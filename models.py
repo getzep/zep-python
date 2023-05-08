@@ -1,6 +1,22 @@
 from typing import List, Optional, Any, Dict
 
 class Memory:
+    """
+    Represents a memory object with messages, metadata, and other attributes.
+
+    :param messages: A list of message objects, where each message contains a role and content.
+    :type messages: Optional[List[Dict[str, Any]]]
+    :param metadata: A dictionary containing metadata associated with the memory.
+    :type metadata: Optional[Dict[str, Any]]
+    :param summary: A dictionary containing a summary of the memory.
+    :type summary: Optional[Dict[str, Any]]
+    :param uuid: A unique identifier for the memory.
+    :type uuid: Optional[str]
+    :param created_at: The timestamp when the memory was created.
+    :type created_at: Optional[str]
+    :param token_count: The token count of the memory.
+    :type token_count: Optional[int]
+    """
     def __init__(
         self,
         messages: Optional[List[Dict[str, Any]]] = None,
@@ -31,6 +47,27 @@ class Memory:
         }
 
 class Message:
+    """
+    Represents a message in a conversation.
+
+    Attributes
+    ----------
+    uuid : str, optional
+        The unique identifier of the message.
+    created_at : str, optional
+        The timestamp of when the message was created.
+    role : str
+        The role of the sender of the message (e.g., "user", "assistant").
+    content : str
+        The content of the message.
+    token_count : int, optional
+        The number of tokens in the message.
+
+    Methods
+    -------
+    to_dict() -> Dict[str, Any]:
+        Returns a dictionary representation of the message.
+    """
     def __init__(
         self,
         role: str,
@@ -46,6 +83,14 @@ class Message:
         self.token_count = token_count
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Returns a dictionary representation of the message.
+
+        Returns
+        -------
+        Dict[str, Any]
+            A dictionary containing the attributes of the message.
+        """
         return {
             "uuid": self.uuid,
             "created_at": self.created_at,
@@ -55,6 +100,27 @@ class Message:
         }
 
 class Summary:
+    """
+    Represents a summary of a conversation.
+
+    Attributes
+    ----------
+    uuid : str
+        The unique identifier of the summary.
+    created_at : str
+        The timestamp of when the summary was created.
+    content : str
+        The content of the summary.
+    recent_message_uuid : str
+        The unique identifier of the most recent message in the conversation.
+    token_count : int
+        The number of tokens in the summary.
+
+    Methods
+    -------
+    to_dict() -> Dict[str, Any]:
+        Returns a dictionary representation of the summary.
+    """
     def __init__(
         self,
         uuid: str,
@@ -70,6 +136,14 @@ class Summary:
         self.token_count = token_count
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Returns a dictionary representation of the summary.
+
+        Returns
+        -------
+        Dict[str, Any]
+            A dictionary containing the attributes of the summary.
+        """
         return {
             "uuid": self.uuid,
             "created_at": self.created_at,
@@ -79,11 +153,37 @@ class Summary:
         }
 
 class SearchPayload:
+    """
+    Represents a search payload for querying memory.
+
+    Attributes
+    ----------
+    meta : Dict[str, Any]
+        Metadata associated with the search query.
+    text : str
+        The text of the search query.
+    """
     def __init__(self, meta: Dict[str, Any], text: str):
         self.meta = meta
         self.text = text
 
 class SearchResult:
+    """
+    Represents a search result from querying memory.
+
+    Attributes
+    ----------
+    message : Optional[Dict[str, Any]]
+        The message associated with the search result.
+    meta : Optional[Dict[str, Any]]
+        Metadata associated with the search result.
+    score : Optional[float]
+        The score of the search result.
+    summary : Optional[str]
+        The summary of the search result.
+    dist : Optional[float]
+        The distance metric of the search result.
+    """
     def __init__(
         self,
         message: Optional[Dict[str, Any]] = None,
@@ -99,6 +199,16 @@ class SearchResult:
         self.dist = dist
 
 class APIError:
+    """
+    Represents an API error.
+
+    Attributes
+    ----------
+    code : int
+        The error code associated with the API error.
+    message : str
+        The error message associated with the API error.
+    """
     def __init__(self, code: int, message: str):
         self.code = code
         self.message = message
