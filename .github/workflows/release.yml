@@ -49,6 +49,6 @@ jobs:
           draft: true
           generateReleaseNotes: true
           tag: v${{ steps.check-version.outputs.version }}
-          commit: master
+          commit: main
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
