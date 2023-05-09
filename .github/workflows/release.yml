@@ -18,6 +18,9 @@ jobs:
         ${{ github.event.pull_request.merged == true }}
         && ${{ contains(github.event.pull_request.labels.*.name, 'release') }}
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - uses: actions/checkout@v3
       - name: Install poetry
@@ -37,13 +40,9 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          draft: false
+          draft: true
           generateReleaseNotes: true
           tag: v${{ steps.check-version.outputs.version }}
           commit: master
-      - name: Publish to PyPI
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          poetry publish
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
