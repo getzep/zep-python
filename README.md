@@ -1,3 +1,5 @@
+[![Release to PyPI](https://github.com/getzep/zep-python/actions/workflows/release.yml/badge.svg)](https://github.com/getzep/zep-python/actions/workflows/release.yml)
+
 # Zep: A long-term memory store for conversational AI applications
 
 This is the Python client package for the Zep service. For more information about Zep, see https://github.com/getzep/zep.
