@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import asyncio
 
-from models import Memory, Message, SearchPayload
-from zep_client import ZepClient
+from zep_python import Memory, Message, SearchPayload, ZepClient
 
 
 async def main() -> None:
