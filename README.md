@@ -69,7 +69,7 @@ Zep Python has both an async and sync API. We've provided code examples for the 
 - `search_memory(session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]`: Search memory for the specified session.
 - `close() -> None`: Close the HTTP client.
 
-### __init__(self, base_url: str) -> None
+### `__init__(self, base_url: str) -> None`
 
 Initialize the ZepClient with the specified base URL.
 
@@ -85,7 +85,7 @@ async with ZepClient(base_url) as client:
 
 ---
 
-## get_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]
+### `get_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]`
 
 Retrieve memory for the specified session. This method is a synchronous wrapper for the asynchronous method `aget_memory`.
 
@@ -100,11 +100,11 @@ Retrieve memory for the specified session. This method is a synchronous wrapper 
 
 **Raises**
 
-- UnexpectedResponseError: If the API response format is unexpected.
+- `UnexpectedResponseError`: If the API response format is unexpected.
 
 ---
 
-### aget_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]
+### `aget_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]`
 
 Asynchronously retrieve memory for the specified session.
 
@@ -115,11 +115,11 @@ Asynchronously retrieve memory for the specified session.
 
 **Returns**
 
-- List[Memory]: A list of Memory objects representing the retrieved memory entries.
+- `List[Memory]`: A list of Memory objects representing the retrieved memory entries.
 
 **Raises**
 
-- UnexpectedResponseError: If the API response format is unexpected.
+- `UnexpectedResponseError`: If the API response format is unexpected.
 
 ```python
 memories = await client.aget_memory("3a3a3a")
@@ -129,7 +129,7 @@ for memory in memories:
 ```
 
 ---
-### search_memory(self, session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]
+### `search_memory(self, session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]`
 
 Search memory for the specified session. This method is a synchronous wrapper for the asynchronous method `asearch_memory`.
 
@@ -141,15 +141,15 @@ Search memory for the specified session. This method is a synchronous wrapper fo
 
 **Returns**
 
-- List[SearchResult]: A list of SearchResult objects representing the search results.
+- `List[SearchResult]`: A list of SearchResult objects representing the search results.
 
 **Raises**
 
-- UnexpectedResponseError: If the API response format is unexpected.
+- `UnexpectedResponseError`: If the API response format is unexpected.
 
 ---
 
-### asearch_memory(self, session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]
+### `asearch_memory(self, session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]`
 
 Asynchronously search memory for the specified session.
 
@@ -161,11 +161,11 @@ Asynchronously search memory for the specified session.
 
 **Returns**
 
-- List[SearchResult]: A list of SearchResult objects representing the search results.
+- `List[SearchResult]`: A list of SearchResult objects representing the search results.
 
 **Raises**
 
-- UnexpectedResponseError: If the API response format is unexpected.
+- `UnexpectedResponseError`: If the API response format is unexpected.
 
 ```python
 search_payload = SearchPayload({}, "What food is served in Iceland?")
@@ -178,7 +178,7 @@ for search_result in search_results:
 
 ---
 
-### add_memory(self, session_id: str, memory_messages: Memory) -> str
+### `add_memory(self, session_id: str, memory_messages: Memory) -> str`
 
 Add memory to the specified session. This method is a synchronous wrapper for the asynchronous method `aadd_memory`.
 
@@ -193,11 +193,11 @@ Add memory to the specified session. This method is a synchronous wrapper for th
 
 **Raises**
 
-- UnexpectedResponseError: If the API response format is unexpected.
+- `UnexpectedResponseError`: If the API response format is unexpected.
 
 ---
 
-### aadd_memory(self, session_id: str, memory_messages: Memory) -> str
+### `aadd_memory(self, session_id: str, memory_messages: Memory) -> str`
 
 Asynchronously add memory to the specified session.
 
@@ -212,7 +212,7 @@ Asynchronously add memory to the specified session.
 
 **Raises**
 
-- UnexpectedResponseError: If the API response format is unexpected.
+- `UnexpectedResponseError`: If the API response format is unexpected.
 
 ```python
 message = Message(role="user", content="who was the first man to go to space?")
@@ -225,7 +225,7 @@ result = await client.aadd_memory(session_id, memory)
 
 ---
 
-### delete_memory(self, session_id: str) -> str
+### `delete_memory(self, session_id: str) -> str`
 
 Delete memory for the specified session. This method is a synchronous wrapper for the asynchronous method `adelete_memory`.
 
@@ -239,11 +239,11 @@ Delete memory for the specified session. This method is a synchronous wrapper fo
 
 **Raises**
 
-- UnexpectedResponseError: If the API response format is unexpected.
+- `UnexpectedResponseError`: If the API response format is unexpected.
 
 ---
 
-### adelete_memory(self, session_id: str) -> str
+### `adelete_memory(self, session_id: str) -> str`
 
 Asynchronously delete memory for the specified session.
 
@@ -258,7 +258,7 @@ result = await client.adelete_memory(session_id)
 
 ---
 
-### close(self) -> None
+### `close(self) -> None`
 
 Asynchronously close the HTTP client.
 
@@ -282,7 +282,7 @@ Represents a memory object with messages, metadata, and other attributes.
 
 ---
 
-### Message
+### `Message`
 
 Represents a message in a conversation.
 
@@ -300,7 +300,7 @@ Represents a message in a conversation.
 
 ---
 
-### Summary
+### `Summary`
 
 Represents a summary of a conversation.
 
@@ -318,7 +318,7 @@ Represents a summary of a conversation.
 
 ---
 
-### SearchPayload
+### `SearchPayload`
 
 Represents a search payload for querying memory.
 
@@ -329,7 +329,7 @@ Represents a search payload for querying memory.
 
 ---
 
-### SearchResult
+### `SearchResult`
 
 Represents a search result from querying memory.
 
@@ -343,7 +343,7 @@ Represents a search result from querying memory.
 
 ---
 
-### APIError
+### `APIError`
 
 Represents an API error.
 
