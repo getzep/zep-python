@@ -85,7 +85,7 @@ async with ZepClient(base_url) as client:
 
 ---
 
-## get_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]
+### get_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]
 
 Retrieve memory for the specified session. This method is a synchronous wrapper for the asynchronous method `aget_memory`.
 
