@@ -2,10 +2,13 @@ name: Deploy Sphinx documentation to Pages
 
 on:
   push:
-    branches: [main] 
+    branches: [disabled] 
 
 jobs:
   build:
+    permissions:
+      pages: write
+      
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
