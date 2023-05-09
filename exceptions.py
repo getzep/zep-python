@@ -1,4 +1,7 @@
-from typing import Optional  
+from __future__ import annotations
+
+from typing import Any, Dict, Optional
+
 
 class ZepClientError(Exception):
     """
@@ -18,9 +21,13 @@ class ZepClientError(Exception):
     response_data : Optional[dict], optional
         The response data to be set for the exception, by default None.
     """
-    def __init__(self, message: str, response_data: Optional[dict] = None):
+
+    def __init__(
+        self, message: str, response_data: Optional[Dict[Any, Any]] = None
+    ) -> None:
         super().__init__(message)
         self.response_data = response_data
+
 
 class UnexpectedResponseError(ZepClientError):
     """
@@ -28,5 +35,6 @@ class UnexpectedResponseError(ZepClientError):
 
     Inherits from ZepClientError.
     """
-    def __init__(self, message: str):
+
+    def __init__(self, message: str) -> None:
         super().__init__(message)

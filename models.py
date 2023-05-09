@@ -1,4 +1,7 @@
-from typing import List, Optional, Any, Dict
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
+
 
 class Memory:
     """
@@ -17,6 +20,7 @@ class Memory:
     :param token_count: The token count of the memory.
     :type token_count: Optional[int]
     """
+
     def __init__(
         self,
         messages: Optional[List[Dict[str, Any]]] = None,
@@ -46,6 +50,7 @@ class Memory:
             "token_count": self.token_count,
         }
 
+
 class Message:
     """
     Represents a message in a conversation.
@@ -68,6 +73,7 @@ class Message:
     to_dict() -> Dict[str, Any]:
         Returns a dictionary representation of the message.
     """
+
     def __init__(
         self,
         role: str,
@@ -99,6 +105,7 @@ class Message:
             "token_count": self.token_count,
         }
 
+
 class Summary:
     """
     Represents a summary of a conversation.
@@ -121,6 +128,7 @@ class Summary:
     to_dict() -> Dict[str, Any]:
         Returns a dictionary representation of the summary.
     """
+
     def __init__(
         self,
         uuid: str,
@@ -152,6 +160,7 @@ class Summary:
             "token_count": self.token_count,
         }
 
+
 class SearchPayload:
     """
     Represents a search payload for querying memory.
@@ -163,9 +172,11 @@ class SearchPayload:
     text : str
         The text of the search query.
     """
+
     def __init__(self, meta: Dict[str, Any], text: str):
         self.meta = meta
         self.text = text
+
 
 class SearchResult:
     """
@@ -184,19 +195,25 @@ class SearchResult:
     dist : Optional[float]
         The distance metric of the search result.
     """
+
     def __init__(
         self,
         message: Optional[Dict[str, Any]] = None,
-        meta: Optional[Dict[str, Any]] = None,  # Add the 'meta' argument with a default value
+        meta: Optional[
+            Dict[str, Any]
+        ] = None,  # Add the 'meta' argument with a default value
         score: Optional[float] = None,
         summary: Optional[str] = None,
         dist: Optional[float] = None,
     ):
         self.message = message
-        self.meta = meta if meta is not None else {}  # Use the provided value or an empty dictionary
+        self.meta = (
+            meta if meta is not None else {}
+        )  # Use the provided value or an empty dictionary
         self.score = score
         self.summary = summary
         self.dist = dist
+
 
 class APIError:
     """
@@ -209,6 +226,7 @@ class APIError:
     message : str
         The error message associated with the API error.
     """
+
     def __init__(self, code: int, message: str):
         self.code = code
         self.message = message

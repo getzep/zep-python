@@ -1,13 +1,14 @@
+from __future__ import annotations
+
 import asyncio
-from zep_client import ZepClient
+
 from models import Memory, Message, SearchPayload
-from exceptions import ZepClientError, UnexpectedResponseError
-# Other imports as needed
+from zep_client import ZepClient
 
-async def main():
-    base_url = "http://localhost:8000" # TODO: Replace with Zep API URL
+
+async def main() -> None:
+    base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
     async with ZepClient(base_url) as client:
-
         # Example usage
         session_id = "2a2a2a"
 
@@ -33,7 +34,7 @@ async def main():
         memories = await client.aget_memory(session_id)
         for memory in memories:
             for message in memory.messages:
-                print(message.to_dict())   
+                print(message.to_dict())
 
         # Delete memory
         result = await client.adelete_memory(session_id)
@@ -51,6 +52,7 @@ async def main():
             # Access the 'content' field within the 'message' object.
             message_content = search_result.message
             print(message_content)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "zep-python"
+version = "0.1.0"
+description = "Zep stores, manages, enriches, and searches long-term memory for conversational AI applications. This is the Python client for the Zep service."
+authors = ["Daniel Chalef <daniel.chalef@private.org>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+httpx = "^0.24.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+ruff = "^0.0.265"
+mypy = "^1.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
