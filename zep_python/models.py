@@ -181,9 +181,9 @@ class SearchPayload:
         The text of the search query.
     """
 
-    def __init__(self, meta: Dict[str, Any], text: str):
-        self.meta = meta
+    def __init__(self, text: str, meta: Optional[Dict[str, Any]] = None):
         self.text = text
+        self.meta = meta
 
 
 class SearchResult:

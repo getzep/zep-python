@@ -329,6 +329,8 @@ class ZepClient:
             json=search_payload.__dict__,
             params=params,
         )
+        if response.status_code == 404:
+            raise NotFoundError("No query results found")
         if response.status_code != 200:
             raise APIError(f"Unexpected status code: {response.status_code}")
         return [
