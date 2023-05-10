@@ -17,6 +17,7 @@ poetry add zep-python
 ```
 
 ## Quick Start
+
 Ensure that you have a Zep server running. See https://github.com/getzep/zep.
 
 ```python
@@ -65,6 +66,7 @@ Zep Python has both an async and sync API. We've provided code examples for the 
 - `client` (httpx.AsyncClient): The HTTP client used for making API requests.
 
 **Methods**
+
 - `get_memory(session_id: str, lastn: Optional[int] = None) -> List[Memory]`: Retrieve memory for the specified session.
 - `add_memory(session_id: str, memory_messages: Memory) -> str`: Add memory to the specified session.
 - `delete_memory(session_id: str) -> str`: Delete memory for the specified session.
@@ -133,6 +135,7 @@ for memory in memories:
 ```
 
 ---
+
 ### `search_memory(self, session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]`
 
 Search memory for the specified session. This method is a synchronous wrapper for the asynchronous method `asearch_memory`.
@@ -259,7 +262,6 @@ Asynchronously delete memory for the specified session.
 result = await client.adelete_memory(session_id)
 ```
 
-
 ---
 
 ### `close(self) -> None`
@@ -267,7 +269,6 @@ result = await client.adelete_memory(session_id)
 Asynchronously close the HTTP client.
 
 **Note**: This method may be called when the ZepClient is no longer needed to release resources.
-
 
 ## Models
 

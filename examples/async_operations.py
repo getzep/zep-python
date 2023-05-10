@@ -1,6 +1,6 @@
 import asyncio
 
-from zep import Memory, Message, NotFoundError, SearchPayload, ZepClient
+from zep_python import Memory, Message, NotFoundError, SearchPayload, ZepClient
 
 
 async def main() -> None:
@@ -54,11 +54,15 @@ async def main() -> None:
         history = [
             {
                 "role": "user",
-                "content": ("I'm looking to plan a trip to Iceland. Can you help me?"),
+                "content": (
+                    "I'm looking to plan a trip to Iceland. Can you help me?"
+                ),
             },
             {
                 "role": "assistant",
-                "content": ("Of course! I'd be happy to help you plan your trip."),
+                "content": (
+                    "Of course! I'd be happy to help you plan your trip."
+                ),
             },
             {
                 "role": "user",

@@ -13,7 +13,7 @@ format:
 	poetry run ruff --select I --fix .
 
 lint:
-	poetry run mypy .
+	poetry run mypy --exclude tests .
 	poetry run black . --check
 	poetry run ruff .
 

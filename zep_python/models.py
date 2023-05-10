@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional, Sequence
 
 
 class Memory:
@@ -24,13 +24,13 @@ class Memory:
 
     def __init__(
         self,
-        messages: Optional[List[Dict[str, Any] | Memory]] = None,
+        messages: Optional[Sequence[Dict[str, Any] | Message]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         summary: Optional[Dict[str, Any]] = None,
         uuid: Optional[str] = None,
         created_at: Optional[str] = None,
         token_count: Optional[int] = None,
-    ):
+    ) -> None:
         if messages is not None:
             self.messages = [
                 (
@@ -213,7 +213,7 @@ class SearchResult:
         score: Optional[float] = None,
         summary: Optional[str] = None,
         dist: Optional[float] = None,
-    ):
+    ) -> None:
         self.message = message
         self.meta = (
             meta if meta is not None else {}

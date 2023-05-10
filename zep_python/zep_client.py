@@ -5,9 +5,9 @@ from typing import List, Optional, Type
 
 import httpx
 
-from zep.exceptions import APIError, NotFoundError
-from zep.models import Memory, SearchPayload, SearchResult
-from zep.utils import sync
+from zep_python.exceptions import APIError, NotFoundError
+from zep_python.models import Memory, SearchPayload, SearchResult
+from zep_python.utils import sync
 
 API_BASEURL = "/api/v1"
 
