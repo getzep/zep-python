@@ -7,7 +7,8 @@ class Memory:
     """
     Represents a memory object with messages, metadata, and other attributes.
 
-    :param messages: A list of message objects, where each message contains a role and content.
+    :param messages: A list of message objects, where each message contains a role and
+                     content.
     :type messages: Optional[List[Dict[str, Any]]]
     :param metadata: A dictionary containing metadata associated with the memory.
     :type metadata: Optional[Dict[str, Any]]
@@ -23,7 +24,7 @@ class Memory:
 
     def __init__(
         self,
-        messages: Optional[List[Dict[str, Any]]] = None,
+        messages: Optional[List[Dict[str, Any] | Memory]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         summary: Optional[Dict[str, Any]] = None,
         uuid: Optional[str] = None,
@@ -31,7 +32,14 @@ class Memory:
         token_count: Optional[int] = None,
     ):
         if messages is not None:
-            self.messages = [Message(**message_data) for message_data in messages]
+            self.messages = [
+                (
+                    Message(**message_data)
+                    if isinstance(message_data, dict)
+                    else message_data
+                )
+                for message_data in messages
+            ]
         else:
             self.messages = []
         self.metadata = metadata if metadata is not None else {}

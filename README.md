@@ -22,7 +22,7 @@ Ensure that you have a Zep server running. See https://github.com/getzep/zep.
 ```python
 import asyncio
 
-from zep_python import Memory, Message, SearchPayload, ZepClient
+from zep import Memory, Message, SearchPayload, ZepClient
 
 base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
 session_id = "2a2a2a" # an identifier for your user's session.
@@ -102,7 +102,8 @@ Retrieve memory for the specified session. This method is a synchronous wrapper 
 
 **Raises**
 
-- `UnexpectedResponseError`: If the API response format is unexpected.
+- `APIError`: If the API response format is unexpected.
+- `NotFoundError`: If no results were found.
 
 ---
 
@@ -121,7 +122,8 @@ Asynchronously retrieve memory for the specified session.
 
 **Raises**
 
-- `UnexpectedResponseError`: If the API response format is unexpected.
+- `APIError`: If the API response format is unexpected.
+- `NotFoundError`: If no results were found.
 
 ```python
 memories = await client.aget_memory("3a3a3a")
@@ -147,7 +149,7 @@ Search memory for the specified session. This method is a synchronous wrapper fo
 
 **Raises**
 
-- `UnexpectedResponseError`: If the API response format is unexpected.
+- `APIError`: If the API response format is unexpected.
 
 ---
 
@@ -167,7 +169,7 @@ Asynchronously search memory for the specified session.
 
 **Raises**
 
-- `UnexpectedResponseError`: If the API response format is unexpected.
+- `APIError`: If the API response format is unexpected.
 
 ```python
 search_payload = SearchPayload({}, "What food is served in Iceland?")
@@ -195,7 +197,7 @@ Add memory to the specified session. This method is a synchronous wrapper for th
 
 **Raises**
 
-- `UnexpectedResponseError`: If the API response format is unexpected.
+- `APIError`: If the API response format is unexpected.
 
 ---
 
@@ -214,7 +216,7 @@ Asynchronously add memory to the specified session.
 
 **Raises**
 
-- `UnexpectedResponseError`: If the API response format is unexpected.
+- `APIError`: If the API response format is unexpected.
 
 ```python
 message = Message(role="user", content="who was the first man to go to space?")
@@ -241,7 +243,7 @@ Delete memory for the specified session. This method is a synchronous wrapper fo
 
 **Raises**
 
-- `UnexpectedResponseError`: If the API response format is unexpected.
+- `APIError`: If the API response format is unexpected.
 
 ---
 
@@ -275,7 +277,7 @@ Represents a memory object with messages, metadata, and other attributes.
 
 **Attributes**:
 
-- `messages` (Optional[List[Dict[str, Any]]]): A list of message objects, where each message contains a role and content.
+- `messages` (Optional[List[Dict[str, Any]] | Memory]): A list of message objects, where each message contains a role and content.
 - `metadata` (Optional[Dict[str, Any]]): A dictionary containing metadata associated with the memory.
 - `summary` (Optional[Dict[str, Any]]): A dictionary containing a summary of the memory.
 - `uuid` (Optional[str]): A unique identifier for the memory.

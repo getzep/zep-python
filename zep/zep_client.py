@@ -5,9 +5,9 @@ from typing import List, Optional, Type
 
 import httpx
 
-from exceptions import UnexpectedResponseError
-from models import Memory, SearchPayload, SearchResult
-from utils import sync
+from zep.exceptions import APIError, NotFoundError
+from zep.models import Memory, SearchPayload, SearchResult
+from zep.utils import sync
 
 API_BASEURL = "/api/v1"
 
@@ -31,7 +31,8 @@ class ZepClient:
         Add memory to the specified session.
     delete_memory(session_id: str) -> str:
         Delete memory for the specified session.
-    search_memory(session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]:
+    search_memory(session_id: str, search_payload: SearchPayload,
+                  limit: Optional[int] = None) -> List[SearchResult]:
         Search memory for the specified session.
     close() -> None:
         Close the HTTP client.
@@ -63,16 +64,20 @@ class ZepClient:
         await self.close()
 
     @sync
-    def get_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]:
+    def get_memory(
+        self, session_id: str, lastn: Optional[int] = None
+    ) -> List[Memory]:
         """
-        Retrieve memory for the specified session. This method is a synchronous wrapper for the asynchronous method `aget_memory`.
+        Retrieve memory for the specified session. This method is a synchronous wrapper
+        for the asynchronous method `aget_memory`.
 
         Parameters
         ----------
         session_id : str
             The ID of the session for which to retrieve memory.
         lastn : Optional[int], optional
-            The number of most recent memory entries to retrieve. Defaults to None (all entries).
+            The number of most recent memory entries to retrieve. Defaults to None (all
+            entries).
 
         Returns
         -------
@@ -81,7 +86,7 @@ class ZepClient:
 
         Raises
         ------
-        UnexpectedResponseError
+        APIError
             If the API response format is unexpected.
         """
         # we've wrapped the function in a decorator that will run it synchronously.
@@ -99,7 +104,8 @@ class ZepClient:
         session_id : str
             The ID of the session for which to retrieve memory.
         lastn : Optional[int], optional
-            The number of most recent memory entries to retrieve. Defaults to None (all entries).
+            The number of most recent memory entries to retrieve. Defaults to None (all
+            entries).
 
         Returns
         -------
@@ -108,7 +114,7 @@ class ZepClient:
 
         Raises
         ------
-        UnexpectedResponseError
+        APIError
             If the API response format is unexpected.
         """
         url = f"{self.base_url}{API_BASEURL}/sessions/{session_id}/memory"
@@ -116,12 +122,14 @@ class ZepClient:
             {"lastn": lastn} if lastn is not None else {}
         )  # Include 'lastn' as a query parameter if provided
         response = await self.client.get(url, params=params)
-        response_data = response.json()
+
+        if response.status_code == 404:
+            raise NotFoundError(f"No memory found for session {session_id}")
 
         if response.status_code != 200:
-            raise UnexpectedResponseError(
-                f"Unexpected status code: {response.status_code}"
-            )
+            raise APIError(f"Unexpected status code: {response.status_code}")
+
+        response_data = response.json()
 
         # Check if the response contains the expected field 'messages'.
         if "messages" in response_data:
@@ -133,16 +141,18 @@ class ZepClient:
                 messages=response_data["messages"],
                 # Add the 'summary' field if it is present in the response.
                 summary=response_data.get("summary", None),
-                # Add any other fields from the response that are relevant to the Memory class.
+                # Add any other fields from the response that are relevant to the
+                # Memory class.
             )
             return [memory]
         else:
-            raise UnexpectedResponseError("Unexpected response format from the API")
+            raise APIError("Unexpected response format from the API")
 
     @sync
     def add_memory(self, session_id: str, memory_messages: Memory) -> str:
         """
-        Add memory to the specified session. This method is a synchronous wrapper for the asynchronous method `aadd_memory`.
+        Add memory to the specified session. This method is a synchronous wrapper for
+        the asynchronous method `aadd_memory`.
 
         Parameters
         ----------
@@ -158,14 +168,16 @@ class ZepClient:
 
         Raises
         ------
-        UnexpectedResponseError
+        APIError
             If the API response format is unexpected.
         """
         # we've wrapped the function in a decorator that will run it synchronously.
         # ignore the type error.
         return self.aadd_memory(session_id, memory_messages)  # type: ignore
 
-    async def aadd_memory(self, session_id: str, memory_messages: Memory) -> str:
+    async def aadd_memory(
+        self, session_id: str, memory_messages: Memory
+    ) -> str:
         """
         Asynchronously add memory to the specified session.
 
@@ -183,7 +195,7 @@ class ZepClient:
 
         Raises
         ------
-        UnexpectedResponseError
+        APIError
             If the API response format is unexpected.
         """
         response = await self.client.post(
@@ -191,16 +203,15 @@ class ZepClient:
             json=memory_messages.to_dict(),
         )
         if response.status_code != 200:
-            raise UnexpectedResponseError(
-                f"Unexpected status code: {response.status_code}"
-            )
+            raise APIError(f"Unexpected status code: {response.status_code}")
 
         return response.text
 
     @sync
     def delete_memory(self, session_id: str) -> str:
         """
-        Delete memory for the specified session. This method is a synchronous wrapper for the asynchronous method `adelete_memory`.
+        Delete memory for the specified session. This method is a synchronous wrapper
+        for the asynchronous method `adelete_memory`.
 
         Parameters
         ----------
@@ -214,7 +225,7 @@ class ZepClient:
 
         Raises
         ------
-        UnexpectedResponseError
+        APIError
             If the API response format is unexpected.
         """
         # we've wrapped the function in a decorator that will run it synchronously.
@@ -237,16 +248,17 @@ class ZepClient:
 
         Raises
         ------
-        UnexpectedResponseError
+        APIError
             If the API response format is unexpected.
         """
         response = await self.client.delete(
             f"{self.base_url}{API_BASEURL}/sessions/{session_id}/memory"
         )
+        if response.status_code == 404:
+            raise NotFoundError(f"No session found for session {session_id}")
+
         if response.status_code != 200:
-            raise UnexpectedResponseError(
-                f"Unexpected status code: {response.status_code}"
-            )
+            raise APIError(f"Unexpected status code: {response.status_code}")
         return response.text
 
     @sync
@@ -257,7 +269,8 @@ class ZepClient:
         limit: Optional[int] = None,
     ) -> List[SearchResult]:
         """
-        Search memory for the specified session. This method is a synchronous wrapper for the asynchronous method `asearch_memory`.
+        Search memory for the specified session. This method is a synchronous wrapper
+        for the asynchronous method `asearch_memory`.
 
         Parameters
         ----------
@@ -275,7 +288,7 @@ class ZepClient:
 
         Raises
         ------
-        UnexpectedResponseError
+        APIError
             If the API response format is unexpected.
         """
         # we've wrapped the function in a decorator that will run it synchronously.
@@ -307,7 +320,7 @@ class ZepClient:
 
         Raises
         ------
-        UnexpectedResponseError
+        APIError
             If the API response format is unexpected.
         """
         params = {"limit": limit} if limit is not None else {}
@@ -317,15 +330,16 @@ class ZepClient:
             params=params,
         )
         if response.status_code != 200:
-            raise UnexpectedResponseError(
-                f"Unexpected status code: {response.status_code}"
-            )
-        return [SearchResult(**search_result) for search_result in response.json()]
+            raise APIError(f"Unexpected status code: {response.status_code}")
+        return [
+            SearchResult(**search_result) for search_result in response.json()
+        ]
 
     async def close(self) -> None:
         """
         Asynchronously close the HTTP client.
 
-        [Optional] This method may be called when the ZepClient is no longer needed to release resources.
+        [Optional] This method may be called when the ZepClient is no longer needed to
+        release resources.
         """
         await self.client.aclose()

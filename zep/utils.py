@@ -15,7 +15,8 @@ class WrappedProtocol(
 
 
 # Decorator that allows us to call async functions synchronously.
-def sync(coro: T) -> WrappedProtocol[T]:
+# TODO: Fix this type issue. Can't be covariant.
+def sync(coro: T) -> WrappedProtocol[T]:  # type: ignore
     @wraps(coro)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         loop = asyncio.get_event_loop()
