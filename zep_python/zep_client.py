@@ -64,7 +64,9 @@ class ZepClient:
         await self.close()
 
     @sync
-    def get_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]:
+    def get_memory(
+        self, session_id: str, lastn: Optional[int] = None
+    ) -> List[Memory]:
         """
         Retrieve memory for the specified session. This method is a synchronous wrapper
         for the asynchronous method `aget_memory`.
@@ -173,7 +175,9 @@ class ZepClient:
         # ignore the type error.
         return self.aadd_memory(session_id, memory_messages)  # type: ignore
 
-    async def aadd_memory(self, session_id: str, memory_messages: Memory) -> str:
+    async def aadd_memory(
+        self, session_id: str, memory_messages: Memory
+    ) -> str:
         """
         Asynchronously add memory to the specified session.
 
@@ -327,7 +331,9 @@ class ZepClient:
         )
         if response.status_code != 200:
             raise APIError(f"Unexpected status code: {response.status_code}")
-        return [SearchResult(**search_result) for search_result in response.json()]
+        return [
+            SearchResult(**search_result) for search_result in response.json()
+        ]
 
     async def close(self) -> None:
         """

@@ -30,7 +30,7 @@ class Memory:
         uuid: Optional[str] = None,
         created_at: Optional[str] = None,
         token_count: Optional[int] = None,
-    ):
+    ) -> None:
         if messages is not None:
             self.messages = [
                 (
@@ -213,7 +213,7 @@ class SearchResult:
         score: Optional[float] = None,
         summary: Optional[str] = None,
         dist: Optional[float] = None,
-    ):
+    ) -> None:
         self.message = message
         self.meta = (
             meta if meta is not None else {}

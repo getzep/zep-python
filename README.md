@@ -23,7 +23,7 @@ Ensure that you have a Zep server running. See https://github.com/getzep/zep.
 ```python
 import asyncio
 
-from zep_python import Memory, Message, SearchPayload, ZepClient
+from zep import Memory, Message, SearchPayload, ZepClient
 
 base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
 session_id = "2a2a2a" # an identifier for your user's session.
