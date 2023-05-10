@@ -65,7 +65,7 @@ Zep Python has both an async and sync API. We've provided code examples for the 
 - `base_url` (str): The base URL of the API.
 - `client` (httpx.AsyncClient): The HTTP client used for making API requests.
 
-**Methods**
+## Methods
 
 - `get_memory(session_id: str, lastn: Optional[int] = None) -> List[Memory]`: Retrieve memory for the specified session.
 - `add_memory(session_id: str, memory_messages: Memory) -> str`: Add memory to the specified session.
@@ -73,12 +73,10 @@ Zep Python has both an async and sync API. We've provided code examples for the 
 - `search_memory(session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]`: Search memory for the specified session.
 - `close() -> None`: Close the HTTP client.
 
-### `__init__(self, base_url: str) -> None`
-
-Initialize the ZepClient with the specified base URL.
+### Init
+- `__init__(self, base_url: str) -> None` : Initialize the ZepClient with the specified base URL.
 
 **Parameters**
-
 - `base_url` (str): The base URL of the API.
 
 ```python
@@ -89,8 +87,8 @@ async with ZepClient(base_url) as client:
 
 ---
 
-### `get_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]`
-
+### get_memory
+- `get_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]`  
 Retrieve memory for the specified session. This method is a synchronous wrapper for the asynchronous method `aget_memory`.
 
 **Parameters**
@@ -109,8 +107,8 @@ Retrieve memory for the specified session. This method is a synchronous wrapper 
 
 ---
 
-### `aget_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]`
-
+### aget_memory  
+- `aget_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]`  
 Asynchronously retrieve memory for the specified session.
 
 **Parameters**
@@ -136,8 +134,8 @@ for memory in memories:
 
 ---
 
-### `search_memory(self, session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]`
-
+### search_memory  
+- `search_memory(self, session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]`  
 Search memory for the specified session. This method is a synchronous wrapper for the asynchronous method `asearch_memory`.
 
 **Parameters**
@@ -156,7 +154,8 @@ Search memory for the specified session. This method is a synchronous wrapper fo
 
 ---
 
-### `asearch_memory(self, session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]`
+### asearch_memory  
+- `asearch_memory(self, session_id: str, search_payload: SearchPayload, limit: Optional[int] = None) -> List[SearchResult]`  
 
 Asynchronously search memory for the specified session.
 
@@ -185,7 +184,8 @@ for search_result in search_results:
 
 ---
 
-### `add_memory(self, session_id: str, memory_messages: Memory) -> str`
+### add_memory  
+- `add_memory(self, session_id: str, memory_messages: Memory) -> str`  
 
 Add memory to the specified session. This method is a synchronous wrapper for the asynchronous method `aadd_memory`.
 
@@ -204,7 +204,8 @@ Add memory to the specified session. This method is a synchronous wrapper for th
 
 ---
 
-### `aadd_memory(self, session_id: str, memory_messages: Memory) -> str`
+### aadd_memory  
+- `aadd_memory(self, session_id: str, memory_messages: Memory) -> str`  
 
 Asynchronously add memory to the specified session.
 
@@ -232,7 +233,8 @@ result = await client.aadd_memory(session_id, memory)
 
 ---
 
-### `delete_memory(self, session_id: str) -> str`
+### delete_memory  
+- `delete_memory(self, session_id: str) -> str`  
 
 Delete memory for the specified session. This method is a synchronous wrapper for the asynchronous method `adelete_memory`.
 
@@ -250,7 +252,8 @@ Delete memory for the specified session. This method is a synchronous wrapper fo
 
 ---
 
-### `adelete_memory(self, session_id: str) -> str`
+### adelete_memory  
+- `adelete_memory(self, session_id: str) -> str`  
 
 Asynchronously delete memory for the specified session.
 
@@ -264,9 +267,10 @@ result = await client.adelete_memory(session_id)
 
 ---
 
-### `close(self) -> None`
+### close  
+- `close(self) -> None`  
 
-Asynchronously close the HTTP client.
+Asynchronously close the HTTP client. This is Optional. 
 
 **Note**: This method may be called when the ZepClient is no longer needed to release resources.
 
@@ -287,7 +291,7 @@ Represents a memory object with messages, metadata, and other attributes.
 
 ---
 
-### `Message`
+### Message
 
 Represents a message in a conversation.
 
@@ -305,7 +309,7 @@ Represents a message in a conversation.
 
 ---
 
-### `Summary`
+### Summary
 
 Represents a summary of a conversation.
 
@@ -323,7 +327,7 @@ Represents a summary of a conversation.
 
 ---
 
-### `SearchPayload`
+### SearchPayload
 
 Represents a search payload for querying memory.
 
@@ -334,7 +338,7 @@ Represents a search payload for querying memory.
 
 ---
 
-### `SearchResult`
+### SearchResult
 
 Represents a search result from querying memory.
 
@@ -347,8 +351,9 @@ Represents a search result from querying memory.
 - `dist` (Optional[float]): The distance metric of the search result.
 
 ---
+## Exceptions
 
-### `APIError`
+### APIError
 
 Represents an API error.
 
@@ -356,3 +361,26 @@ Represents an API error.
 
 - `code` (int): The error code associated with the API error.
 - `message` (str): The error message associated with the API error.
+---
+
+### ZepClientError
+
+Base exception class for ZepClient errors.
+
+**Attributes**:
+
+- `message`: str - The error message associated with the ZepClient error.
+- `response_data`: Optional[dict] - The response data associated with the ZepClient error.
+---
+
+### NotFoundError
+
+Raised when the API response contains no results.
+
+Inherits from ZepClientError.
+
+**Attributes**:
+
+- `message`: str - The error message to be set for the exception.
+
+---
