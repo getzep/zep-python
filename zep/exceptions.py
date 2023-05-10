@@ -29,9 +29,20 @@ class ZepClientError(Exception):
         self.response_data = response_data
 
 
-class UnexpectedResponseError(ZepClientError):
+class APIError(ZepClientError):
     """
     Raised when the API response format is unexpected.
+
+    Inherits from ZepClientError.
+    """
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
+class NotFoundError(ZepClientError):
+    """
+    Raised when the API response contains no results.
 
     Inherits from ZepClientError.
     """
