@@ -10,5 +10,5 @@ __all__ = [
     "APIError",
     "NotFoundError",
     "SearchResult",
-    "Summary"
+    "Summary",
 ]

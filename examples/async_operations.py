@@ -30,7 +30,7 @@ async def main() -> None:
         memory = Memory()
         memory.messages = [message]
 
-        result = await client.aadd_memory(session_id, memory)
+        await client.aadd_memory(session_id, memory)
         memories = await client.aget_memory(session_id)
         for memory in memories:
             for message in memory.messages:
@@ -54,15 +54,11 @@ async def main() -> None:
         history = [
             {
                 "role": "user",
-                "content": (
-                    "I'm looking to plan a trip to Iceland. Can you help me?"
-                ),
+                "content": "I'm looking to plan a trip to Iceland. Can you help me?",
             },
             {
                 "role": "assistant",
-                "content": (
-                    "Of course! I'd be happy to help you plan your trip."
-                ),
+                "content": "Of course! I'd be happy to help you plan your trip.",
             },
             {
                 "role": "user",
@@ -90,12 +86,14 @@ async def main() -> None:
                 ),
             },
         ]
-        memories = [Message(**m) for m in history]
-        memory = Memory(messages=memories)
+        messages = [Message(**m) for m in history]  # type: ignore
+        memory = Memory(messages=messages)
         result = await client.aadd_memory(session_id, memory)
         print(result)
+        memories = await client.aget_memory(session_id)
+        print(memories[0].dict())
         # Search memory
-        search_payload = SearchPayload({}, "Iceland")
+        search_payload = SearchPayload(text="Iceland")
         search_results = await client.asearch_memory(session_id, search_payload)
         for search_result in search_results:
             # Access the 'content' field within the 'message' object.
