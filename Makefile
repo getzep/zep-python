@@ -13,9 +13,9 @@ format:
 	poetry run ruff --select I --fix .
 
 lint:
-	poetry run mypy --exclude tests .
+	poetry run mypy --exclude tests zep_python/
 	poetry run black . --check
-	poetry run ruff .
+	poetry run ruff zep_python/
 
 test:
 	poetry run pytest tests
