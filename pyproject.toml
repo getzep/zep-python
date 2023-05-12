@@ -8,6 +8,15 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.8"
 httpx = "^0.24.0"
+pydantic = "^1.10.7"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.3.1"
+pytest-httpx = "^0.22.0"
+pytest-asyncio = "^0.21.0"
+ruff = "^0.0.265"
+mypy = "^1.2.0"
+pytest-mock = "^3.10.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
@@ -15,8 +24,6 @@ ruff = "^0.0.265"
 mypy = "^1.2.0"
 pre-commit = "^3.3.1"
 sphinxawesome-theme = "^4.0.3"
-pytest = "^7.3.1"
-pytest-httpx = "^0.22.0"
 
 [build-system]
 requires = ["poetry-core"]
