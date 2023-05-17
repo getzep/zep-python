@@ -1,56 +1,30 @@
 import asyncio
-
-from zep_python import Memory, Message, NotFoundError, SearchPayload, ZepClient
+import uuid
+from zep_python import Memory, Message, NotFoundError, APIError, SearchPayload, ZepClient
 
 
 async def main() -> None:
     base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
     async with ZepClient(base_url) as client:
         # Example usage
-        session_id = "2a2a2a"
+        #session_id = uuid.uuid4().hex
+        session_id = "1234567890"
 
+        #
         # Get memory
-        print("****** GET MEMORY ******")
-        print("Getting memory for session 3a3a3a")
+        #
+        print("\n1---getMemory for Session: " + session_id)
         try:
-            memories = await client.aget_memory("3a3a3a")
-            for memory in memories:
-                for message in memory.messages:
-                    print(message.to_dict())
-        except NotFoundError:
-            print("Memory not found")
-
-        # Add memory
-        print("****** ADD MEMORY ******")
-        print("Adding new memory for session 2a2a2a")
-        role = "user"
-        content = "who was the first man to go to space"
-        message = Message(role=role, content=content)
-
-        memory = Memory()
-        memory.messages = [message]
-
-        await client.aadd_memory(session_id, memory)
-        memories = await client.aget_memory(session_id)
-        for memory in memories:
-            for message in memory.messages:
+            memory = await client.aget_memory(session_id)
+            for message in memory:
                 print(message.to_dict())
-
-        # Delete memory
-        result = await client.adelete_memory(session_id)
-        print(result)
-        print("Getting memory for session 2a2a2a")
-        try:
-            memories = await client.aget_memory(session_id)
-            for memory in memories:
-                for message in memory.messages:
-                    print(message.to_dict())
         except NotFoundError:
             print("Memory not found")
 
-        # Add memory for a different session
-        session_id = "5a5a5a"
-
+        #       
+        # Add memory
+        #
+        print("\n2---addMemory for Session: " + session_id)
         history = [
             {
                 "role": "user",
@@ -88,17 +62,47 @@ async def main() -> None:
         ]
         messages = [Message(**m) for m in history]  # type: ignore
         memory = Memory(messages=messages)
-        result = await client.aadd_memory(session_id, memory)
-        print(result)
-        memories = await client.aget_memory(session_id)
-        print(memories[0].dict())
+        try:
+            result = await client.aadd_memory(session_id, memory)
+            print(result)
+        except APIError as e:
+            print("Unable to add memory to session " + session_id + " got error: " + e)
+        
+        #
+        # Get memory we just added
+        #
+        print("\n3---getMemory for Session: " + session_id)
+        try:
+            memory = await client.aget_memory(session_id)
+            for message in memory:
+                print(message.to_dict())
+        except NotFoundError:
+            print("Memory not found for Session: " + session_id)
+
+        #
         # Search memory
+        #
         search_payload = SearchPayload(text="Iceland")
-        search_results = await client.asearch_memory(session_id, search_payload)
-        for search_result in search_results:
-            # Access the 'content' field within the 'message' object.
-            message_content = search_result.message
-            print(message_content)
+        print("\n4---searchMemory for Query: '" + search_payload.text + "'")
+        # Search memory
+        try:
+            search_results = await client.asearch_memory(session_id, search_payload)
+            for search_result in search_results:
+                # Access the 'content' field within the 'message' object.
+                message_content = search_result.message
+                print(message_content)
+        except NotFoundError:
+            print("Nothing found for Session" + session_id)
+
+        #
+        # Delete memory
+        #
+        print("\n5---deleteMemory for Session" + session_id)
+        try:
+            result = await client.adelete_memory(session_id)
+            print(result)
+        except NotFoundError:
+            print("Memory not found for Session" + session_id)
 
 
 if __name__ == "__main__":
