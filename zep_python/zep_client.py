@@ -78,7 +78,7 @@ class ZepClient:
         self.close()
 
     @sync
-    def get_memory(self, session_id: str, lastn: Optional[int] = None) -> List[Memory]:
+    def get_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
         """
         Retrieve memory for the specified session. This method is a synchronous wrapper
         for the asynchronous method `aget_memory`.
@@ -108,9 +108,7 @@ class ZepClient:
 
         return self.aget_memory(session_id, lastn)  # type: ignore
 
-    async def aget_memory(
-        self, session_id: str, lastn: Optional[int] = None
-    ) -> List[Memory]:
+    async def aget_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
         """
         Asynchronously retrieve memory for the specified session.
 
@@ -124,8 +122,8 @@ class ZepClient:
 
         Returns
         -------
-        List[Memory]
-            A list of Memory objects representing the retrieved memory entries.
+        Memory
+            A Memory object representing the retrieved memory entries.
 
         Raises
         ------
@@ -169,7 +167,7 @@ class ZepClient:
             # Add any other fields from the response that are relevant to the
             # Memory class.
         )
-        return [memory]
+        return memory
 
     @sync
     def add_memory(self, session_id: str, memory_messages: Memory) -> str:

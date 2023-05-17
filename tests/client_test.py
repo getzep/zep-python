@@ -51,12 +51,11 @@ async def test_aget_memory(httpx_mock: HTTPXMock):
     async with ZepClient(base_url=api_base_url) as client:
         memory = await client.aget_memory(session_id)
 
-        assert len(memory) == 1
-        assert len(memory[0].messages) == 2
-        assert memory[0].messages[0].uuid == "msg-uuid"
-        assert memory[0].messages[0].role == "user"
-        assert memory[0].messages[0].content == "Test message"
-        assert filter_unset_fields(memory[0].dict()) == mock_response
+        assert len(memory.messages) == 2
+        assert memory.messages[0].uuid == "msg-uuid"
+        assert memory.messages[0].role == "user"
+        assert memory.messages[0].content == "Test message"
+        assert filter_unset_fields(memory.dict()) == mock_response
 
 
 @pytest.mark.asyncio
@@ -89,10 +88,8 @@ async def test_aget_memory_missing_values(httpx_mock: HTTPXMock):
     async with ZepClient(base_url=api_base_url) as client:
         memory = await client.aget_memory(session_id)
 
-    # Should still return the memory object
-    assert len(memory) == 1
-    # But the message should still be 2
-    assert len(memory[0].messages) == 2
+    # there should be two messages
+    assert len(memory.messages) == 2
 
 
 def test_get_memory(httpx_mock: HTTPXMock):
@@ -110,11 +107,10 @@ def test_get_memory(httpx_mock: HTTPXMock):
     with ZepClient(base_url=api_base_url) as client:
         memory = client.get_memory(session_id)
 
-        assert len(memory) == 1
-        assert len(memory[0].messages) == 2
-        assert memory[0].messages[0].uuid == "msg-uuid"
-        assert memory[0].messages[0].role == "user"
-        assert memory[0].messages[0].content == "Test message"
+        assert len(memory.messages) == 2
+        assert memory.messages[0].uuid == "msg-uuid"
+        assert memory.messages[0].role == "user"
+        assert memory.messages[0].content == "Test message"
 
 
 @pytest.mark.asyncio
