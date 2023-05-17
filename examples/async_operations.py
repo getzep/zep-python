@@ -1,13 +1,21 @@
 import asyncio
 import uuid
-from zep_python import Memory, Message, NotFoundError, APIError, SearchPayload, ZepClient
+
+from zep_python import (
+    APIError,
+    Memory,
+    Message,
+    NotFoundError,
+    SearchPayload,
+    ZepClient,
+)
 
 
 async def main() -> None:
     base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
     async with ZepClient(base_url) as client:
         # Example usage
-        #session_id = uuid.uuid4().hex
+        # session_id = uuid.uuid4().hex
         session_id = "1234567890"
 
         #
@@ -21,7 +29,7 @@ async def main() -> None:
         except NotFoundError:
             print("Memory not found")
 
-        #       
+        #
         # Add memory
         #
         print("\n2---addMemory for Session: " + session_id)
@@ -67,7 +75,7 @@ async def main() -> None:
             print(result)
         except APIError as e:
             print("Unable to add memory to session " + session_id + " got error: " + e)
-        
+
         #
         # Get memory we just added
         #

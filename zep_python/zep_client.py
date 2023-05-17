@@ -108,9 +108,7 @@ class ZepClient:
 
         return self.aget_memory(session_id, lastn)  # type: ignore
 
-    async def aget_memory(
-        self, session_id: str, lastn: Optional[int] = None
-    ) -> Memory:
+    async def aget_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
         """
         Asynchronously retrieve memory for the specified session.
 
