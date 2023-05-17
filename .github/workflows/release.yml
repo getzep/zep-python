@@ -47,7 +47,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
-          draft: true
+          makeLatest: true
+          draft: false
           generateReleaseNotes: true
           tag: v${{ steps.check-version.outputs.version }}
           commit: main
