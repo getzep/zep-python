@@ -1,1 +1,2 @@
-sphinxawesome-theme==4.0.3
+mkdocs==1.4.3
+mkdocstrings[python]==0.21.2

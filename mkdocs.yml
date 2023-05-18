@@ -1,0 +1,59 @@
+site_name: Zep Python SDK
+repo_url: https://github.com/getzep/zep-python
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - search
+    - search.suggest
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+    logo: fontawesome/solid/robot
+
+plugins:
+- mkdocstrings
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - abbr
+  - def_list
+  - tables
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+nav:
+  - Home: https://getzep.github.io/sdk/
+  - Python Client: zep_client.md
+  - Models: models.md
+  - Exceptions: exceptions.md
+  - Langchain ❤️: https://getzep.github.io/sdk/langchain/
