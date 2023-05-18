@@ -52,8 +52,8 @@ markdown_extensions:
       emoji_generator: !!python/name:materialx.emoji.to_svg
 
 nav:
-  - Home: https://getzep.github.io/sdk/
+  - Home: /
   - Python Client: /zep-python/zep_client.md
   - Models: /zep-python/models.md
   - Exceptions: /zep-python/exceptions.md
-  - Langchain ❤️: https://getzep.github.io/sdk/langchain/
+  - Langchain ❤️: /sdk/langchain/
