@@ -93,8 +93,8 @@ class ZepClient:
 
         Returns
         -------
-        List[Memory]
-            A list of Memory objects representing the retrieved memory entries.
+        Memory
+            A memory object containing a Summary, metadata, and list of Messages.
 
         Raises
         ------
@@ -123,7 +123,7 @@ class ZepClient:
         Returns
         -------
         Memory
-            A Memory object representing the retrieved memory entries.
+            A memory object containing a Summary, metadata, and list of Messages.
 
         Raises
         ------
