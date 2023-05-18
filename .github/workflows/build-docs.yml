@@ -1,26 +1,26 @@
-name: Deploy Sphinx documentation to Pages
-
+name: docs-build
 on:
+  workflow_dispatch:
   push:
-    branches: [disabled] 
+    branches:
+      - main
 
+permissions:
+  contents: write
 jobs:
-  build:
-    permissions:
-      pages: write
-      
+  deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Build HTML
-      uses: ammaraskar/sphinx-action@master
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: html-docs
-        path: docs/build/html/
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/build/html
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+      - run: pip install -r docs/requirements.txt
+      - run: mkdocs gh-deploy --force

@@ -91,19 +91,25 @@ class Memory(BaseModel):
     """
     Represents a memory object with messages, metadata, and other attributes.
 
-    :param messages: A list of message objects, where each message contains a role and
-                     content.
-    :type messages: Optional[List[Dict[str, Any]]]
-    :param metadata: A dictionary containing metadata associated with the memory.
-    :type metadata: Optional[Dict[str, Any]]
-    :param summary: A Summary object.
-    :type summary: Optional[Summary]
-    :param uuid: A unique identifier for the memory.
-    :type uuid: Optional[str]
-    :param created_at: The timestamp when the memory was created.
-    :type created_at: Optional[str]
-    :param token_count: The token count of the memory.
-    :type token_count: Optional[int]
+    Attributes
+    ----------
+    messages : Optional[List[Dict[str, Any]]]
+        A list of message objects, where each message contains a role and content.
+    metadata : Optional[Dict[str, Any]]
+        A dictionary containing metadata associated with the memory.
+    summary : Optional[Summary]
+        A Summary object.
+    uuid : Optional[str]
+        A unique identifier for the memory.
+    created_at : Optional[str]
+        The timestamp when the memory was created.
+    token_count : Optional[int]
+        The token count of the memory.
+
+    Methods
+    -------
+    to_dict() -> Dict[str, Any]:
+        Returns a dictionary representation of the message.
     """
 
     messages: List[Message] = Field(
