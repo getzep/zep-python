@@ -42,15 +42,14 @@ async with ZepClient(base_url) as client:
 
     # Long chat histories will automatically be summarized.
     # A summary and chat history are returned with a `get_memory`
-    memories = await client.aget_memory(session_id)
-    for memory in memories:
-        for message in memory.messages:
-            print(message.to_dict())
+    memory = await client.aget_memory(session_id)
+    for message in memory.messages:
+         print(message.to_dict())
 
     # Search memory
     # Messages uploaded to Zep are automatically embedded and made available
     # for vector-based similarity search.
-    search_payload = SearchPayload({}, "Who is Yuri Gagarin?")
+    search_payload = SearchPayload("Who is Yuri Gagarin?")
     search_results = await client.asearch_memory(session_id, search_payload)
     for search_result in search_results:
         # Access the 'content' field within the 'message' object.
