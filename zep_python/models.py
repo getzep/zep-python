@@ -74,6 +74,7 @@ class Message(BaseModel):
     uuid: Optional[str] = Field(optional=True, default=None)
     created_at: Optional[str] = Field(optional=True, default=None)
     token_count: Optional[int] = Field(optional=True, default=None)
+    metadata: Optional[Dict[str, Any]] = Field(optional=True, default=None)
 
     def to_dict(self) -> Dict[str, Any]:
         """

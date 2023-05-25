@@ -11,6 +11,30 @@ from zep_python.zep_client import ZepClient
 
 api_base_url = "http://localhost/api/v1"
 
+mock_response = {
+    "messages": [
+        {
+            "uuid": "msg-uuid",
+            "role": "user",
+            "content": "Test message",
+            "metadata": {"key": "value"},
+        },
+        {
+            "uuid": "msg-uuid2",
+            "role": "ai",
+            "content": "Test message2",
+            "metadata": {"key2": "value2"},
+        },
+    ],
+}
+
+mock_memory = Memory(
+    messages=[
+        Message(role="user", content="Test message", metadata={"key": "value"}),
+        Message(role="ai", content="Test message2"),
+    ]
+)
+
 
 @pytest.fixture
 def assert_all_responses_were_requested() -> bool:
@@ -35,27 +59,28 @@ def filter_unset_fields(d: Dict) -> Dict:
     return filtered
 
 
+def validate_memory(memory: Memory):
+    assert len(memory.messages) == len(mock_response["messages"])
+
+    for i in range(len(memory.messages)):
+        assert memory.messages[i].uuid == mock_response["messages"][i]["uuid"]
+        assert memory.messages[i].role == mock_response["messages"][i]["role"]
+        assert memory.messages[i].content == mock_response["messages"][i]["content"]
+        assert memory.messages[i].metadata == mock_response["messages"][i]["metadata"]
+
+    assert filter_unset_fields(memory.dict()) == mock_response
+
+
 @pytest.mark.asyncio
 async def test_aget_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
-
-    mock_response = {
-        "messages": [
-            {"uuid": "msg-uuid", "role": "user", "content": "Test message"},
-            {"uuid": "msg-uuid2", "role": "ai", "content": "Test message2"},
-        ],
-    }
 
     httpx_mock.add_response(status_code=200, json=mock_response)
 
     async with ZepClient(base_url=api_base_url) as client:
         memory = await client.aget_memory(session_id)
 
-        assert len(memory.messages) == 2
-        assert memory.messages[0].uuid == "msg-uuid"
-        assert memory.messages[0].role == "user"
-        assert memory.messages[0].content == "Test message"
-        assert filter_unset_fields(memory.dict()) == mock_response
+        validate_memory(memory)
 
 
 @pytest.mark.asyncio
@@ -95,31 +120,21 @@ async def test_aget_memory_missing_values(httpx_mock: HTTPXMock):
 def test_get_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
-    mock_response = {
-        "messages": [
-            {"uuid": "msg-uuid", "role": "user", "content": "Test message"},
-            {"uuid": "msg-uuid2", "role": "ai", "content": "Test message2"},
-        ],
-    }
-
     httpx_mock.add_response(status_code=200, json=mock_response)
 
     with ZepClient(base_url=api_base_url) as client:
         memory = client.get_memory(session_id)
 
-        assert len(memory.messages) == 2
-        assert memory.messages[0].uuid == "msg-uuid"
-        assert memory.messages[0].role == "user"
-        assert memory.messages[0].content == "Test message"
+        validate_memory(memory)
 
 
 @pytest.mark.asyncio
 async def test_aget_memory_not_found(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
-    mock_response = {}
+    empty_mock_response = {}
 
-    httpx_mock.add_response(status_code=404, json=mock_response)
+    httpx_mock.add_response(status_code=404, json=empty_mock_response)
 
     async with ZepClient(base_url=api_base_url) as client:
         with pytest.raises(NotFoundError):
@@ -130,34 +145,20 @@ async def test_aget_memory_not_found(httpx_mock: HTTPXMock):
 async def test_aadd_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
-    memory_messages = Memory(
-        messages=[
-            Message(role="user", content="Test message"),
-            Message(role="ai", content="Test message2"),
-        ]
-    )
-
     httpx_mock.add_response(status_code=200, text="OK")
 
     async with ZepClient(base_url=api_base_url) as client:
-        response = await client.aadd_memory(session_id, memory_messages)
+        response = await client.aadd_memory(session_id, mock_memory)
         assert response == "OK"
 
 
 def test_add_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
-    memory_messages = Memory(
-        messages=[
-            Message(role="user", content="Test message"),
-            Message(role="ai", content="Test message2"),
-        ]
-    )
-
     httpx_mock.add_response(status_code=200, text="OK")
 
     with ZepClient(base_url=api_base_url) as client:
-        response = client.add_memory(session_id, memory_messages)
+        response = client.add_memory(session_id, mock_memory)
         assert response == "OK"
 
 
