@@ -6,7 +6,7 @@ import pytest
 from pytest_httpx import HTTPXMock
 
 from zep_python import NotFoundError
-from zep_python.models import Memory, MemorySearchPayload, Message
+from zep_python.models import Memory, Message, SearchPayload
 from zep_python.zep_client import ZepClient
 
 api_base_url = "http://localhost/api/v1"
@@ -189,11 +189,7 @@ async def test_adelete_memory_session_unknown(httpx_mock: HTTPXMock):
 async def test_asearch_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
-    search_payload = MemorySearchPayload(
-        meta={},
-        text="Test query",
-        metadata={"where": {"jsonpath": '$.system.entities[*] ? (@.Label == "DATE")'}},
-    )
+    search_payload = SearchPayload(meta={}, text="Test query")
     mock_response = [
         {
             "message": {
@@ -201,7 +197,7 @@ async def test_asearch_memory(httpx_mock: HTTPXMock):
                 "role": "user",
                 "content": "Test message",
             },
-            "dist": 0.9,
+            "score": 0.9,
         }
     ]
 
@@ -214,7 +210,7 @@ async def test_asearch_memory(httpx_mock: HTTPXMock):
         assert search_results[0].message["uuid"] == "msg-uuid"
         assert search_results[0].message["role"] == "user"
         assert search_results[0].message["content"] == "Test message"
-        assert search_results[0].dist == 0.9
+        assert search_results[0].score == 0.9
 
 
 @pytest.mark.asyncio
@@ -229,11 +225,7 @@ async def test_asearch_memory_no_payload(httpx_mock: HTTPXMock):
 def test_search_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
-    search_payload = MemorySearchPayload(
-        meta={},
-        text="Test query",
-        metadata={"where": {"jsonpath": '$.system.entities[*] ? (@.Label == "DATE")'}},
-    )
+    search_payload = SearchPayload(meta={}, text="Test query")
     mock_response = [
         {
             "message": {
@@ -241,7 +233,7 @@ def test_search_memory(httpx_mock: HTTPXMock):
                 "role": "user",
                 "content": "Test message",
             },
-            "dist": 0.9,
+            "score": 0.9,
         }
     ]
 
@@ -254,4 +246,4 @@ def test_search_memory(httpx_mock: HTTPXMock):
         assert search_results[0].message["uuid"] == "msg-uuid"
         assert search_results[0].message["role"] == "user"
         assert search_results[0].message["content"] == "Test message"
-        assert search_results[0].dist == 0.9
+        assert search_results[0].score == 0.9

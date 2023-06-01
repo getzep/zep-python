@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, Union
-
-import httpx
+from typing import Any, Dict, Optional
 
 
 class ZepClientError(Exception):
@@ -28,11 +26,7 @@ class ZepClientError(Exception):
         self, message: str, response_data: Optional[Dict[Any, Any]] = None
     ) -> None:
         super().__init__(message)
-        self.message = message
         self.response_data = response_data
-
-    def __str__(self):
-        return f"{self.message}: {self.response_data}"
 
 
 class APIError(ZepClientError):
@@ -42,17 +36,8 @@ class APIError(ZepClientError):
     Inherits from ZepClientError.
     """
 
-    def __init__(
-        self, response: Union[httpx.Response, None] = None, message: str = "API error"
-    ) -> None:
-        if response:
-            response_data = {
-                "status_code": response.status_code,
-                "message": response.text,
-            }
-        else:
-            response_data = None
-        super().__init__(message=message, response_data=response_data)
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
 
 
 class NotFoundError(ZepClientError):
