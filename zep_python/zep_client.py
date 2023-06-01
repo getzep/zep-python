@@ -6,7 +6,13 @@ from typing import Any, Dict, List, Optional, Type
 import httpx
 
 from zep_python.exceptions import APIError, NotFoundError
-from zep_python.models import Memory, Message, SearchPayload, SearchResult, Summary
+from zep_python.models import (
+    Memory,
+    MemorySearchPayload,
+    MemorySearchResult,
+    Message,
+    Summary,
+)
 
 API_BASE_PATH = "/api/v1"
 
@@ -86,7 +92,7 @@ class ZepClient:
             if len(messages) == 0:
                 raise ValueError("Messages can't be empty")
         except (TypeError, ValueError) as e:
-            raise APIError("Unexpected response format from the API") from e
+            raise APIError(message="Unexpected response format from the API") from e
 
         summary: Optional[Summary] = None
         if response_data.get("summary", None) is not None:
@@ -141,7 +147,7 @@ class ZepClient:
             raise NotFoundError(f"No memory found for session {session_id}")
 
         if response.status_code != 200:
-            raise APIError(f"Unexpected status code: {response.status_code}")
+            raise APIError(response)
 
         response_data = response.json()
 
@@ -180,7 +186,7 @@ class ZepClient:
             raise NotFoundError(f"No memory found for session {session_id}")
 
         if response.status_code != 200:
-            raise APIError(f"Unexpected status code: {response.status_code}")
+            raise APIError(response)
 
         response_data = response.json()
 
@@ -215,7 +221,7 @@ class ZepClient:
             json=memory_messages.dict(exclude_none=True),
         )
         if response.status_code != 200:
-            raise APIError(f"Unexpected status code: {response.status_code}")
+            raise APIError(response)
 
         return response.text
 
@@ -248,7 +254,7 @@ class ZepClient:
             json=memory_messages.dict(exclude_none=True),
         )
         if response.status_code != 200:
-            raise APIError(f"Unexpected status code: {response.status_code}")
+            raise APIError(response)
 
         return response.text
 
@@ -279,7 +285,7 @@ class ZepClient:
             raise NotFoundError(f"No session found for session {session_id}")
 
         if response.status_code != 200:
-            raise APIError(f"Unexpected status code: {response.status_code}")
+            raise APIError(response)
         return response.text
 
     async def adelete_memory(self, session_id: str) -> str:
@@ -309,15 +315,15 @@ class ZepClient:
             raise NotFoundError(f"No session found for session {session_id}")
 
         if response.status_code != 200:
-            raise APIError(f"Unexpected status code: {response.status_code}")
+            raise APIError(response)
         return response.text
 
     def search_memory(
         self,
         session_id: str,
-        search_payload: SearchPayload,
+        search_payload: MemorySearchPayload,
         limit: Optional[int] = None,
-    ) -> List[SearchResult]:
+    ) -> List[MemorySearchResult]:
         """
         Search memory for the specified session.
 
@@ -325,14 +331,14 @@ class ZepClient:
         ----------
         session_id : str
             The ID of the session for which memory should be searched.
-        search_payload : SearchPayload
+        search_payload : MemorySearchPayload
             A SearchPayload object representing the search query.
         limit : Optional[int], optional
             The maximum number of search results to return. Defaults to None (no limit).
 
         Returns
         -------
-        List[SearchResult]
+        List[MemorySearchResult]
             A list of SearchResult objects representing the search results.
 
         Raises
@@ -355,15 +361,17 @@ class ZepClient:
         if response.status_code == 404:
             raise NotFoundError("No query results found")
         if response.status_code != 200:
-            raise APIError(f"Unexpected status code: {response.status_code}")
-        return [SearchResult(**search_result) for search_result in response.json()]
+            raise APIError(response)
+        return [
+            MemorySearchResult(**search_result) for search_result in response.json()
+        ]
 
     async def asearch_memory(
         self,
         session_id: str,
-        search_payload: SearchPayload,
+        search_payload: MemorySearchPayload,
         limit: Optional[int] = None,
-    ) -> List[SearchResult]:
+    ) -> List[MemorySearchResult]:
         """
         Asynchronously search memory for the specified session.
 
@@ -371,14 +379,14 @@ class ZepClient:
         ----------
         session_id : str
             The ID of the session for which memory should be searched.
-        search_payload : SearchPayload
+        search_payload : MemorySearchPayload
             A SearchPayload object representing the search query.
         limit : Optional[int], optional
             The maximum number of search results to return. Defaults to None (no limit).
 
         Returns
         -------
-        List[SearchResult]
+        List[MemorySearchResult]
             A list of SearchResult objects representing the search results.
 
         Raises
@@ -401,8 +409,10 @@ class ZepClient:
         if response.status_code == 404:
             raise NotFoundError("No query results found")
         if response.status_code != 200:
-            raise APIError(f"Unexpected status code: {response.status_code}")
-        return [SearchResult(**search_result) for search_result in response.json()]
+            raise APIError(response)
+        return [
+            MemorySearchResult(**search_result) for search_result in response.json()
+        ]
 
     async def aclose(self) -> None:
         """
