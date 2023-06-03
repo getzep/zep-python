@@ -126,23 +126,23 @@ class Memory(BaseModel):
         return self.dict()
 
 
-class SearchPayload(BaseModel):
+class MemorySearchPayload(BaseModel):
     """
     Represents a search payload for querying memory.
 
     Attributes
     ----------
-    meta : Dict[str, Any]
+    metadata : Dict[str, Any]
         Metadata associated with the search query.
     text : str
         The text of the search query.
     """
 
     text: str = Field("A text is required")
-    meta: Optional[Dict[str, Any]] = Field(optional=True, default=None)
+    metadata: Optional[Dict[str, Any]] = Field(optional=True, default=None)
 
 
-class SearchResult(BaseModel):
+class MemorySearchResult(BaseModel):
     """
     Represents a search result from querying memory.
 
@@ -150,10 +150,8 @@ class SearchResult(BaseModel):
     ----------
     message : Optional[Dict[str, Any]]
         The message associated with the search result.
-    meta : Optional[Dict[str, Any]]
+    metadata : Optional[Dict[str, Any]]
         Metadata associated with the search result.
-    score : Optional[float]
-        The score of the search result.
     summary : Optional[str]
         The summary of the search result.
     dist : Optional[float]
@@ -161,7 +159,6 @@ class SearchResult(BaseModel):
     """
 
     message: Optional[Dict[str, Any]] = None
-    meta: Optional[Dict[str, Any]] = None
-    score: Optional[float] = None
+    metadata: Optional[Dict[str, Any]] = None
     summary: Optional[str] = None
     dist: Optional[float] = None

@@ -1,9 +1,19 @@
+""" Example of using the Zep Python SDK.
+
+    Note: Once a session is deleted, new messages cannot be added to it. The API will return
+    a 400 error if you try to add messages to a deleted session.
+"""
+import time
+import uuid
+
+from chat_history import history
+
 from zep_python import (
     APIError,
     Memory,
+    MemorySearchPayload,
     Message,
     NotFoundError,
-    SearchPayload,
     ZepClient,
 )
 
@@ -12,8 +22,7 @@ def main() -> None:
     base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
     with ZepClient(base_url) as client:
         # Example usage
-        # session_id = uuid.uuid4().hex
-        session_id = "1234567890"
+        session_id = uuid.uuid4().hex
 
         #
         # Get memory
@@ -30,41 +39,6 @@ def main() -> None:
         # Add memory
         #
         print("\n2---addMemory for Session: " + session_id)
-        history = [
-            {
-                "role": "user",
-                "content": "I'm looking to plan a trip to Iceland. Can you help me?",
-            },
-            {
-                "role": "assistant",
-                "content": "Of course! I'd be happy to help you plan your trip.",
-            },
-            {
-                "role": "user",
-                "content": "What's the best time of year to go?",
-            },
-            {
-                "role": "assistant",
-                "content": (
-                    "The best time to visit Iceland is from June to August. The"
-                    " weather is milder, and you'll have more daylight for"
-                    " sightseeing."
-                ),
-            },
-            {
-                "role": "user",
-                "content": "Do I need a visa?",
-            },
-            {
-                "role": "assistant",
-                "content": (
-                    "Visa requirements depend on your nationality. Citizens of"
-                    " the Schengen Area, the US, Canada, and several other"
-                    " countries can visit Iceland for up to 90 days without a"
-                    " visa."
-                ),
-            },
-        ]
         messages = [Message(**m) for m in history]  # type: ignore
         memory = Memory(messages=messages)
         try:
@@ -72,6 +46,9 @@ def main() -> None:
             print(result)
         except APIError as e:
             print(f"Unable to add memory to session {session_id} got error: {e}")
+
+        # Naive wait for memory to be enriched and indexed
+        time.sleep(2.0)
 
         #
         # Get memory we just added
@@ -87,8 +64,13 @@ def main() -> None:
         #
         # Search memory
         #
-        search_payload = SearchPayload(text="Iceland")
-        print(f"\n4---searchMemory for Query: '{search_payload.text}'")
+        search_payload = MemorySearchPayload(
+            text="Name some popular destinations in Iceland?",
+            metadata={
+                "where": {"jsonpath": '$.system.entities[*] ? (@.Label == "LOC")'}
+            },
+        )
+        print(f"\n4---searchMemory for Query: '{search_payload}'")
         # Search memory
         try:
             search_results = client.search_memory(session_id, search_payload)
