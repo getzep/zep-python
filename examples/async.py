@@ -21,7 +21,8 @@ from zep_python import (
 
 async def main() -> None:
     base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
-    async with ZepClient(base_url) as client:
+    api_key = "YOUR_API_KEY"  # TODO: Replace with your API key
+    async with ZepClient(base_url, api_key) as client:
         session_id = uuid.uuid4().hex
 
         print(f"\n1---getMemory for Session: {session_id}")
