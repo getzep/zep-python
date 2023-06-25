@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import TracebackType
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type
 
 import httpx
 
@@ -43,7 +43,7 @@ class ZepClient:
         Close the HTTP client.
     """
 
-    def __init__(self, base_url: str, api_key: Union[str, None] = None) -> None:
+    def __init__(self, base_url: str, api_key: Optional[str] = None) -> None:
         """
         Initialize the ZepClient with the specified base URL.
 
@@ -52,7 +52,7 @@ class ZepClient:
         base_url : str
             The base URL of the API.
 
-        api_key : Union[str, None]
+        api_key : Optional[str]
             The API key to use for authentication. (optional)
         """
 
@@ -91,7 +91,7 @@ class ZepClient:
         self.close()
 
     def _handle_response(
-        self, response: httpx.Response, missing_message: Union[str, None] = None
+        self, response: httpx.Response, missing_message: Optional[str] = None
     ) -> None:
         missing_message = missing_message or "No query results found"
         if response.status_code == 404:
