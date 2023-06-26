@@ -55,6 +55,28 @@ class APIError(ZepClientError):
         super().__init__(message=message, response_data=response_data)
 
 
+class AuthError(ZepClientError):
+    """
+    Raised when API authentication fails.
+
+    Inherits from APIError.
+    """
+
+    def __init__(
+        self,
+        response: Union[httpx.Response, None] = None,
+        message: str = "Authentication error",
+    ) -> None:
+        if response:
+            response_data = {
+                "status_code": response.status_code,
+                "message": response.text,
+            }
+        else:
+            response_data = None
+        super().__init__(message=message, response_data=response_data)
+
+
 class NotFoundError(ZepClientError):
     """
     Raised when the API response contains no results.

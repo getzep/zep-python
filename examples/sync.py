@@ -20,7 +20,8 @@ from zep_python import (
 
 def main() -> None:
     base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
-    with ZepClient(base_url) as client:
+    api_key = "YOUR_API_KEY"  # TODO: Replace with your API key
+    with ZepClient(base_url, api_key) as client:
         # Example usage
         session_id = uuid.uuid4().hex
 

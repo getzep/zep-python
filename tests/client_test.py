@@ -72,6 +72,18 @@ def validate_memory(memory: Memory):
 
 
 @pytest.mark.asyncio
+async def test_set_authorization_header(httpx_mock):
+    httpx_mock.add_response(status_code=200)
+
+    with ZepClient(base_url="http://localhost:8000", api_key="myapikey") as client:
+        response = await client.aclient.get(f"{client.base_url}/my-endpoint")
+
+    assert response.status_code == 200
+    assert "Authorization" in response.request.headers
+    assert response.request.headers["Authorization"] == "Bearer myapikey"
+
+
+@pytest.mark.asyncio
 async def test_aget_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 

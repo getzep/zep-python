@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Type
 
 import httpx
 
-from zep_python.exceptions import APIError, NotFoundError
+from zep_python.exceptions import APIError, AuthError, NotFoundError
 from zep_python.models import (
     Memory,
     MemorySearchPayload,
@@ -43,7 +43,7 @@ class ZepClient:
         Close the HTTP client.
     """
 
-    def __init__(self, base_url: str) -> None:
+    def __init__(self, base_url: str, api_key: Optional[str] = None) -> None:
         """
         Initialize the ZepClient with the specified base URL.
 
@@ -51,10 +51,18 @@ class ZepClient:
         ----------
         base_url : str
             The base URL of the API.
+
+        api_key : Optional[str]
+            The API key to use for authentication. (optional)
         """
+
+        headers: Dict[str, str] = {}
+        if api_key is not None:
+            headers["Authorization"] = f"Bearer {api_key}"
+
         self.base_url = f"{base_url}{API_BASE_PATH}"
-        self.aclient = httpx.AsyncClient(base_url=self.base_url)
-        self.client = httpx.Client(base_url=self.base_url)
+        self.aclient = httpx.AsyncClient(base_url=self.base_url, headers=headers)
+        self.client = httpx.Client(base_url=self.base_url, headers=headers)
 
     async def __aenter__(self) -> "ZepClient":
         """Asynchronous context manager entry point"""
@@ -81,6 +89,19 @@ class ZepClient:
     ) -> None:
         """Sync context manager exit point"""
         self.close()
+
+    def _handle_response(
+        self, response: httpx.Response, missing_message: Optional[str] = None
+    ) -> None:
+        missing_message = missing_message or "No query results found"
+        if response.status_code == 404:
+            raise NotFoundError(missing_message)
+
+        if response.status_code == 401:
+            raise AuthError(response)
+
+        if response.status_code != 200:
+            raise APIError(response)
 
     def _parse_get_memory_response(self, response_data: Any) -> Memory:
         """Parse the response from the get_memory API call."""
@@ -143,11 +164,7 @@ class ZepClient:
         params = self._gen_get_params(lastn)
         response = self.client.get(url, params=params)
 
-        if response.status_code == 404:
-            raise NotFoundError(f"No memory found for session {session_id}")
-
-        if response.status_code != 200:
-            raise APIError(response)
+        self._handle_response(response, f"No memory found for session {session_id}")
 
         response_data = response.json()
 
@@ -182,11 +199,7 @@ class ZepClient:
         params = self._gen_get_params(lastn)
         response = await self.aclient.get(url, params=params)
 
-        if response.status_code == 404:
-            raise NotFoundError(f"No memory found for session {session_id}")
-
-        if response.status_code != 200:
-            raise APIError(response)
+        self._handle_response(response, f"No memory found for session {session_id}")
 
         response_data = response.json()
 
@@ -220,8 +233,8 @@ class ZepClient:
             f"/sessions/{session_id}/memory",
             json=memory_messages.dict(exclude_none=True),
         )
-        if response.status_code != 200:
-            raise APIError(response)
+
+        self._handle_response(response)
 
         return response.text
 
@@ -253,8 +266,8 @@ class ZepClient:
             f"/sessions/{session_id}/memory",
             json=memory_messages.dict(exclude_none=True),
         )
-        if response.status_code != 200:
-            raise APIError(response)
+
+        self._handle_response(response)
 
         return response.text
 
@@ -281,11 +294,7 @@ class ZepClient:
             raise ValueError("session_id must be provided")
 
         response = self.client.delete(f"/sessions/{session_id}/memory")
-        if response.status_code == 404:
-            raise NotFoundError(f"No session found for session {session_id}")
-
-        if response.status_code != 200:
-            raise APIError(response)
+        self._handle_response(response)
         return response.text
 
     async def adelete_memory(self, session_id: str) -> str:
@@ -311,11 +320,7 @@ class ZepClient:
             raise ValueError("session_id must be provided")
 
         response = await self.aclient.delete(f"/sessions/{session_id}/memory")
-        if response.status_code == 404:
-            raise NotFoundError(f"No session found for session {session_id}")
-
-        if response.status_code != 200:
-            raise APIError(response)
+        self._handle_response(response)
         return response.text
 
     def search_memory(
@@ -358,10 +363,7 @@ class ZepClient:
             json=search_payload.dict(),
             params=params,
         )
-        if response.status_code == 404:
-            raise NotFoundError("No query results found")
-        if response.status_code != 200:
-            raise APIError(response)
+        self._handle_response(response)
         return [
             MemorySearchResult(**search_result) for search_result in response.json()
         ]
@@ -406,10 +408,7 @@ class ZepClient:
             json=search_payload.dict(),
             params=params,
         )
-        if response.status_code == 404:
-            raise NotFoundError("No query results found")
-        if response.status_code != 200:
-            raise APIError(response)
+        self._handle_response(response)
         return [
             MemorySearchResult(**search_result) for search_result in response.json()
         ]
