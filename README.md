@@ -1,3 +1,5 @@
+
+
 [![Tests](https://github.com/getzep/zep-python/actions/workflows/test.yml/badge.svg)](https://github.com/getzep/zep-python/actions/workflows/test.yml) [![lint](https://github.com/getzep/zep-python/actions/workflows/lint.yml/badge.svg)](https://github.com/getzep/zep-python/actions/workflows/lint.yml) [![Release to PyPI](https://github.com/getzep/zep-python/actions/workflows/release.yml/badge.svg)](https://github.com/getzep/zep-python/actions/workflows/release.yml) ![GitHub](https://img.shields.io/github/license/getzep/zep-python?color=blue)
 
 # Zep: A long-term memory store for conversational AI applications
@@ -58,4 +60,3 @@ async with ZepClient(base_url) as client:
 
 ## Server Installation and SDK Documentation
 
-Server installation documentation and more available here: [https://getzep.github.io](https://getzep.github.io/)
