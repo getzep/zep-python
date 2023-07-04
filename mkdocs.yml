@@ -1,5 +1,5 @@
 site_name: Zep Python SDK
-repo_url: https://github.com/getzep/zep-python
+repo_url: https://docs.getzep.com/zep-python
 theme:
   name: material
   features:
@@ -56,4 +56,4 @@ nav:
   - Python Client: /zep-python/zep_client
   - Models: /zep-python/models
   - Exceptions: /zep-python/exceptions
-  - Langchain ❤️: /sdk/langchain/
+
