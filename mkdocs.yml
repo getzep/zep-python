@@ -56,4 +56,5 @@ nav:
   - Python Client: /zep-python/zep_client
   - Models: /zep-python/models
   - Exceptions: /zep-python/exceptions
+  - Langchain ❤️: /sdk/langchain/
 
