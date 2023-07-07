@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from types import TracebackType
 from typing import Any, Dict, List, Optional, Type
+from urllib.parse import urljoin
 
 import httpx
 
@@ -11,10 +12,12 @@ from zep_python.models import (
     MemorySearchPayload,
     MemorySearchResult,
     Message,
+    Session,
     Summary,
 )
 
 API_BASE_PATH = "/api/v1"
+API_TIMEOUT = 10
 
 
 class ZepClient:
@@ -60,9 +63,13 @@ class ZepClient:
         if api_key is not None:
             headers["Authorization"] = f"Bearer {api_key}"
 
-        self.base_url = f"{base_url}{API_BASE_PATH}"
-        self.aclient = httpx.AsyncClient(base_url=self.base_url, headers=headers)
-        self.client = httpx.Client(base_url=self.base_url, headers=headers)
+        self.base_url = urljoin(base_url, API_BASE_PATH)
+        self.aclient = httpx.AsyncClient(
+            base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
+        )
+        self.client = httpx.Client(
+            base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
+        )
 
     async def __aenter__(self) -> "ZepClient":
         """Asynchronous context manager entry point"""
@@ -153,11 +160,13 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
 
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         url = f"/sessions/{session_id}/memory"
@@ -189,10 +198,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         url = f"/sessions/{session_id}/memory"
@@ -223,10 +234,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         response = self.client.post(
@@ -256,10 +269,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         response = await self.aclient.post(
@@ -287,10 +302,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         response = self.client.delete(f"/sessions/{session_id}/memory")
@@ -313,10 +330,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         response = await self.aclient.delete(f"/sessions/{session_id}/memory")
@@ -348,10 +367,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         if search_payload is None:
@@ -393,10 +414,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         if search_payload is None:
