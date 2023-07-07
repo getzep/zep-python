@@ -5,6 +5,35 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
+class Session(BaseModel):
+    """
+    Represents a session object with a unique identifier, metadata,
+    and other attributes.
+
+    Attributes
+    ----------
+    uuid : str
+        A unique identifier for the session.
+    created_at : str
+        The timestamp when the session was created.
+    updated_at : str
+        The timestamp when the session was last updated.
+    deleted_at : Optional[datetime]
+        The timestamp when the session was deleted.
+    session_id : str
+        The unique identifier of the session.
+    metadata : Dict[str, Any]
+        The metadata associated with the session.
+    """
+
+    uuid: str
+    created_at: str
+    updated_at: str
+    deleted_at: Optional[str]
+    session_id: str
+    metadata: Dict[str, Any]
+
+
 class Summary(BaseModel):
     """
     Represents a summary of a conversation.
