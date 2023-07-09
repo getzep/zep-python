@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from types import TracebackType
 from typing import Any, Dict, List, Optional, Type
+from urllib.parse import urljoin
 
 import httpx
 
@@ -11,10 +12,12 @@ from zep_python.models import (
     MemorySearchPayload,
     MemorySearchResult,
     Message,
+    Session,
     Summary,
 )
 
 API_BASE_PATH = "/api/v1"
+API_TIMEOUT = 10
 
 
 class ZepClient:
@@ -60,9 +63,13 @@ class ZepClient:
         if api_key is not None:
             headers["Authorization"] = f"Bearer {api_key}"
 
-        self.base_url = f"{base_url}{API_BASE_PATH}"
-        self.aclient = httpx.AsyncClient(base_url=self.base_url, headers=headers)
-        self.client = httpx.Client(base_url=self.base_url, headers=headers)
+        self.base_url = urljoin(base_url, API_BASE_PATH)
+        self.aclient = httpx.AsyncClient(
+            base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
+        )
+        self.client = httpx.Client(
+            base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
+        )
 
     async def __aenter__(self) -> "ZepClient":
         """Asynchronous context manager entry point"""
@@ -134,6 +141,156 @@ class ZepClient:
             params["lastn"] = lastn
         return params
 
+    def get_session(self, session_id: str) -> Session:
+        """
+        Retrieve the session with the specified ID.
+
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session to retrieve.
+
+        Returns
+        -------
+        Session
+            The session with the specified ID.
+
+        Raises
+        ------
+        ValueError
+            If the session ID is None or empty.
+        APIError
+            If the API response format is unexpected.
+        """
+        if session_id is None or session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        url = f"/sessions/{session_id}"
+
+        try:
+            response = self.client.get(url)
+        except httpx.NetworkError as e:
+            raise ConnectionError("Failed to connect to server") from e
+
+        self._handle_response(response, f"No session found for session {session_id}")
+
+        response_data = response.json()
+
+        return Session.parse_obj(response_data)
+
+    async def aget_session(self, session_id: str) -> Session:
+        """
+        Asynchronously retrieve the session with the specified ID.
+
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session to retrieve.
+
+        Returns
+        -------
+        Session
+            The session with the specified ID.
+
+        Raises
+        ------
+        ValueError
+            If the session ID is None or empty.
+        APIError
+            If the API response format is unexpected.
+        """
+        if session_id is None or session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        url = f"/sessions/{session_id}"
+
+        try:
+            response = await self.aclient.get(url)
+        except httpx.NetworkError as e:
+            raise ConnectionError("Failed to connect to server") from e
+
+        self._handle_response(response, f"No session found for session {session_id}")
+
+        response_data = response.json()
+
+        return Session.parse_obj(response_data)
+
+    def add_session(self, session: Session) -> str:
+        """
+        Add or update the specified session.
+
+        Parameters
+        ----------
+        session : Session
+            The session to add.
+
+        Returns
+        -------
+        Session
+            The added session.
+
+        Raises
+        ------
+        ValueError
+            If the session is None or empty.
+        APIError
+            If the API response format is unexpected.
+        """
+        if session is None:
+            raise ValueError("session must be provided")
+        if session.session_id is None or session.session_id.strip() == "":
+            raise ValueError("session.session_id must be provided")
+
+        url = f"/sessions/{session.session_id}"
+
+        try:
+            response = self.client.post(url, json=session.dict(exclude_none=True))
+        except httpx.NetworkError as e:
+            raise ConnectionError("Failed to connect to server") from e
+
+        self._handle_response(response, f"Failed to add session {session.session_id}")
+
+        return response.text
+
+    async def aadd_session(self, session: Session) -> str:
+        """
+        Asynchronously add or update the specified session.
+
+        Parameters
+        ----------
+        session : Session
+            The session to add.
+
+        Returns
+        -------
+        Session
+            The added session.
+
+        Raises
+        ------
+        ValueError
+            If the session is None or empty.
+        APIError
+            If the API response format is unexpected.
+        """
+        if session is None:
+            raise ValueError("session must be provided")
+        if session.session_id is None or session.session_id.strip() == "":
+            raise ValueError("session.session_id must be provided")
+
+        url = f"/sessions/{session.session_id}"
+
+        try:
+            response = await self.aclient.post(
+                url, json=session.dict(exclude_none=True)
+            )
+        except httpx.NetworkError as e:
+            raise ConnectionError("Failed to connect to server") from e
+
+        self._handle_response(response, f"Failed to add session {session.session_id}")
+
+        return response.text
+
     def get_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
         """
         Retrieve memory for the specified session.
@@ -153,11 +310,13 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
 
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         url = f"/sessions/{session_id}/memory"
@@ -189,10 +348,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         url = f"/sessions/{session_id}/memory"
@@ -223,10 +384,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         response = self.client.post(
@@ -256,10 +419,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         response = await self.aclient.post(
@@ -287,10 +452,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         response = self.client.delete(f"/sessions/{session_id}/memory")
@@ -313,10 +480,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         response = await self.aclient.delete(f"/sessions/{session_id}/memory")
@@ -348,10 +517,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         if search_payload is None:
@@ -393,10 +564,12 @@ class ZepClient:
 
         Raises
         ------
+        ValueError
+            If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
         """
-        if session_id is None or session_id == "":
+        if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
         if search_payload is None:

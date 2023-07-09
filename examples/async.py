@@ -17,6 +17,7 @@ from zep_python import (
     NotFoundError,
     ZepClient,
 )
+from zep_python.models import Session
 
 
 async def main() -> None:
@@ -24,6 +25,39 @@ async def main() -> None:
     api_key = "YOUR_API_KEY"  # TODO: Replace with your API key
     async with ZepClient(base_url, api_key) as client:
         session_id = uuid.uuid4().hex
+
+        #
+        # Create session
+        #
+        print(f"Creating session: {session_id}")
+        try:
+            session = Session(session_id=session_id, metadata={"foo": "bar"})
+            result = await client.aadd_session(session)
+            print(result)
+        except APIError as e:
+            print(f"Unable to create session {session_id} got error: {e}")
+
+        #
+        # Update session metadata
+        #
+        print(f"Creating session: {session_id}")
+        try:
+            # The new metadata values will be merged with the existing metadata
+            session = Session(session_id=session_id, metadata={"bar": "foo"})
+            result = await client.aadd_session(session)
+            print(result)
+        except APIError as e:
+            print(f"Unable to create session {session_id} got error: {e}")
+
+        #
+        # Get session
+        #
+        print(f"Getting session: {session_id}")
+        try:
+            session = await client.aget_session(session_id)
+            print(session.dict())
+        except NotFoundError:
+            print("Session not found")
 
         print(f"\n1---getMemory for Session: {session_id}")
         try:

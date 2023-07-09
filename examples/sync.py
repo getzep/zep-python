@@ -16,6 +16,7 @@ from zep_python import (
     NotFoundError,
     ZepClient,
 )
+from zep_python.models import Session
 
 
 def main() -> None:
@@ -24,6 +25,39 @@ def main() -> None:
     with ZepClient(base_url, api_key) as client:
         # Example usage
         session_id = uuid.uuid4().hex
+
+        #
+        # Create session
+        #
+        print(f"Creating session: {session_id}")
+        try:
+            session = Session(session_id=session_id, metadata={"foo": "bar"})
+            result = client.add_session(session)
+            print(result)
+        except APIError as e:
+            print(f"Unable to create session {session_id} got error: {e}")
+
+        #
+        # Update session metadata
+        #
+        print(f"Creating session: {session_id}")
+        try:
+            # The new metadata values will be merged with the existing metadata
+            session = Session(session_id=session_id, metadata={"bar": "foo"})
+            result = client.add_session(session)
+            print(result)
+        except APIError as e:
+            print(f"Unable to create session {session_id} got error: {e}")
+
+        #
+        # Get session
+        #
+        print(f"Getting session: {session_id}")
+        try:
+            session = client.get_session(session_id)
+            print(session.dict())
+        except NotFoundError:
+            print("Session not found")
 
         #
         # Get memory
