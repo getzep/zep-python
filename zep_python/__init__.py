@@ -4,8 +4,10 @@ from zep_python.models import (
     MemorySearchPayload,
     MemorySearchResult,
     Message,
-    Session,
     Summary,
+    Session,
+    DocumentCollection,
+    Document,
 )
 from zep_python.zep_client import ZepClient
 
@@ -19,4 +21,6 @@ __all__ = [
     "MemorySearchResult",
     "Summary",
     "Session",
+    "DocumentCollection",
+    "Document",
 ]

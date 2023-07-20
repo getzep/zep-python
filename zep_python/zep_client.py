@@ -6,14 +6,15 @@ from urllib.parse import urljoin
 
 import httpx
 
-from zep_python.exceptions import APIError, AuthError, NotFoundError
+from zep_python.exceptions import APIError
+from zep_python.document_client import DocumentClient
+from zep_python.memory_client import MemoryClient
 from zep_python.models import (
     Memory,
     MemorySearchPayload,
     MemorySearchResult,
-    Message,
     Session,
-    Summary,
+    DocumentCollection,
 )
 
 API_BASE_PATH = "/api/v1"
@@ -22,14 +23,16 @@ API_TIMEOUT = 10
 
 class ZepClient:
     """
-    ZepClient class implementation.
+    ZepClient class implementation. This is a facade for memory and document APIs.
 
     Attributes
     ----------
     base_url : str
         The base URL of the API.
-    client : httpx.AsyncClient
-        The HTTP client used for making API requests.
+    memory_client : zep_memory_api
+        The client used for making Memory API requests.
+    document_client : zep_documents_api
+        The client used for making Document API requests.
 
     Methods
     -------
@@ -45,6 +48,10 @@ class ZepClient:
     close() -> None:
         Close the HTTP client.
     """
+
+    base_url: str
+    memory_client: MemoryClient
+    document_client: DocumentClient
 
     def __init__(self, base_url: str, api_key: Optional[str] = None) -> None:
         """
@@ -73,6 +80,9 @@ class ZepClient:
 
         self._healthcheck(base_url)
 
+        self.memory_client = MemoryClient(self.aclient, self.client)
+        self.document_client = DocumentClient(self.aclient)
+
     async def __aenter__(self) -> "ZepClient":
         """Asynchronous context manager entry point"""
         return self
@@ -98,50 +108,6 @@ class ZepClient:
     ) -> None:
         """Sync context manager exit point"""
         self.close()
-
-    def _handle_response(
-        self, response: httpx.Response, missing_message: Optional[str] = None
-    ) -> None:
-        missing_message = missing_message or "No query results found"
-        if response.status_code == 404:
-            raise NotFoundError(missing_message)
-
-        if response.status_code == 401:
-            raise AuthError(response)
-
-        if response.status_code != 200:
-            raise APIError(response)
-
-    def _parse_get_memory_response(self, response_data: Any) -> Memory:
-        """Parse the response from the get_memory API call."""
-        messages: List[Message]
-        try:
-            messages = [
-                Message.parse_obj(m) for m in response_data.get("messages", None)
-            ]
-            if len(messages) == 0:
-                raise ValueError("Messages can't be empty")
-        except (TypeError, ValueError) as e:
-            raise APIError(message="Unexpected response format from the API") from e
-
-        summary: Optional[Summary] = None
-        if response_data.get("summary", None) is not None:
-            summary = Summary.parse_obj(response_data["summary"])
-
-        memory = Memory(
-            messages=messages,
-            # Add the 'summary' field if it is present in the response.
-            summary=summary,
-            # Add any other fields from the response that are relevant to the
-            # Memory class.
-        )
-        return memory
-
-    def _gen_get_params(self, lastn: Optional[int] = None) -> Dict[str, Any]:
-        params = {}
-        if lastn is not None:
-            params["lastn"] = lastn
-        return params
 
     def _healthcheck(self, base_url: str) -> None:
         """
@@ -171,356 +137,36 @@ class ZepClient:
         except (httpx.ConnectError, httpx.NetworkError, httpx.TimeoutException) as e:
             raise APIError(None, error_msg) from e
 
+    # Facade methods for Memory API
     def get_session(self, session_id: str) -> Session:
-        """
-        Retrieve the session with the specified ID.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session to retrieve.
-
-        Returns
-        -------
-        Session
-            The session with the specified ID.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        url = f"/sessions/{session_id}"
-
-        try:
-            response = self.client.get(url)
-        except httpx.NetworkError as e:
-            raise ConnectionError("Failed to connect to server") from e
-
-        self._handle_response(response, f"No session found for session {session_id}")
-
-        response_data = response.json()
-
-        return Session.parse_obj(response_data)
+        return self.memory_client.get_session(session_id)
 
     async def aget_session(self, session_id: str) -> Session:
-        """
-        Asynchronously retrieve the session with the specified ID.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session to retrieve.
-
-        Returns
-        -------
-        Session
-            The session with the specified ID.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        url = f"/sessions/{session_id}"
-
-        try:
-            response = await self.aclient.get(url)
-        except httpx.NetworkError as e:
-            raise ConnectionError("Failed to connect to server") from e
-
-        self._handle_response(response, f"No session found for session {session_id}")
-
-        response_data = response.json()
-
-        return Session.parse_obj(response_data)
+        return await self.memory_client.aget_session(session_id)
 
     def add_session(self, session: Session) -> str:
-        """
-        Add or update the specified session.
-
-        Parameters
-        ----------
-        session : Session
-            The session to add.
-
-        Returns
-        -------
-        Session
-            The added session.
-
-        Raises
-        ------
-        ValueError
-            If the session is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session is None:
-            raise ValueError("session must be provided")
-        if session.session_id is None or session.session_id.strip() == "":
-            raise ValueError("session.session_id must be provided")
-
-        url = f"/sessions/{session.session_id}"
-
-        try:
-            response = self.client.post(url, json=session.dict(exclude_none=True))
-        except httpx.NetworkError as e:
-            raise ConnectionError("Failed to connect to server") from e
-
-        self._handle_response(response, f"Failed to add session {session.session_id}")
-
-        return response.text
+        return self.memory_client.add_session(session)
 
     async def aadd_session(self, session: Session) -> str:
-        """
-        Asynchronously add or update the specified session.
-
-        Parameters
-        ----------
-        session : Session
-            The session to add.
-
-        Returns
-        -------
-        Session
-            The added session.
-
-        Raises
-        ------
-        ValueError
-            If the session is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session is None:
-            raise ValueError("session must be provided")
-        if session.session_id is None or session.session_id.strip() == "":
-            raise ValueError("session.session_id must be provided")
-
-        url = f"/sessions/{session.session_id}"
-
-        try:
-            response = await self.aclient.post(
-                url, json=session.dict(exclude_none=True)
-            )
-        except httpx.NetworkError as e:
-            raise ConnectionError("Failed to connect to server") from e
-
-        self._handle_response(response, f"Failed to add session {session.session_id}")
-
-        return response.text
+        return await self.memory_client.aadd_session(session)
 
     def get_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
-        """
-        Retrieve memory for the specified session.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session for which to retrieve memory.
-        lastn : Optional[int], optional
-            The number of most recent memory entries to retrieve. Defaults to None (all
-            entries).
-
-        Returns
-        -------
-        Memory
-            A memory object containing a Summary, metadata, and list of Messages.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        url = f"/sessions/{session_id}/memory"
-        params = self._gen_get_params(lastn)
-        response = self.client.get(url, params=params)
-
-        self._handle_response(response, f"No memory found for session {session_id}")
-
-        response_data = response.json()
-
-        return self._parse_get_memory_response(response_data)
+        return self.memory_client.get_memory(session_id, lastn)
 
     async def aget_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
-        """
-        Asynchronously retrieve memory for the specified session.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session for which to retrieve memory.
-        lastn : Optional[int], optional
-            The number of most recent memory entries to retrieve. Defaults to None (all
-            entries).
-
-        Returns
-        -------
-        Memory
-            A memory object containing a Summary, metadata, and list of Messages.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        url = f"/sessions/{session_id}/memory"
-        params = self._gen_get_params(lastn)
-        response = await self.aclient.get(url, params=params)
-
-        self._handle_response(response, f"No memory found for session {session_id}")
-
-        response_data = response.json()
-
-        return self._parse_get_memory_response(response_data)
+        return await self.memory_client.aget_memory(session_id, lastn)
 
     def add_memory(self, session_id: str, memory_messages: Memory) -> str:
-        """
-        Add memory to the specified session.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session to which memory should be added.
-        memory_messages : Memory
-            A Memory object representing the memory messages to be added.
-
-        Returns
-        -------
-        str
-            The response text from the API.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        response = self.client.post(
-            f"/sessions/{session_id}/memory",
-            json=memory_messages.dict(exclude_none=True),
-        )
-
-        self._handle_response(response)
-
-        return response.text
+        return self.memory_client.add_memory(session_id, memory_messages)
 
     async def aadd_memory(self, session_id: str, memory_messages: Memory) -> str:
-        """
-        Asynchronously add memory to the specified session.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session to which memory should be added.
-        memory_messages : Memory
-            A Memory object representing the memory messages to be added.
-
-        Returns
-        -------
-        str
-            The response text from the API.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        response = await self.aclient.post(
-            f"/sessions/{session_id}/memory",
-            json=memory_messages.dict(exclude_none=True),
-        )
-
-        self._handle_response(response)
-
-        return response.text
+        return await self.memory_client.aadd_memory(session_id, memory_messages)
 
     def delete_memory(self, session_id: str) -> str:
-        """
-        Delete memory for the specified session.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session for which memory should be deleted.
-
-        Returns
-        -------
-        str
-            The response text from the API.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        response = self.client.delete(f"/sessions/{session_id}/memory")
-        self._handle_response(response)
-        return response.text
+        return self.memory_client.delete_memory(session_id)
 
     async def adelete_memory(self, session_id: str) -> str:
-        """
-        Asynchronously delete memory for the specified session.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session for which memory should be deleted.
-
-        Returns
-        -------
-        str
-            The response text from the API.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        response = await self.aclient.delete(f"/sessions/{session_id}/memory")
-        self._handle_response(response)
-        return response.text
+        return await self.memory_client.adelete_memory(session_id)
 
     def search_memory(
         self,
@@ -528,46 +174,7 @@ class ZepClient:
         search_payload: MemorySearchPayload,
         limit: Optional[int] = None,
     ) -> List[MemorySearchResult]:
-        """
-        Search memory for the specified session.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session for which memory should be searched.
-        search_payload : MemorySearchPayload
-            A SearchPayload object representing the search query.
-        limit : Optional[int], optional
-            The maximum number of search results to return. Defaults to None (no limit).
-
-        Returns
-        -------
-        List[MemorySearchResult]
-            A list of SearchResult objects representing the search results.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        if search_payload is None:
-            raise ValueError("search_payload must be provided")
-
-        params = {"limit": limit} if limit is not None else {}
-        response = self.client.post(
-            f"/sessions/{session_id}/search",
-            json=search_payload.dict(),
-            params=params,
-        )
-        self._handle_response(response)
-        return [
-            MemorySearchResult(**search_result) for search_result in response.json()
-        ]
+        return self.memory_client.search_memory(session_id, search_payload, limit)
 
     async def asearch_memory(
         self,
@@ -575,46 +182,25 @@ class ZepClient:
         search_payload: MemorySearchPayload,
         limit: Optional[int] = None,
     ) -> List[MemorySearchResult]:
-        """
-        Asynchronously search memory for the specified session.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session for which memory should be searched.
-        search_payload : MemorySearchPayload
-            A SearchPayload object representing the search query.
-        limit : Optional[int], optional
-            The maximum number of search results to return. Defaults to None (no limit).
-
-        Returns
-        -------
-        List[MemorySearchResult]
-            A list of SearchResult objects representing the search results.
-
-        Raises
-        ------
-        ValueError
-            If the session ID is None or empty.
-        APIError
-            If the API response format is unexpected.
-        """
-        if session_id is None or session_id.strip() == "":
-            raise ValueError("session_id must be provided")
-
-        if search_payload is None:
-            raise ValueError("search_payload must be provided")
-
-        params = {"limit": limit} if limit is not None else {}
-        response = await self.aclient.post(
-            f"/sessions/{session_id}/search",
-            json=search_payload.dict(),
-            params=params,
+        return await self.memory_client.asearch_memory(
+            session_id, search_payload, limit
         )
-        self._handle_response(response)
-        return [
-            MemorySearchResult(**search_result) for search_result in response.json()
-        ]
+
+    # Facade methods for Document API
+    async def get_documentcollection(self, collection_id: str) -> DocumentCollection:
+        return await self.document_client.get_documentcollection(collection_id)
+
+    async def add_documentcollection(self, collection: DocumentCollection) -> str:
+        return await self.document_client.add_documentcollection(collection)
+
+    async def update_documentcollection(self, collection: DocumentCollection) -> str:
+        return await self.document_client.update_documentcollection(collection)
+
+    async def delete_documentcollection(self, collection_id: str) -> str:
+        return await self.document_client.delete_documentcollection(collection_id)
+
+    async def list_documentcollections(self) -> List[DocumentCollection]:
+        return await self.document_client.list_documentcollections()
 
     async def aclose(self) -> None:
         """
