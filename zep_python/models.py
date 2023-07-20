@@ -263,21 +263,21 @@ class Document(BaseModel):
 
     Attributes
     ----------
-    uuid : str
+    uuid : Optional[str]
         The unique identifier of the document.
-    created_at : datetime
+    created_at : Optional[datetime]
         The timestamp of when the document was created.
-    updated_at : datetime
+    updated_at : Optional[datetime]
         The timestamp of when the document was last updated.
     deleted_at : Optional[datetime]
         The timestamp of when the document was deleted.
-    name : str
-        The unique identifier of the document.
+    document_id : Optional[str]
+        The unique identifier of the document (name or some id).
     content : str
         The content of the document.
     metadata : Optional[Dict[str, Any]]
         Any additional metadata associated with the document.
-    embedding : List[float]
+    embedding : Optional[List[float]]
         The embedding of the document.
     """
 
@@ -285,10 +285,10 @@ class Document(BaseModel):
     created_at: Optional[str]
     updated_at: Optional[str]
     deleted_at: Optional[str]
-    id: str
-    content: str
+    document_id: Optional[str]
+    content: Optional[str]
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    embedding: List[float]
+    embedding: Optional[List[float]]
 
     def to_dict(self) -> Dict[str, Any]:
         """

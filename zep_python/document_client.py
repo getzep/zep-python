@@ -1,8 +1,12 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Optional, Dict
+
+import warnings
 
 import httpx
+
+import json
 
 from zep_python.models import (
     Document,
@@ -10,6 +14,7 @@ from zep_python.models import (
 )
 from zep_python.exceptions import APIError, AuthError, NotFoundError
 
+MAX_DOCUMENTS = 1000
 
 class DocumentClient:
     """
@@ -133,7 +138,6 @@ class DocumentClient:
         APIError
             If the API response format is unexpected.
         """
-        print(documentcollection)
         if (
             documentcollection is None
             or documentcollection.name is None
@@ -151,13 +155,13 @@ class DocumentClient:
         return response.text
 
     # Document Collection APIs : Delete a document collection
-    async def delete_documentcollection(self, documentcollection_name: str) -> str:
+    async def delete_documentcollection(self, name: str) -> str:
         """
         Asynchronously delete documentcollection.
 
         Parameters
         ----------
-        documentcollection_name : str
+        name : str
             The name of the documentcollection to be deleted.
 
         Returns
@@ -173,11 +177,11 @@ class DocumentClient:
         APIError
             If the API response format is unexpected.
         """
-        if documentcollection_name is None or documentcollection_name.strip() == "":
+        if name is None or name.strip() == "":
             raise ValueError("documentcollection name must be provided")
 
         response = await self.aclient.delete(
-            "/collection/{documentcollection_name}",
+            f"/collection/{name}",
         )
 
         self._handle_response(response)
@@ -185,15 +189,13 @@ class DocumentClient:
         return response.text
 
     # Document Collection APIs : Get a document collection
-    async def get_documentcollection(
-        self, documentcollection_name: str
-    ) -> DocumentCollection:
+    async def get_documentcollection(self, name: str) -> DocumentCollection:
         """
         Asynchronously gets a documentcollection.
 
         Parameters
         ----------
-        documentcollection_name : str
+        name : str
             The name of the documentcollection to get.
 
         Returns
@@ -209,11 +211,10 @@ class DocumentClient:
         APIError
             If the API response format is unexpected.
         """
-        if documentcollection_name is None or documentcollection_name.strip() == "":
+        if name is None or name.strip() == "":
             raise ValueError("documentcollection name must be provided")
-
         response = await self.aclient.get(
-            "/collection/{documentcollection_name}",
+            f"/collection/{name}",
         )
 
         self._handle_response(response)
@@ -246,14 +247,19 @@ class DocumentClient:
         ]
 
     # Document APIs : Add a document
-    async def add_document(self, document: Document) -> str:
+    async def add_document(
+        self, collection_name: str, documents: List[Document]
+    ) -> List[str]:
         """
         Asynchronously create a document.
 
         Parameters
         ----------
-        document : Document
-            A Document object representing the document to be create.
+        collection_name : str
+            The name of the document collection to add the document to.
+
+        documents : List[Document]
+            A list of Document objects representing the documents to be create.
 
         Returns
         -------
@@ -265,25 +271,32 @@ class DocumentClient:
         APIError
             If the API response format is unexpected.
         """
-        if document is None or document.id is None or document.id.strip() == "":
-            raise ValueError("document id must be provided")
+        if collection_name is None or collection_name.strip() == "":
+            raise ValueError("document collection name must be provided")
+
+        if documents is None:
+            raise ValueError("document list must be provided")
+
+        documents_dicts = [document.dict(exclude_none=True) for document in documents]
 
         response = await self.aclient.post(
-            "/document",
-            json=document.dict(exclude_none=True),
+            f"/collection/{collection_name}/document",
+            json=documents_dicts,
         )
 
         self._handle_response(response)
 
-        return response.text
+        return json.loads(response.text)
 
-    # Document APIs : Update a document
-    async def update_document(self, document: Document) -> str:
+    # Document APIs : Update a document by uuid
+    async def update_document(self, collection_name: str, document: Document) -> str:
         """
-        Asynchronously update document.
+        Asynchronously update document by UUID.
 
         Parameters
         ----------
+        collection_name : str
+            The name of the document collection to update the document to.
         document : Document
             A Document object representing the document to be added or updated.
 
@@ -300,11 +313,14 @@ class DocumentClient:
         APIError
             If the API response format is unexpected.
         """
-        if document is None or document.id is None or document.id.strip() == "":
-            raise ValueError("document name must be provided")
+        if collection_name is None or collection_name.strip() == "":
+            raise ValueError("document collection name must be provided")
+
+        if document is None or document.uuid is None or document.uuid.strip() == "":
+            raise ValueError("document uuid must be provided")
 
         response = await self.aclient.patch(
-            "/document/{document.name}",
+            f"/collection/{collection_name}/document/uuid/{document.uuid}",
             json=document.dict(exclude_none=True),
         )
 
@@ -313,14 +329,16 @@ class DocumentClient:
         return response.text
 
     # Document APIs : Delete a document
-    async def delete_document(self, document_name: str) -> str:
+    async def delete_document(self, collection_name: str, document_uuid: str) -> str:
         """
         Asynchronously delete document.
 
         Parameters
         ----------
-        document_name : str
-            The name of the document to be deleted.
+        collection_name : str
+            The name of the document collection to delete the document from.
+        document_uuid : str
+            The uuid of the document to be deleted.
 
         Returns
         -------
@@ -335,11 +353,14 @@ class DocumentClient:
         APIError
             If the API response format is unexpected.
         """
-        if document_name is None or document_name.strip() == "":
-            raise ValueError("document name must be provided")
+        if collection_name is None or collection_name.strip() == "":
+            raise ValueError("document collection name must be provided")
+
+        if document_uuid is None or document_uuid.strip() == "":
+            raise ValueError("document uuid must be provided")
 
         response = await self.aclient.delete(
-            "/document/{document_name}",
+            f"/collection/{collection_name}/document/uuid/{document_uuid}",
         )
 
         self._handle_response(response)
@@ -347,13 +368,16 @@ class DocumentClient:
         return response.text
 
     # Document APIs : Get a document
-    async def get_document(self, document_name: str) -> Document:
+    async def get_document(self, collection_name: str, document_uuid: str) -> Document:
         """
         Asynchronously gets a document.
 
         Parameters
         ----------
-        document_name : str
+        collection_name : str
+            The name of the document collection to get the document from.
+
+        document_uuid : str
             The name of the document to get.
 
         Returns
@@ -369,21 +393,130 @@ class DocumentClient:
         APIError
             If the API response format is unexpected.
         """
-        if document_name is None or document_name.strip() == "":
+        if collection_name is None or collection_name.strip() == "":
             raise ValueError("document name must be provided")
 
+        if document_uuid is None or document_uuid.strip() == "":
+            raise ValueError("document uuid must be provided")
+
         response = await self.aclient.get(
-            "/document/{document_name}",
+            f"/collection/{collection_name}/document/uuid/{document_uuid}",
         )
 
         self._handle_response(response)
 
         return Document(**response.json())
 
-    # Document APIs : List the documents
-    async def list_documents(self) -> List[Document]:
+    # Document Batch APIs
+    async def batchupdate_documents(
+        self, collection_name: str, documents: List[Document]
+    ) -> str:
         """
-        Asynchronously gets all documents.
+        Asynchronously batch update documents.
+
+        Parameters
+        ----------
+        collection_name : str
+            The name of the document collection to update the documents to.
+        documents : List[Document]
+            A list of Document objects representing the documents to be added
+            or updated.
+
+        Returns
+        -------
+        str
+            The response text from the API.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
+        if collection_name is None or collection_name.strip() == "":
+            raise ValueError("document collection name must be provided")
+
+        if documents is None:
+            raise ValueError("document list must be provided")
+
+        if len(documents) > MAX_DOCUMENTS:
+            warnings.warn(
+                f"The number of documents exceeds the limit of {MAX_DOCUMENTS}. "
+                + f"Only the first {MAX_DOCUMENTS} documents will be updated."
+            )
+
+        # Limit the number of documents updated
+        documents = documents[:MAX_DOCUMENTS]
+
+        documents_dicts = [document.dict(exclude_none=True) for document in documents]
+
+        response = await self.aclient.patch(
+            f"/collection/{collection_name}/document/batchUpdate",
+            json=documents_dicts,
+        )
+
+        self._handle_response(response)
+
+        return response.text
+
+    async def batchdelete_documents(
+        self, collection_name: str, document_uuids: List[str]
+    ) -> str:
+        """
+        Asynchronously batch delete documents.
+
+        Parameters
+        ----------
+        collection_name : str
+            The name of the document collection to delete the documents from.
+        document_uuids : List[str]
+            A list of document uuids to be deleted.
+
+        Returns
+        -------
+        str
+            The response text from the API.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
+        if collection_name is None or collection_name.strip() == "":
+            raise ValueError("document collection name must be provided")
+
+        if document_uuids is None:
+            raise ValueError("document uuid list must be provided")
+
+        if len(document_uuids) > MAX_DOCUMENTS:
+            warnings.warn(
+                f"The number of documents exceeds the limit of {MAX_DOCUMENTS}. "
+                + f"Only the first {MAX_DOCUMENTS} documents will be deleted."
+            )
+
+        # Limit the number of documents fetched
+        document_uuids = document_uuids[:MAX_DOCUMENTS]
+
+        response = await self.aclient.post(
+            f"/collection/{collection_name}/document/batchDelete",
+            json=document_uuids,
+        )
+
+        self._handle_response(response)
+
+        return response.text
+
+    async def batchget_documents(
+        self, collection_name: str, document_identifiers: Dict[str, List[str]]
+    ) -> List[Document]:
+        """
+        Asynchronously batch gets documents.
+
+        Parameters
+        ----------
+        collection_name : str
+            The name of the document collection to get the documents from.
+        document_identifiers : Dict[str, List[str]]
+            A list of document identifiers to be retrieved.
 
         Returns
         -------
@@ -395,11 +528,27 @@ class DocumentClient:
         APIError
             If the API response format is unexpected.
         """
-        response = await self.aclient.get(
-            "/document",
+        if collection_name is None or collection_name.strip() == "":
+            raise ValueError("document collection name must be provided")
+
+        if not document_identifiers:
+            raise ValueError("document identifiers must be provided")
+
+        for key, identifiers in document_identifiers.items():
+            if len(identifiers) > MAX_DOCUMENTS:
+                warnings.warn(
+                    f"The number of documents for {key} exceeds the limit"
+                    + f" of {MAX_DOCUMENTS}. "
+                    + f"Only the first {MAX_DOCUMENTS} documents will be "
+                    + "fetched."
+                )
+                document_identifiers[key] = identifiers[:MAX_DOCUMENTS]
+
+        response = await self.aclient.post(
+            f"/collection/{collection_name}/document/batchGet",
+            json=document_identifiers,
         )
 
         self._handle_response(response)
-        return [Document(**document) for document in response.json()]
 
-    # Document Bulk APIs
+        return [Document(**document) for document in response.json()]

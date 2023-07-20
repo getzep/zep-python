@@ -15,6 +15,7 @@ from zep_python.models import (
     MemorySearchResult,
     Session,
     DocumentCollection,
+    Document,
 )
 
 API_BASE_PATH = "/api/v1"
@@ -186,22 +187,71 @@ class ZepClient:
             session_id, search_payload, limit
         )
 
-    # Facade methods for Document API
-    async def get_documentcollection(self, collection_id: str) -> DocumentCollection:
+    # Facade methods for Document Collection APIs
+    async def get_collection(self, collection_id: str) -> DocumentCollection:
         return await self.document_client.get_documentcollection(collection_id)
 
-    async def add_documentcollection(self, collection: DocumentCollection) -> str:
+    async def add_collection(self, collection: DocumentCollection) -> str:
         return await self.document_client.add_documentcollection(collection)
 
-    async def update_documentcollection(self, collection: DocumentCollection) -> str:
+    async def update_collection(self, collection: DocumentCollection) -> str:
         return await self.document_client.update_documentcollection(collection)
 
-    async def delete_documentcollection(self, collection_id: str) -> str:
+    async def delete_collection(self, collection_id: str) -> str:
         return await self.document_client.delete_documentcollection(collection_id)
 
-    async def list_documentcollections(self) -> List[DocumentCollection]:
+    async def list_collections(self) -> List[DocumentCollection]:
         return await self.document_client.list_documentcollections()
 
+    # Facade methods for Document APIs
+    async def get_document(self, collection_id: str, document_id: str) -> Document:
+        return await self.document_client.get_document(collection_id, document_id)
+
+    async def add_document(
+        self, collection_id: str, documents: List[Document]
+    ) -> List[str]:
+        return await self.document_client.add_document(collection_id, documents)
+
+    async def update_document(self, collection_id: str, document: Document) -> str:
+        return await self.document_client.update_document(collection_id, document)
+
+    async def delete_document(self, collection_id: str, document_id: str) -> str:
+        return await self.document_client.delete_document(collection_id, document_id)
+
+    # async def list_documents(self, collection_id: str) -> List[Document]:
+
+    # Facade methods for Document Bulk APIs
+    async def batchupdate_documents(
+        self, collection_id: str, documents: List[Document]
+    ) -> str:
+        return await self.document_client.batchupdate_documents(
+            collection_id, documents
+        )
+
+    async def batchdelete_documents(
+        self, collection_id: str, document_ids: List[str]
+    ) -> str:
+        return await self.document_client.batchdelete_documents(
+            collection_id, document_ids
+        )
+
+    async def batchget_documents_byid(
+        self, collection_id: str, document_ids: Dict[str, List[str]]
+    ) -> List[Document]:
+        return await self.document_client.batchget_documents(
+            collection_id, document_ids
+        )
+
+    async def batchget_documents_byuuid(
+        self,
+        collection_id: str,
+        document_uuids: Dict[str, List[str]],
+    ) -> List[Document]:
+        return await self.document_client.batchget_documents(
+            collection_id, document_uuids
+        )
+
+    # Close the HTTP client
     async def aclose(self) -> None:
         """
         Asynchronously close the HTTP client.
