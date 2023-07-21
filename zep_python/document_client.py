@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-from typing import List, Optional, Dict
-
+import json
 import warnings
+from typing import Dict, List, Optional
 
 import httpx
 
-import json
-
+from zep_python.exceptions import APIError, AuthError, NotFoundError
 from zep_python.models import (
     Document,
     DocumentCollection,
 )
-from zep_python.exceptions import APIError, AuthError, NotFoundError
 
 MAX_DOCUMENTS = 1000
+
 
 class DocumentClient:
     """

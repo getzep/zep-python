@@ -1,7 +1,6 @@
 """ Example of using the Zep Python SDK asynchronously for Documents.
 """
 import asyncio
-
 import datetime
 
 from zep_python import (
@@ -37,8 +36,8 @@ async def main() -> None:
 
         print(f"\n.  Creating document collection: {collection_name}")
         try:
-            collection = await client.add_collection(collection)
-            print(collection)
+            status = await client.add_collection(collection)
+            print(status)
         except APIError as e:
             print(f"Unable to create document collection {collection_name}")
             print(e)

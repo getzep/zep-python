@@ -4,9 +4,9 @@
     a 400 error if you try to add messages to a deleted session.
 """
 import asyncio
+import datetime
 import time
 import uuid
-import datetime
 
 from chat_history import history
 

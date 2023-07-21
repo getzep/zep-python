@@ -197,6 +197,51 @@ class MemorySearchResult(BaseModel):
     dist: Optional[float] = None
 
 
+class Document(BaseModel):
+    """
+    Represents a document base.
+
+    Attributes
+    ----------
+    uuid : Optional[str]
+        The unique identifier of the document.
+    created_at : Optional[datetime]
+        The timestamp of when the document was created.
+    updated_at : Optional[datetime]
+        The timestamp of when the document was last updated.
+    deleted_at : Optional[datetime]
+        The timestamp of when the document was deleted.
+    document_id : Optional[str]
+        The unique identifier of the document (name or some id).
+    content : str
+        The content of the document.
+    metadata : Optional[Dict[str, Any]]
+        Any additional metadata associated with the document.
+    embedding : Optional[List[float]]
+        The embedding of the document.
+    """
+
+    uuid: Optional[str] = None
+    created_at: Optional[str]
+    updated_at: Optional[str]
+    deleted_at: Optional[str]
+    document_id: Optional[str]
+    content: Optional[str]
+    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    embedding: Optional[List[float]]
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Returns a dictionary representation of the document.
+
+        Returns
+        -------
+        Dict[str, Any]
+            A dictionary containing the attributes of the document.
+        """
+        return self.dict()
+
+
 class DocumentCollection(BaseModel):
     """
     Represents a collection of documents.
@@ -241,10 +286,6 @@ class DocumentCollection(BaseModel):
     distance_function: Optional[str]
     is_normalized: Optional[bool]
 
-    documents: List[Document] = Field(
-        default=[], description="A List of Documents or empty List"
-    )
-
     def to_dict(self) -> Dict[str, Any]:
         """
         Returns a dictionary representation of the document collection.
@@ -253,50 +294,5 @@ class DocumentCollection(BaseModel):
         -------
         Dict[str, Any]
             A dictionary containing the attributes of the document collection.
-        """
-        return self.dict()
-
-
-class Document(BaseModel):
-    """
-    Represents a document base.
-
-    Attributes
-    ----------
-    uuid : Optional[str]
-        The unique identifier of the document.
-    created_at : Optional[datetime]
-        The timestamp of when the document was created.
-    updated_at : Optional[datetime]
-        The timestamp of when the document was last updated.
-    deleted_at : Optional[datetime]
-        The timestamp of when the document was deleted.
-    document_id : Optional[str]
-        The unique identifier of the document (name or some id).
-    content : str
-        The content of the document.
-    metadata : Optional[Dict[str, Any]]
-        Any additional metadata associated with the document.
-    embedding : Optional[List[float]]
-        The embedding of the document.
-    """
-
-    uuid: Optional[str] = None
-    created_at: Optional[str]
-    updated_at: Optional[str]
-    deleted_at: Optional[str]
-    document_id: Optional[str]
-    content: Optional[str]
-    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    embedding: Optional[List[float]]
-
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Returns a dictionary representation of the document.
-
-        Returns
-        -------
-        Dict[str, Any]
-            A dictionary containing the attributes of the document.
         """
         return self.dict()
