@@ -5,6 +5,7 @@ from zep_python.models import (
     MemorySearchResult,
     Message,
     Summary,
+    Session,
 )
 from zep_python.zep_client import ZepClient
 
@@ -17,4 +18,5 @@ __all__ = [
     "NotFoundError",
     "MemorySearchResult",
     "Summary",
+    "Session",
 ]
