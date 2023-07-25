@@ -7,7 +7,7 @@ from pytest_httpx import HTTPXMock
 
 from zep_python import NotFoundError
 from zep_python.models import Memory, MemorySearchPayload, Message, Session
-from zep_python.zep_client import ZepClient
+from zep_python.zep_client import ZepClient, concat_url
 
 api_base_url = "http://localhost/api/v1"
 
@@ -358,3 +358,22 @@ async def test_aadd_session_missing_session(httpx_mock: HTTPXMock):
     async with ZepClient(base_url=api_base_url) as client:
         with pytest.raises(ValueError):
             _ = await client.aadd_session(session=None)  # type: ignore
+
+
+def test_concat_url():
+    assert (
+        concat_url("https://server.com/zep", "/v1/api")
+        == "https://server.com/zep/v1/api"
+    )
+    assert (
+        concat_url("https://server.com/zep/", "/v1/api")
+        == "https://server.com/zep/v1/api"
+    )
+    assert (
+        concat_url("https://server.com/zep", "v1/api")
+        == "https://server.com/zep/v1/api"
+    )
+    assert (
+        concat_url("https://server.com/zep/", "v1/api")
+        == "https://server.com/zep/v1/api"
+    )
