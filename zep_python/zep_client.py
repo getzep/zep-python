@@ -153,7 +153,7 @@ class ZepClient:
             If the server is not running or the API URL is incorrect.
         """
 
-        url = "/healthz"
+        url = concat_url(base_url,  "/healthz")
 
         error_msg = """Failed to connect to Zep server. Please check that:
          - the server is running 
@@ -165,7 +165,7 @@ class ZepClient:
 
             self._handle_response(response, error_msg)
 
-            if response.status_code == 200 and response.text != "OK":
+            if response.status_code == 200 and response.text != ".":
                 raise APIError(response, error_msg)
 
         except (httpx.ConnectError, httpx.NetworkError, httpx.TimeoutException) as e:

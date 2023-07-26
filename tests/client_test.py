@@ -38,7 +38,7 @@ mock_memory = Memory(
 
 @pytest.fixture(autouse=True)
 def mock_healthcheck(httpx_mock: HTTPXMock):
-    httpx_mock.add_response(status_code=200, text="OK")
+    httpx_mock.add_response(status_code=200, text=".")
     yield
 
 
@@ -92,7 +92,7 @@ def test_client_connect_healthcheck_fail(httpx_mock: HTTPXMock):
 @pytest.mark.usefixtures("undo_mock_healthcheck")
 def test_client_connect_healthcheck_pass(httpx_mock: HTTPXMock):
     """Explicitly undo the mock healthcheck and then add a new mock response"""
-    httpx_mock.add_response(status_code=200, text="OK")
+    httpx_mock.add_response(status_code=200, text=".")
 
     ZepClient(base_url="http://localhost:11111")
 
