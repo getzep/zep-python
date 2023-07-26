@@ -5,7 +5,7 @@ from uuid import uuid4
 import pytest
 from pytest_httpx import HTTPXMock
 
-from zep_python import NotFoundError
+from zep_python import APIError, NotFoundError
 from zep_python.models import Memory, MemorySearchPayload, Message, Session
 from zep_python.zep_client import ZepClient, concat_url
 
@@ -34,6 +34,18 @@ mock_memory = Memory(
         Message(role="ai", content="Test message2"),
     ]
 )
+
+
+@pytest.fixture(autouse=True)
+def mock_healthcheck(httpx_mock: HTTPXMock):
+    httpx_mock.add_response(status_code=200, text=".")
+    yield
+
+
+@pytest.fixture
+def undo_mock_healthcheck(httpx_mock: HTTPXMock):
+    httpx_mock.reset(False)
+    yield
 
 
 @pytest.fixture
@@ -71,11 +83,24 @@ def validate_memory(memory: Memory):
     assert filter_unset_fields(memory.dict()) == mock_messages
 
 
-@pytest.mark.asyncio
-async def test_set_authorization_header(httpx_mock):
-    httpx_mock.add_response(status_code=200)
+@pytest.mark.usefixtures("undo_mock_healthcheck")
+def test_client_connect_healthcheck_fail(httpx_mock: HTTPXMock):
+    with pytest.raises(APIError):
+        ZepClient(base_url="http://localhost:11111")
 
+
+@pytest.mark.usefixtures("undo_mock_healthcheck")
+def test_client_connect_healthcheck_pass(httpx_mock: HTTPXMock):
+    """Explicitly undo the mock healthcheck and then add a new mock response"""
+    httpx_mock.add_response(status_code=200, text=".")
+
+    ZepClient(base_url="http://localhost:11111")
+
+
+@pytest.mark.asyncio
+async def test_set_authorization_header(httpx_mock: HTTPXMock):
     with ZepClient(base_url="http://localhost:8000", api_key="myapikey") as client:
+        httpx_mock.add_response(status_code=200)
         response = await client.aclient.get(f"{client.base_url}/my-endpoint")
 
     assert response.status_code == 200
@@ -87,9 +112,8 @@ async def test_set_authorization_header(httpx_mock):
 async def test_aget_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
-    httpx_mock.add_response(status_code=200, json=mock_messages)
-
     async with ZepClient(base_url=api_base_url) as client:
+        httpx_mock.add_response(status_code=200, json=mock_messages)
         memory = await client.aget_memory(session_id)
 
         validate_memory(memory)

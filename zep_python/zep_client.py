@@ -71,6 +71,8 @@ class ZepClient:
             base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
         )
 
+        self._healthcheck(base_url)
+
     async def __aenter__(self) -> "ZepClient":
         """Asynchronous context manager entry point"""
         return self
@@ -140,6 +142,34 @@ class ZepClient:
         if lastn is not None:
             params["lastn"] = lastn
         return params
+
+    def _healthcheck(self, base_url: str) -> None:
+        """
+        Check that the Zep server is running and the API URL is correct.
+
+        Raises
+        ------
+        ConnectionError
+            If the server is not running or the API URL is incorrect.
+        """
+
+        url = concat_url(base_url, "/healthz")
+
+        error_msg = """Failed to connect to Zep server. Please check that:
+         - the server is running 
+         - the API URL is correct
+         - No other process is using the same port"""
+
+        try:
+            response = httpx.get(url)
+
+            self._handle_response(response, error_msg)
+
+            if response.status_code == 200 and response.text != ".":
+                raise APIError(response, error_msg)
+
+        except (httpx.ConnectError, httpx.NetworkError, httpx.TimeoutException) as e:
+            raise APIError(None, error_msg) from e
 
     def get_session(self, session_id: str) -> Session:
         """
