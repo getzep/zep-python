@@ -63,7 +63,7 @@ class ZepClient:
         if api_key is not None:
             headers["Authorization"] = f"Bearer {api_key}"
 
-        self.base_url = urljoin(base_url, API_BASE_PATH)
+        self.base_url = concat_url(base_url, API_BASE_PATH)
         self.aclient = httpx.AsyncClient(
             base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
         )
@@ -603,3 +603,22 @@ class ZepClient:
         release resources.
         """
         self.client.close()
+
+
+def concat_url(base_url: str, path: str) -> str:
+    """
+    Join the specified base URL and path.
+
+    Parameters
+    ----------
+    base_url : str
+        The base URL to join.
+    path : str
+        The path to join.
+
+    Returns
+    -------
+    str
+        The joined URL.
+    """
+    return urljoin(base_url + "/", path.lstrip("/"))

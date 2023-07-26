@@ -4,8 +4,8 @@ from zep_python.models import (
     MemorySearchPayload,
     MemorySearchResult,
     Message,
-    Summary,
     Session,
+    Summary,
 )
 from zep_python.zep_client import ZepClient
 
