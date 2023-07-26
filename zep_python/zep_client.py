@@ -153,7 +153,7 @@ class ZepClient:
             If the server is not running or the API URL is incorrect.
         """
 
-        url = concat_url(base_url,  "/healthz")
+        url = concat_url(base_url, "/healthz")
 
         error_msg = """Failed to connect to Zep server. Please check that:
          - the server is running 
