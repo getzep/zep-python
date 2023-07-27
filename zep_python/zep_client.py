@@ -6,8 +6,8 @@ from urllib.parse import urljoin
 
 import httpx
 
-from zep_python.exceptions import APIError
 from zep_python.document_client import DocumentClient
+from zep_python.exceptions import APIError
 from zep_python.memory_client import MemoryClient
 from zep_python.models import (
     Document,
@@ -84,6 +84,32 @@ class ZepClient:
         self.memory_client = MemoryClient(self.aclient, self.client)
         self.document_client = DocumentClient(self.aclient)
 
+    def _healthcheck(self, base_url: str) -> None:
+        """
+        Check that the Zep server is running and the API URL is correct.
+
+        Raises
+        ------
+        ConnectionError
+            If the server is not running or the API URL is incorrect.
+        """
+
+        url = concat_url(base_url, "/healthz")
+
+        error_msg = """Failed to connect to Zep server. Please check that:
+         - the server is running 
+         - the API URL is correct
+         - No other process is using the same port"""
+
+        try:
+            response = httpx.get(url)
+
+            if response.status_code != 200 or response.text != ".":
+                raise APIError(response, error_msg)
+
+        except (httpx.ConnectError, httpx.NetworkError, httpx.TimeoutException) as e:
+            raise APIError(None, error_msg) from e
+
     async def __aenter__(self) -> "ZepClient":
         """Asynchronous context manager entry point"""
         return self
@@ -109,34 +135,6 @@ class ZepClient:
     ) -> None:
         """Sync context manager exit point"""
         self.close()
-
-    def _healthcheck(self, base_url: str) -> None:
-        """
-        Check that the Zep server is running and the API URL is correct.
-
-        Raises
-        ------
-        ConnectionError
-            If the server is not running or the API URL is incorrect.
-        """
-
-        url = concat_url(base_url, "/healthz")
-
-        error_msg = """Failed to connect to Zep server. Please check that:
-         - the server is running 
-         - the API URL is correct
-         - No other process is using the same port"""
-
-        try:
-            response = httpx.get(url)
-
-            self._handle_response(response, error_msg)
-
-            if response.status_code == 200 and response.text != ".":
-                raise APIError(response, error_msg)
-
-        except (httpx.ConnectError, httpx.NetworkError, httpx.TimeoutException) as e:
-            raise APIError(None, error_msg) from e
 
     # Facade methods for Memory API
     def get_session(self, session_id: str) -> Session:
