@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-try:
-    from pydantic.v1 import BaseModel, Field
-except ImportError:
+if TYPE_CHECKING:
     from pydantic import BaseModel, Field
+else:
+    try:
+        from pydantic.v1 import BaseModel, Field
+    except ImportError:
+        from pydantic import BaseModel, Field
 
 
 class Session(BaseModel):
