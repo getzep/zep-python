@@ -1,10 +1,7 @@
+from typing import Dict, List
 from uuid import uuid4
 
 import pytest
-
-from typing import List, Dict
-
-
 from pytest_httpx import HTTPXMock
 
 from zep_python import NotFoundError

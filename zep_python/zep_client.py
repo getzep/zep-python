@@ -10,12 +10,12 @@ from zep_python.exceptions import APIError
 from zep_python.document_client import DocumentClient
 from zep_python.memory_client import MemoryClient
 from zep_python.models import (
+    Document,
+    DocumentCollection,
     Memory,
     MemorySearchPayload,
     MemorySearchResult,
     Session,
-    DocumentCollection,
-    Document,
 )
 
 API_BASE_PATH = "/api/v1"
