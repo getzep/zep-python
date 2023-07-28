@@ -9,7 +9,7 @@ import httpx
 
 from zep_python.document.client import DocumentClient
 from zep_python.exceptions import APIError
-from zep_python.memory.memory import MemoryClient
+from zep_python.memory.client import MemoryClient
 from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
@@ -102,10 +102,8 @@ class ZepClient:
 
         try:
             response = httpx.get(url)
-
             if response.status_code != 200 or response.text != ".":
                 raise APIError(response, error_msg)
-
         except (httpx.ConnectError, httpx.NetworkError, httpx.TimeoutException) as e:
             raise APIError(None, error_msg) from e
 

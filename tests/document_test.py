@@ -5,13 +5,13 @@ import pytest
 from pytest_httpx import HTTPXMock
 
 from tests.fixtures import API_BASE_URL, mock_healthcheck, undo_mock_healthcheck
-from zep_python.document import Document, Collection
+from zep_python.document import CollectionModel, Document
 from zep_python.zep_client import ZepClient
 
 _ = mock_healthcheck, undo_mock_healthcheck
 
 mock_collection_id = str(uuid4())
-mock_collection = Collection(
+mock_collection = CollectionModel(
     name="mock_collection",
     description="Mock Collection",
     metadata={"key": "value"},
@@ -64,7 +64,7 @@ mock_getbatchrequest_by_id = {
 }
 
 
-def validate__collection(collection: Collection) -> None:
+def validate__collection(collection: CollectionModel) -> None:
     assert collection.name == "mock_collection"
     assert collection.description == "Mock Collection"
     assert collection.metadata == {"key": "value"}
@@ -82,7 +82,7 @@ def validate__document(document: Document) -> None:
 
 def validate__batchdocument(documents: List[Document]) -> None:
     # Predefined collection and document objects
-    Collection(
+    CollectionModel(
         name="mock_collection", description="Mock Collection", id=mock_collection_id
     )
 

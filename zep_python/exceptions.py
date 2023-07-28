@@ -86,3 +86,17 @@ class NotFoundError(ZepClientError):
 
     def __init__(self, message: str) -> None:
         super().__init__(message)
+
+
+def handle_response(
+    response: httpx.Response, missing_doc: Optional[str] = None
+) -> None:
+    missing_doc = missing_doc or "No query results found"
+    if response.status_code == 404:
+        raise NotFoundError(missing_doc)
+
+    if response.status_code == 401:
+        raise AuthError(response)
+
+    if response.status_code != 200:
+        raise APIError(response)

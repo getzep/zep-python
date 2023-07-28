@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
-from zep_python.exceptions import APIError, AuthError, NotFoundError
+from zep_python.exceptions import APIError, handle_response
 from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
@@ -21,8 +21,6 @@ class MemoryClient:
 
     Attributes
     ----------
-    base_url : str
-        The base URL of the API.
     aclient : httpx.AsyncClient
         The async client used for making API requests.
     client : httpx.Client
@@ -91,19 +89,6 @@ class MemoryClient:
         self.aclient = aclient
         self.client = client
 
-    def _handle_response(
-        self, response: httpx.Response, missing_message: Optional[str] = None
-    ) -> None:
-        missing_message = missing_message or "No query results found"
-        if response.status_code == 404:
-            raise NotFoundError(missing_message)
-
-        if response.status_code == 401:
-            raise AuthError(response)
-
-        if response.status_code != 200:
-            raise APIError(response)
-
     def _parse_get_memory_response(self, response_data: Any) -> Memory:
         """Parse the response from the get_memory API call."""
         messages: List[Message]
@@ -167,7 +152,7 @@ class MemoryClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
-        self._handle_response(response, f"No session found for session {session_id}")
+        handle_response(response, f"No session found for session {session_id}")
 
         response_data = response.json()
 
@@ -205,7 +190,7 @@ class MemoryClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
-        self._handle_response(response, f"No session found for session {session_id}")
+        handle_response(response, f"No session found for session {session_id}")
 
         response_data = response.json()
 
@@ -245,7 +230,7 @@ class MemoryClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
-        self._handle_response(response, f"Failed to add session {session.session_id}")
+        handle_response(response, f"Failed to add session {session.session_id}")
 
         return response.text
 
@@ -285,7 +270,7 @@ class MemoryClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
-        self._handle_response(response, f"Failed to add session {session.session_id}")
+        handle_response(response, f"Failed to add session {session.session_id}")
 
         return response.text
 
@@ -322,7 +307,7 @@ class MemoryClient:
         params = self._gen_get_params(lastn)
         response = self.client.get(url, params=params)
 
-        self._handle_response(response, f"No memory found for session {session_id}")
+        handle_response(response, f"No memory found for session {session_id}")
 
         response_data = response.json()
 
@@ -360,7 +345,7 @@ class MemoryClient:
         params = self._gen_get_params(lastn)
         response = await self.aclient.get(url, params=params)
 
-        self._handle_response(response, f"No memory found for session {session_id}")
+        handle_response(response, f"No memory found for session {session_id}")
 
         response_data = response.json()
 
@@ -398,7 +383,7 @@ class MemoryClient:
             json=memory_messages.dict(exclude_none=True),
         )
 
-        self._handle_response(response)
+        handle_response(response)
 
         return response.text
 
@@ -434,7 +419,7 @@ class MemoryClient:
             json=memory_messages.dict(exclude_none=True),
         )
 
-        self._handle_response(response)
+        handle_response(response)
 
         return response.text
 
@@ -464,7 +449,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         response = self.client.delete(f"/sessions/{session_id}/memory")
-        self._handle_response(response)
+        handle_response(response)
         return response.text
 
     # Memory APIs : Delete Memory Asynchronously
@@ -493,7 +478,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         response = await self.aclient.delete(f"/sessions/{session_id}/memory")
-        self._handle_response(response)
+        handle_response(response)
         return response.text
 
     # Memory APIs : Search Memory
@@ -539,7 +524,7 @@ class MemoryClient:
             json=search_payload.dict(),
             params=params,
         )
-        self._handle_response(response)
+        handle_response(response)
         return [
             MemorySearchResult(**search_result) for search_result in response.json()
         ]
@@ -587,7 +572,7 @@ class MemoryClient:
             json=search_payload.dict(),
             params=params,
         )
-        self._handle_response(response)
+        handle_response(response)
         return [
             MemorySearchResult(**search_result) for search_result in response.json()
         ]

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 
 class Document(BaseModel):
@@ -26,11 +25,16 @@ class Document(BaseModel):
         The content of the document.
     metadata : Optional[Dict[str, Any]]
         Any additional metadata associated with the document.
+    is_embedded : Optional[bool]
+        Whether the document has an embedding.
     embedding : Optional[List[float]]
         The embedding of the document.
+    dist : Optional[float]
+        The distance of the document from the query document. Available only
+        when the document is returned as part of a query result.
     """
 
-    uuid: Optional[str] = None
+    uuid: Optional[UUID] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     document_id: Optional[str] = None
@@ -38,6 +42,7 @@ class Document(BaseModel):
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     is_embedded: Optional[bool] = None
     embedding: Optional[List[float]] = None
+    dist: Optional[float] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -51,7 +56,7 @@ class Document(BaseModel):
         return self.dict()
 
 
-class Collection(BaseModel):
+class CollectionModel(BaseModel):
     """
     Represents a collection of documents.
 
