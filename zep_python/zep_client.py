@@ -9,14 +9,13 @@ import httpx
 from zep_python.document_client import DocumentClient
 from zep_python.exceptions import APIError
 from zep_python.memory_client import MemoryClient
-from zep_python.models import (
-    Document,
-    DocumentCollection,
+from zep_python.memory_models import (
     Memory,
     MemorySearchPayload,
     MemorySearchResult,
     Session,
 )
+from zep_python import Document, DocumentCollection
 
 API_BASE_PATH = "/api/v1"
 API_TIMEOUT = 10

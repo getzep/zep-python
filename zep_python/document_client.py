@@ -7,10 +7,7 @@ from typing import Dict, List, Optional
 import httpx
 
 from zep_python.exceptions import APIError, AuthError, NotFoundError
-from zep_python.models import (
-    Document,
-    DocumentCollection,
-)
+from zep_python import Document, DocumentCollection
 
 MAX_DOCUMENTS = 1000
 

@@ -7,7 +7,7 @@ from pytest_httpx import HTTPXMock
 
 from tests.fixtures import API_BASE_URL, mock_healthcheck, undo_mock_healthcheck
 from zep_python import NotFoundError
-from zep_python.models import Memory, MemorySearchPayload, Message, Session
+from zep_python.memory_models import Memory, MemorySearchPayload, Message, Session
 from zep_python.zep_client import ZepClient
 
 _ = mock_healthcheck, undo_mock_healthcheck

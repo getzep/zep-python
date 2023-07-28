@@ -5,7 +5,7 @@ import pytest
 from pytest_httpx import HTTPXMock
 
 from tests.fixtures import API_BASE_URL, mock_healthcheck, undo_mock_healthcheck
-from zep_python.models import Document, DocumentCollection
+from zep_python import Document, DocumentCollection
 from zep_python.zep_client import ZepClient
 
 _ = mock_healthcheck, undo_mock_healthcheck
@@ -16,10 +16,9 @@ mock_collection = DocumentCollection(
     description="Mock Collection",
     metadata={"key": "value"},
     embedding_dimensions=768,
-    embedding_model_name="bert-base-uncased",
-    distance_function="cosine",
-    is_normalized=True,
+    is_auto_embedded=True,
 )
+
 
 mock_document_uuid = str(uuid4())
 mock_document_id = str(uuid4())
@@ -33,7 +32,8 @@ mock_document = Document(
     embedding=[1.0, 2.0, 3.0],
 )
 
-mock_modifieddocument = Document(
+
+mock_modified_document = Document(
     uuid=mock_document_uuid,
     metadata={"jelly": "fish"},
 )
@@ -69,14 +69,12 @@ def validate__collection(collection: DocumentCollection) -> None:
     assert collection.description == "Mock Collection"
     assert collection.metadata == {"key": "value"}
     assert collection.embedding_dimensions == 768
-    assert collection.embedding_model_name == "bert-base-uncased"
-    assert collection.distance_function == "cosine"
-    assert collection.is_normalized is True
+    assert collection.is_auto_embedded is True
 
 
 def validate__document(document: Document) -> None:
-    assert document.id == mock_document_id
     assert document.uuid == mock_document_uuid
+    assert document.document_id == mock_document_id
     assert document.content == "mock content"
     assert document.metadata == {"key": "value"}
     assert document.embedding == [1.0, 2.0, 3.0]
@@ -87,9 +85,6 @@ def validate__batchdocument(documents: List[Document]) -> None:
     DocumentCollection(
         name="mock_collection", description="Mock Collection", id=mock_collection_id
     )
-
-
-mock_document = Document(id=mock_document_id, data={"key": "value"})
 
 
 @pytest.mark.asyncio
@@ -144,12 +139,14 @@ async def test_get_document(httpx_mock: HTTPXMock):
 
 @pytest.mark.asyncio
 async def test_add_document(httpx_mock: HTTPXMock):
-    httpx_mock.add_response(status_code=200, json={"ids": [mock_document_id]})
+    httpx_mock.add_response(status_code=200, json=[mock_document_id])
 
     async with ZepClient(base_url=API_BASE_URL) as client:
-        document_ids = await client.add_document(mock_collection_id, [mock_document])
+        document_ids: List[str] = await client.add_document(
+            mock_collection_id, [mock_document]
+        )
 
-        assert document_ids["ids"] == [mock_document_id]
+        assert document_ids[0] == mock_document_id
 
 
 @pytest.mark.asyncio
@@ -157,7 +154,9 @@ async def test_update_document(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, json="Document Updated")
 
     async with ZepClient(base_url=API_BASE_URL) as client:
-        status = await client.update_document(mock_collection_id, mock_modifieddocument)
+        status = await client.update_document(
+            mock_collection_id, mock_modified_document
+        )
 
         assert status == '"Document Updated"'
 

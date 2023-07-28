@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 import httpx
 
 from zep_python.exceptions import APIError, AuthError, NotFoundError
-from zep_python.models import (
+from zep_python.memory_models import (
     Memory,
     MemorySearchPayload,
     MemorySearchResult,

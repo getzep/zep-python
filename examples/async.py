@@ -18,7 +18,7 @@ from zep_python import (
     NotFoundError,
     ZepClient,
 )
-from zep_python.models import Session
+from zep_python.memory_models import Session
 
 
 async def main() -> None:
