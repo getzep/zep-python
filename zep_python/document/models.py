@@ -51,7 +51,7 @@ class Document(BaseModel):
         return self.dict()
 
 
-class DocumentCollection(BaseModel):
+class Collection(BaseModel):
     """
     Represents a collection of documents.
 

@@ -7,7 +7,12 @@ from pytest_httpx import HTTPXMock
 
 from tests.fixtures import API_BASE_URL, mock_healthcheck, undo_mock_healthcheck
 from zep_python import NotFoundError
-from zep_python.memory_models import Memory, MemorySearchPayload, Message, Session
+from zep_python.memory.models import (
+    Memory,
+    MemorySearchPayload,
+    Message,
+    Session,
+)
 from zep_python.zep_client import ZepClient
 
 _ = mock_healthcheck, undo_mock_healthcheck
@@ -73,7 +78,7 @@ async def test_aget_memory(httpx_mock: HTTPXMock):
 
     async with ZepClient(base_url=API_BASE_URL) as client:
         httpx_mock.add_response(status_code=200, json=mock_messages)
-        memory = await client.aget_memory(session_id)
+        memory = await client.memory.aget_memory(session_id)
 
         validate_memory(memory)
 
@@ -82,7 +87,7 @@ async def test_aget_memory(httpx_mock: HTTPXMock):
 async def test_aget_memory_missing_session(httpx_mock: HTTPXMock):
     async with ZepClient(base_url=API_BASE_URL) as client:
         with pytest.raises(ValueError):
-            _ = await client.aget_memory(session_id=None)  # type: ignore
+            _ = await client.memory.aget_memory(session_id=None)  # type: ignore
 
 
 @pytest.mark.asyncio
@@ -106,7 +111,7 @@ async def test_aget_memory_missing_values(httpx_mock: HTTPXMock):
 
     # Fields are optional and so this should still parse
     async with ZepClient(base_url=API_BASE_URL) as client:
-        memory = await client.aget_memory(session_id)
+        memory = await client.memory.aget_memory(session_id)
 
     # there should be two messages
     assert len(memory.messages) == 2
@@ -118,7 +123,7 @@ def test_get_memory(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, json=mock_messages)
 
     with ZepClient(base_url=API_BASE_URL) as client:
-        memory = client.get_memory(session_id)
+        memory = client.memory.get_memory(session_id)
 
         validate_memory(memory)
 
@@ -133,7 +138,7 @@ async def test_aget_memory_not_found(httpx_mock: HTTPXMock):
 
     async with ZepClient(base_url=API_BASE_URL) as client:
         with pytest.raises(NotFoundError):
-            _ = await client.aget_memory(session_id)
+            _ = await client.memory.aget_memory(session_id)
 
 
 @pytest.mark.asyncio
@@ -143,7 +148,7 @@ async def test_aadd_memory(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, text="OK")
 
     async with ZepClient(base_url=API_BASE_URL) as client:
-        response = await client.aadd_memory(session_id, mock_memory)
+        response = await client.memory.aadd_memory(session_id, mock_memory)
         assert response == "OK"
 
 
@@ -153,7 +158,7 @@ def test_add_memory(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, text="OK")
 
     with ZepClient(base_url=API_BASE_URL) as client:
-        response = client.add_memory(session_id, mock_memory)
+        response = client.memory.add_memory(session_id, mock_memory)
         assert response == "OK"
 
 
@@ -164,7 +169,7 @@ async def test_adelete_memory(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, text="Memory deleted")
 
     async with ZepClient(base_url=API_BASE_URL) as client:
-        response = await client.adelete_memory(session_id)
+        response = await client.memory.adelete_memory(session_id)
 
         assert response == "Memory deleted"
 
@@ -177,7 +182,7 @@ async def test_adelete_memory_session_unknown(httpx_mock: HTTPXMock):
 
     async with ZepClient(base_url=API_BASE_URL) as client:
         with pytest.raises(NotFoundError):
-            _ = await client.adelete_memory(session_id)
+            _ = await client.memory.adelete_memory(session_id)
 
 
 @pytest.mark.asyncio
@@ -203,7 +208,7 @@ async def test_asearch_memory(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, json=mock_response)
 
     async with ZepClient(base_url=API_BASE_URL) as client:
-        search_results = await client.asearch_memory(session_id, search_payload)
+        search_results = await client.memory.asearch_memory(session_id, search_payload)
 
         assert len(search_results) == 1
         assert search_results[0].message["uuid"] == "msg-uuid"
@@ -218,7 +223,7 @@ async def test_asearch_memory_no_payload(httpx_mock: HTTPXMock):
 
     async with ZepClient(base_url=API_BASE_URL) as client:
         with pytest.raises(ValueError):
-            _ = await client.asearch_memory(session_id, None)  # type: ignore
+            _ = await client.memory.asearch_memory(session_id, None)  # type: ignore
 
 
 def test_search_memory(httpx_mock: HTTPXMock):
@@ -243,7 +248,7 @@ def test_search_memory(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, json=mock_response)
 
     with ZepClient(base_url=API_BASE_URL) as client:
-        search_results = client.search_memory(session_id, search_payload)
+        search_results = client.memory.search_memory(session_id, search_payload)
 
         assert len(search_results) == 1
         assert search_results[0].message["uuid"] == "msg-uuid"
@@ -275,7 +280,7 @@ async def test_get_session(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, json=mock_session)
 
     client = ZepClient(base_url=API_BASE_URL)
-    session = client.get_session(session_id)
+    session = client.memory.get_session(session_id)
 
     validate_session(session)
 
@@ -284,7 +289,7 @@ def test_get_session_missing_id():
     client = ZepClient(base_url=API_BASE_URL)
 
     with pytest.raises(ValueError):
-        client.get_session(session_id=None)  # type: ignore
+        client.memory.get_session(session_id=None)  # type: ignore
 
 
 @pytest.mark.asyncio
@@ -294,7 +299,7 @@ async def test_aget_session(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, json=mock_session)
 
     async with ZepClient(base_url=API_BASE_URL) as client:
-        session = await client.aget_session(session_id)
+        session = await client.memory.aget_session(session_id)
 
         validate_session(session)
 
@@ -303,7 +308,7 @@ async def test_aget_session(httpx_mock: HTTPXMock):
 async def test_aget_session_missing_id(httpx_mock: HTTPXMock):
     async with ZepClient(base_url=API_BASE_URL) as client:
         with pytest.raises(ValueError):
-            _ = await client.aget_session(session_id=None)  # type: ignore
+            _ = await client.memory.aget_session(session_id=None)  # type: ignore
 
 
 def test_add_session(httpx_mock: HTTPXMock):
@@ -312,7 +317,7 @@ def test_add_session(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, text="OK")
 
     client = ZepClient(base_url=API_BASE_URL)
-    result = client.add_session(session)
+    result = client.memory.add_session(session)
 
     assert result == "OK"
 
@@ -321,7 +326,7 @@ def test_add_session_missing_session():
     client = ZepClient(base_url=API_BASE_URL)
 
     with pytest.raises(ValueError):
-        client.add_session(session=None)  # type: ignore
+        client.memory.add_session(session=None)  # type: ignore
 
 
 @pytest.mark.asyncio
@@ -331,7 +336,7 @@ async def test_aadd_session(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, text="OK")
 
     async with ZepClient(base_url=API_BASE_URL) as client:
-        result = await client.aadd_session(session)
+        result = await client.memory.aadd_session(session)
 
         assert result == "OK"
 
@@ -340,4 +345,4 @@ async def test_aadd_session(httpx_mock: HTTPXMock):
 async def test_aadd_session_missing_session(httpx_mock: HTTPXMock):
     async with ZepClient(base_url=API_BASE_URL) as client:
         with pytest.raises(ValueError):
-            _ = await client.aadd_session(session=None)  # type: ignore
+            _ = await client.memory.aadd_session(session=None)  # type: ignore

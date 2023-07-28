@@ -5,13 +5,13 @@ import pytest
 from pytest_httpx import HTTPXMock
 
 from tests.fixtures import API_BASE_URL, mock_healthcheck, undo_mock_healthcheck
-from zep_python import Document, DocumentCollection
+from zep_python.document import Document, Collection
 from zep_python.zep_client import ZepClient
 
 _ = mock_healthcheck, undo_mock_healthcheck
 
 mock_collection_id = str(uuid4())
-mock_collection = DocumentCollection(
+mock_collection = Collection(
     name="mock_collection",
     description="Mock Collection",
     metadata={"key": "value"},
@@ -38,7 +38,7 @@ mock_modified_document = Document(
     metadata={"jelly": "fish"},
 )
 
-mock_batchdocument = [
+mock_batch_document = [
     Document(
         document_id="1",
         uuid=mock_document_uuid,
@@ -55,16 +55,16 @@ mock_batchdocument = [
     ),
 ]
 
-mock_getbatchrequest_byuuid = {
+mock_getbatchrequest_by_uuid = {
     "uuids": [mock_document_uuid, mock_document_uuid2],
 }
 
-mock_getbatchrequest_byid = {
+mock_getbatchrequest_by_id = {
     "document_ids": [mock_document_id, "2"],
 }
 
 
-def validate__collection(collection: DocumentCollection) -> None:
+def validate__collection(collection: Collection) -> None:
     assert collection.name == "mock_collection"
     assert collection.description == "Mock Collection"
     assert collection.metadata == {"key": "value"}
@@ -82,7 +82,7 @@ def validate__document(document: Document) -> None:
 
 def validate__batchdocument(documents: List[Document]) -> None:
     # Predefined collection and document objects
-    DocumentCollection(
+    Collection(
         name="mock_collection", description="Mock Collection", id=mock_collection_id
     )
 
@@ -92,7 +92,7 @@ async def test_add_collection(httpx_mock: HTTPXMock):
     httpx_mock.add_response(status_code=200, json="Collection Added")
 
     async with ZepClient(base_url=API_BASE_URL) as client:
-        response = await client.add_collection(mock_collection)
+        response = await client.document.aadd_collection(mock_collection)
 
         assert response == '"Collection Added"'
 
@@ -199,7 +199,7 @@ async def test_batchget_documents_byid(httpx_mock: HTTPXMock):
 
     async with ZepClient(base_url=API_BASE_URL) as client:
         documents = await client.batchget_documents_byid(
-            mock_collection_id, mock_getbatchrequest_byid
+            mock_collection_id, mock_getbatchrequest_by_id
         )
         print(documents)
 
@@ -212,7 +212,7 @@ async def test_batchget_documents_byuuid(httpx_mock: HTTPXMock):
 
     async with ZepClient(base_url=API_BASE_URL) as client:
         documents = await client.batchget_documents_byuuid(
-            mock_collection_id, mock_getbatchrequest_byuuid
+            mock_collection_id, mock_getbatchrequest_by_uuid
         )
         print(documents)
 

@@ -1,21 +1,21 @@
 from __future__ import annotations
 
+import warnings
 from types import TracebackType
-from typing import Any, Dict, List, Optional, Type
+from typing import Dict, List, Optional, Type
 from urllib.parse import urljoin
 
 import httpx
 
-from zep_python.document_client import DocumentClient
+from zep_python.document.client import DocumentClient
 from zep_python.exceptions import APIError
-from zep_python.memory_client import MemoryClient
-from zep_python.memory_models import (
+from zep_python.memory.memory import MemoryClient
+from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
     MemorySearchResult,
     Session,
 )
-from zep_python import Document, DocumentCollection
 
 API_BASE_PATH = "/api/v1"
 API_TIMEOUT = 10
@@ -23,35 +23,35 @@ API_TIMEOUT = 10
 
 class ZepClient:
     """
-    ZepClient class implementation. This is a facade for memory and document APIs.
+    ZepClient class implementation.
 
     Attributes
     ----------
     base_url : str
         The base URL of the API.
-    memory_client : zep_memory_api
+    memory : MemoryClient
         The client used for making Memory API requests.
-    document_client : zep_documents_api
+    document : DocumentClient
         The client used for making Document API requests.
 
     Methods
     -------
     get_memory(session_id: str, lastn: Optional[int] = None) -> List[Memory]:
-        Retrieve memory for the specified session.
+        Retrieve memory for the specified session. (Deprecated)
     add_memory(session_id: str, memory_messages: Memory) -> str:
-        Add memory to the specified session.
+        Add memory to the specified session. (Deprecated)
     delete_memory(session_id: str) -> str:
-        Delete memory for the specified session.
+        Delete memory for the specified session. (Deprecated)
     search_memory(session_id: str, search_payload: SearchPayload,
                   limit: Optional[int] = None) -> List[SearchResult]:
-        Search memory for the specified session.
+        Search memory for the specified session. (Deprecated)
     close() -> None:
         Close the HTTP client.
     """
 
     base_url: str
-    memory_client: MemoryClient
-    document_client: DocumentClient
+    memory: MemoryClient
+    document: DocumentClient
 
     def __init__(self, base_url: str, api_key: Optional[str] = None) -> None:
         """
@@ -80,8 +80,7 @@ class ZepClient:
 
         self._healthcheck(base_url)
 
-        self.memory_client = MemoryClient(self.aclient, self.client)
-        self.document_client = DocumentClient(self.aclient)
+        self.memory = MemoryClient(self.aclient, self.client)
 
     def _healthcheck(self, base_url: str) -> None:
         """
@@ -98,7 +97,8 @@ class ZepClient:
         error_msg = """Failed to connect to Zep server. Please check that:
          - the server is running 
          - the API URL is correct
-         - No other process is using the same port"""
+         - No other process is using the same port
+         """
 
         try:
             response = httpx.get(url)
@@ -137,34 +137,44 @@ class ZepClient:
 
     # Facade methods for Memory API
     def get_session(self, session_id: str) -> Session:
-        return self.memory_client.get_session(session_id)
+        deprecated_warning(self.get_session)
+        return self.memory.get_session(session_id)
 
     async def aget_session(self, session_id: str) -> Session:
-        return await self.memory_client.aget_session(session_id)
+        deprecated_warning(self.aget_session)
+        return await self.memory.aget_session(session_id)
 
     def add_session(self, session: Session) -> str:
-        return self.memory_client.add_session(session)
+        deprecated_warning(self.add_session)
+        return self.memory.add_session(session)
 
     async def aadd_session(self, session: Session) -> str:
-        return await self.memory_client.aadd_session(session)
+        deprecated_warning(self.aadd_session)
+        return await self.memory.aadd_session(session)
 
     def get_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
-        return self.memory_client.get_memory(session_id, lastn)
+        deprecated_warning(self.get_memory)
+        return self.memory.get_memory(session_id, lastn)
 
     async def aget_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
-        return await self.memory_client.aget_memory(session_id, lastn)
+        deprecated_warning(self.aget_memory)
+        return await self.memory.aget_memory(session_id, lastn)
 
     def add_memory(self, session_id: str, memory_messages: Memory) -> str:
-        return self.memory_client.add_memory(session_id, memory_messages)
+        deprecated_warning(self.add_memory)
+        return self.memory.add_memory(session_id, memory_messages)
 
     async def aadd_memory(self, session_id: str, memory_messages: Memory) -> str:
-        return await self.memory_client.aadd_memory(session_id, memory_messages)
+        deprecated_warning(self.aadd_memory)
+        return await self.memory.aadd_memory(session_id, memory_messages)
 
     def delete_memory(self, session_id: str) -> str:
-        return self.memory_client.delete_memory(session_id)
+        deprecated_warning(self.delete_memory)
+        return self.memory.delete_memory(session_id)
 
     async def adelete_memory(self, session_id: str) -> str:
-        return await self.memory_client.adelete_memory(session_id)
+        deprecated_warning(self.adelete_memory)
+        return await self.memory.adelete_memory(session_id)
 
     def search_memory(
         self,
@@ -172,7 +182,8 @@ class ZepClient:
         search_payload: MemorySearchPayload,
         limit: Optional[int] = None,
     ) -> List[MemorySearchResult]:
-        return self.memory_client.search_memory(session_id, search_payload, limit)
+        deprecated_warning(self.search_memory)
+        return self.memory.search_memory(session_id, search_payload, limit)
 
     async def asearch_memory(
         self,
@@ -180,73 +191,8 @@ class ZepClient:
         search_payload: MemorySearchPayload,
         limit: Optional[int] = None,
     ) -> List[MemorySearchResult]:
-        return await self.memory_client.asearch_memory(
-            session_id, search_payload, limit
-        )
-
-    # Facade methods for Document Collection APIs
-    async def get_collection(self, collection_id: str) -> DocumentCollection:
-        return await self.document_client.get_documentcollection(collection_id)
-
-    async def add_collection(self, collection: DocumentCollection) -> str:
-        return await self.document_client.add_documentcollection(collection)
-
-    async def update_collection(self, collection: DocumentCollection) -> str:
-        return await self.document_client.update_documentcollection(collection)
-
-    async def delete_collection(self, collection_id: str) -> str:
-        return await self.document_client.delete_documentcollection(collection_id)
-
-    async def list_collections(self) -> List[DocumentCollection]:
-        return await self.document_client.list_documentcollections()
-
-    # Facade methods for Document APIs
-    async def get_document(self, collection_id: str, document_id: str) -> Document:
-        return await self.document_client.get_document(collection_id, document_id)
-
-    async def add_document(
-        self, collection_id: str, documents: List[Document]
-    ) -> List[str]:
-        return await self.document_client.add_document(collection_id, documents)
-
-    async def update_document(self, collection_id: str, document: Document) -> str:
-        return await self.document_client.update_document(collection_id, document)
-
-    async def delete_document(self, collection_id: str, document_id: str) -> str:
-        return await self.document_client.delete_document(collection_id, document_id)
-
-    # async def list_documents(self, collection_id: str) -> List[Document]:
-
-    # Facade methods for Document Bulk APIs
-    async def batchupdate_documents(
-        self, collection_id: str, documents: List[Document]
-    ) -> str:
-        return await self.document_client.batchupdate_documents(
-            collection_id, documents
-        )
-
-    async def batchdelete_documents(
-        self, collection_id: str, document_ids: List[str]
-    ) -> str:
-        return await self.document_client.batchdelete_documents(
-            collection_id, document_ids
-        )
-
-    async def batchget_documents_byid(
-        self, collection_id: str, document_ids: Dict[str, List[str]]
-    ) -> List[Document]:
-        return await self.document_client.batchget_documents(
-            collection_id, document_ids
-        )
-
-    async def batchget_documents_byuuid(
-        self,
-        collection_id: str,
-        document_uuids: Dict[str, List[str]],
-    ) -> List[Document]:
-        return await self.document_client.batchget_documents(
-            collection_id, document_uuids
-        )
+        deprecated_warning(self.asearch_memory)
+        return await self.memory.asearch_memory(session_id, search_payload, limit)
 
     # Close the HTTP client
     async def aclose(self) -> None:
@@ -285,3 +231,13 @@ def concat_url(base_url: str, path: str) -> str:
         The joined URL.
     """
     return urljoin(base_url + "/", path.lstrip("/"))
+
+
+def deprecated_warning(func):
+    warnings.warn(
+        f"{func.__name__} method from the base client path is deprecated, "
+        "please use the corresponding method from zep_python.memory instead",
+        DeprecationWarning,
+        stacklevel=3,
+    )
+    return func

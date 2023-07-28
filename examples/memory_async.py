@@ -4,7 +4,6 @@
     a 400 error if you try to add messages to a deleted session.
 """
 import asyncio
-import datetime
 import time
 import uuid
 
@@ -18,7 +17,7 @@ from zep_python import (
     NotFoundError,
     ZepClient,
 )
-from zep_python.memory_models import Session
+from zep_python.memory.models import Session
 
 
 async def main() -> None:

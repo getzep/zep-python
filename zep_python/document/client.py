@@ -7,38 +7,36 @@ from typing import Dict, List, Optional
 import httpx
 
 from zep_python.exceptions import APIError, AuthError, NotFoundError
-from zep_python import Document, DocumentCollection
+from .models import Document, Collection
 
 MAX_DOCUMENTS = 1000
 
 
 class DocumentClient:
     """
-    document_client class implementation for document APIs.
+    DocumentClient implements Zep's document APIs.
 
     Attributes
     ----------
-    base_url : str
-        The base URL of the API.
     aclient : httpx.AsyncClient
         The async client used for making API requests.
 
     Methods
     -------
-    add_documentcollection(documentcollection: DocumentCollection) -> str:
-        Asynchronously create a documentcollection.
+    add_collection(collection: DocumentCollection) -> str:
+        Asynchronously create a collection.
 
-    update_documentcollection(documentcollection: DocumentCollection) -> str:
-        Asynchronously update documentcollection.
+    update_collection(collection: DocumentCollection) -> str:
+        Asynchronously update collection.
 
-    delete_documentcollection(documentcollection_name: str) -> str:
-        Asynchronously delete documentcollection.
+    delete_collection(collection_name: str) -> str:
+        Asynchronously delete collection.
 
-    get_documentcollection(documentcollection_name: str) -> DocumentCollection:
-        Asynchronously gets a documentcollection.
+    get_collection(collection_name: str) -> DocumentCollection:
+        Asynchronously gets a collection.
 
-    list_documentcollections() -> List[DocumentCollection]:
-        Asynchronously gets all documentcollections.
+    list_collections() -> List[DocumentCollection]:
+        Asynchronously gets all collections.
 
     """
 
@@ -69,18 +67,15 @@ class DocumentClient:
         if response.status_code != 200:
             raise APIError(response)
 
-    # Document Collection APIs : Add a document collection
-    async def add_documentcollection(
-        self, documentcollection: DocumentCollection
-    ) -> str:
+    async def aadd_collection(self, collection: Collection) -> str:
         """
-        Asynchronously create a documentcollection.
+        Asynchronously create a collection.
 
         Parameters
         ----------
-        documentcollection : DocumentCollection
+        collection : Collection
             A DocumentCollection object representing the
-            documentcollection to be create.
+            collection to be created.
 
         Returns
         -------
@@ -93,15 +88,15 @@ class DocumentClient:
             If the API response format is unexpected.
         """
         if (
-            documentcollection is None
-            or documentcollection.name is None
-            or documentcollection.name.strip() == ""
+            collection is None
+            or collection.name is None
+            or collection.name.strip() == ""
         ):
-            raise ValueError("documentcollection name must be provided")
+            raise ValueError("collection name must be provided")
 
         response = await self.aclient.post(
-            "/collection/{documentcollection.name}",
-            json=documentcollection.dict(exclude_none=True),
+            "/collection/{collection.name}",
+            json=collection.dict(exclude_none=True),
         )
 
         self._handle_response(response)
@@ -109,16 +104,14 @@ class DocumentClient:
         return response.text
 
     # Document Collection APIs : Update a document collection
-    async def update_documentcollection(
-        self, documentcollection: DocumentCollection
-    ) -> str:
+    async def update_collection(self, collection: Collection) -> str:
         """
-        Asynchronously update documentcollection.
+        Asynchronously update collection.
 
         Parameters
         ----------
-        documentcollection : DocumentCollection
-            A DocumentCollection object representing the documentcollection
+        collection : Collection
+            A DocumentCollection object representing the collection
             to be added or updated.
 
         Returns
@@ -129,21 +122,21 @@ class DocumentClient:
         Raises
         ------
         NotFoundError
-            If the documentcollection is not found.
+            If the collection is not found.
 
         APIError
             If the API response format is unexpected.
         """
         if (
-            documentcollection is None
-            or documentcollection.name is None
-            or documentcollection.name.strip() == ""
+            collection is None
+            or collection.name is None
+            or collection.name.strip() == ""
         ):
-            raise ValueError("documentcollection name must be provided")
+            raise ValueError("collection name must be provided")
 
         response = await self.aclient.patch(
-            f"/collection/{documentcollection.name}",
-            json=documentcollection.dict(exclude_none=True),
+            f"/collection/{collection.name}",
+            json=collection.dict(exclude_none=True),
         )
 
         self._handle_response(response)
@@ -151,14 +144,14 @@ class DocumentClient:
         return response.text
 
     # Document Collection APIs : Delete a document collection
-    async def delete_documentcollection(self, name: str) -> str:
+    async def delete_collection(self, name: str) -> str:
         """
-        Asynchronously delete documentcollection.
+        Asynchronously delete collection.
 
         Parameters
         ----------
         name : str
-            The name of the documentcollection to be deleted.
+            The name of the collection to be deleted.
 
         Returns
         -------
@@ -168,13 +161,13 @@ class DocumentClient:
         Raises
         ------
         NotFoundError
-            If the documentcollection is not found.
+            If the collection is not found.
 
         APIError
             If the API response format is unexpected.
         """
         if name is None or name.strip() == "":
-            raise ValueError("documentcollection name must be provided")
+            raise ValueError("collection name must be provided")
 
         response = await self.aclient.delete(
             f"/collection/{name}",
@@ -185,46 +178,46 @@ class DocumentClient:
         return response.text
 
     # Document Collection APIs : Get a document collection
-    async def get_documentcollection(self, name: str) -> DocumentCollection:
+    async def get_collection(self, name: str) -> Collection:
         """
-        Asynchronously gets a documentcollection.
+        Asynchronously gets a collection.
 
         Parameters
         ----------
         name : str
-            The name of the documentcollection to get.
+            The name of the collection to get.
 
         Returns
         -------
-        DocumentCollection
+        Collection
             The document collection object.
 
         Raises
         ------
         NotFoundError
-            If the documentcollection is not found.
+            If the collection is not found.
 
         APIError
             If the API response format is unexpected.
         """
         if name is None or name.strip() == "":
-            raise ValueError("documentcollection name must be provided")
+            raise ValueError("collection name must be provided")
         response = await self.aclient.get(
             f"/collection/{name}",
         )
 
         self._handle_response(response)
 
-        return DocumentCollection(**response.json())
+        return Collection(**response.json())
 
     # Document Collection APIs : List the documetns in a document collection
-    async def list_documentcollections(self) -> List[DocumentCollection]:
+    async def list_collections(self) -> List[Collection]:
         """
-        Asynchronously gets all documentcollections.
+        Asynchronously gets all collections.
 
         Returns
         -------
-        List[DocumentCollection]
+        List[Collection]
             The list of document collection objects.
 
         Raises
@@ -237,10 +230,7 @@ class DocumentClient:
         )
 
         self._handle_response(response)
-        return [
-            DocumentCollection(**documentcollection)
-            for documentcollection in response.json()
-        ]
+        return [Collection(**collection) for collection in response.json()]
 
     # Document APIs : Add a document
     async def add_document(
@@ -404,7 +394,7 @@ class DocumentClient:
         return Document(**response.json())
 
     # Document Batch APIs
-    async def batchupdate_documents(
+    async def batch_update_documents(
         self, collection_name: str, documents: List[Document]
     ) -> str:
         """
@@ -454,7 +444,7 @@ class DocumentClient:
 
         return response.text
 
-    async def batchdelete_documents(
+    async def batch_delete_documents(
         self, collection_name: str, document_uuids: List[str]
     ) -> str:
         """
@@ -501,7 +491,7 @@ class DocumentClient:
 
         return response.text
 
-    async def batchget_documents(
+    async def batch_get_documents(
         self, collection_name: str, document_identifiers: Dict[str, List[str]]
     ) -> List[Document]:
         """
