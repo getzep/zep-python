@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional, Dict, Any
 
 import httpx
 
@@ -11,41 +11,50 @@ from .collections import DocumentCollection
 
 class DocumentClient:
     """
-    Implements Zep's document APIs.
+    This class implements Zep's document APIs.
 
-    Attributes
-    ----------
-    client : httpx.Client
-        Synchronous API client.
-    aclient : httpx.AsyncClient
-        Asynchronous API client.
+    Attributes:
+        client (httpx.Client): Synchronous API client.
+        aclient (httpx.AsyncClient): Asynchronous API client.
 
-    Methods
-    -------
-    aadd_collection(collection: DocumentCollection) -> str:
-        Asynchronously creates a collection.
-    add_collection(collection: DocumentCollection) -> str:
-        Synchronously creates a collection.
+    Methods:
+        aadd_collection(name: str, embedding_dimensions: int,
+                        description: Optional[str] = "",
+                        metadata: Optional[Dict[str, Any]] = None,
+                        is_auto_embedded: bool = True) -> str:
+            Asynchronously creates a collection.
 
-    aupdate_collection(collection: DocumentCollection) -> str:
-        Asynchronously updates a collection.
-    update(collection: DocumentCollection) -> str:
-        Synchronously updates a collection.
+        add_collection(name: str, embedding_dimensions: int,
+                       description: Optional[str] = "",
+                       metadata: Optional[Dict[str, Any]] = None,
+                       is_auto_embedded: bool = True) -> str:
+            Synchronously creates a collection.
 
-    adelete_collection(collection_name: str) -> str:
-        Asynchronously deletes a collection.
-    delete_collection(collection_name: str) -> str:
-        Synchronously deletes a collection.
+        aupdate_collection(name: str, description: Optional[str] = "",
+                           metadata: Optional[Dict[str, Any]] = None) -> str:
+            Asynchronously updates a collection.
 
-    aget_collection(collection_name: str) -> DocumentCollection:
-        Asynchronously retrieves a collection.
-    get_collection(collection_name: str) -> DocumentCollection:
-        Synchronously retrieves a collection.
+        update(name: str, description: Optional[str] = "",
+               metadata: Optional[Dict[str, Any]] = None) -> str:
+            Synchronously updates a collection.
 
-    alist_collections() -> List[DocumentCollection]:
-        Asynchronously retrieves all collections.
-    list_collections() -> List[DocumentCollection]:
-        Synchronously retrieves all collections.
+        adelete_collection(collection_name: str) -> str:
+            Asynchronously deletes a collection.
+
+        delete_collection(collection_name: str) -> str:
+            Synchronously deletes a collection.
+
+        aget_collection(collection_name: str) -> DocumentCollection:
+            Asynchronously retrieves a collection.
+
+        get_collection(collection_name: str) -> DocumentCollection:
+            Synchronously retrieves a collection.
+
+        alist_collections() -> List[DocumentCollection]:
+            Asynchronously retrieves all collections.
+
+        list_collections() -> List[DocumentCollection]:
+            Synchronously retrieves all collections.
     """
 
     def __init__(self, aclient: httpx.AsyncClient, client: httpx.Client) -> None:
@@ -56,16 +65,30 @@ class DocumentClient:
         self.client = client
 
     async def aadd_collection(
-        self, collection: DocumentCollection
+        self,
+        name: str,
+        embedding_dimensions: int,
+        description: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        is_auto_embedded: bool = True,
     ) -> DocumentCollection:
         """
         Asynchronously creates a collection.
 
         Parameters
         ----------
-        collection : DocumentCollection
-            A DocumentCollection object representing the collection to be created. The
-            collection name and embedding_dimensions must be provided.
+        name : str
+            The name of the collection to be created.
+        description: str
+            The description of the collection to be created.
+        embedding_dimensions : int
+            The number of dimensions of the embeddings to use for documents
+            in this collection. This must match your model's embedding dimensions.
+        metadata : Optional[Dict[str, Any]], optional
+            A dictionary of metadata to be associated with the collection,
+            by default None.
+        is_auto_embedded : bool, optional
+            Whether the collection is automatically embedded, by default True.
 
         Returns
         -------
@@ -78,6 +101,17 @@ class DocumentClient:
             If the API response format is unexpected, or if the server returns an error.
         """
 
+        if embedding_dimensions is None or embedding_dimensions <= 0:
+            raise ValueError("embedding_dimensions must be a positive integer")
+
+        collection = DocumentCollection(
+            name=name,
+            description=description,
+            embedding_dimensions=embedding_dimensions,
+            metadata=metadata,
+            is_auto_embedded=is_auto_embedded,
+        )
+
         response = await self.aclient.post(
             "/collection/{collection_create.name}",
             json=collection.dict(exclude_none=True),
@@ -87,15 +121,31 @@ class DocumentClient:
 
         return await self.aget_collection(collection.name)
 
-    def add_collection(self, collection: DocumentCollection) -> DocumentCollection:
+    def add_collection(
+        self,
+        name: str,
+        embedding_dimensions: int,
+        description: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        is_auto_embedded: bool = True,
+    ) -> DocumentCollection:
         """
         Creates a collection.
 
         Parameters
         ----------
-        collection : DocumentCollection
-            A DocumentCollection object representing the collection to be created. The
-            collection name and embedding_dimensions must be provided.
+        name : str
+            The name of the collection to be created.
+        description: str
+            The description of the collection to be created.
+        embedding_dimensions : int
+            The number of dimensions of the embeddings to use for documents
+            in this collection. This must match your model's embedding dimensions.
+        metadata : Optional[Dict[str, Any]], optional
+            A dictionary of metadata to be associated with the collection,
+            by default None.
+        is_auto_embedded : bool, optional
+            Whether the collection is automatically embedded, by default True.
 
         Returns
         -------
@@ -110,13 +160,17 @@ class DocumentClient:
             If the API key is invalid.
         """
 
-        validated_dict = DocumentCollection(
-            operation="create", **collection.dict(exclude_none=True)
-        ).dict(exclude_none=True)
+        collection = DocumentCollection(
+            name=name,
+            description=description,
+            embedding_dimensions=embedding_dimensions,
+            metadata=metadata,
+            is_auto_embedded=is_auto_embedded,
+        )
 
         response = self.client.post(
             "/collection/{collection_create.name}",
-            json=validated_dict,
+            json=collection.dict(exclude_none=True),
         )
 
         handle_response(response)
@@ -199,10 +253,22 @@ class DocumentClient:
         return DocumentCollection(**filtered_response)
 
     async def aupdate_collection(
-        self, collection: DocumentCollection
+        self,
+        name: str,
+        description: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> DocumentCollection:
         """
         Asynchronously updates a collection.
+
+        Parameters
+        ----------
+        name : str
+            Collection name.
+        description: Optional[str], optional
+            Collection description.
+        metadata : Optional[Dict[str, Any]], optional
+            A dictionary of metadata to be associated with the collection.
 
         Returns
         -------
@@ -219,8 +285,11 @@ class DocumentClient:
             If the API key is invalid.
         """
 
-        if collection.name is None or collection.name.strip() == "":
-            raise ValueError("collection name must be provided")
+        collection = DocumentCollection(
+            name=name,
+            description=description,
+            metadata=metadata,
+        )
 
         response = await self.aclient.patch(
             f"/collection/{collection.name}",
@@ -231,9 +300,23 @@ class DocumentClient:
 
         return await self.aget_collection(collection.name)
 
-    def update(self, collection: DocumentCollection) -> DocumentCollection:
+    def update(
+        self,
+        name: str,
+        description: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> DocumentCollection:
         """
         Updates a collection.
+
+        Parameters
+        ----------
+        name : str
+            Collection name.
+        description: Optional[str], optional
+            Collection description.
+        metadata : Optional[Dict[str, Any]], optional
+            A dictionary of metadata to be associated with the collection.
 
         Returns
         -------
@@ -250,8 +333,11 @@ class DocumentClient:
             If the API key is invalid.
         """
 
-        if collection.name is None or collection.name.strip() == "":
-            raise ValueError("collection name must be provided")
+        collection = DocumentCollection(
+            name=name,
+            description=description,
+            metadata=metadata,
+        )
 
         response = self.client.patch(
             f"/collection/{collection.name}",

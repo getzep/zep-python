@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional
-from uuid import UUID
 
-from pydantic import BaseModel, Field, root_validator, Extra
+from pydantic import BaseModel, Field, Extra
 
 
 class Document(BaseModel):
@@ -34,14 +33,14 @@ class Document(BaseModel):
         when the document is returned as part of a query result.
     """
 
-    uuid: UUID = Field(const=True)
+    uuid: str = Field(default=None)
     created_at: Optional[datetime] = Field(const=True)
     updated_at: Optional[datetime] = Field(const=True)
     document_id: Optional[str] = None
     content: str = Field(..., min_length=1)
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    is_embedded: bool = Field(const=True)
-    embedding: Optional[List[float]] = Field(const=True)
+    is_embedded: Optional[bool] = Field(default=None)
+    embedding: Optional[List[float]] = Field(default=None)
     dist: Optional[float] = Field(const=True)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -62,7 +61,7 @@ class DocumentCollectionModel(BaseModel):
 
     Attributes
     ----------
-    uuid : UUID
+    uuid : str
         The unique identifier of the collection.
     created_at : Optional[datetime]
         The timestamp of when the collection was created.

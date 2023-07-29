@@ -42,7 +42,7 @@ class DocumentCollection(DocumentCollectionModel):
 
         Returns
         -------
-        UUID
+        List[str]
             The UUIDs of the created documents.
 
         Raises
@@ -68,11 +68,9 @@ class DocumentCollection(DocumentCollectionModel):
 
         handle_response(response)
 
-        uuids = [UUID(uuid) for uuid in response.json()]
+        return response.json()
 
-        return uuids
-
-    def add_document(self, documents: List[Document]) -> List[UUID]:
+    def add_documents(self, documents: List[Document]) -> List[str]:
         if not self._client:
             raise ValueError(
                 "Can only add documents once a collection has been created"
@@ -90,9 +88,7 @@ class DocumentCollection(DocumentCollectionModel):
 
         handle_response(response)
 
-        uuids = [UUID(uuid) for uuid in response.json()]
-
-        return uuids
+        return response.json()
 
     async def aupdate_document(self, document: Document) -> None:
         """
