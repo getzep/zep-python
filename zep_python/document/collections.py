@@ -1,12 +1,13 @@
 import warnings
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 import httpx
+from pydantic import PrivateAttr
 
 from zep_python.exceptions import handle_response
 
-from .models import CollectionModel, Document
+from .models import DocumentCollectionModel, Document
 
 LARGE_BATCH_WARNING_LIMIT = 1000
 LARGE_BATCH_WARNING = (
@@ -15,49 +16,21 @@ LARGE_BATCH_WARNING = (
 )
 
 
-class Collection(CollectionModel):
-    __doc__ = CollectionModel.__doc__
+class DocumentCollection(DocumentCollectionModel):
+    __doc__ = DocumentCollectionModel.__doc__
 
-    aclient: httpx.AsyncClient
-    client: httpx.Client
+    _client: Optional[httpx.Client] = PrivateAttr(default=None)
+    _aclient: Optional[httpx.AsyncClient] = PrivateAttr(default=None)
 
-    # TODO: What should updates return?
-    async def aupdate(self) -> str:
-        """
-        Asynchronously update collection.
-
-        Returns
-        -------
-        str
-            The response text from the API.
-
-        Raises
-        ------
-        NotFoundError
-            If the collection is not found.
-
-        APIError
-            If the API response format is unexpected.
-        """
-
-        response = await self.aclient.patch(
-            f"/collection/{self.name}",
-            json=self.dict(exclude_none=True),
-        )
-
-        handle_response(response)
-
-        return response.text
-
-    def update(self) -> str:
-        response = self.client.patch(
-            f"/collection/{self.name}",
-            json=self.dict(exclude_none=True),
-        )
-
-        handle_response(response)
-
-        return response.text
+    def __init__(
+        self,
+        aclient: Optional[httpx.AsyncClient] = None,
+        client: Optional[httpx.Client] = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
+        self._aclient = aclient
+        self._client = client
 
     async def aadd_documents(self, documents: List[Document]) -> List[UUID]:
         """
@@ -78,12 +51,17 @@ class Collection(CollectionModel):
             If the API response format is unexpected.
         """
 
+        if not self._aclient:
+            raise ValueError(
+                "Can only add documents once a collection has been created"
+            )
+
         if documents is None:
             raise ValueError("document list must be provided")
 
         documents_dicts = [document.dict(exclude_none=True) for document in documents]
 
-        response = await self.aclient.post(
+        response = await self._aclient.post(
             f"/collection/{self.name}/document",
             json=documents_dicts,
         )
@@ -95,12 +73,17 @@ class Collection(CollectionModel):
         return uuids
 
     def add_document(self, documents: List[Document]) -> List[UUID]:
+        if not self._client:
+            raise ValueError(
+                "Can only add documents once a collection has been created"
+            )
+
         if documents is None:
             raise ValueError("document list must be provided")
 
         documents_dicts = [document.dict(exclude_none=True) for document in documents]
 
-        response = self.client.post(
+        response = self._client.post(
             f"/collection/{self.name}/document",
             json=documents_dicts,
         )
@@ -133,10 +116,16 @@ class Collection(CollectionModel):
         APIError
             If the API response format is unexpected.
         """
+        if not self._aclient:
+            raise ValueError(
+                "Can only update documents once a collection has been retrieved or"
+                " created"
+            )
+
         if document is None or document.uuid is None:
             raise ValueError("document uuid must be provided")
 
-        response = await self.aclient.patch(
+        response = await self._aclient.patch(
             f"/collection/{self.name}/document/uuid/{document.uuid}",
             json=document.dict(exclude_none=True),
         )
@@ -144,10 +133,16 @@ class Collection(CollectionModel):
         handle_response(response)
 
     def update_document(self, document: Document):
+        if not self._client:
+            raise ValueError(
+                "Can only update documents once a collection has been retrieved or"
+                " created"
+            )
+
         if document is None or document.uuid is None:
             raise ValueError("document uuid must be provided")
 
-        response = self.client.patch(
+        response = self._client.patch(
             f"/collection/{self.name}/document/uuid/{document.uuid}",
             json=document.dict(exclude_none=True),
         )
@@ -175,21 +170,30 @@ class Collection(CollectionModel):
         APIError
             If the API response format is unexpected.
         """
+        if not self._aclient:
+            raise ValueError(
+                "Can only delete a document once a collection has been retrieved"
+            )
 
         if document_uuid is None == "":
             raise ValueError("document uuid must be provided")
 
-        response = await self.aclient.delete(
+        response = await self._aclient.delete(
             f"/collection/{self.name}/document/uuid/{document_uuid}",
         )
 
         handle_response(response)
 
     def delete_document(self, document_uuid: UUID) -> None:
+        if not self._client:
+            raise ValueError(
+                "Can only delete a document once a collection has been retrieved"
+            )
+
         if document_uuid is None:
             raise ValueError("document uuid must be provided")
 
-        response = self.client.delete(
+        response = self._client.delete(
             f"/collection/{self.name}/document/uuid/{document_uuid}",
         )
 
@@ -217,11 +221,15 @@ class Collection(CollectionModel):
         APIError
             If the API response format is unexpected.
         """
+        if not self._aclient:
+            raise ValueError(
+                "Can only get a document once a collection has been retrieved"
+            )
 
         if document_uuid is None:
             raise ValueError("document uuid must be provided")
 
-        response = await self.aclient.get(
+        response = await self._aclient.get(
             f"/collection/{self.name}/document/uuid/{document_uuid}",
         )
 
@@ -230,10 +238,15 @@ class Collection(CollectionModel):
         return Document(**response.json())
 
     def get_document(self, document_uuid: UUID) -> Document:
+        if not self._client:
+            raise ValueError(
+                "Can only get a document once a collection has been retrieved"
+            )
+
         if document_uuid is None:
             raise ValueError("document uuid must be provided")
 
-        response = self.client.get(
+        response = self._client.get(
             f"/collection/{self.name}/document/uuid/{document_uuid}",
         )
 
@@ -260,6 +273,10 @@ class Collection(CollectionModel):
         APIError
             If the API response format is unexpected.
         """
+        if not self._aclient:
+            raise ValueError(
+                "Can only update documents once a collection has been retrieved"
+            )
 
         if documents is None:
             raise ValueError("document list must be provided")
@@ -269,7 +286,7 @@ class Collection(CollectionModel):
 
         documents_dicts = [document.dict(exclude_none=True) for document in documents]
 
-        response = await self.aclient.patch(
+        response = await self._aclient.patch(
             f"/collection/{self.name}/document/batchUpdate",
             json=documents_dicts,
         )
@@ -277,6 +294,11 @@ class Collection(CollectionModel):
         handle_response(response)
 
     def batch_update_documents(self, documents: List[Document]) -> None:
+        if not self._client:
+            raise ValueError(
+                "Can only update documents once a collection has been retrieved"
+            )
+
         if documents is None:
             raise ValueError("document list must be provided")
 
@@ -285,7 +307,7 @@ class Collection(CollectionModel):
 
         documents_dicts = [document.dict(exclude_none=True) for document in documents]
 
-        response = self.client.patch(
+        response = self._client.patch(
             f"/collection/{self.name}/document/batchUpdate",
             json=documents_dicts,
         )
@@ -310,13 +332,18 @@ class Collection(CollectionModel):
         APIError
             If the API response format is unexpected.
         """
+        if not self._aclient:
+            raise ValueError(
+                "Can only delete documents once a collection has been retrieved"
+            )
+
         if document_uuids is None:
             raise ValueError("document uuid list must be provided")
 
         if len(document_uuids) > LARGE_BATCH_WARNING_LIMIT:
             warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
 
-        response = await self.aclient.post(
+        response = await self._aclient.post(
             f"/collection/{self.name}/document/batchDelete",
             json=document_uuids,
         )
@@ -324,6 +351,11 @@ class Collection(CollectionModel):
         handle_response(response)
 
     def batch_delete_documents(self, document_uuids: List[UUID]) -> None:
+        if not self._client:
+            raise ValueError(
+                "Can only delete documents once a collection has been retrieved"
+            )
+
         if document_uuids is None:
             raise ValueError("document uuid list must be provided")
 
@@ -333,14 +365,13 @@ class Collection(CollectionModel):
         # Limit the number of documents fetched
         document_uuids = document_uuids[:LARGE_BATCH_WARNING_LIMIT]
 
-        response = self.client.post(
+        response = self._client.post(
             f"/collection/{self.name}/document/batchDelete",
             json=document_uuids,
         )
 
         handle_response(response)
 
-    # TODO: Fix this
     async def abatch_get_documents(
         self, document_ids: Dict[str, List[str]]
     ) -> List[Document]:
@@ -362,6 +393,10 @@ class Collection(CollectionModel):
         APIError
             If the API response format is unexpected.
         """
+        if not self._aclient:
+            raise ValueError(
+                "Can only get documents once a collection has been retrieved"
+            )
 
         if not document_ids:
             raise ValueError("document identifiers must be provided")
@@ -370,7 +405,7 @@ class Collection(CollectionModel):
             if len(identifiers) > LARGE_BATCH_WARNING_LIMIT:
                 warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
 
-        response = await self.aclient.post(
+        response = await self._aclient.post(
             f"/collection/{self.name}/document/batchGet",
             json=document_ids,
         )
@@ -380,6 +415,11 @@ class Collection(CollectionModel):
         return [Document(**document) for document in response.json()]
 
     def batch_get_documents(self, document_ids: Dict[str, List[str]]) -> List[Document]:
+        if not self._client:
+            raise ValueError(
+                "Can only get documents once a collection has been retrieved"
+            )
+
         if not document_ids:
             raise ValueError("document identifiers must be provided")
 
@@ -387,7 +427,7 @@ class Collection(CollectionModel):
             if len(identifiers) > LARGE_BATCH_WARNING_LIMIT:
                 warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
 
-        response = self.client.post(
+        response = self._client.post(
             f"/collection/{self.name}/document/batchGet",
             json=document_ids,
         )
@@ -412,8 +452,10 @@ class Collection(CollectionModel):
         APIError
             If the API response format is unexpected.
         """
+        if not self._client:
+            raise ValueError("Can only index a collection it has been retrieved")
 
-        response = self.client.post(
+        response = self._client.post(
             f"/api/v1/collection/{self.name}/index/create",
         )
 
@@ -446,11 +488,15 @@ class Collection(CollectionModel):
         APIError
             If the API response format is unexpected or there's an error from the API.
         """
+        if not self._aclient:
+            raise ValueError(
+                "Can only search documents once a collection has been retrieved"
+            )
 
         url = f"/api/v1/collection/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
 
-        response = await self.aclient.post(
+        response = await self._aclient.post(
             url,
             params=params,
             json={"text": search_text, "metadata": metadata},
@@ -487,11 +533,15 @@ class Collection(CollectionModel):
         APIError
             If the API response format is unexpected or there's an error from the API.
         """
+        if not self._client:
+            raise ValueError(
+                "Can only search documents once a collection has been retrieved"
+            )
 
         url = f"/api/v1/collection/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
 
-        response = self.client.post(
+        response = self._client.post(
             url,
             params=params,
             json={"text": search_text, "metadata": metadata},

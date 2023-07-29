@@ -19,7 +19,7 @@ async def main() -> None:
 
     async with ZepClient(base_url, api_key) as client:
         # Document operations
-        print(f"------Document operations:")
+        print("------Document operations:")
 
         # Create document collection
         collection_name = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -76,7 +76,7 @@ async def main() -> None:
             return
 
         # List document collections
-        print(f"\n.  Listing document collections")
+        print("\n.  Listing document collections")
         try:
             document_collections = await client.list_collections()
             if len(document_collections) == 0:
@@ -84,7 +84,7 @@ async def main() -> None:
             else:
                 print([collection.name for collection in document_collections])
         except APIError as e:
-            print(f"Unable to list document collections")
+            print("Unable to list document collections")
             print(e)
             return
 
@@ -108,7 +108,7 @@ async def main() -> None:
             doc_uuids = await client.add_document(collection_name, documents)
             print(doc_uuids)
         except APIError as e:
-            print(f"Unable to create document")
+            print("Unable to create document")
             print(e)
             return
 
@@ -120,10 +120,10 @@ async def main() -> None:
             document = await client.get_document(collection_name, document_uuid)
             print(document)
         except NotFoundError as e:
-            print(f"Unable to get document")
+            print("Unable to get document")
             print(e)
         except APIError as e:
-            print(f"Unable to get document")
+            print("Unable to get document")
             print(e)
             return
 
@@ -138,10 +138,10 @@ async def main() -> None:
             status = await client.update_document(collection_name, modified_document)
             print(status)
         except NotFoundError as e:
-            print(f"Unable to modify document")
+            print("Unable to modify document")
             print(e)
         except APIError as e:
-            print(f"Unable to modify document")
+            print("Unable to modify document")
             print(e)
             # return
 
@@ -153,10 +153,10 @@ async def main() -> None:
             document = await client.get_document(collection_name, document_uuid)
             print(document)
         except NotFoundError as e:
-            print(f"Unable to get document")
+            print("Unable to get document")
             print(e)
         except APIError as e:
-            print(f"Unable to get document")
+            print("Unable to get document")
             print(e)
             return
 
@@ -179,10 +179,10 @@ async def main() -> None:
             status = await client.batchupdate_documents(collection_name, documents)
             print(status)
         except NotFoundError as e:
-            print(f"Unable to modify documents")
+            print("Unable to modify documents")
             print(e)
         except APIError as e:
-            print(f"Unable to modify documents")
+            print("Unable to modify documents")
             print(e)
             # return
 
@@ -195,10 +195,10 @@ async def main() -> None:
             )
             print(documents)
         except NotFoundError as e:
-            print(f"Unable to get documents")
+            print("Unable to get documents")
             print(e)
         except APIError as e:
-            print(f"Unable to get documents")
+            print("Unable to get documents")
             print(e)
             return
 
@@ -211,10 +211,10 @@ async def main() -> None:
             )
             print(documents)
         except NotFoundError as e:
-            print(f"Unable to get documents")
+            print("Unable to get documents")
             print(e)
         except APIError as e:
-            print(f"Unable to get documents")
+            print("Unable to get documents")
             print(e)
             # return
 
@@ -225,10 +225,10 @@ async def main() -> None:
             status = await client.batchdelete_documents(collection_name, delete_uuids)
             print(status)
         except NotFoundError as e:
-            print(f"Unable to delete documents")
+            print("Unable to delete documents")
             print(e)
         except APIError as e:
-            print(f"Unable to delete documents")
+            print("Unable to delete documents")
             print(e)
             return
 
@@ -238,10 +238,10 @@ async def main() -> None:
             status = await client.delete_document(collection_name, document_uuid)
             print(status)
         except NotFoundError as e:
-            print(f"Unable to delete document")
+            print("Unable to delete document")
             print(e)
         except APIError as e:
-            print(f"Unable to delete document")
+            print("Unable to delete document")
             print(e)
             return
 

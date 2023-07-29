@@ -3,7 +3,7 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from tests.fixtures import API_BASE_URL, mock_healthcheck, undo_mock_healthcheck
+from tests.conftest import API_BASE_URL, mock_healthcheck, undo_mock_healthcheck
 from zep_python import APIError
 from zep_python.zep_client import ZepClient, concat_url
 

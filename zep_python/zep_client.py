@@ -81,6 +81,7 @@ class ZepClient:
         self._healthcheck(base_url)
 
         self.memory = MemoryClient(self.aclient, self.client)
+        self.document = DocumentClient(self.aclient, self.client)
 
     def _healthcheck(self, base_url: str) -> None:
         """
@@ -233,8 +234,10 @@ def concat_url(base_url: str, path: str) -> str:
 
 def deprecated_warning(func):
     warnings.warn(
-        f"{func.__name__} method from the base client path is deprecated, "
-        "please use the corresponding method from zep_python.memory instead",
+        (
+            f"{func.__name__} method from the base client path is deprecated, "
+            "please use the corresponding method from zep_python.memory instead"
+        ),
         DeprecationWarning,
         stacklevel=3,
     )

@@ -3,7 +3,14 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-API_BASE_URL = "http://localhost:8000/api/v1"
+from zep_python import ZepClient
+
+API_BASE_URL = "http://localhost:8000"
+
+
+@pytest.fixture
+def zep_client():
+    return ZepClient(base_url=API_BASE_URL)
 
 
 @pytest.fixture(autouse=True)

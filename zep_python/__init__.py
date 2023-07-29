@@ -6,8 +6,10 @@ from zep_python.zep_client import ZepClient
 
 def deprecated_import():
     warnings.warn(
-        "Importing memory classes from the base client path is deprecated, "
-        "please import from zep_python.memory instead.",
+        (
+            "Importing memory classes from the base client path is deprecated, "
+            "please import from zep_python.memory instead."
+        ),
         DeprecationWarning,
         stacklevel=2,
     )

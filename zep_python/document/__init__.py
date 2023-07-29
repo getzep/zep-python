@@ -1,6 +1,6 @@
-from zep_python.document.models import CollectionModel, Document
+from zep_python.document.models import DocumentCollectionModel, Document
 
 __all__ = [
     "Document",
-    "CollectionModel",
+    "DocumentCollectionModel",
 ]
