@@ -4,32 +4,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field, root_validator
-
-
-def create_root_validator(allowed_on_create, allowed_on_update):
-    @root_validator(pre=True, allow_reuse=True)
-    def check_fields(cls, values):
-        operation = values.get("operation")
-
-        if operation is None:
-            operation = "create"
-        else:
-            del values["operation"]
-
-        if operation == "create":
-            for field in values:
-                if field not in allowed_on_create:
-                    raise ValueError(f"{field} is not allowed for create operation")
-
-        elif operation == "update":
-            for field in values:
-                if field not in allowed_on_update:
-                    raise ValueError(f"{field} is not allowed for update operation")
-
-        return values
-
-    return check_fields
+from pydantic import BaseModel, Field, root_validator, Extra
 
 
 class Document(BaseModel):
@@ -68,11 +43,6 @@ class Document(BaseModel):
     is_embedded: bool = Field(const=True)
     embedding: Optional[List[float]] = Field(const=True)
     dist: Optional[float] = Field(const=True)
-
-    _ = create_root_validator(
-        allowed_on_create=["document_id", "content", "metadata", "embedding"],
-        allowed_on_update=["uuid", "document_id", "metadata"],
-    )
 
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -113,28 +83,25 @@ class DocumentCollectionModel(BaseModel):
         Flag indicating whether an index has been created for this collection.
     """
 
-    uuid: Optional[UUID] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-    name: str = Field(..., min_length=5, max_length=45, regex="^[a-zA-Z0-9_-]*$")
+    uuid: Optional[str] = Field(default=None)
+    created_at: Optional[datetime] = Field(const=True)
+    updated_at: Optional[datetime] = Field(const=True)
+    name: str = Field(
+        ...,
+        min_length=5,
+        max_length=45,
+        regex="^[a-zA-Z0-9_-]*$",
+    )
     description: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    embedding_dimensions: int
-    is_auto_embedded: Optional[bool] = True
-    is_indexed: Optional[bool] = None
-    document_count: Optional[int] = None
-    document_embedded_count: Optional[int] = None
+    embedding_dimensions: Optional[int] = Field(ge=1, le=2000)  # not required on update
+    is_auto_embedded: Optional[bool] = Field(const=True, default=True)
+    is_indexed: Optional[bool] = Field(const=True)
+    document_count: Optional[int] = Field(const=True)
+    document_embedded_count: Optional[int] = Field(const=True)
 
-    _ = create_root_validator(
-        allowed_on_create=[
-            "name",
-            "description",
-            "metadata",
-            "embedding_dimensions",
-            "is_auto_embedded",
-        ],
-        allowed_on_update=["uuid", "description", "metadata"],
-    )
+    class Config:
+        extra = Extra.forbid
 
     def to_dict(self) -> Dict[str, Any]:
         """

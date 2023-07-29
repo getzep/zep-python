@@ -78,13 +78,9 @@ class DocumentClient:
             If the API response format is unexpected, or if the server returns an error.
         """
 
-        validated_dict = DocumentCollection(
-            operation="create", **collection.dict(exclude_none=True)
-        ).dict(exclude_none=True)
-
         response = await self.aclient.post(
             "/collection/{collection_create.name}",
-            json=validated_dict,
+            json=collection.dict(exclude_none=True),
         )
 
         handle_response(response)
@@ -223,13 +219,12 @@ class DocumentClient:
             If the API key is invalid.
         """
 
-        validated_dict = DocumentCollection(
-            operation="update", **collection.dict(exclude_none=True)
-        ).dict(exclude_none=True)
+        if collection.name is None or collection.name.strip() == "":
+            raise ValueError("collection name must be provided")
 
         response = await self.aclient.patch(
             f"/collection/{collection.name}",
-            json=validated_dict,
+            json=collection.dict(exclude_none=True),
         )
 
         handle_response(response)
@@ -254,13 +249,13 @@ class DocumentClient:
         AuthError
             If the API key is invalid.
         """
-        validated_dict = DocumentCollection(
-            operation="update", **collection.dict(exclude_none=True)
-        ).dict(exclude_none=True)
+
+        if collection.name is None or collection.name.strip() == "":
+            raise ValueError("collection name must be provided")
 
         response = self.client.patch(
             f"/collection/{collection.name}",
-            json=validated_dict,
+            json=collection.dict(exclude_none=True),
         )
 
         handle_response(response)
