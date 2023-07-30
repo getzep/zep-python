@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 def filter_dict(d: Dict[Any, Any]) -> Dict[Any, Any]:

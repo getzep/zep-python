@@ -1,5 +1,5 @@
 from random import random
-from typing import Union, Optional
+from typing import Optional, Union
 from uuid import uuid4
 
 import httpx
@@ -10,10 +10,10 @@ from pytest_httpx import HTTPXMock
 from tests.conftest import API_BASE_URL
 from zep_python.document import Document
 from zep_python.document.collections import (
-    DocumentCollection,
     LARGE_BATCH_WARNING_LIMIT,
+    DocumentCollection,
 )
-from zep_python.exceptions import NotFoundError, APIError
+from zep_python.exceptions import APIError, NotFoundError
 from zep_python.zep_client import ZepClient
 
 validation_error_types = (ValidationError, ValueError)
@@ -543,7 +543,7 @@ def test_create_collection_index(zep_client: ZepClient, httpx_mock: HTTPXMock):
         status_code=200,
     )
 
-    mock_collection.create_collection_index()
+    mock_collection.create_index()
 
 
 @pytest.mark.asyncio
@@ -557,9 +557,7 @@ async def test_asearch_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
         json=[doc.dict() for doc in mock_documents],
     )
 
-    response = await mock_collection.asearch_documents(
-        "search_text", {"key": "value"}, 10
-    )
+    response = await mock_collection.asearch("search_text", {"key": "value"}, 10)
 
     assert response == mock_documents
 
@@ -574,7 +572,7 @@ def test_search_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
         json=[doc.dict() for doc in mock_documents],
     )
 
-    response = mock_collection.search_documents("search_text", {"key": "value"}, 10)
+    response = mock_collection.search("search_text", {"key": "value"}, 10)
 
     assert response == mock_documents
 
@@ -590,7 +588,7 @@ async def test_asearch_documents_no_limit(zep_client: ZepClient, httpx_mock: HTT
         json=[doc.dict() for doc in mock_documents],
     )
 
-    response = await mock_collection.asearch_documents(
+    response = await mock_collection.asearch(
         "search_text",
         {"key": "value"},
     )
@@ -611,7 +609,7 @@ async def test_asearch_documents_no_metadata(
         json=[doc.dict() for doc in mock_documents],
     )
 
-    response = await mock_collection.asearch_documents("search_text")
+    response = await mock_collection.asearch("search_text")
 
     assert response == mock_documents
 
@@ -623,7 +621,7 @@ async def test_asearch_documents_no_collection(
     mock_collection = generate_mock_collection(1, with_clients=False)
 
     with pytest.raises(ValueError):
-        await mock_collection.asearch_documents("search_text", {"key": "value"}, 10)
+        await mock_collection.asearch("search_text", {"key": "value"}, 10)
 
 
 @pytest.mark.asyncio
@@ -639,7 +637,7 @@ async def test_asearch_documents_api_error(
     )
 
     with pytest.raises(APIError):
-        await mock_collection.asearch_documents("search_text", {"key": "value"}, 10)
+        await mock_collection.asearch("search_text", {"key": "value"}, 10)
 
 
 def generate_mock_collection(

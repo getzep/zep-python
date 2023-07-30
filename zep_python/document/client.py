@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 import httpx
 
-from zep_python.utils import filter_dict
 from zep_python.exceptions import handle_response
+from zep_python.utils import filter_dict
+
 from .collections import DocumentCollection
 
 
@@ -213,7 +214,7 @@ class DocumentClient:
 
         filtered_response = filter_dict(response.json())
 
-        return DocumentCollection(**filtered_response)
+        return DocumentCollection(aclient=self.aclient, **filtered_response)
 
     def get_collection(self, name: str) -> DocumentCollection:
         """
@@ -250,7 +251,7 @@ class DocumentClient:
 
         filtered_response = filter_dict(response.json())
 
-        return DocumentCollection(**filtered_response)
+        return DocumentCollection(client=self.client, **filtered_response)
 
     async def aupdate_collection(
         self,
@@ -300,7 +301,7 @@ class DocumentClient:
 
         return await self.aget_collection(collection.name)
 
-    def update(
+    def update_collection(
         self,
         name: str,
         description: Optional[str] = None,
@@ -348,7 +349,6 @@ class DocumentClient:
 
         return self.get_collection(collection.name)
 
-    # Document Collection APIs : List the documetns in a document collection
     async def alist_collections(self) -> List[DocumentCollection]:
         """
         Asynchronously lists all collections.

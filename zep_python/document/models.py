@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, Extra
+from pydantic import BaseModel, Extra, Field
 
 
 class Document(BaseModel):
@@ -33,15 +33,15 @@ class Document(BaseModel):
         when the document is returned as part of a query result.
     """
 
-    uuid: Optional[str] = Field(default=None)
-    created_at: Optional[datetime] = Field(const=True)
-    updated_at: Optional[datetime] = Field(const=True)
-    document_id: Optional[str] = None
+    uuid: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    document_id: Optional[str] = Field(default=None, max_length=100)
     content: str = Field(..., min_length=1)
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    is_embedded: Optional[bool] = Field(default=None)
-    embedding: Optional[List[float]] = Field(default=None)
-    dist: Optional[float] = Field(const=True)
+    is_embedded: Optional[bool] = None
+    embedding: Optional[List[float]] = None
+    dist: Optional[float] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -82,22 +82,23 @@ class DocumentCollectionModel(BaseModel):
         Flag indicating whether an index has been created for this collection.
     """
 
-    uuid: Optional[str] = Field(default=None)
-    created_at: Optional[datetime] = Field(const=True)
-    updated_at: Optional[datetime] = Field(const=True)
+    uuid: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     name: str = Field(
         ...,
         min_length=5,
-        max_length=45,
+        max_length=40,
         regex="^[a-zA-Z0-9_-]*$",
     )
-    description: Optional[str] = None
+    description: Optional[str] = Field(default=None, max_length=1000)
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    embedding_dimensions: Optional[int] = Field(ge=1, le=2000)  # not required on update
-    is_auto_embedded: Optional[bool] = Field(const=True, default=True)
-    is_indexed: Optional[bool] = Field(const=True)
-    document_count: Optional[int] = Field(const=True)
-    document_embedded_count: Optional[int] = Field(const=True)
+    embedding_dimensions: Optional[int] = Field(ge=8, le=2000, default=None)
+    is_auto_embedded: Optional[bool] = True
+    is_indexed: Optional[bool] = None
+    document_count: Optional[int] = None
+    document_embedded_count: Optional[int] = None
+    is_normalized: Optional[bool] = None
 
     class Config:
         extra = Extra.forbid

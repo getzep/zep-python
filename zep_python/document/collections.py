@@ -5,12 +5,12 @@ from uuid import UUID
 import httpx
 from pydantic import PrivateAttr
 
+from zep_python.exceptions import handle_response
 from zep_python.utils import filter_dict
 
-from zep_python.exceptions import handle_response
+from .models import Document, DocumentCollectionModel
 
-from .models import DocumentCollectionModel, Document
-
+MIN_DOCS_TO_INDEX = 10_000
 LARGE_BATCH_WARNING_LIMIT = 1000
 LARGE_BATCH_WARNING = (
     f"Batch size is greater than {LARGE_BATCH_WARNING_LIMIT}. "
@@ -33,6 +33,28 @@ class DocumentCollection(DocumentCollectionModel):
         super().__init__(**kwargs)
         self._aclient = aclient
         self._client = client
+
+    @property
+    def status(self) -> str:
+        """
+        Get the status of the collection.
+
+        Returns
+        -------
+        str
+            The status of the collection.
+
+            `ready`: All documents have been embedded and the collection is ready for
+            search.
+
+            `pending`: The collection is still processing.
+        """
+        if self.document_count and (
+            self.document_embedded_count == self.document_count
+        ):
+            return "ready"
+        else:
+            return "pending"
 
     async def aadd_documents(self, documents: List[Document]) -> List[UUID]:
         """
@@ -316,7 +338,7 @@ class DocumentCollection(DocumentCollectionModel):
         return [Document(**document) for document in response.json()]
 
     def get_documents(self, uuids: List[str]) -> List[Document]:
-        if not self._aclient:
+        if not self._client:
             raise ValueError(
                 "Can only get documents once a collection has been retrieved"
             )
@@ -336,8 +358,9 @@ class DocumentCollection(DocumentCollectionModel):
 
         return [Document(**document) for document in response.json()]
 
-    def create_collection_index(
+    def create_index(
         self,
+        force: bool = None,
     ) -> None:
         """
         Creates an index for a DocumentCollection.
@@ -355,15 +378,25 @@ class DocumentCollection(DocumentCollectionModel):
         if not self._client:
             raise ValueError("Can only index a collection it has been retrieved")
 
+        if not force and (self.document_count <= MIN_DOCS_TO_INDEX):
+            raise ValueError(
+                f"Collection must have at least {MIN_DOCS_TO_INDEX} documents to be"
+                " indexed. Please see the Zep documentation on index best practices."
+                " Pass force=True to override."
+            )
+
+        params = filter_dict({"force": force})
+
         response = self._client.post(
-            f"/api/v1/collection/{self.name}/index/create",
+            f"/collection/{self.name}/index/create",
+            params=params,
         )
 
         handle_response(response)
 
-    async def asearch_documents(
+    async def asearch(
         self,
-        search_text: str,
+        text: str,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
     ) -> List[Document]:
@@ -372,7 +405,7 @@ class DocumentCollection(DocumentCollectionModel):
 
         Parameters
         ----------
-        search_text : str
+        text : str
             The search text.
         metadata : Optional[Dict[str, Any]], optional
             Document metadata to filter on.
@@ -382,12 +415,10 @@ class DocumentCollection(DocumentCollectionModel):
         Returns
         -------
         List[Document]
-            The response text from the API.
+            The list of documents that match the search criteria.
 
         Raises
         ------
-        NotFoundError
-            If the collection is not found.
         APIError
             If the API response format is unexpected or there's an error from the API.
         """
@@ -396,22 +427,28 @@ class DocumentCollection(DocumentCollectionModel):
                 "Can only search documents once a collection has been retrieved"
             )
 
-        url = f"/api/v1/collection/{self.name}/search"
+        url = f"/collection/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
 
         response = await self._aclient.post(
             url,
             params=params,
-            json={"text": search_text, "metadata": metadata},
+            json={"text": text, "metadata": metadata},
         )
 
+        # If the collection is not found, return an empty list
+        if response.status_code == 404:
+            return []
+
+        # Otherwise, handle the response for other errors
         handle_response(response)
 
-        return [Document(**document) for document in response.json()]
+        # if no error, return the list of documents
+        return [Document(**document) for document in response.json().get("results")]
 
-    def search_documents(
+    def search(
         self,
-        search_text: str,
+        text: str,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
     ) -> List[Document]:
@@ -420,7 +457,7 @@ class DocumentCollection(DocumentCollectionModel):
 
         Parameters
         ----------
-        search_text : str
+        text : str
             The search text.
         metadata : Optional[Dict[str, Any]], optional
             Document metadata to filter on.
@@ -430,12 +467,10 @@ class DocumentCollection(DocumentCollectionModel):
         Returns
         -------
         List[Document]
-            The response text from the API.
+            The list of documents that match the search criteria.
 
         Raises
         ------
-        NotFoundError
-            If the collection is not found.
         APIError
             If the API response format is unexpected or there's an error from the API.
         """
@@ -444,15 +479,21 @@ class DocumentCollection(DocumentCollectionModel):
                 "Can only search documents once a collection has been retrieved"
             )
 
-        url = f"/api/v1/collection/{self.name}/search"
+        url = f"/collection/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
 
         response = self._client.post(
             url,
             params=params,
-            json={"text": search_text, "metadata": metadata},
+            json={"text": text, "metadata": metadata},
         )
 
+        # If the collection is not found, return an empty list
+        if response.status_code == 404:
+            return []
+
+        # Otherwise, handle the response for other errors
         handle_response(response)
 
-        return [Document(**document) for document in response.json()]
+        # if no error, return the list of documents
+        return [Document(**document) for document in response.json().get("results")]
