@@ -17,7 +17,14 @@ def naive_split_text(text: str, max_chunk_size: int):
     """Naive text splitter chunks document into chunks of max_chunk_size,
     using paragraphs and sentences as guides."""
     chunks = []
+
+    # remove extraneous whitespace
+    text = " ".join(text.split())
+    # split into paragraphs
     paragraphs = text.split("\n\n")
+
+    # clean up paragraphs
+    paragraphs = [p.strip() for p in paragraphs if len(p.strip()) > 0]
 
     for paragraph in paragraphs:
         if 0 > len(paragraph) <= max_chunk_size:
@@ -53,12 +60,12 @@ def read_chunk_from_file(file: str, chunk_size: int):
 
 def print_results(results: List[Document]):
     for result in results:
-        print((result.dict()))
+        print(result.content, result.metadata, " -> ", result.dist, "\n")
 
 
 def main(file: str):
     zep_api_url = "http://localhost:8000"
-    max_chunk_size = 1500
+    max_chunk_size = 500
     collection_name = f"babbage{uuid4()}".replace("-", "")
 
     print(f"Creating collection {collection_name}")
@@ -124,7 +131,7 @@ def main(file: str):
     print_results(search_results)
 
     # retrieve a single document by uuid
-    document_to_retrieve = uuids[5]
+    document_to_retrieve = uuids[25]
     print(f"Retrieving document {document_to_retrieve}")
     retrieved_document = collection.get_document(document_to_retrieve)
     print(retrieved_document.dict())
@@ -140,26 +147,33 @@ def main(file: str):
     metadata_query = {
         "where": {"jsonpath": '$[*] ? (@.baz == "qux")'},
     }
-    search_results = collection.search(text=query, metadata=metadata_query, limit=5)
+    new_search_results = collection.search(text=query, metadata=metadata_query, limit=5)
     print(
-        f"Found {len(search_results)} documents matching query '{query}'"
+        f"Found {len(new_search_results)} documents matching query '{query}'"
         f" {metadata_query}"
     )
-    print_results(search_results)
+    print_results(new_search_results)
+
+    # Search by embedding
+    interesting_document = search_results[0]
+    print(f"Searching for documents similar to:\n{interesting_document.content}\n")
+    embedding_search_results = collection.search(
+        embedding=interesting_document.embedding, limit=5
+    )
+    print(f"Found {len(embedding_search_results)} documents matching embedding")
+    print("Most similar documents:")
+    print_results(embedding_search_results)
 
     # delete a document
     print(f"Deleting document {document_to_retrieve}")
     collection.delete_document(document_to_retrieve)
 
     # Get a list of documents in the collection by uuid
-    docs_to_get = uuids[20:30]
+    docs_to_get = uuids[40:50]
     print(f"Getting documents: {docs_to_get}")
     documents = collection.get_documents(docs_to_get)
     print(f"Got {len(documents)} documents")
     print_results(documents)
-
-    # collection_name = "babbage5d62c5bc7bd7440cbeda579795fa29b9"
-    # collection = client.document.get_collection(collection_name)
 
     # Index the collection
     # We wouldn't ordinarily do this until the collection is larger.
