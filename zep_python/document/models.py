@@ -33,7 +33,7 @@ class Document(BaseModel):
         when the document is returned as part of a query result.
     """
 
-    uuid: str = Field(default=None)
+    uuid: Optional[str] = Field(default=None)
     created_at: Optional[datetime] = Field(const=True)
     updated_at: Optional[datetime] = Field(const=True)
     document_id: Optional[str] = None

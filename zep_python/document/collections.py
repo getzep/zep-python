@@ -5,6 +5,8 @@ from uuid import UUID
 import httpx
 from pydantic import PrivateAttr
 
+from zep_python.utils import filter_dict
+
 from zep_python.exceptions import handle_response
 
 from .models import DocumentCollectionModel, Document
@@ -90,14 +92,23 @@ class DocumentCollection(DocumentCollectionModel):
 
         return response.json()
 
-    async def aupdate_document(self, document: Document) -> None:
+    async def aupdate_document(
+        self,
+        uuid: str,
+        description: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> None:
         """
         Asynchronously update document by UUID.
 
         Parameters
         ----------
-        document : Document
-            A Document object representing the document to be added or updated.
+        uuid : str
+            The UUID of the document to update.
+        description : Optional[str]
+            The description of the document.
+        metadata : Optional[Dict[str, Any]]
+            The metadata of the document.
 
         Returns
         -------
@@ -118,40 +129,55 @@ class DocumentCollection(DocumentCollectionModel):
                 " created"
             )
 
-        if document is None or document.uuid is None:
+        if uuid is None:
             raise ValueError("document uuid must be provided")
 
+        if description is None and metadata is None:
+            raise ValueError("description or metadata must be provided")
+
+        payload = filter_dict({"description": description, "metadata": metadata})
+
         response = await self._aclient.patch(
-            f"/collection/{self.name}/document/uuid/{document.uuid}",
-            json=document.dict(exclude_none=True),
+            f"/collection/{self.name}/document/uuid/{uuid}",
+            json=payload,
         )
 
         handle_response(response)
 
-    def update_document(self, document: Document):
+    def update_document(
+        self,
+        uuid: str,
+        description: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> None:
         if not self._client:
             raise ValueError(
                 "Can only update documents once a collection has been retrieved or"
                 " created"
             )
 
-        if document is None or document.uuid is None:
+        if uuid is None:
             raise ValueError("document uuid must be provided")
 
+        if description is None and metadata is None:
+            raise ValueError("description or metadata must be provided")
+
+        payload = filter_dict({"description": description, "metadata": metadata})
+
         response = self._client.patch(
-            f"/collection/{self.name}/document/uuid/{document.uuid}",
-            json=document.dict(exclude_none=True),
+            f"/collection/{self.name}/document/uuid/{uuid}",
+            json=payload,
         )
 
         handle_response(response)
 
-    async def adelete_document(self, document_uuid: UUID) -> None:
+    async def adelete_document(self, uuid: str) -> None:
         """
         Asynchronously delete document.
 
         Parameters
         ----------
-        document_uuid: UUID
+        uuid: str
             The uuid of the document to be deleted.
 
         Returns
@@ -171,37 +197,37 @@ class DocumentCollection(DocumentCollectionModel):
                 "Can only delete a document once a collection has been retrieved"
             )
 
-        if document_uuid is None == "":
+        if uuid is None or uuid.strip() == "":
             raise ValueError("document uuid must be provided")
 
         response = await self._aclient.delete(
-            f"/collection/{self.name}/document/uuid/{document_uuid}",
+            f"/collection/{self.name}/document/uuid/{uuid}",
         )
 
         handle_response(response)
 
-    def delete_document(self, document_uuid: UUID) -> None:
+    def delete_document(self, uuid: str) -> None:
         if not self._client:
             raise ValueError(
                 "Can only delete a document once a collection has been retrieved"
             )
 
-        if document_uuid is None:
+        if uuid is None or uuid.strip() == "":
             raise ValueError("document uuid must be provided")
 
         response = self._client.delete(
-            f"/collection/{self.name}/document/uuid/{document_uuid}",
+            f"/collection/{self.name}/document/uuid/{uuid}",
         )
 
         handle_response(response)
 
-    async def aget_document(self, document_uuid: UUID) -> Document:
+    async def aget_document(self, uuid: str) -> Document:
         """
         Asynchronously gets a document.
 
         Parameters
         ----------
-        document_uuid: UUID
+        uuid: str
             The name of the document to get.
 
         Returns
@@ -222,162 +248,42 @@ class DocumentCollection(DocumentCollectionModel):
                 "Can only get a document once a collection has been retrieved"
             )
 
-        if document_uuid is None:
+        if uuid is None or uuid.strip() == "":
             raise ValueError("document uuid must be provided")
 
         response = await self._aclient.get(
-            f"/collection/{self.name}/document/uuid/{document_uuid}",
+            f"/collection/{self.name}/document/uuid/{uuid}",
         )
 
         handle_response(response)
 
         return Document(**response.json())
 
-    def get_document(self, document_uuid: UUID) -> Document:
+    def get_document(self, uuid: str) -> Document:
         if not self._client:
             raise ValueError(
                 "Can only get a document once a collection has been retrieved"
             )
 
-        if document_uuid is None:
+        if uuid is None or uuid.strip() == "":
             raise ValueError("document uuid must be provided")
 
         response = self._client.get(
-            f"/collection/{self.name}/document/uuid/{document_uuid}",
+            f"/collection/{self.name}/document/uuid/{uuid}",
         )
 
         handle_response(response)
 
         return Document(**response.json())
 
-    async def abatch_update_documents(self, documents: List[Document]) -> None:
+    async def aget_documents(self, uuids: List[str]) -> List[Document]:
         """
-        Asynchronously batch update documents.
+        Asynchronously gets a list of documents.
 
         Parameters
         ----------
-        documents : List[Document]
-            A list of Document objects representing the documents to be added
-            or updated.
-
-        Returns
-        -------
-        None
-
-        Raises
-        ------
-        APIError
-            If the API response format is unexpected.
-        """
-        if not self._aclient:
-            raise ValueError(
-                "Can only update documents once a collection has been retrieved"
-            )
-
-        if documents is None:
-            raise ValueError("document list must be provided")
-
-        if len(documents) > LARGE_BATCH_WARNING_LIMIT:
-            warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
-
-        documents_dicts = [document.dict(exclude_none=True) for document in documents]
-
-        response = await self._aclient.patch(
-            f"/collection/{self.name}/document/batchUpdate",
-            json=documents_dicts,
-        )
-
-        handle_response(response)
-
-    def batch_update_documents(self, documents: List[Document]) -> None:
-        if not self._client:
-            raise ValueError(
-                "Can only update documents once a collection has been retrieved"
-            )
-
-        if documents is None:
-            raise ValueError("document list must be provided")
-
-        if len(documents) > LARGE_BATCH_WARNING_LIMIT:
-            warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
-
-        documents_dicts = [document.dict(exclude_none=True) for document in documents]
-
-        response = self._client.patch(
-            f"/collection/{self.name}/document/batchUpdate",
-            json=documents_dicts,
-        )
-
-        handle_response(response)
-
-    async def abatch_delete_documents(self, document_uuids: List[UUID]) -> None:
-        """
-        Asynchronously batch delete documents.
-
-        Parameters
-        ----------
-        document_uuids : List[UUID]
-            A list of document uuids to be deleted.
-
-        Returns
-        -------
-        None
-
-        Raises
-        ------
-        APIError
-            If the API response format is unexpected.
-        """
-        if not self._aclient:
-            raise ValueError(
-                "Can only delete documents once a collection has been retrieved"
-            )
-
-        if document_uuids is None:
-            raise ValueError("document uuid list must be provided")
-
-        if len(document_uuids) > LARGE_BATCH_WARNING_LIMIT:
-            warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
-
-        response = await self._aclient.post(
-            f"/collection/{self.name}/document/batchDelete",
-            json=document_uuids,
-        )
-
-        handle_response(response)
-
-    def batch_delete_documents(self, document_uuids: List[UUID]) -> None:
-        if not self._client:
-            raise ValueError(
-                "Can only delete documents once a collection has been retrieved"
-            )
-
-        if document_uuids is None:
-            raise ValueError("document uuid list must be provided")
-
-        if len(document_uuids) > LARGE_BATCH_WARNING_LIMIT:
-            warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
-
-        # Limit the number of documents fetched
-        document_uuids = document_uuids[:LARGE_BATCH_WARNING_LIMIT]
-
-        response = self._client.post(
-            f"/collection/{self.name}/document/batchDelete",
-            json=document_uuids,
-        )
-
-        handle_response(response)
-
-    async def abatch_get_documents(
-        self, document_ids: Dict[str, List[str]]
-    ) -> List[Document]:
-        """
-        Asynchronously batch gets documents.
-
-        Parameters
-        ----------
-        document_ids : Dict[str, List[str]]
-            A list of document identifiers to be retrieved.
+        uuids: List[str]
+            The list of document uuids to get.
 
         Returns
         -------
@@ -394,38 +300,36 @@ class DocumentCollection(DocumentCollectionModel):
                 "Can only get documents once a collection has been retrieved"
             )
 
-        if not document_ids:
-            raise ValueError("document identifiers must be provided")
+        if not uuids or len(uuids) == 0:
+            raise ValueError("document uuids must be provided")
 
-        for key, identifiers in document_ids.items():
-            if len(identifiers) > LARGE_BATCH_WARNING_LIMIT:
-                warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
+        if len(uuids) > LARGE_BATCH_WARNING_LIMIT:
+            warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
 
         response = await self._aclient.post(
-            f"/collection/{self.name}/document/batchGet",
-            json=document_ids,
+            f"/collection/{self.name}/document/list/get",
+            json={"uuids": uuids},
         )
 
         handle_response(response)
 
         return [Document(**document) for document in response.json()]
 
-    def batch_get_documents(self, document_ids: Dict[str, List[str]]) -> List[Document]:
-        if not self._client:
+    def get_documents(self, uuids: List[str]) -> List[Document]:
+        if not self._aclient:
             raise ValueError(
                 "Can only get documents once a collection has been retrieved"
             )
 
-        if not document_ids:
-            raise ValueError("document identifiers must be provided")
+        if not uuids or len(uuids) == 0:
+            raise ValueError("document uuids must be provided")
 
-        for key, identifiers in document_ids.items():
-            if len(identifiers) > LARGE_BATCH_WARNING_LIMIT:
-                warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
+        if len(uuids) > LARGE_BATCH_WARNING_LIMIT:
+            warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
 
         response = self._client.post(
-            f"/collection/{self.name}/document/batchGet",
-            json=document_ids,
+            f"/collection/{self.name}/document/list/get",
+            json={"uuids": uuids},
         )
 
         handle_response(response)

@@ -9,8 +9,11 @@ from pytest_httpx import HTTPXMock
 
 from tests.conftest import API_BASE_URL
 from zep_python.document import Document
-from zep_python.document.collections import DocumentCollection
-from zep_python.exceptions import NotFoundError
+from zep_python.document.collections import (
+    DocumentCollection,
+    LARGE_BATCH_WARNING_LIMIT,
+)
+from zep_python.exceptions import NotFoundError, APIError
 from zep_python.zep_client import ZepClient
 
 validation_error_types = (ValidationError, ValueError)
@@ -252,6 +255,295 @@ async def test_aadd_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
     )
 
     assert response == uuids
+
+
+def test_add_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_documents = [gen_mock_document("test_collection", 10) for _ in range(10)]
+
+    uuids = [d.uuid for d in mock_documents]
+
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json=uuids,
+    )
+
+    response = mock_collection.add_documents(
+        mock_documents,
+    )
+
+    assert response == uuids
+
+
+@pytest.mark.asyncio
+async def test_aupdate_document_valid(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="PATCH",
+        status_code=200,
+    )
+
+    await mock_collection.aupdate_document(
+        uuid=str(uuid4()),
+        description="test_document",
+        metadata={"name": "test_document"},
+    )
+
+
+@pytest.mark.asyncio
+async def test_aupdate_document_not_found(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="PATCH",
+        status_code=404,
+    )
+
+    with pytest.raises(NotFoundError):
+        await mock_collection.aupdate_document(
+            uuid=str(uuid4()),
+            description="test_document",
+            metadata={"name": "test_document"},
+        )
+
+
+def test_update_document_valid(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="PATCH",
+        status_code=200,
+    )
+
+    mock_collection.update_document(
+        uuid=str(uuid4()),
+        description="test_document",
+        metadata={"name": "test_document"},
+    )
+
+
+@pytest.mark.asyncio
+async def test_aupdate_document_invalid_uuid(
+    zep_client: ZepClient, httpx_mock: HTTPXMock
+):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="PATCH",
+        status_code=200,
+    )
+
+    with pytest.raises(ValueError):
+        await mock_collection.aupdate_document(
+            uuid=None,  # type: ignore
+            description="test_document",
+            metadata={"name": "test_document"},
+        )
+
+
+@pytest.mark.asyncio
+async def test_aupdate_document_nothing_to_update(
+    zep_client: ZepClient, httpx_mock: HTTPXMock
+):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="PATCH",
+        status_code=200,
+    )
+
+    with pytest.raises(ValueError):
+        await mock_collection.aupdate_document(uuid=str(uuid4()))
+
+
+@pytest.mark.asyncio
+async def test_adelete_document_valid(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="DELETE",
+        status_code=200,
+    )
+
+    await mock_collection.adelete_document(str(uuid4()))
+
+
+@pytest.mark.asyncio
+async def test_adelete_document_not_found(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="DELETE",
+        status_code=404,
+    )
+
+    with pytest.raises(NotFoundError):
+        await mock_collection.adelete_document(str(uuid4()))
+
+
+@pytest.mark.asyncio
+async def test_adelete_document_invalid_uuid(
+    zep_client: ZepClient,
+):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    with pytest.raises(ValueError):
+        await mock_collection.adelete_document(None)  # type: ignore
+
+
+def test_delete_document_valid(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="DELETE",
+        status_code=200,
+    )
+
+    mock_collection.delete_document(str(uuid4()))
+
+
+@pytest.mark.asyncio
+async def test_aget_document(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    mock_document = gen_mock_document("test_collection", 10)
+
+    httpx_mock.add_response(
+        method="GET",
+        status_code=200,
+        json=mock_document.dict(),
+    )
+
+    response = await mock_collection.aget_document(mock_document.uuid)
+
+    assert response == mock_document
+
+
+@pytest.mark.asyncio
+async def test_aget_document_not_found(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="GET",
+        status_code=404,
+    )
+
+    with pytest.raises(NotFoundError):
+        await mock_collection.aget_document(str(uuid4()))
+
+
+def test_get_document(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    mock_document = gen_mock_document("test_collection", 10)
+
+    httpx_mock.add_response(
+        method="GET",
+        status_code=200,
+        json=mock_document.dict(),
+    )
+
+    response = mock_collection.get_document(mock_document.uuid)
+
+    assert response == mock_document
+
+
+@pytest.mark.asyncio
+async def test_aget_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json=[doc.dict() for doc in mock_documents],
+    )
+
+    response = await mock_collection.aget_documents(
+        [doc.uuid for doc in mock_documents]
+    )
+
+    assert response == mock_documents
+
+
+def test_get_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json=[doc.dict() for doc in mock_documents],
+    )
+
+    response = mock_collection.get_documents([doc.uuid for doc in mock_documents])
+
+    assert response == mock_documents
+
+
+@pytest.mark.asyncio
+async def test_aget_documents_no_uuids(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    with pytest.raises(ValueError):
+        await mock_collection.aget_documents([])
+
+
+@pytest.mark.asyncio
+async def test_aget_documents_no_collection(
+    zep_client: ZepClient,
+):
+    mock_collection = generate_mock_collection(1, with_clients=False)
+
+    with pytest.raises(ValueError):
+        await mock_collection.aget_documents(["uuid"])
+
+
+@pytest.mark.asyncio
+async def test_aget_documents_large_batch(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [
+        gen_mock_document("test_collection", i)
+        for i in range(LARGE_BATCH_WARNING_LIMIT + 1)
+    ]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json=[doc.dict() for doc in mock_documents],
+    )
+
+    with pytest.warns(UserWarning):
+        await mock_collection.aget_documents([doc.uuid for doc in mock_documents])
+
+
+@pytest.mark.asyncio
+async def test_aget_documents_api_error(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=400,
+        json={"unexpected": "response"},
+    )
+
+    with pytest.raises(APIError):
+        await mock_collection.aget_documents([doc.uuid for doc in mock_documents])
+
+
+def test_create_collection_index(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+    )
+
+    mock_collection.create_collection_index()
 
 
 def generate_mock_collection(
