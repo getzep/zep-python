@@ -396,17 +396,23 @@ class DocumentCollection(DocumentCollectionModel):
 
     async def asearch(
         self,
-        text: str,
+        text: Optional[str] = None,
+        embedding: Optional[List[float]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
     ) -> List[Document]:
         """
         Async search over documents in a collection based on provided search criteria.
+        One of text, embedding, or metadata must be provided.
+
+        Returns an empty list if no documents are found.
 
         Parameters
         ----------
-        text : str
+        text : Optional[str], optional
             The search text.
+        embedding : Optional[List[float]], optional
+            The embedding vector to search for.
         metadata : Optional[Dict[str, Any]], optional
             Document metadata to filter on.
         limit : Optional[int], optional
@@ -422,10 +428,16 @@ class DocumentCollection(DocumentCollectionModel):
         APIError
             If the API response format is unexpected or there's an error from the API.
         """
-        if not self._aclient:
+        if not self._client:
             raise ValueError(
                 "Can only search documents once a collection has been retrieved"
             )
+
+        if text is None and embedding is None and metadata is None:
+            raise ValueError("One of text, embedding, or metadata must be provided.")
+
+        if text is not None and not isinstance(text, str):
+            raise ValueError("Text must be a string.")
 
         url = f"/collection/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
@@ -433,7 +445,7 @@ class DocumentCollection(DocumentCollectionModel):
         response = await self._aclient.post(
             url,
             params=params,
-            json={"text": text, "metadata": metadata},
+            json={"text": text, "embedding": embedding, "metadata": metadata},
         )
 
         # If the collection is not found, return an empty list
