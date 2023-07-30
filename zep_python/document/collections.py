@@ -362,7 +362,10 @@ class DocumentCollection(DocumentCollectionModel):
         handle_response(response)
 
     async def asearch_documents(
-        self, search_text: str, metadata: Dict[str, Any], limit: int
+        self,
+        search_text: str,
+        metadata: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = None,
     ) -> List[Document]:
         """
         Async search over documents in a collection based on provided search criteria.
@@ -371,9 +374,9 @@ class DocumentCollection(DocumentCollectionModel):
         ----------
         search_text : str
             The search text.
-        metadata : Dict[str, Any]
+        metadata : Optional[Dict[str, Any]], optional
             Document metadata to filter on.
-        limit : int, optional
+        limit : Optional[int], optional
             Limit the number of returned documents.
 
         Returns
@@ -407,7 +410,10 @@ class DocumentCollection(DocumentCollectionModel):
         return [Document(**document) for document in response.json()]
 
     def search_documents(
-        self, search_text: str, metadata: Dict[str, Any], limit: int
+        self,
+        search_text: str,
+        metadata: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = None,
     ) -> List[Document]:
         """
         Searches over documents in a collection based on provided search criteria.
@@ -416,9 +422,9 @@ class DocumentCollection(DocumentCollectionModel):
         ----------
         search_text : str
             The search text.
-        metadata : Dict[str, Any]
+        metadata : Optional[Dict[str, Any]], optional
             Document metadata to filter on.
-        limit : int, optional
+        limit : Optional[int], optional
             Limit the number of returned documents.
 
         Returns

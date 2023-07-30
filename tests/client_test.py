@@ -37,6 +37,7 @@ async def test_set_authorization_header(httpx_mock: HTTPXMock):
 
 @pytest.mark.usefixtures("undo_mock_healthcheck")
 def test_concat_url():
+    assert concat_url("https://server.com", "/v1/api") == "https://server.com/v1/api"
     assert (
         concat_url("https://server.com/zep", "/v1/api")
         == "https://server.com/zep/v1/api"

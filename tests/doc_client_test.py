@@ -546,6 +546,102 @@ def test_create_collection_index(zep_client: ZepClient, httpx_mock: HTTPXMock):
     mock_collection.create_collection_index()
 
 
+@pytest.mark.asyncio
+async def test_asearch_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json=[doc.dict() for doc in mock_documents],
+    )
+
+    response = await mock_collection.asearch_documents(
+        "search_text", {"key": "value"}, 10
+    )
+
+    assert response == mock_documents
+
+
+def test_search_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json=[doc.dict() for doc in mock_documents],
+    )
+
+    response = mock_collection.search_documents("search_text", {"key": "value"}, 10)
+
+    assert response == mock_documents
+
+
+@pytest.mark.asyncio
+async def test_asearch_documents_no_limit(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json=[doc.dict() for doc in mock_documents],
+    )
+
+    response = await mock_collection.asearch_documents(
+        "search_text",
+        {"key": "value"},
+    )
+
+    assert response == mock_documents
+
+
+@pytest.mark.asyncio
+async def test_asearch_documents_no_metadata(
+    zep_client: ZepClient, httpx_mock: HTTPXMock
+):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json=[doc.dict() for doc in mock_documents],
+    )
+
+    response = await mock_collection.asearch_documents("search_text")
+
+    assert response == mock_documents
+
+
+@pytest.mark.asyncio
+async def test_asearch_documents_no_collection(
+    zep_client: ZepClient, httpx_mock: HTTPXMock
+):
+    mock_collection = generate_mock_collection(1, with_clients=False)
+
+    with pytest.raises(ValueError):
+        await mock_collection.asearch_documents("search_text", {"key": "value"}, 10)
+
+
+@pytest.mark.asyncio
+async def test_asearch_documents_api_error(
+    zep_client: ZepClient, httpx_mock: HTTPXMock
+):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=400,
+        json={"unexpected": "response"},
+    )
+
+    with pytest.raises(APIError):
+        await mock_collection.asearch_documents("search_text", {"key": "value"}, 10)
+
+
 def generate_mock_collection(
     col_id: Union[int, str], with_clients: bool = False
 ) -> DocumentCollection:

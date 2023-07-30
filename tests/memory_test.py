@@ -346,3 +346,19 @@ async def test_aadd_session_missing_session(httpx_mock: HTTPXMock):
     async with ZepClient(base_url=API_BASE_URL) as client:
         with pytest.raises(ValueError):
             _ = await client.memory.aadd_session(session=None)  # type: ignore
+
+
+@pytest.mark.asyncio
+async def test_aget_session_warning(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    session = Session(**mock_session)
+
+    httpx_mock.add_response(
+        method="GET",
+        status_code=200,
+        json=session.dict(),
+    )
+
+    with pytest.warns(DeprecationWarning):
+        response = await zep_client.aget_session(session.session_id)
+
+    assert response == mock_session
