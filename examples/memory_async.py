@@ -1,7 +1,7 @@
 """ Example of using the Zep Python SDK asynchronously.
 
-    Note: Once a session is deleted, new messages cannot be added to it. The API will return
-    a 400 error if you try to add messages to a deleted session.
+    Note: Once a session is deleted, new messages cannot be added to it.
+    The API will return a 400 error if you try to add messages to a deleted session.
 """
 import asyncio
 import time
@@ -31,7 +31,7 @@ async def main() -> None:
         print(f"Creating session: {session_id}")
         try:
             session = Session(session_id=session_id, metadata={"foo": "bar"})
-            result = await client.aadd_session(session)
+            result = await client.memory.aadd_session(session)
             print(result)
         except NotFoundError as e:
             print(f"Unable to create session {session_id} got error: {e}")
@@ -43,7 +43,7 @@ async def main() -> None:
         try:
             # The new metadata values will be merged with the existing metadata
             session = Session(session_id=session_id, metadata={"bar": "foo"})
-            result = await client.aadd_session(session)
+            result = await client.memory.aadd_session(session)
             print(result)
         except NotFoundError as e:
             print(f"Unable to create session {session_id} got error: {e}")
@@ -53,14 +53,14 @@ async def main() -> None:
         # Get session
         print(f"Getting session: {session_id}")
         try:
-            session = await client.aget_session(session_id)
+            session = await client.memory.aget_session(session_id)
         except NotFoundError:
             print("Session not found")
 
         # Get Memory for session
         print(f"\n1---getMemory for Session: {session_id}")
         try:
-            memory = await client.aget_memory(session_id)
+            memory = await client.memory.aget_memory(session_id)
             for message in memory.messages:
                 print(message.to_dict())
         except NotFoundError:
@@ -71,7 +71,7 @@ async def main() -> None:
         messages = [Message(**m) for m in history]
         memory = Memory(messages=messages)
         try:
-            result = await client.aadd_memory(session_id, memory)
+            result = await client.memory.aadd_memory(session_id, memory)
             print(result)
         except NotFoundError as e:
             print(f"Unable to add memory to session {session_id}. Got error: {e}")
@@ -84,7 +84,7 @@ async def main() -> None:
         # Get Memory for session
         print(f"\n3---getMemory for Session: {session_id}")
         try:
-            memory = await client.aget_memory(session_id)
+            memory = await client.memory.aget_memory(session_id)
             for message in memory.messages:
                 print(message.to_dict())
         except NotFoundError:
@@ -99,7 +99,9 @@ async def main() -> None:
         )
         print(f"\n4---searchMemory for Query: '{search_payload}'")
         try:
-            search_results = await client.asearch_memory(session_id, search_payload)
+            search_results = await client.memory.asearch_memory(
+                session_id, search_payload
+            )
             for search_result in search_results:
                 message_content = search_result.message
                 print(message_content)
@@ -109,7 +111,7 @@ async def main() -> None:
         # Delete Memory for session
         print(f"\n5---deleteMemory for Session {session_id}")
         try:
-            result = await client.adelete_memory(session_id)
+            result = await client.memory.adelete_memory(session_id)
             print(result)
         except NotFoundError:
             print(f"Memory not found for Session {session_id}")
