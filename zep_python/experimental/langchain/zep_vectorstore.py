@@ -224,6 +224,7 @@ class ZepVectorStore(VectorStore):
         Args:
             query: input text
             k: Number of Documents to return. Defaults to 4.
+            metadata: Optional, metadata associated with the query
             **kwargs: kwargs to be passed to similarity search. Should include:
                 score_threshold: Optional, a floating point value between 0 to 1 to
                     filter the resulting set of retrieved docs
@@ -232,7 +233,15 @@ class ZepVectorStore(VectorStore):
             List of Tuples of (doc, similarity_score)
         """
 
-        results = self._collection.search(query, limit=k, metadata=metadata, **kwargs)
+        if self._embedding:
+            query_vector = self._embedding.embed_query(query)
+            results = self._collection.search(
+                embedding=query_vector, limit=k, metadata=metadata, **kwargs
+            )
+        else:
+            results = self._collection.search(
+                query, limit=k, metadata=metadata, **kwargs
+            )
 
         return [
             (
@@ -249,9 +258,15 @@ class ZepVectorStore(VectorStore):
         self, query: str, k: int = 4, metadata: Dict[str, any] = None, **kwargs: Any
     ) -> List[Tuple[Document, float]]:
         """Return docs most similar to query."""
-        results = await self._collection.asearch(
-            query, limit=k, metadata=metadata, **kwargs
-        )
+        if self._embedding:
+            query_vector = self._embedding.embed_query(query)
+            results = await self._collection.asearch(
+                embedding=query_vector, limit=k, metadata=metadata, **kwargs
+            )
+        else:
+            results = await self._collection.asearch(
+                query, limit=k, metadata=metadata, **kwargs
+            )
 
         return [
             (
@@ -366,9 +381,16 @@ class ZepVectorStore(VectorStore):
         Returns:
             List of Documents selected by maximal marginal relevance.
         """
-        results, query_vector = self._collection.search_return_query_vector(
-            query, limit=k, metadata=metadata, **kwargs
-        )
+
+        if self._embedding:
+            query_vector = self._embedding.embed_query(query)
+            results = self._collection.search(
+                embedding=query_vector, limit=k, metadata=metadata, **kwargs
+            )
+        else:
+            results, query_vector = self._collection.search_return_query_vector(
+                query, limit=k, metadata=metadata, **kwargs
+            )
 
         return self._max_marginal_relevance_selection(
             query_vector, results, k=k, lambda_mult=lambda_mult
@@ -385,9 +407,15 @@ class ZepVectorStore(VectorStore):
     ) -> List[Document]:
         """Return docs selected using the maximal marginal relevance."""
 
-        results, query_vector = await self._collection.asearch_return_query_vector(
-            query, limit=k, metadata=metadata, **kwargs
-        )
+        if self._embedding:
+            query_vector = self._embedding.embed_query(query)
+            results = await self._collection.asearch(
+                embedding=query_vector, limit=k, metadata=metadata, **kwargs
+            )
+        else:
+            results, query_vector = await self._collection.asearch_return_query_vector(
+                query, limit=k, metadata=metadata, **kwargs
+            )
 
         return self._max_marginal_relevance_selection(
             query_vector, results, k=k, lambda_mult=lambda_mult
