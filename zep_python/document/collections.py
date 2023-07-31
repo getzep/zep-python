@@ -6,6 +6,7 @@ from pydantic import PrivateAttr
 
 from zep_python.exceptions import handle_response
 from zep_python.utils import filter_dict
+
 from .models import Document, DocumentCollectionModel
 
 MIN_DOCS_TO_INDEX = 10_000
