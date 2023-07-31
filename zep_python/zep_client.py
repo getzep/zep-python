@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Type
 from urllib.parse import urljoin
 
 import httpx
+from packaging.version import Version
 
 from zep_python.document.client import DocumentClient
 from zep_python.exceptions import APIError
@@ -19,6 +20,8 @@ from zep_python.memory.models import (
 
 API_BASE_PATH = "/api/v1"
 API_TIMEOUT = 10
+
+MINIMUM_SERVER_VERSION = "0.9.0pre0"
 
 
 class ZepClient:
@@ -85,7 +88,8 @@ class ZepClient:
 
     def _healthcheck(self, base_url: str) -> None:
         """
-        Check that the Zep server is running and the API URL is correct.
+        Check that the Zep server is running, the API URL is correct,
+        and that the server version is compatible with this client.
 
         Raises
         ------
@@ -105,6 +109,23 @@ class ZepClient:
             response = httpx.get(url)
             if response.status_code != 200 or response.text != ".":
                 raise APIError(response, error_msg)
+
+            zep_server_version_str = response.headers.get("X-Zep-Version")
+            if zep_server_version_str:
+                zep_server_version = Version(zep_server_version_str.split("-")[0])
+            else:
+                zep_server_version = Version("0.0.0")
+
+            if zep_server_version < Version(MINIMUM_SERVER_VERSION):
+                warnings.warn(
+                    (
+                        f"Zep server version less than {MINIMUM_SERVER_VERSION} does"
+                        " not support the document vector store features of this"
+                        f" client. Please update to {MINIMUM_SERVER_VERSION} or newer."
+                    ),
+                    Warning,
+                    stacklevel=2,
+                )
         except (httpx.ConnectError, httpx.NetworkError, httpx.TimeoutException) as e:
             raise APIError(None, error_msg) from e
 
