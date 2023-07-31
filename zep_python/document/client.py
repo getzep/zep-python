@@ -115,7 +115,7 @@ class DocumentClient:
         )
 
         response = await self.aclient.post(
-            "/collection/{collection_create.name}",
+            f"/collection/{name}",
             json=collection.dict(exclude_none=True),
         )
 
@@ -171,7 +171,7 @@ class DocumentClient:
         )
 
         response = self.client.post(
-            "/collection/{collection_create.name}",
+            f"/collection/{name}",
             json=collection.dict(exclude_none=True),
         )
 

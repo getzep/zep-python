@@ -42,11 +42,14 @@ validation_error_types = (ValidationError, ValueError)
         ),
     ],
 )
-async def test_add_collection_valid(
+async def test_aadd_collection_valid(
     name: str, collection_data: dict, httpx_mock: HTTPXMock, zep_client
 ):
     # mock call to aadd_collection
-    httpx_mock.add_response(method="POST", status_code=200)
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+    )
     # mock call to aget_collection inside aadd_collection
     httpx_mock.add_response(method="GET", status_code=200, json=collection_data)
 
@@ -543,7 +546,7 @@ def test_create_collection_index(zep_client: ZepClient, httpx_mock: HTTPXMock):
         status_code=200,
     )
 
-    mock_collection.create_index()
+    mock_collection.create_index(force=True)
 
 
 @pytest.mark.asyncio
@@ -554,10 +557,34 @@ async def test_asearch_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json=[doc.dict() for doc in mock_documents],
+        json={"results": [doc.dict() for doc in mock_documents]},
     )
 
-    response = await mock_collection.asearch("search_text", {"key": "value"}, 10)
+    response = await mock_collection.asearch(
+        "search_text", metadata={"key": "value"}, limit=10
+    )
+
+    assert response == mock_documents
+
+
+@pytest.mark.asyncio
+async def test_asearch_documents_embedding(
+    zep_client: ZepClient, httpx_mock: HTTPXMock
+):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    embedding = [random() for _ in range(384)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json={"results": [doc.dict() for doc in mock_documents]},
+    )
+
+    response = await mock_collection.asearch(
+        embedding=embedding, metadata={"key": "value"}, limit=10
+    )
 
     assert response == mock_documents
 
@@ -569,10 +596,12 @@ def test_search_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json=[doc.dict() for doc in mock_documents],
+        json={"results": [doc.dict() for doc in mock_documents]},
     )
 
-    response = mock_collection.search("search_text", {"key": "value"}, 10)
+    response = mock_collection.search(
+        "search_text", metadata={"key": "value"}, limit=10
+    )
 
     assert response == mock_documents
 
@@ -585,12 +614,12 @@ async def test_asearch_documents_no_limit(zep_client: ZepClient, httpx_mock: HTT
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json=[doc.dict() for doc in mock_documents],
+        json={"results": [doc.dict() for doc in mock_documents]},
     )
 
     response = await mock_collection.asearch(
         "search_text",
-        {"key": "value"},
+        metadata={"key": "value"},
     )
 
     assert response == mock_documents
@@ -606,7 +635,7 @@ async def test_asearch_documents_no_metadata(
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json=[doc.dict() for doc in mock_documents],
+        json={"results": [doc.dict() for doc in mock_documents]},
     )
 
     response = await mock_collection.asearch("search_text")
