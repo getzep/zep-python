@@ -1,13 +1,11 @@
 import warnings
-from typing import Any, Dict, List, Optional
-from uuid import UUID
+from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
 from pydantic import PrivateAttr
 
 from zep_python.exceptions import handle_response
 from zep_python.utils import filter_dict
-
 from .models import Document, DocumentCollectionModel
 
 MIN_DOCS_TO_INDEX = 10_000
@@ -56,7 +54,7 @@ class DocumentCollection(DocumentCollectionModel):
         else:
             return "pending"
 
-    async def aadd_documents(self, documents: List[Document]) -> List[UUID]:
+    async def aadd_documents(self, documents: List[Document]) -> List[str]:
         """
         Asynchronously create documents.
 
@@ -494,6 +492,45 @@ class DocumentCollection(DocumentCollectionModel):
 
         handle_response(response)
 
+    async def asearch_return_query_vector(
+        self,
+        text: Optional[str] = None,
+        embedding: Optional[List[float]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = None,
+    ) -> Tuple[List[Document], List[float]]:
+        if not self._client:
+            raise ValueError(
+                "Can only search documents once a collection has been retrieved"
+            )
+
+        if text is None and embedding is None and metadata is None:
+            raise ValueError("One of text, embedding, or metadata must be provided.")
+
+        if text is not None and not isinstance(text, str):
+            raise ValueError("Text must be a string.")
+
+        url = f"/collection/{self.name}/search"
+        params = {"limit": limit} if limit is not None and limit > 0 else {}
+
+        response = await self._aclient.post(
+            url,
+            params=params,
+            json={"text": text, "embedding": embedding, "metadata": metadata},
+        )
+
+        # If the collection is not found, return an empty list
+        if response.status_code == 404:
+            return [], []
+
+        # Otherwise, handle the response for other errors
+        handle_response(response)
+
+        return (
+            [Document(**document) for document in response.json()["results"]],
+            response.json()["query_vector"],
+        )
+
     async def asearch(
         self,
         text: Optional[str] = None,
@@ -528,6 +565,19 @@ class DocumentCollection(DocumentCollectionModel):
         APIError
             If the API response format is unexpected or there's an error from the API.
         """
+        results, _ = await self.asearch_return_query_vector(
+            text=text, embedding=embedding, metadata=metadata, limit=limit
+        )
+
+        return results
+
+    def search_return_query_vector(
+        self,
+        text: Optional[str] = None,
+        embedding: Optional[List[float]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = None,
+    ) -> Tuple[List[Document], List[float]]:
         if not self._client:
             raise ValueError(
                 "Can only search documents once a collection has been retrieved"
@@ -542,7 +592,7 @@ class DocumentCollection(DocumentCollectionModel):
         url = f"/collection/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
 
-        response = await self._aclient.post(
+        response = self._client.post(
             url,
             params=params,
             json={"text": text, "embedding": embedding, "metadata": metadata},
@@ -550,13 +600,15 @@ class DocumentCollection(DocumentCollectionModel):
 
         # If the collection is not found, return an empty list
         if response.status_code == 404:
-            return []
+            return [], []
 
         # Otherwise, handle the response for other errors
         handle_response(response)
 
-        # if no error, return the list of documents
-        return [Document(**document) for document in response.json().get("results")]
+        return (
+            [Document(**document) for document in response.json()["results"]],
+            response.json()["query_vector"],
+        )
 
     def search(
         self,
@@ -592,32 +644,8 @@ class DocumentCollection(DocumentCollectionModel):
         APIError
             If the API response format is unexpected or there's an error from the API.
         """
-        if not self._client:
-            raise ValueError(
-                "Can only search documents once a collection has been retrieved"
-            )
-
-        if text is None and embedding is None and metadata is None:
-            raise ValueError("One of text, embedding, or metadata must be provided.")
-
-        if text is not None and not isinstance(text, str):
-            raise ValueError("Text must be a string.")
-
-        url = f"/collection/{self.name}/search"
-        params = {"limit": limit} if limit is not None and limit > 0 else {}
-
-        response = self._client.post(
-            url,
-            params=params,
-            json={"text": text, "embedding": embedding, "metadata": metadata},
+        results, _ = self.search_return_query_vector(
+            text=text, embedding=embedding, metadata=metadata, limit=limit
         )
 
-        # If the collection is not found, return an empty list
-        if response.status_code == 404:
-            return []
-
-        # Otherwise, handle the response for other errors
-        handle_response(response)
-
-        # if no error, return the list of documents
-        return [Document(**document) for document in response.json().get("results")]
+        return results

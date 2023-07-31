@@ -557,7 +557,10 @@ async def test_asearch_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json={"results": [doc.dict() for doc in mock_documents]},
+        json={
+            "results": [doc.dict() for doc in mock_documents],
+            "query_vector": [random() for _ in range(384)],
+        },
     )
 
     response = await mock_collection.asearch(
@@ -579,7 +582,10 @@ async def test_asearch_documents_embedding(
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json={"results": [doc.dict() for doc in mock_documents]},
+        json={
+            "results": [doc.dict() for doc in mock_documents],
+            "query_vector": [random() for _ in range(384)],
+        },
     )
 
     response = await mock_collection.asearch(
@@ -596,7 +602,10 @@ def test_search_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json={"results": [doc.dict() for doc in mock_documents]},
+        json={
+            "results": [doc.dict() for doc in mock_documents],
+            "query_vector": [random() for _ in range(384)],
+        },
     )
 
     response = mock_collection.search(
@@ -614,7 +623,10 @@ async def test_asearch_documents_no_limit(zep_client: ZepClient, httpx_mock: HTT
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json={"results": [doc.dict() for doc in mock_documents]},
+        json={
+            "results": [doc.dict() for doc in mock_documents],
+            "query_vector": [random() for _ in range(384)],
+        },
     )
 
     response = await mock_collection.asearch(
@@ -635,7 +647,10 @@ async def test_asearch_documents_no_metadata(
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json={"results": [doc.dict() for doc in mock_documents]},
+        json={
+            "results": [doc.dict() for doc in mock_documents],
+            "query_vector": [random() for _ in range(384)],
+        },
     )
 
     response = await mock_collection.asearch("search_text")
