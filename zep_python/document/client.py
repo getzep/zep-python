@@ -22,21 +22,22 @@ class DocumentClient:
         aadd_collection(name: str, embedding_dimensions: int,
                         description: Optional[str] = "",
                         metadata: Optional[Dict[str, Any]] = None,
-                        is_auto_embedded: bool = True) -> str:
+                        is_auto_embedded: bool = True) -> DocumentCollection:
             Asynchronously creates a collection.
 
         add_collection(name: str, embedding_dimensions: int,
                        description: Optional[str] = "",
                        metadata: Optional[Dict[str, Any]] = None,
-                       is_auto_embedded: bool = True) -> str:
+                       is_auto_embedded: bool = True) -> DocumentCollection:
             Synchronously creates a collection.
 
         aupdate_collection(name: str, description: Optional[str] = "",
-                           metadata: Optional[Dict[str, Any]] = None) -> str:
+                           metadata: Optional[Dict[str, Any]] = None
+                           ) -> DocumentCollection:
             Asynchronously updates a collection.
 
         update(name: str, description: Optional[str] = "",
-               metadata: Optional[Dict[str, Any]] = None) -> str:
+               metadata: Optional[Dict[str, Any]] = None) -> DocumentCollection:
             Synchronously updates a collection.
 
         adelete_collection(collection_name: str) -> str:

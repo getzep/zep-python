@@ -61,7 +61,7 @@ class DocumentCollection(DocumentCollectionModel):
         Asynchronously create documents.
 
 
-        documents : List[DocumentModel]
+        documents : List[Document]
             A list of Document objects representing the documents to be create.
 
         Returns
@@ -95,6 +95,23 @@ class DocumentCollection(DocumentCollectionModel):
         return response.json()
 
     def add_documents(self, documents: List[Document]) -> List[str]:
+        """
+        Create documents.
+
+
+        documents : List[Document]
+            A list of Document objects representing the documents to be create.
+
+        Returns
+        -------
+        List[str]
+            The UUIDs of the created documents.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
         if not self._client:
             raise ValueError(
                 "Can only add documents once a collection has been created"
@@ -134,8 +151,7 @@ class DocumentCollection(DocumentCollectionModel):
 
         Returns
         -------
-        str
-            The response text from the API.
+        None
 
         Raises
         ------
@@ -172,6 +188,30 @@ class DocumentCollection(DocumentCollectionModel):
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
+        """
+        Update document by UUID.
+
+        Parameters
+        ----------
+        uuid : str
+            The UUID of the document to update.
+        description : Optional[str]
+            The description of the document.
+        metadata : Optional[Dict[str, Any]]
+            The metadata of the document.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        NotFoundError
+            If the document is not found.
+
+        APIError
+            If the API response format is unexpected.
+        """
         if not self._client:
             raise ValueError(
                 "Can only update documents once a collection has been retrieved or"
@@ -229,6 +269,26 @@ class DocumentCollection(DocumentCollectionModel):
         handle_response(response)
 
     def delete_document(self, uuid: str) -> None:
+        """
+        Delete document.
+
+        Parameters
+        ----------
+        uuid: str
+            The uuid of the document to be deleted.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        NotFoundError
+            If the document is not found.
+
+        APIError
+            If the API response format is unexpected.
+        """
         if not self._client:
             raise ValueError(
                 "Can only delete a document once a collection has been retrieved"
@@ -282,6 +342,27 @@ class DocumentCollection(DocumentCollectionModel):
         return Document(**response.json())
 
     def get_document(self, uuid: str) -> Document:
+        """
+        Gets a document.
+
+        Parameters
+        ----------
+        uuid: str
+            The name of the document to get.
+
+        Returns
+        -------
+        Document
+            The retrieved document.
+
+        Raises
+        ------
+        NotFoundError
+            If the document is not found.
+
+        APIError
+            If the API response format is unexpected.
+        """
         if not self._client:
             raise ValueError(
                 "Can only get a document once a collection has been retrieved"
@@ -338,6 +419,24 @@ class DocumentCollection(DocumentCollectionModel):
         return [Document(**document) for document in response.json()]
 
     def get_documents(self, uuids: List[str]) -> List[Document]:
+        """
+        Gets a list of documents.
+
+        Parameters
+        ----------
+        uuids: List[str]
+            The list of document uuids to get.
+
+        Returns
+        -------
+        List[Document]
+            The list of document objects.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
         if not self._client:
             raise ValueError(
                 "Can only get documents once a collection has been retrieved"
@@ -365,10 +464,11 @@ class DocumentCollection(DocumentCollectionModel):
         """
         Creates an index for a DocumentCollection.
 
-
-        Returns
-        -------
-        None
+        Parameters
+        ----------
+        force : bool, optional
+            If True, forces the creation of the index even if the number of documents
+            is less than then minimum recommended for indexing. Defaults to False.
 
         Raises
         ------

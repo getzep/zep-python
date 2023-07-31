@@ -1,5 +1,4 @@
 """ Using Zep as a vector database. A simple sync example. """
-import json
 import time
 from typing import List
 from uuid import uuid4
