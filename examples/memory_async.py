@@ -53,7 +53,7 @@ async def main() -> None:
         # Get session
         print(f"Getting session: {session_id}")
         try:
-            session = await client.memory.aget_session(session_id)
+            _ = await client.memory.aget_session(session_id)
         except NotFoundError:
             print("Session not found")
 

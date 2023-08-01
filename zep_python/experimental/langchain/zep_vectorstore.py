@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import warnings
-from abc import abstractmethod
 from typing import (
     Any,
     Dict,
@@ -16,7 +15,7 @@ import numpy as np
 from langchain.docstore.document import Document
 from langchain.embeddings.base import Embeddings
 from langchain.vectorstores.base import VectorStore
-from langchain.vectorstores.utils import maximal_marginal_relevance
+from langchain.vectorstores.utils import maximal_marginal_relevance  # type: ignore
 
 from zep_python.document import Document as ZepDocument
 from zep_python.document import DocumentCollection
@@ -25,20 +24,20 @@ from zep_python.document import DocumentCollection
 class ZepVectorStore(VectorStore):
     def __init__(
         self,
-        collection: DocumentCollection = None,
+        collection: DocumentCollection,
         texts: Optional[List[str]] = None,
         metadata: Optional[List[Dict[str, Any]]] = None,
         embedding: Optional[Embeddings] = None,
         **kwargs: Any,
     ) -> None:
-        if not isinstance(collection, DocumentCollection):
+        if not isinstance(collection, DocumentCollection):  # type: ignore
             raise ValueError(
                 "collection should be an instance of a Zep DocumentCollection"
             )
 
         self._collection: Optional[DocumentCollection] = collection
-        self._texts: List[str] = texts
-        self._embedding: Embeddings = embedding
+        self._texts: Optional[List[str]] = texts
+        self._embedding: Optional[Embeddings] = embedding
 
         if self._texts is not None:
             self.add_texts(self._texts, metadatas=metadata, **kwargs)
@@ -46,10 +45,14 @@ class ZepVectorStore(VectorStore):
     def _generate_documents_to_add(
         self,
         texts: Iterable[str],
-        metadatas: Optional[List[dict]] = None,
+        metadatas: Optional[List[Dict[Any, Any]]] = None,
         document_ids: Optional[List[str]] = None,
     ):
-        if self._collection.is_auto_embedded and self._embedding is not None:
+        if (
+            self._collection
+            and self._collection.is_auto_embedded
+            and self._embedding is not None
+        ):
             warnings.warn(
                 """The collection is set to auto-embed and an embedding 
             function is present. Ignoring the embedding function.""",
@@ -59,9 +62,11 @@ class ZepVectorStore(VectorStore):
 
         embeddings = None
         if self._embedding is not None:
-            embeddings = self._embedding.embed_documents(texts)
+            embeddings = self._embedding.embed_documents(list(texts))
 
-            if self._collection.embedding_dimensions != len(embeddings[0]):
+            if self._collection and self._collection.embedding_dimensions != len(
+                embeddings[0]
+            ):
                 raise ValueError(
                     "The embedding dimensions of the collection and the embedding"
                     " function do not match. Collection dimensions:"
@@ -84,7 +89,7 @@ class ZepVectorStore(VectorStore):
     def add_texts(
         self,
         texts: Iterable[str],
-        metadatas: Optional[List[dict]] = None,
+        metadatas: Optional[List[Dict[str, Any]]] = None,
         document_ids: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> List[str]:
@@ -100,6 +105,11 @@ class ZepVectorStore(VectorStore):
             List of ids from adding the texts into the vectorstore.
         """
 
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
+
         documents = self._generate_documents_to_add(texts, metadatas, document_ids)
         uuids = self._collection.add_documents(documents)
 
@@ -108,11 +118,15 @@ class ZepVectorStore(VectorStore):
     async def aadd_texts(
         self,
         texts: Iterable[str],
-        metadatas: Optional[List[dict]] = None,
+        metadatas: Optional[List[Dict[str, Any]]] = None,
         document_ids: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> List[str]:
         """Run more texts through the embeddings and add to the vectorstore."""
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
 
         documents = self._generate_documents_to_add(texts, metadatas, document_ids)
         uuids = await self._collection.aadd_documents(documents)
@@ -123,14 +137,14 @@ class ZepVectorStore(VectorStore):
         """Run more documents through the embeddings and add to the vectorstore.
 
         Args:
-            documents (List[Document]: Documents to add to the vectorstore.
+            documents List[Document]: Documents to add to the vectorstore.
 
         Returns:
             List[str]: List of UUIDs of the added texts.
         """
         texts = [doc.page_content for doc in documents]
-        metadatas = [doc.metadata for doc in documents]
-        return self.add_texts(texts, metadatas, **kwargs)
+        metadatas = [doc.metadata for doc in documents]  # type: ignore
+        return self.add_texts(texts, metadatas, **kwargs)  # type: ignore
 
     async def aadd_documents(
         self, documents: List[Document], **kwargs: Any
@@ -138,20 +152,20 @@ class ZepVectorStore(VectorStore):
         """Run more documents through the embeddings and add to the vectorstore.
 
         Args:
-            documents (List[Document]: Documents to add to the vectorstore.
+            documents List[Document]: Documents to add to the vectorstore.
 
         Returns:
             List[str]: List of UUIDs of the added texts.
         """
         texts = [doc.page_content for doc in documents]
-        metadatas = [doc.metadata for doc in documents]
-        return await self.aadd_texts(texts, metadatas, **kwargs)
+        metadatas = [doc.metadata for doc in documents]  # type: ignore
+        return await self.aadd_texts(texts, metadatas, **kwargs)  # type: ignore
 
     def search(
         self,
         query: str,
         search_type: str,
-        metadata: Dict[str, Any] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         k: int = 4,
         **kwargs: Any,
     ) -> List[Document]:
@@ -172,7 +186,7 @@ class ZepVectorStore(VectorStore):
         self,
         query: str,
         search_type: str,
-        metadata: Dict[str, Any] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         k: int = 5,
         **kwargs: Any,
     ) -> List[Document]:
@@ -190,7 +204,11 @@ class ZepVectorStore(VectorStore):
             )
 
     def similarity_search(
-        self, query: str, k: int = 4, metadata: Dict[str, Any] = None, **kwargs: Any
+        self,
+        query: str,
+        k: int = 4,
+        metadata: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> List[Document]:
         """Return docs most similar to query."""
 
@@ -199,21 +217,26 @@ class ZepVectorStore(VectorStore):
         )
         return [doc for doc, _ in results]
 
-    def similarity_search_with_score(
-        self, query: str, k: int = 4, metadata: Dict[str, Any] = None, **kwargs: Any
-    ) -> List[Tuple[Document, float]]:
-        """Run similarity search with distance."""
-        raise self._similarity_search_with_relevance_scores(
-            query, k, metadata=metadata, **kwargs
-        )
-
-    def _similarity_search_with_relevance_scores(
+    def similarity_search_with_score(  # type: ignore
         self,
         query: str,
         k: int = 4,
-        metadata: Dict[str, Any] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        *args: Any,
         **kwargs: Any,
-    ) -> List[Tuple[Document, float]]:
+    ) -> List[Tuple[Document, Optional[float]]]:
+        """Run similarity search with distance."""
+        return self._similarity_search_with_relevance_scores(
+            query, k, metadata=metadata, **kwargs
+        )
+
+    def _similarity_search_with_relevance_scores(  # type: ignore
+        self,
+        query: str,
+        k: int = 4,
+        metadata: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> List[Tuple[Document, Optional[float]]]:
         """
         Default similarity search with relevance scores. Modify if necessary
         in subclass.
@@ -224,15 +247,20 @@ class ZepVectorStore(VectorStore):
         Args:
             query: input text
             k: Number of Documents to return. Defaults to 4.
-            metadata: Optional, metadata associated with the query
+            metadata: Optional, metadata filter
             **kwargs: kwargs to be passed to similarity search. Should include:
-                score_threshold: Optional, a floating point value between 0 to 1 to
+                score_threshold: Optional, a floating point value between 0 to 1 and
                     filter the resulting set of retrieved docs
 
         Returns:
             List of Tuples of (doc, similarity_score)
         """
 
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
+
         if self._embedding:
             query_vector = self._embedding.embed_query(query)
             results = self._collection.search(
@@ -247,17 +275,27 @@ class ZepVectorStore(VectorStore):
             (
                 Document(
                     page_content=doc.content,
-                    metadata=doc.metadata,
+                    metadata=doc.metadata,  # type: ignore
                 ),
-                doc.dist,
+                doc.score,
             )
             for doc in results
         ]
 
-    async def asimilarity_search_with_relevance_scores(
-        self, query: str, k: int = 4, metadata: Dict[str, any] = None, **kwargs: Any
-    ) -> List[Tuple[Document, float]]:
+    async def asimilarity_search_with_relevance_scores(  # type: ignore
+        self,
+        query: str,
+        k: int = 4,
+        metadata: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> List[Tuple[Document, Optional[float]]]:
         """Return docs most similar to query."""
+
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
+
         if self._embedding:
             query_vector = self._embedding.embed_query(query)
             results = await self._collection.asearch(
@@ -272,15 +310,19 @@ class ZepVectorStore(VectorStore):
             (
                 Document(
                     page_content=doc.content,
-                    metadata=doc.metadata,
+                    metadata=doc.metadata,  # type: ignore
                 ),
-                doc.dist,
+                doc.score,
             )
             for doc in results
         ]
 
     async def asimilarity_search(
-        self, query: str, k: int = 4, metadata: Dict[str, any] = None, **kwargs: Any
+        self,
+        query: str,
+        k: int = 4,
+        metadata: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> List[Document]:
         """Return docs most similar to query."""
 
@@ -294,7 +336,7 @@ class ZepVectorStore(VectorStore):
         self,
         embedding: List[float],
         k: int = 4,
-        metadata: Dict[str, any] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> List[Document]:
         """Return docs most similar to embedding vector.
@@ -302,10 +344,16 @@ class ZepVectorStore(VectorStore):
         Args:
             embedding: Embedding to look up documents similar to.
             k: Number of Documents to return. Defaults to 4.
+            metadata: Optional, metadata filter
 
         Returns:
             List of Documents most similar to the query vector.
         """
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
+
         results = self._collection.search(
             embedding=embedding, limit=k, metadata=metadata, **kwargs
         )
@@ -313,7 +361,7 @@ class ZepVectorStore(VectorStore):
         return [
             Document(
                 page_content=doc.content,
-                metadata=doc.metadata,
+                metadata=doc.metadata,  # type: ignore
             )
             for doc in results
         ]
@@ -322,10 +370,14 @@ class ZepVectorStore(VectorStore):
         self,
         embedding: List[float],
         k: int = 4,
-        metadata: Dict[str, any] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> List[Document]:
         """Return docs most similar to embedding vector."""
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
 
         results = self._collection.search(
             embedding=embedding, limit=k, metadata=metadata, **kwargs
@@ -334,7 +386,7 @@ class ZepVectorStore(VectorStore):
         return [
             Document(
                 page_content=doc.content,
-                metadata=doc.metadata,
+                metadata=doc.metadata,  # type: ignore
             )
             for doc in results
         ]
@@ -353,7 +405,10 @@ class ZepVectorStore(VectorStore):
             lambda_mult=lambda_mult,
         )
         selected = [results[i] for i in mmr_selected]
-        return [Document(page_content=d.content, metadata=d.metadata) for d in selected]
+        return [
+            Document(page_content=d.content, metadata=d.metadata)  # type: ignore
+            for d in selected
+        ]
 
     def max_marginal_relevance_search(
         self,
@@ -361,7 +416,7 @@ class ZepVectorStore(VectorStore):
         k: int = 4,
         fetch_k: int = 20,
         lambda_mult: float = 0.5,
-        metadata: Dict[str, Any] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> List[Document]:
         """Return docs selected using the maximal marginal relevance.
@@ -381,6 +436,11 @@ class ZepVectorStore(VectorStore):
         Returns:
             List of Documents selected by maximal marginal relevance.
         """
+
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
 
         if self._embedding:
             query_vector = self._embedding.embed_query(query)
@@ -402,10 +462,15 @@ class ZepVectorStore(VectorStore):
         k: int = 4,
         fetch_k: int = 20,
         lambda_mult: float = 0.5,
-        metadata: Dict[str, Any] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> List[Document]:
         """Return docs selected using the maximal marginal relevance."""
+
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
 
         if self._embedding:
             query_vector = self._embedding.embed_query(query)
@@ -427,7 +492,7 @@ class ZepVectorStore(VectorStore):
         k: int = 4,
         fetch_k: int = 20,
         lambda_mult: float = 0.5,
-        metadata: Dict[str, Any] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> List[Document]:
         """Return docs selected using the maximal marginal relevance.
@@ -447,6 +512,11 @@ class ZepVectorStore(VectorStore):
         Returns:
             List of Documents selected by maximal marginal relevance.
         """
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
+
         results = self._collection.search(
             embedding=embedding, limit=k, metadata=metadata, **kwargs
         )
@@ -461,10 +531,15 @@ class ZepVectorStore(VectorStore):
         k: int = 4,
         fetch_k: int = 20,
         lambda_mult: float = 0.5,
-        metadata: Dict[str, Any] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> List[Document]:
         """Return docs selected using the maximal marginal relevance."""
+        if not isinstance(self._collection, DocumentCollection):
+            raise ValueError(
+                "collection should be an instance of a Zep DocumentCollection"
+            )
+
         results = await self._collection.asearch(
             embedding=embedding, limit=k, metadata=metadata, **kwargs
         )
@@ -474,23 +549,26 @@ class ZepVectorStore(VectorStore):
         )
 
     @classmethod
-    def from_texts(
+    def from_texts(  # type: ignore
         cls: Type[ZepVectorStore],
         texts: List[str],
+        collection: DocumentCollection,
         embedding: Optional[Embeddings] = None,
-        metadatas: Optional[List[dict]] = None,
-        collection: DocumentCollection = None,
+        metadatas: Optional[List[Dict[str, Any]]] = None,
         **kwargs: Any,
     ) -> ZepVectorStore:
         """Return VectorStore initialized from texts and embeddings."""
-
-        return cls(collection=collection, texts=texts, embedding=embedding)
+        return cls(
+            collection=collection, texts=texts, embedding=embedding, metadata=metadatas
+        )
 
     @property
-    def embeddings(self) -> Embeddings:
+    def embeddings(self) -> Optional[Embeddings]:
         return self._embedding
 
-    def delete(self, uuids: Optional[List[str]] = None, **kwargs: Any) -> None:
+    def delete(  # type: ignore
+        self, uuids: Optional[List[str]] = None, **kwargs: Any
+    ) -> None:
         """Delete by Zep vector UUIDs.
 
         Parameters

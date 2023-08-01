@@ -1,7 +1,7 @@
 """ Example of using the Zep Python SDK.
 
-    Note: Once a session is deleted, new messages cannot be added to it. The API will return
-    a 400 error if you try to add messages to a deleted session.
+    Note: Once a session is deleted, new messages cannot be added to it.
+    The API will return a 400 error if you try to add messages to a deleted session.
 """
 import time
 import uuid

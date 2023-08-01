@@ -61,7 +61,7 @@ class DocumentCollection(DocumentCollectionModel):
 
 
         documents : List[Document]
-            A list of Document objects representing the documents to be create.
+            A list of Document objects representing the documents to create.
 
         Returns
         -------
@@ -99,7 +99,7 @@ class DocumentCollection(DocumentCollectionModel):
 
 
         documents : List[Document]
-            A list of Document objects representing the documents to be create.
+            A list of Document objects representing the documents to create.
 
         Returns
         -------
@@ -458,7 +458,7 @@ class DocumentCollection(DocumentCollectionModel):
 
     def create_index(
         self,
-        force: bool = None,
+        force: bool = False,
     ) -> None:
         """
         Creates an index for a DocumentCollection.
@@ -477,7 +477,11 @@ class DocumentCollection(DocumentCollectionModel):
         if not self._client:
             raise ValueError("Can only index a collection it has been retrieved")
 
-        if not force and (self.document_count <= MIN_DOCS_TO_INDEX):
+        if (
+            not force
+            and self.document_count
+            and (self.document_count <= MIN_DOCS_TO_INDEX)
+        ):
             raise ValueError(
                 f"Collection must have at least {MIN_DOCS_TO_INDEX} documents to be"
                 " indexed. Please see the Zep documentation on index best practices."
@@ -500,7 +504,7 @@ class DocumentCollection(DocumentCollectionModel):
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
     ) -> Tuple[List[Document], List[float]]:
-        if not self._client:
+        if not self._aclient:
             raise ValueError(
                 "Can only search documents once a collection has been retrieved"
             )

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from types import TracebackType
-from typing import Dict, List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Type
 from urllib.parse import urljoin
 
 import httpx
@@ -253,7 +253,7 @@ def concat_url(base_url: str, path: str) -> str:
     return urljoin(base_url + "/", path.lstrip("/"))
 
 
-def deprecated_warning(func):
+def deprecated_warning(func: Callable[..., Any]) -> Callable[..., Any]:
     warnings.warn(
         (
             f"{func.__name__} method from the base client path is deprecated, "

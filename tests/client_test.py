@@ -11,7 +11,7 @@ _ = mock_healthcheck, undo_mock_healthcheck
 
 
 @pytest.mark.usefixtures("undo_mock_healthcheck")
-def test_client_connect_healthcheck_fail(httpx_mock: HTTPXMock):
+def test_client_connect_healthcheck_fail():
     with pytest.raises(APIError):
         ZepClient(base_url=API_BASE_URL)
 
