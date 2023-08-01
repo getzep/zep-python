@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from faker import Faker
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
-from langchain.docstore.base import Document
 from langchain.memory import ZepMemory
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 

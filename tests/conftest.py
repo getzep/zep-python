@@ -1,5 +1,3 @@
-# mypy: ignore-errors
-
 import pytest
 from pytest_httpx import HTTPXMock
 

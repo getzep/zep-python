@@ -59,7 +59,7 @@ def read_chunk_from_file(file: str, chunk_size: int):
 
 def print_results(results: List[Document]):
     for result in results:
-        print(result.content, result.metadata, " -> ", result.dist, "\n")
+        print(result.content, result.metadata, " -> ", result.score, "\n")
 
 
 def main(file: str):

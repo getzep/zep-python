@@ -7,7 +7,7 @@ from llama_index.readers.schema.base import Document
 
 
 class ZepReader(BaseReader):
-    """Zep reader.
+    """Zep document vector store reader.
 
     Args:
         api_url (str): Zep API URL

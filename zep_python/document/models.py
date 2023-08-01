@@ -28,8 +28,8 @@ class Document(BaseModel):
         Whether the document has an embedding.
     embedding : Optional[List[float]]
         The embedding of the document.
-    dist : Optional[float]
-        The distance of the document from the query document. Available only
+    score : Optional[float]
+        The normed score of the search result. Available only
         when the document is returned as part of a query result.
     """
 
@@ -41,7 +41,7 @@ class Document(BaseModel):
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     is_embedded: Optional[bool] = None
     embedding: Optional[List[float]] = None
-    dist: Optional[float] = None
+    score: Optional[float] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """
