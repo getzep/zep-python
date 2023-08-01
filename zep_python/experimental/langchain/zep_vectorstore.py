@@ -13,11 +13,11 @@ from typing import (
 )
 
 import numpy as np
-
 from langchain.docstore.document import Document
 from langchain.embeddings.base import Embeddings
 from langchain.vectorstores.base import VectorStore
 from langchain.vectorstores.utils import maximal_marginal_relevance
+
 from zep_python.document import Document as ZepDocument
 from zep_python.document import DocumentCollection
 

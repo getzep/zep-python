@@ -1,5 +1,4 @@
 import time
-from typing import List
 from uuid import uuid4
 
 from llama_index.node_parser import SimpleNodeParser
