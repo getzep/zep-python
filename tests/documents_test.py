@@ -323,7 +323,7 @@ def test_update_document_valid(zep_client: ZepClient, httpx_mock: HTTPXMock):
 
     mock_collection.update_document(
         uuid=str(uuid4()),
-        description="test_document",
+        document_id="document_id2",
         metadata={"name": "test_document"},
     )
 

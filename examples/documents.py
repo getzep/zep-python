@@ -139,6 +139,7 @@ def main(file: str):
     print(f"Updating document {document_to_retrieve} metadata")
     collection.update_document(
         document_to_retrieve,
+        document_id="new_document_id",
         metadata={"foo": "bar", "baz": "qux"},
     )
 
