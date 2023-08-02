@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "zep-python"
-version = "0.34"
+version = "1.0b0"
 description = "Zep stores, manages, enriches, indexes, and searches long-term memory for conversational AI applications. This is the Python client for the Zep service."
 authors = ["Daniel Chalef <daniel.chalef@private.org>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.9.0,<4"
 httpx = "^0.24.0"
 pydantic = "^1.10.7"
 
@@ -25,8 +25,18 @@ mypy = "^1.2.0"
 pre-commit = "^3.3.1"
 mkdocs = "^1.4.3"
 mkdocstrings = {version = "0.21.2", extras = ["python"]}
-python-dotenv = "^1.0.0"
 mkdocs-material = "^9.1.13"
+pytest-httpx = "^0.22.0"
+faker = "^19.2.0"
+python-dotenv = "^1.0.0"
+
+
+[tool.poetry.group.experimental.dependencies]
+langchain = "^0.0.247"
+numpy = "^1.25.1"
+openai = "^0.27.8"
+tiktoken = "^0.4.0"
+llama-index = "^0.7.16"
 
 [build-system]
 requires = ["poetry-core"]

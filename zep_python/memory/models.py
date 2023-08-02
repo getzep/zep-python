@@ -30,10 +30,10 @@ class Session(BaseModel):
         The metadata associated with the session.
     """
 
-    uuid: Optional[str]
-    created_at: Optional[str]
-    updated_at: Optional[str]
-    deleted_at: Optional[str]
+    uuid: Optional[str] = None
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+    deleted_at: Optional[str] = None
     session_id: str
     metadata: Dict[str, Any]
 
