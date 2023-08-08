@@ -53,11 +53,11 @@ markdown_extensions:
 
 nav:
   - Home: /
-  - Python Client: zep_client.md
+  - Python Client: /zep_client/zep_client.md
   - Memory:
-      - API: memory.md
-      - Models: models_memoru.md
+      - API: /zep_client/memory.md
+      - Models: /zep_client/models_memoru.md
   - Documents:
-      - API: documents.md
-      - Models: models_document.md
-  - Exceptions: exceptions.md
+      - API: /zep_client/documents.md
+      - Models: /zep_client/models_document.md
+  - Exceptions: /zep_client/exceptions.md
