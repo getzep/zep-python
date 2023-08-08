@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "zep-python"
-version = "1.0b0"
+version = "1.0"
 description = "Zep stores, manages, enriches, indexes, and searches long-term memory for conversational AI applications. This is the Python client for the Zep service."
 authors = ["Daniel Chalef <daniel.chalef@private.org>"]
 readme = "README.md"
