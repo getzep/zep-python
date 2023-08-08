@@ -16,14 +16,14 @@ theme:
   palette:
     # Palette toggle for light mode
     - scheme: default
-      primary: teal
+      primary: deep purple
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
 
     # Palette toggle for dark mode
     - scheme: slate
-      primary: teal
+      primary: deep purple
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
@@ -53,7 +53,11 @@ markdown_extensions:
 
 nav:
   - Home: /
-  - Python Client: /zep-python/zep_client
-  - Models: /zep-python/models
-  - Exceptions: /zep-python/exceptions
-  - Langchain ❤️: /sdk/langchain/
+  - Python Client: zep_client.md
+  - Memory:
+      - API: memory.md
+      - Models: models_memoru.md
+  - Documents:
+      - API: documents.md
+      - Models: models_document.md
+  - Exceptions: exceptions.md
