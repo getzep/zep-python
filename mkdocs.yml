@@ -52,12 +52,12 @@ markdown_extensions:
       emoji_generator: !!python/name:materialx.emoji.to_svg
 
 nav:
-  - Home: /
-  - Python Client: /zep_client/zep_client.md
+  - Home: /zep_client/
+  - Python Client: /zep_client/zep_client
   - Memory:
-      - API: /zep_client/memory.md
-      - Models: /zep_client/models_memoru.md
+      - API: /zep_client/memory
+      - Models: /zep_client/models_memoru
   - Documents:
-      - API: /zep_client/documents.md
-      - Models: /zep_client/models_document.md
-  - Exceptions: /zep_client/exceptions.md
+      - API: /zep_client/documents
+      - Models: /zep_client/models_document
+  - Exceptions: /zep_client/exceptions
