@@ -18,7 +18,7 @@ LARGE_BATCH_WARNING = (
 
 
 class DocumentCollection(DocumentCollectionModel):
-    __doc__ = DocumentCollectionModel.__doc__
+    __doc__ = DocumentCollectionModel.__doc__ or ""
 
     _client: Optional[httpx.Client] = PrivateAttr(default=None)
     _aclient: Optional[httpx.AsyncClient] = PrivateAttr(default=None)
