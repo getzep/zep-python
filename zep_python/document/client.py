@@ -215,7 +215,9 @@ class DocumentClient:
 
         filtered_response = filter_dict(response.json())
 
-        return DocumentCollection(aclient=self.aclient, **filtered_response)
+        return DocumentCollection(
+            client=self.client, aclient=self.aclient, **filtered_response
+        )
 
     def get_collection(self, name: str) -> DocumentCollection:
         """
@@ -252,7 +254,9 @@ class DocumentClient:
 
         filtered_response = filter_dict(response.json())
 
-        return DocumentCollection(client=self.client, **filtered_response)
+        return DocumentCollection(
+            client=self.client, aclient=self.aclient, **filtered_response
+        )
 
     async def aupdate_collection(
         self,
