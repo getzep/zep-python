@@ -8,7 +8,7 @@ on:
       - 'pyproject.toml'
 
 env:
-  POETRY_VERSION: "1.4.2"
+  POETRY_VERSION: "1.6.1"
 
 jobs:
   if_release:
