@@ -1,8 +1,15 @@
 import warnings
-from typing import Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 import httpx
-from pydantic import PrivateAttr
+
+if TYPE_CHECKING:
+    from pydantic import PrivateAttr
+else:
+    try:
+        from pydantic.v1 import PrivateAttr
+    except ImportError:
+        from pydantic import PrivateAttr
 
 from zep_python.exceptions import handle_response
 from zep_python.utils import filter_dict

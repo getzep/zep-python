@@ -1,9 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from pydantic import BaseModel, Extra, Field
+if TYPE_CHECKING:
+    from pydantic import BaseModel, Extra, Field
+else:
+    try:
+        from pydantic.v1 import BaseModel, Extra, Field
+    except ImportError:
+        from pydantic import BaseModel, Extra, Field
 
 
 class Document(BaseModel):
