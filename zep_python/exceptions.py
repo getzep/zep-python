@@ -98,5 +98,5 @@ def handle_response(
     if response.status_code == 401:
         raise AuthError(response)
 
-    if 200 <= response.status_code <= 299:
+    if not (200 <= response.status_code <= 299):
         raise APIError(response)

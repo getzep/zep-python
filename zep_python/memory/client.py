@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
 
 import httpx
 
-from zep_python.exceptions import APIError, handle_response
+from zep_python.exceptions import APIError, NotFoundError, handle_response
 from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
@@ -273,6 +273,162 @@ class MemoryClient:
         handle_response(response, f"Failed to add session {session.session_id}")
 
         return response.text
+
+    # Memory APIs : Get a List of Sessions
+    def list_sessions(
+        self, limit: Optional[int] = None, cursor: Optional[int] = None
+    ) -> List[Session]:
+        """
+        Retrieve a list of all sessions.
+
+        Parameters
+        ----------
+        limit : Optional[int]
+            Limit the number of results returned.
+        cursor : Optional[int]
+            Cursor for pagination.
+
+        Returns
+        -------
+        List[Session]
+            A list of all sessions.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
+        url = "sessions"
+        params = {}
+        if limit is not None:
+            params["limit"] = limit
+        if cursor is not None:
+            params["cursor"] = cursor
+
+        try:
+            response = self.client.get(url, params=params)
+        except httpx.NetworkError as e:
+            raise ConnectionError("Failed to connect to server") from e
+
+        handle_response(response, "Failed to get sessions")
+
+        response_data = response.json()
+
+        return [Session.parse_obj(session) for session in response_data]
+
+    # Memory APIs : Get a List of Sessions Asynchronously
+    async def alist_sessions(
+        self, limit: Optional[int] = None, cursor: Optional[int] = None
+    ) -> List[Session]:
+        """
+        Asynchronously retrieve a list of all sessions.
+
+        Parameters
+        ----------
+        limit : Optional[int]
+            Limit the number of results returned.
+        cursor : Optional[int]
+            Cursor for pagination.
+
+        Returns
+        -------
+        List[Session]
+            A list of all sessions.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
+        url = "sessions"
+        params = {}
+        if limit is not None:
+            params["limit"] = limit
+        if cursor is not None:
+            params["cursor"] = cursor
+
+        try:
+            response = await self.aclient.get(url, params=params)
+        except httpx.NetworkError as e:
+            raise ConnectionError("Failed to connect to server") from e
+
+        handle_response(response, "Failed to get sessions")
+
+        response_data = response.json()
+
+        return [Session.parse_obj(session) for session in response_data]
+
+    def list_all_sessions(
+        self, chunk_size: int = 100
+    ) -> Generator[List[Session], None, None]:
+        """
+        Retrieve all sessions, handling pagination automatically.
+        Yields a generator of lists of sessions.
+
+        Parameters
+        ----------
+        chunk_size : int
+            The number of sessions to retrieve at a time.
+
+        Yields
+        ------
+        List[Session]
+            The next chunk of sessions from the server.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
+        cursor = None
+
+        while True:
+            response = self.list_sessions(limit=chunk_size, cursor=cursor)
+
+            if len(response) == 0:
+                # We've reached the last page
+                break
+
+            yield response
+
+            # Set the cursor to the ID of the last session retrieved
+            cursor = response[-1].id
+
+    async def alist_all_sessions(
+        self, chunk_size: int = 100
+    ) -> AsyncGenerator[List[Session], None]:
+        """
+        Asynchronously retrieve all sessions, handling pagination automatically.
+        Yields a generator of lists of sessions.
+
+        Parameters
+        ----------
+        chunk_size : int
+            The number of sessions to retrieve at a time.
+
+        Yields
+        ------
+        List[Session]
+            The next chunk of sessions from the server.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
+        cursor = None
+
+        while True:
+            response = await self.alist_sessions(limit=chunk_size, cursor=cursor)
+
+            if len(response) == 0:
+                # We've reached the last page
+                break
+
+            yield response
+
+            # Set the cursor to the ID of the last session retrieved
+            cursor = response[-1].id
 
     # Memory APIs : Get Memory
     def get_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
