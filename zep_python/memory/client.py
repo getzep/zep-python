@@ -4,7 +4,7 @@ from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
 
 import httpx
 
-from zep_python.exceptions import APIError, NotFoundError, handle_response
+from zep_python.exceptions import APIError, handle_response
 from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
@@ -137,10 +137,14 @@ class MemoryClient:
 
         Raises
         ------
+        NotFoundError
+            If the session with the specified ID is not found.
         ValueError
             If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
+        ConnectionError
+            If the connection to the server fails.
         """
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
@@ -175,10 +179,14 @@ class MemoryClient:
 
         Raises
         ------
+        NotFoundError
+            If the session with the specified ID is not found.
         ValueError
             If the session ID is None or empty.
         APIError
             If the API response format is unexpected.
+        ConnectionError
+            If the connection to the server fails.
         """
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
@@ -217,13 +225,15 @@ class MemoryClient:
             If the session is None or empty.
         APIError
             If the API response format is unexpected.
+        ConnectionError
+            If the connection to the server fails.
         """
         if session is None:
             raise ValueError("session must be provided")
         if session.session_id is None or session.session_id.strip() == "":
             raise ValueError("session.session_id must be provided")
 
-        url = f"/sessions/{session.session_id}"
+        url = "sessions"
 
         try:
             response = self.client.post(url, json=session.dict(exclude_none=True))
@@ -255,13 +265,15 @@ class MemoryClient:
             If the session is None or empty.
         APIError
             If the API response format is unexpected.
+        ConnectionError
+            If the connection to the server fails.
         """
         if session is None:
             raise ValueError("session must be provided")
         if session.session_id is None or session.session_id.strip() == "":
             raise ValueError("session.session_id must be provided")
 
-        url = f"/sessions/{session.session_id}"
+        url = "sessions"
 
         try:
             response = await self.aclient.post(
@@ -271,6 +283,87 @@ class MemoryClient:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response, f"Failed to add session {session.session_id}")
+
+        return response.text
+
+    # Memory APIs : Update a Session
+
+    def update_session(self, session: Session) -> str:
+        """
+        Update the specified session.
+
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session to update.
+        session : Session
+            The session data to update.
+
+        Returns
+        -------
+        str
+            The response text from the API.
+
+        Raises
+        ------
+        NotFoundError
+            If the session with the specified ID is not found.
+        ValueError
+            If the session ID or session is None.
+        APIError
+            If the API response format is unexpected.
+        """
+        if session is None:
+            raise ValueError("session must be provided")
+        if session.session_id is None or session.session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        response = self.client.patch(
+            f"/sessions/{session.session_id}",
+            json=session.dict(exclude_none=True),
+        )
+
+        handle_response(response, f"Failed to update session {session.session_id}")
+
+        return response.text
+
+    # Memory APIs : Update a Session Asynchronously
+    async def aupdate_session(self, session: Session) -> str:
+        """
+        Asynchronously update the specified session.
+
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session to update.
+        session : Session
+            The session data to update.
+
+        Returns
+        -------
+        str
+            The response text from the API.
+
+        Raises
+        ------
+        NotFoundError
+            If the session with the specified ID is not found.
+        ValueError
+            If the session ID or session is None.
+        APIError
+            If the API response format is unexpected.
+        """
+        if session is None:
+            raise ValueError("session must be provided")
+        if session.session_id is None or session.session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        response = await self.aclient.patch(
+            f"/sessions/{session.session_id}",
+            json=session.dict(exclude_none=True),
+        )
+
+        handle_response(response, f"Failed to update session {session.session_id}")
 
         return response.text
 
@@ -297,6 +390,8 @@ class MemoryClient:
         ------
         APIError
             If the API response format is unexpected.
+        ConnectionError
+            If the connection to the server fails.
         """
         url = "sessions"
         params = {}
@@ -379,6 +474,8 @@ class MemoryClient:
         ------
         APIError
             If the API response format is unexpected.
+        ConnectionError
+            If the connection to the server fails.
         """
         cursor = None
 
