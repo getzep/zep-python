@@ -39,16 +39,16 @@ async def main() -> None:
             print(f"Unable to create session {session_id} got error: {e}")
 
         # Update session metadata
-        print(f"Creating session: {session_id}")
+        print(f"Updating session: {session_id}")
         try:
             # The new metadata values will be merged with the existing metadata
             session = Session(session_id=session_id, metadata={"bar": "foo"})
-            result = await client.memory.aadd_session(session)
+            result = await client.memory.aupdate_session(session)
             print(result)
         except NotFoundError as e:
-            print(f"Unable to create session {session_id} got error: {e}")
+            print(f"Unable to update session {session_id} got error: {e}")
         except APIError as e:
-            print(f"Unable to create session {session_id} got error: {e}")
+            print(f"Unable to update session {session_id} got error: {e}")
 
         # Get session
         print(f"Getting session: {session_id}")

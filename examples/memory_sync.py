@@ -40,14 +40,14 @@ def main() -> None:
         #
         # Update session metadata
         #
-        print(f"Creating session: {session_id}")
+        print(f"Updating session: {session_id}")
         try:
             # The new metadata values will be merged with the existing metadata
             session = Session(session_id=session_id, metadata={"bar": "foo"})
-            result = client.memory.add_session(session)
+            result = client.memory.update_session(session)
             print(result)
         except APIError as e:
-            print(f"Unable to create session {session_id} got error: {e}")
+            print(f"Unable to update session {session_id} got error: {e}")
 
         #
         # Get session
