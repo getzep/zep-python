@@ -37,6 +37,7 @@ class Session(BaseModel):
     """
 
     uuid: Optional[str] = None
+    id: Optional[int] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
     deleted_at: Optional[str] = None

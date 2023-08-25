@@ -21,7 +21,7 @@ from zep_python.memory.models import (
 API_BASE_PATH = "/api/v1"
 API_TIMEOUT = 10
 
-MINIMUM_SERVER_VERSION = "0.9.0-beta.0"
+MINIMUM_SERVER_VERSION = "0.11.0"
 
 
 class ZepClient:
