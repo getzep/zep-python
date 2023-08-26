@@ -13,7 +13,7 @@ class User(BaseModel):
     Attributes
     ----------
     uuid : UUID
-        A unique identifier for the user.
+        A unique identifier for the user. Used internally as a primary key.
     id : int
         The ID of the user. Used as a cursor for pagination.
     created_at : datetime

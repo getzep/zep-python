@@ -115,6 +115,8 @@ class ZepClient:
 
             zep_server_version_str = response.headers.get("X-Zep-Version")
             if zep_server_version_str:
+                if "dev" in zep_server_version_str:
+                    return
                 zep_server_version = Version(zep_server_version_str.split("-")[0])
             else:
                 zep_server_version = Version("0.0.0")
