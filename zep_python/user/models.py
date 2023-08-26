@@ -12,38 +12,38 @@ class User(BaseModel):
 
     Attributes
     ----------
-    uuid : UUID
+    uuid : Optional[UUID]
         A unique identifier for the user. Used internally as a primary key.
-    id : int
+    id : Optional[int]
         The ID of the user. Used as a cursor for pagination.
-    created_at : datetime
+    created_at : Optional[datetime]
         The timestamp when the user was created.
-    updated_at : datetime
+    updated_at : Optional[datetime]
         The timestamp when the user was last updated.
     deleted_at : Optional[datetime]
         The timestamp when the user was deleted.
     user_id : str
         The unique identifier of the user.
-    email : str
+    email : Optional[str]
         The email of the user.
-    first_name : str
+    first_name : Optional[str]
         The first name of the user.
-    last_name : str
+    last_name : Optional[str]
         The last name of the user.
-    metadata : Dict[str, Any]
+    metadata : Optional[Dict[str, Any]]
         The metadata associated with the user.
     """
 
-    uuid: UUID
-    id: int
-    created_at: datetime
-    updated_at: datetime
+    uuid: Optional[UUID] = None
+    id: Optional[int] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None
     user_id: str
-    email: str
-    first_name: str
-    last_name: str
-    metadata: Dict[str, Any]
+    email: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class CreateUserRequest(BaseModel):
@@ -54,21 +54,21 @@ class CreateUserRequest(BaseModel):
     ----------
     user_id : str
         The unique identifier of the user.
-    email : str
+    email : Optional[str]
         The email of the user.
-    first_name : str
+    first_name : Optional[str]
         The first name of the user.
-    last_name : str
+    last_name : Optional[str]
         The last name of the user.
-    metadata : Dict[str, Any]
+    metadata : Optional[Dict[str, Any]]
         The metadata associated with the user.
     """
 
     user_id: str
-    email: str
-    first_name: str
-    last_name: str
-    metadata: Dict[str, Any]
+    email: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class UpdateUserRequest(BaseModel):
@@ -77,23 +77,23 @@ class UpdateUserRequest(BaseModel):
 
     Attributes
     ----------
-    uuid : UUID
+    uuid : Optional[UUID]
         A unique identifier for the user.
     user_id : str
         The unique identifier of the user.
-    email : str
+    email : Optional[str]
         The email of the user.
-    first_name : str
+    first_name : Optional[str]
         The first name of the user.
-    last_name : str
+    last_name : Optional[str]
         The last name of the user.
-    metadata : Dict[str, Any]
+    metadata : Optional[Dict[str, Any]]
         The metadata associated with the user.
     """
 
-    uuid: UUID
+    uuid: Optional[UUID] = None
     user_id: str
-    email: str
-    first_name: str
-    last_name: str
-    metadata: Dict[str, Any]
+    email: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None

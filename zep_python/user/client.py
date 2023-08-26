@@ -284,7 +284,9 @@ class UserClient:
 
         handle_response(response)
 
-    def list_users(self, limit: Optional[int], cursor: Optional[int]) -> List[User]:
+    def list_users(
+        self, limit: Optional[int] = None, cursor: Optional[int] = None
+    ) -> List[User]:
         """
         List users.
 
@@ -317,7 +319,7 @@ class UserClient:
         return [User.parse_obj(user) for user in response.json()]
 
     async def alist_users(
-        self, limit: Optional[int], cursor: Optional[int]
+        self, limit: Optional[int] = None, cursor: Optional[int] = None
     ) -> List[User]:
         """
         Async list users.
