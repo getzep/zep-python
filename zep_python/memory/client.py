@@ -26,60 +26,6 @@ class MemoryClient:
     client : httpx.Client
         The client used for making API requests.
 
-    Methods
-    -------
-    ___init___(aclient: httpx.AsyncClient, client: httpx.Client) -> None:
-        Initialize the zep_memory_api.
-
-    handle_response(response: httpx.Response,
-                    missing_message:
-                    Optional[str] = None) -> None:
-        Handle the response from the API.
-
-    parse_get_memory_response(response_data: Any) -> Memory:
-        Parse the response from the get_memory API call.
-
-    gen_get_params(lastn: Optional[int] = None) -> Dict[str, Any]:
-        Generate the parameters for the get_memory API call.
-
-    get_session(session_id: str) -> Session:
-        Retrieve the session with the specified ID.
-
-    aget_session(session_id: str) -> Session:
-        Asynchronously retrieve the session with the specified ID.
-
-    add_session(session: Session) -> str:
-        Add or update the specified session.
-
-    aaadd_session(session: Session) -> str:
-        Asynchronously add or update the specified session.
-
-    get_memory(session_id: str, lastn: Optional[int] = None) -> Memory:
-        Retrieve memory for the specified session.
-
-    aget_memory(session_id: str, lastn: Optional[int] = None) -> Memory:
-        Asynchronously retrieve memory for the specified session.
-
-    add_memory(session_id: str, memory_messages: Memory) -> str:
-        Add memory to the specified session.
-
-    aadd_memory(session_id: str, memory_messages: Memory) -> str:
-        Asynchronously add memory to the specified session.
-
-    delete_memory(session_id: str) -> str:
-        Delete memory for the specified session.
-
-    adelete_memory(session_id: str) -> str:
-        Asynchronously delete memory for the specified session.
-
-    search_memory(session_id: str, search_payload: MemorySearchPayload,
-                    limit: Optional[int] = None) -> List[MemorySearchResult]:
-        Search memory for the specified session.
-
-    asearch_memory(session_id: str, search_payload: MemorySearchPayload,
-                    limit: Optional[int] = None) -> List[MemorySearchResult]:
-        Asynchronously search memory for the specified session.
-
     """
 
     aclient: httpx.AsyncClient
@@ -477,7 +423,7 @@ class MemoryClient:
         ConnectionError
             If the connection to the server fails.
         """
-        cursor = None
+        cursor: Optional[int] = None
 
         while True:
             response = self.list_sessions(limit=chunk_size, cursor=cursor)
@@ -488,8 +434,10 @@ class MemoryClient:
 
             yield response
 
-            # Set the cursor to the ID of the last session retrieved
-            cursor = response[-1].id
+            if cursor is None:
+                cursor = 0
+
+            cursor += chunk_size
 
     async def alist_all_sessions(
         self, chunk_size: int = 100
@@ -513,7 +461,7 @@ class MemoryClient:
         APIError
             If the API response format is unexpected.
         """
-        cursor = None
+        cursor: Optional[int] = None
 
         while True:
             response = await self.alist_sessions(limit=chunk_size, cursor=cursor)
@@ -524,8 +472,9 @@ class MemoryClient:
 
             yield response
 
-            # Set the cursor to the ID of the last session retrieved
-            cursor = response[-1].id
+            if cursor is None:
+                cursor = 0
+            cursor += chunk_size
 
     # Memory APIs : Get Memory
     def get_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
