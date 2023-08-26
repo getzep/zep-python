@@ -168,11 +168,11 @@ class ZepClient:
         deprecated_warning(self.aget_session)
         return await self.memory.aget_session(session_id)
 
-    def add_session(self, session: Session) -> str:
+    def add_session(self, session: Session) -> Session:
         deprecated_warning(self.add_session)
         return self.memory.add_session(session)
 
-    async def aadd_session(self, session: Session) -> str:
+    async def aadd_session(self, session: Session) -> Session:
         deprecated_warning(self.aadd_session)
         return await self.memory.aadd_session(session)
 
