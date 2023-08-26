@@ -17,6 +17,7 @@ from zep_python.memory.models import (
     MemorySearchResult,
     Session,
 )
+from zep_python.user.client import UserClient
 
 API_BASE_PATH = "/api/v1"
 API_TIMEOUT = 10
@@ -55,6 +56,7 @@ class ZepClient:
     base_url: str
     memory: MemoryClient
     document: DocumentClient
+    user: UserClient
 
     def __init__(self, base_url: str, api_key: Optional[str] = None) -> None:
         """
@@ -85,6 +87,7 @@ class ZepClient:
 
         self.memory = MemoryClient(self.aclient, self.client)
         self.document = DocumentClient(self.aclient, self.client)
+        self.user = UserClient(self.aclient, self.client)
 
     def _healthcheck(self, base_url: str) -> None:
         """
