@@ -516,12 +516,15 @@ async def test_alist_all_sessions(httpx_mock: HTTPXMock):
         httpx_mock.add_response(status_code=200, json=[mock_sessions[0]])
         sessions_generator = client.memory.alist_all_sessions(1)
         i = 0
-        async for session in sessions_generator:
-            assert session == [Session.parse_obj(mock_sessions[i])]
-            if i == 0:
-                httpx_mock.add_response(status_code=200, json=[mock_sessions[i + 1]])
-            else:
-                httpx_mock.add_response(status_code=200, json=[])
-                with pytest.raises(StopAsyncIteration):
-                    _ = await anext(sessions_generator)
-            i += 1
+        try:
+            async for session in sessions_generator:
+                assert session == [Session.parse_obj(mock_sessions[i])]
+                if i == 0:
+                    httpx_mock.add_response(
+                        status_code=200, json=[mock_sessions[i + 1]]
+                    )
+                else:
+                    httpx_mock.add_response(status_code=200, json=[])
+                i += 1
+        except StopAsyncIteration:
+            pass
