@@ -30,6 +30,15 @@ class ZepVectorStore(VectorStore):
         embedding: Optional[Embeddings] = None,
         **kwargs: Any,
     ) -> None:
+        warnings.warn(
+            (
+                "This experimental class has been deprecated. Please use the "
+                "official ZepVectorStore class in the Langchain package."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         if not isinstance(collection, DocumentCollection):  # type: ignore
             raise ValueError(
                 "collection should be an instance of a Zep DocumentCollection"
