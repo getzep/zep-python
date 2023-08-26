@@ -124,9 +124,8 @@ class ZepClient:
             if zep_server_version < Version(MINIMUM_SERVER_VERSION):
                 warnings.warn(
                     (
-                        f"Zep server version less than {MINIMUM_SERVER_VERSION} does"
-                        " not support the document vector store features of this"
-                        f" client. Please update to {MINIMUM_SERVER_VERSION} or newer."
+                        "You are using an incompatible Zep server version. Please"
+                        " upgrade to {MINIMUM_SERVER_VERSION} or later."
                     ),
                     Warning,
                     stacklevel=2,
