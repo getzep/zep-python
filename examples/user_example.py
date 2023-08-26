@@ -20,13 +20,13 @@ def main() -> None:
                 metadata={"foo": "bar"},
             )
             try:
-                user = client.user.add_user(user_request)
+                user = client.user.add(user_request)
                 print(f"Created user {i+1}: {user.user_id}")
             except APIError as e:
                 print(f"Failed to create user {i+1}: {e}")
 
         # Update the first user
-        user_id = client.user.list_users()[0].user_id
+        user_id = client.user.list()[0].user_id
         user_request = UpdateUserRequest(
             user_id=user_id,
             email="updated_user@example.com",
@@ -35,23 +35,22 @@ def main() -> None:
             metadata={"foo": "updated_bar"},
         )
         try:
-            client.user.update_user(user_request)
-            user = client.user.get_user(user_id)
-            print(f"Updated user: {user.user_id}")
+            updated_user = client.user.update(user_request)
+            print(f"Updated user: {updated_user.user_id}")
         except APIError as e:
             print(f"Failed to update user: {e}")
 
         # Delete the second user
-        user_id = client.user.list_users()[1].user_id
+        user_id = client.user.list()[1].user_id
         try:
-            client.user.delete_user(user_id)
+            client.user.delete(user_id)
             print(f"Deleted user: {user_id}")
         except APIError as e:
             print(f"Failed to delete user: {e}")
 
         # List all users
         try:
-            users_generator = client.user.list_all_users()
+            users_generator = client.user.list_chunked()
             print("All users:")
             while True:
                 users = next(users_generator, None)

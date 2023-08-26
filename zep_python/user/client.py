@@ -36,7 +36,7 @@ class UserClient:
         self.aclient = aclient
         self.client = client
 
-    def add_user(self, user: CreateUserRequest) -> User:
+    def add(self, user: CreateUserRequest) -> User:
         """
         Add a user.
 
@@ -66,7 +66,7 @@ class UserClient:
         handle_response(response)
         return User.parse_obj(response.json())
 
-    async def aadd_user(self, user: CreateUserRequest) -> User:
+    async def aadd(self, user: CreateUserRequest) -> User:
         """
         Async add a user.
 
@@ -98,7 +98,7 @@ class UserClient:
         handle_response(response)
         return User.parse_obj(response.json())
 
-    def get_user(self, user_id: str) -> User:
+    def get(self, user_id: str) -> User:
         """
         Get a user.
 
@@ -129,7 +129,7 @@ class UserClient:
         handle_response(response)
         return User.parse_obj(response.json())
 
-    async def aget_user(self, user_id: str) -> User:
+    async def aget(self, user_id: str) -> User:
         """
         Async get a user.
 
@@ -162,7 +162,7 @@ class UserClient:
         handle_response(response)
         return User.parse_obj(response.json())
 
-    def update_user(self, user: UpdateUserRequest) -> User:
+    def update(self, user: UpdateUserRequest) -> User:
         """
         Update a user.
 
@@ -198,7 +198,7 @@ class UserClient:
 
         return User.parse_obj(response.json())
 
-    async def aupdate_user(self, user: UpdateUserRequest) -> User:
+    async def aupdate(self, user: UpdateUserRequest) -> User:
         """
         Async update a user.
 
@@ -234,7 +234,7 @@ class UserClient:
 
         return User.parse_obj(response.json())
 
-    def delete_user(self, user_id: str) -> None:
+    def delete(self, user_id: str) -> None:
         """
         Delete a user.
 
@@ -263,7 +263,7 @@ class UserClient:
 
         handle_response(response)
 
-    async def adelete_user(self, user_id: str) -> None:
+    async def adelete(self, user_id: str) -> None:
         """
         Async delete a user.
 
@@ -292,7 +292,7 @@ class UserClient:
 
         handle_response(response)
 
-    def list_users(
+    def list(
         self, limit: Optional[int] = None, cursor: Optional[int] = None
     ) -> List[User]:
         """
@@ -326,7 +326,7 @@ class UserClient:
         handle_response(response)
         return [User.parse_obj(user) for user in response.json()]
 
-    async def alist_users(
+    async def alist(
         self, limit: Optional[int] = None, cursor: Optional[int] = None
     ) -> List[User]:
         """
@@ -360,7 +360,7 @@ class UserClient:
         handle_response(response)
         return [User.parse_obj(user) for user in response.json()]
 
-    def list_all_users(
+    def list_chunked(
         self, chunk_size: int = 100
     ) -> Generator[List[User], None, None]:
         """
@@ -389,7 +389,7 @@ class UserClient:
         cursor: Optional[int] = None
 
         while True:
-            response = self.list_users(limit=chunk_size, cursor=cursor)
+            response = self.list(limit=chunk_size, cursor=cursor)
 
             if len(response) == 0:
                 # We've reached the last page
@@ -401,7 +401,7 @@ class UserClient:
                 cursor = 0
             cursor += chunk_size
 
-    async def alist_all_users(
+    async def alist_chunked(
         self, chunk_size: int = 100
     ) -> AsyncGenerator[List[User], None]:
         """
@@ -430,7 +430,7 @@ class UserClient:
         cursor: Optional[int] = None
 
         while True:
-            response = await self.alist_users(limit=chunk_size, cursor=cursor)
+            response = await self.alist(limit=chunk_size, cursor=cursor)
             if len(response) == 0:
                 # We've reached the last page
                 break
@@ -441,7 +441,7 @@ class UserClient:
                 cursor = 0
             cursor += chunk_size
 
-    def list_user_sessions(self, user_id: str) -> List[Session]:
+    def get_sessions(self, user_id: str) -> List[Session]:
         """
         List all sessions associated with this user.
 
@@ -470,7 +470,7 @@ class UserClient:
         handle_response(response)
         return [Session.parse_obj(session) for session in response.json()]
 
-    async def alist_user_sessions(self, user_id: str) -> List[Session]:
+    async def aget_sessions(self, user_id: str) -> List[Session]:
         """
         Async list all sessions associated with this user.
 

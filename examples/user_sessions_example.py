@@ -20,7 +20,7 @@ def main() -> None:
             metadata={"foo": "bar"},
         )
         try:
-            user = client.user.add_user(user_request)
+            user = client.user.add(user_request)
             print(f"Created user: {user.user_id}")
         except APIError as e:
             print(f"Failed to create user: {e}")
@@ -39,7 +39,7 @@ def main() -> None:
 
         # List all sessions associated with the user
         try:
-            sessions = client.user.list_user_sessions(user_id)
+            sessions = client.user.get_sessions(user_id)
             print(f"Sessions for user {user_id}:")
             for session in sessions:
                 print(session.dict(exclude_unset=True), "\n")
