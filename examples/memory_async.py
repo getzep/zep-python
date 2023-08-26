@@ -17,20 +17,38 @@ from zep_python import (
     NotFoundError,
     ZepClient,
 )
-from zep_python.memory.models import Session
+from zep_python.memory import Session
+from zep_python.user import CreateUserRequest
 
 
 async def main() -> None:
     base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
     api_key = "YOUR_API_KEY"  # TODO: Replace with your API key
     async with ZepClient(base_url, api_key) as client:
+        # Create a user
+        user_id = uuid.uuid4().hex
+        user_request = CreateUserRequest(
+            user_id=user_id,
+            email="user@example.com",
+            first_name="John",
+            last_name="Doe",
+            metadata={"foo": "bar"},
+        )
+        try:
+            user = client.user.add(user_request)
+            print(f"Created user: {user.user_id}")
+        except APIError as e:
+            print(f"Failed to create user: {e}")
+
         session_id = uuid.uuid4().hex
         print(f"------Memory operations: {session_id}")
 
-        # Create session
+        # Create session associated with the above user
         print(f"Creating session: {session_id}")
         try:
-            session = Session(session_id=session_id, metadata={"foo": "bar"})
+            session = Session(
+                session_id=session_id, user_id=user_id, metadata={"foo": "bar"}
+            )
             result = await client.memory.aadd_session(session)
             print(result)
         except NotFoundError as e:
