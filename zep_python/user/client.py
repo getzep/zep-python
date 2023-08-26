@@ -360,9 +360,7 @@ class UserClient:
         handle_response(response)
         return [User.parse_obj(user) for user in response.json()]
 
-    def list_chunked(
-        self, chunk_size: int = 100
-    ) -> Generator[List[User], None, None]:
+    def list_chunked(self, chunk_size: int = 100) -> Generator[List[User], None, None]:
         """
         List all users in chunks.
 
