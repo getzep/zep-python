@@ -316,12 +316,12 @@ async def test_aget_session_missing_id(httpx_mock: HTTPXMock):
 def test_add_session(httpx_mock: HTTPXMock):
     session = Session(**mock_session)
 
-    httpx_mock.add_response(status_code=200, text="OK")
+    httpx_mock.add_response(status_code=200, json=mock_session)
 
     client = ZepClient(base_url=API_BASE_URL)
     result = client.memory.add_session(session)
 
-    assert result == "OK"
+    assert result == session
 
 
 def test_add_session_missing_session():
@@ -335,12 +335,12 @@ def test_add_session_missing_session():
 async def test_aadd_session(httpx_mock: HTTPXMock):
     session = Session(**mock_session)
 
-    httpx_mock.add_response(status_code=200, text="OK")
+    httpx_mock.add_response(status_code=200, json=mock_session)
 
     async with ZepClient(base_url=API_BASE_URL) as client:
         result = await client.memory.aadd_session(session)
 
-        assert result == "OK"
+        assert result == session
 
 
 @pytest.mark.asyncio
@@ -353,12 +353,12 @@ async def test_aadd_session_missing_session(httpx_mock: HTTPXMock):
 def test_update_session(httpx_mock: HTTPXMock):
     session = Session(**mock_session)
 
-    httpx_mock.add_response(status_code=200, text="OK")
+    httpx_mock.add_response(status_code=200, json=mock_session)
 
     client = ZepClient(base_url=API_BASE_URL)
     result = client.memory.update_session(session)
 
-    assert result == "OK"
+    assert result == session
 
 
 def test_update_session_missing_id(httpx_mock: HTTPXMock):
@@ -394,12 +394,12 @@ def test_update_session_not_found(httpx_mock: HTTPXMock):
 async def test_aupdate_session(httpx_mock: HTTPXMock):
     session = Session(**mock_session)
 
-    httpx_mock.add_response(status_code=200, text="OK")
+    httpx_mock.add_response(status_code=200, json=mock_session)
 
     async with ZepClient(base_url=API_BASE_URL) as client:
         result = await client.memory.aupdate_session(session)
 
-        assert result == "OK"
+        assert result == session
 
 
 @pytest.mark.asyncio

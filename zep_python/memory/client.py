@@ -151,9 +151,9 @@ class MemoryClient:
         return Session.parse_obj(response_data)
 
     # Memory APIs : Add a Session
-    def add_session(self, session: Session) -> str:
+    def add_session(self, session: Session) -> Session:
         """
-        Add or update the specified session.
+        Add a session.
 
         Parameters
         ----------
@@ -188,12 +188,12 @@ class MemoryClient:
 
         handle_response(response, f"Failed to add session {session.session_id}")
 
-        return response.text
+        return Session.parse_obj(response.json())
 
     # Memory APIs : Add a Session Asynchronously
-    async def aadd_session(self, session: Session) -> str:
+    async def aadd_session(self, session: Session) -> Session:
         """
-        Asynchronously add or update the specified session.
+        Asynchronously add a session.
 
         Parameters
         ----------
@@ -230,25 +230,22 @@ class MemoryClient:
 
         handle_response(response, f"Failed to add session {session.session_id}")
 
-        return response.text
+        return Session.parse_obj(response.json())
 
     # Memory APIs : Update a Session
-
-    def update_session(self, session: Session) -> str:
+    def update_session(self, session: Session) -> Session:
         """
         Update the specified session.
 
         Parameters
         ----------
-        session_id : str
-            The ID of the session to update.
         session : Session
             The session data to update.
 
         Returns
         -------
-        str
-            The response text from the API.
+        Session
+            The updated session.
 
         Raises
         ------
@@ -271,24 +268,22 @@ class MemoryClient:
 
         handle_response(response, f"Failed to update session {session.session_id}")
 
-        return response.text
+        return Session.parse_obj(response.json())
 
     # Memory APIs : Update a Session Asynchronously
-    async def aupdate_session(self, session: Session) -> str:
+    async def aupdate_session(self, session: Session) -> Session:
         """
         Asynchronously update the specified session.
 
         Parameters
         ----------
-        session_id : str
-            The ID of the session to update.
         session : Session
             The session data to update.
 
         Returns
         -------
-        str
-            The response text from the API.
+        Session
+            The updated session.
 
         Raises
         ------
@@ -311,14 +306,14 @@ class MemoryClient:
 
         handle_response(response, f"Failed to update session {session.session_id}")
 
-        return response.text
+        return Session.parse_obj(response.json())
 
     # Memory APIs : Get a List of Sessions
     def list_sessions(
         self, limit: Optional[int] = None, cursor: Optional[int] = None
     ) -> List[Session]:
         """
-        Retrieve a list of all sessions.
+        Retrieve a list of paginated sessions.
 
         Parameters
         ----------
@@ -330,7 +325,7 @@ class MemoryClient:
         Returns
         -------
         List[Session]
-            A list of all sessions.
+            A list of all sessions paginated.
 
         Raises
         ------
@@ -362,7 +357,7 @@ class MemoryClient:
         self, limit: Optional[int] = None, cursor: Optional[int] = None
     ) -> List[Session]:
         """
-        Asynchronously retrieve a list of all sessions.
+        Asynchronously retrieve a list of paginated sessions.
 
         Parameters
         ----------
@@ -374,7 +369,7 @@ class MemoryClient:
         Returns
         -------
         List[Session]
-            A list of all sessions.
+            A list of all sessions paginated.
 
         Raises
         ------
