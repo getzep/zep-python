@@ -152,6 +152,8 @@ class UserClient:
         NotFoundError
             If the user does not exist.
         """
+        if user_id is None:
+            raise ValueError("user_id must be provided")
         try:
             response = await self.aclient.get(f"/user/{user_id}")
         except httpx.NetworkError as e:
@@ -160,7 +162,7 @@ class UserClient:
         handle_response(response)
         return User.parse_obj(response.json())
 
-    def update_user(self, user: UpdateUserRequest) -> None:
+    def update_user(self, user: UpdateUserRequest) -> User:
         """
         Update a user.
 
@@ -171,7 +173,8 @@ class UserClient:
 
         Returns
         -------
-        None
+        User
+            The user that was updated.
 
         Raises
         ------
@@ -193,7 +196,9 @@ class UserClient:
             raise ConnectionError("Failed to connect to server") from e
         handle_response(response)
 
-    async def aupdate_user(self, user: UpdateUserRequest) -> None:
+        return User.parse_obj(response.json())
+
+    async def aupdate_user(self, user: UpdateUserRequest) -> User:
         """
         Async update a user.
 
@@ -204,7 +209,8 @@ class UserClient:
 
         Returns
         -------
-        None
+        User
+            The user that was updated.
 
         Raises
         ------
@@ -225,6 +231,8 @@ class UserClient:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response)
+
+        return User.parse_obj(response.json())
 
     def delete_user(self, user_id: str) -> None:
         """
@@ -300,7 +308,7 @@ class UserClient:
         Returns
         -------
         List[User]
-            The list of users.
+            The list of users. If no users are found, an empty list is returned.
 
         Raises
         ------
@@ -334,7 +342,7 @@ class UserClient:
         Returns
         -------
         List[User]
-            The list of users.
+            The list of users. An empty list is returned if there are no users.
 
         Raises
         ------
