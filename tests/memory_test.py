@@ -1,5 +1,5 @@
 # mypy: ignore-errors
-from typing import Dict
+from typing import Dict, List
 from uuid import uuid4
 
 import pytest
@@ -260,11 +260,13 @@ def test_search_memory(httpx_mock: HTTPXMock):
 # Predefined session response
 mock_session = {
     "uuid": str(uuid4()),
+    "id": 1,
     "created_at": "2020-12-31T23:59:59",
     "updated_at": "2021-01-01T00:00:00",
     "deleted_at": None,
     "session_id": "abc123",
     "metadata": {},
+    "user_id": "user123",
 }
 
 
@@ -314,12 +316,12 @@ async def test_aget_session_missing_id(httpx_mock: HTTPXMock):
 def test_add_session(httpx_mock: HTTPXMock):
     session = Session(**mock_session)
 
-    httpx_mock.add_response(status_code=200, text="OK")
+    httpx_mock.add_response(status_code=200, json=mock_session)
 
     client = ZepClient(base_url=API_BASE_URL)
     result = client.memory.add_session(session)
 
-    assert result == "OK"
+    assert result == session
 
 
 def test_add_session_missing_session():
@@ -333,12 +335,12 @@ def test_add_session_missing_session():
 async def test_aadd_session(httpx_mock: HTTPXMock):
     session = Session(**mock_session)
 
-    httpx_mock.add_response(status_code=200, text="OK")
+    httpx_mock.add_response(status_code=200, json=mock_session)
 
     async with ZepClient(base_url=API_BASE_URL) as client:
         result = await client.memory.aadd_session(session)
 
-        assert result == "OK"
+        assert result == session
 
 
 @pytest.mark.asyncio
@@ -346,6 +348,88 @@ async def test_aadd_session_missing_session(httpx_mock: HTTPXMock):
     async with ZepClient(base_url=API_BASE_URL) as client:
         with pytest.raises(ValueError):
             _ = await client.memory.aadd_session(session=None)  # type: ignore
+
+
+def test_update_session(httpx_mock: HTTPXMock):
+    session = Session(**mock_session)
+
+    httpx_mock.add_response(status_code=200, json=mock_session)
+
+    client = ZepClient(base_url=API_BASE_URL)
+    result = client.memory.update_session(session)
+
+    assert result == session
+
+
+def test_update_session_missing_id(httpx_mock: HTTPXMock):
+    session = Session(**mock_session)
+
+    session.session_id = None
+
+    client = ZepClient(base_url=API_BASE_URL)
+
+    with pytest.raises(ValueError):
+        client.memory.update_session(session=session)  # type: ignore
+
+
+def test_update_session_missing_session(httpx_mock: HTTPXMock):
+    client = ZepClient(base_url=API_BASE_URL)
+
+    with pytest.raises(ValueError):
+        client.memory.update_session(session=None)  # type: ignore
+
+
+def test_update_session_not_found(httpx_mock: HTTPXMock):
+    httpx_mock.add_response(status_code=404)
+
+    session = Session(**mock_session)
+
+    client = ZepClient(base_url=API_BASE_URL)
+
+    with pytest.raises(NotFoundError):
+        client.memory.update_session(session)  # type: ignore
+
+
+@pytest.mark.asyncio
+async def test_aupdate_session(httpx_mock: HTTPXMock):
+    session = Session(**mock_session)
+
+    httpx_mock.add_response(status_code=200, json=mock_session)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        result = await client.memory.aupdate_session(session)
+
+        assert result == session
+
+
+@pytest.mark.asyncio
+async def test_aupdate_session_missing_id(httpx_mock: HTTPXMock):
+    session = Session(**mock_session)
+
+    session.session_id = None
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = await client.memory.aupdate_session(session=session)  # type: ignore
+
+
+@pytest.mark.asyncio
+async def test_aupdate_session_missing_session(httpx_mock: HTTPXMock):
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = await client.memory.aupdate_session(session=None)  # type: ignore
+
+
+@pytest.mark.asyncio
+async def test_aupdate_session_not_found(httpx_mock: HTTPXMock):
+    httpx_mock.add_response(status_code=404)
+
+    session = Session(**mock_session)
+
+    client = ZepClient(base_url=API_BASE_URL)
+
+    with pytest.raises(NotFoundError):
+        await client.memory.aupdate_session(session)  # type: ignore
 
 
 @pytest.mark.asyncio
@@ -362,3 +446,85 @@ async def test_aget_session_warning(zep_client: ZepClient, httpx_mock: HTTPXMock
         response = await zep_client.aget_session(session.session_id)
 
     assert response == mock_session
+
+
+mock_sessions = [
+    {
+        "uuid": str(uuid4()),
+        "id": 0,
+        "created_at": "2020-12-31T23:59:59",
+        "updated_at": "2021-01-01T00:00:00",
+        "deleted_at": None,
+        "session_id": "abc123",
+        "metadata": {},
+        "user_id": "user123",
+    },
+    {
+        "uuid": str(uuid4()),
+        "id": 1,
+        "created_at": "2021-01-01T00:00:00",
+        "updated_at": "2021-01-01T00:00:01",
+        "deleted_at": None,
+        "session_id": "abc124",
+        "metadata": {},
+    },
+]
+
+
+def validate_sessions(sessions: List[Session]) -> None:
+    # Validate the sessions list here
+    assert [Session.parse_obj(session) for session in mock_sessions] == sessions
+
+
+@pytest.mark.asyncio
+async def test_list_sessions(httpx_mock: HTTPXMock):
+    httpx_mock.add_response(status_code=200, json=mock_sessions)
+
+    client = ZepClient(base_url=API_BASE_URL)
+    sessions = client.memory.list_sessions()
+
+    validate_sessions(sessions)
+
+
+@pytest.mark.asyncio
+async def test_alist_sessions(httpx_mock: HTTPXMock):
+    httpx_mock.add_response(status_code=200, json=mock_sessions)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        sessions = await client.memory.alist_sessions()
+
+        validate_sessions(sessions)
+
+
+def test_list_all_sessions(httpx_mock: HTTPXMock):
+    with ZepClient(base_url=API_BASE_URL) as client:
+        httpx_mock.add_response(status_code=200, json=[mock_sessions[0]])
+        sessions_generator = client.memory.list_all_sessions(1)
+        for i, session in enumerate(sessions_generator):
+            assert session == [Session.parse_obj(mock_sessions[i])]
+            if i == 0:
+                httpx_mock.add_response(status_code=200, json=[mock_sessions[i + 1]])
+            else:
+                httpx_mock.add_response(status_code=200, json=[])
+                with pytest.raises(StopIteration):
+                    _ = next(sessions_generator)
+
+
+@pytest.mark.asyncio
+async def test_alist_all_sessions(httpx_mock: HTTPXMock):
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        httpx_mock.add_response(status_code=200, json=[mock_sessions[0]])
+        sessions_generator = client.memory.alist_all_sessions(1)
+        i = 0
+        try:
+            async for session in sessions_generator:
+                assert session == [Session.parse_obj(mock_sessions[i])]
+                if i == 0:
+                    httpx_mock.add_response(
+                        status_code=200, json=[mock_sessions[i + 1]]
+                    )
+                else:
+                    httpx_mock.add_response(status_code=200, json=[])
+                i += 1
+        except StopAsyncIteration:
+            pass

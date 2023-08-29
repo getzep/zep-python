@@ -16,7 +16,8 @@ from zep_python import (
     NotFoundError,
     ZepClient,
 )
-from zep_python.memory.models import Session
+from zep_python.memory import Session
+from zep_python.user import CreateUserRequest
 
 
 def main() -> None:
@@ -24,14 +25,31 @@ def main() -> None:
     api_key = "YOUR_API_KEY"  # TODO: Replace with your API key
     with ZepClient(base_url, api_key) as client:
         # Example usage
-        session_id = uuid.uuid4().hex
+
+        # Create a user
+        user_id = uuid.uuid4().hex
+        user_request = CreateUserRequest(
+            user_id=user_id,
+            email="user@example.com",
+            first_name="John",
+            last_name="Doe",
+            metadata={"foo": "bar"},
+        )
+        try:
+            user = client.user.add(user_request)
+            print(f"Created user: {user.user_id}")
+        except APIError as e:
+            print(f"Failed to create user: {e}")
 
         #
-        # Create session
+        # Create session associated with the above user
         #
+        session_id = uuid.uuid4().hex
         print(f"Creating session: {session_id}")
         try:
-            session = Session(session_id=session_id, metadata={"foo": "bar"})
+            session = Session(
+                session_id=session_id, user_id=user_id, metadata={"foo": "bar"}
+            )
             result = client.memory.add_session(session)
             print(result)
         except APIError as e:
@@ -40,14 +58,14 @@ def main() -> None:
         #
         # Update session metadata
         #
-        print(f"Creating session: {session_id}")
+        print(f"Updating session: {session_id}")
         try:
             # The new metadata values will be merged with the existing metadata
             session = Session(session_id=session_id, metadata={"bar": "foo"})
-            result = client.memory.add_session(session)
+            result = client.memory.update_session(session)
             print(result)
         except APIError as e:
-            print(f"Unable to create session {session_id} got error: {e}")
+            print(f"Unable to update session {session_id} got error: {e}")
 
         #
         # Get session

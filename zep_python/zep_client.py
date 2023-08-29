@@ -17,11 +17,12 @@ from zep_python.memory.models import (
     MemorySearchResult,
     Session,
 )
+from zep_python.user.client import UserClient
 
 API_BASE_PATH = "/api/v1"
 API_TIMEOUT = 10
 
-MINIMUM_SERVER_VERSION = "0.9.0-beta.0"
+MINIMUM_SERVER_VERSION = "0.11.0"
 
 
 class ZepClient:
@@ -55,6 +56,7 @@ class ZepClient:
     base_url: str
     memory: MemoryClient
     document: DocumentClient
+    user: UserClient
 
     def __init__(self, base_url: str, api_key: Optional[str] = None) -> None:
         """
@@ -85,6 +87,7 @@ class ZepClient:
 
         self.memory = MemoryClient(self.aclient, self.client)
         self.document = DocumentClient(self.aclient, self.client)
+        self.user = UserClient(self.aclient, self.client)
 
     def _healthcheck(self, base_url: str) -> None:
         """
@@ -112,6 +115,8 @@ class ZepClient:
 
             zep_server_version_str = response.headers.get("X-Zep-Version")
             if zep_server_version_str:
+                if "dev" in zep_server_version_str:
+                    return
                 zep_server_version = Version(zep_server_version_str.split("-")[0])
             else:
                 zep_server_version = Version("0.0.0")
@@ -119,9 +124,8 @@ class ZepClient:
             if zep_server_version < Version(MINIMUM_SERVER_VERSION):
                 warnings.warn(
                     (
-                        f"Zep server version less than {MINIMUM_SERVER_VERSION} does"
-                        " not support the document vector store features of this"
-                        f" client. Please update to {MINIMUM_SERVER_VERSION} or newer."
+                        "You are using an incompatible Zep server version. Please"
+                        " upgrade to {MINIMUM_SERVER_VERSION} or later."
                     ),
                     Warning,
                     stacklevel=2,
@@ -164,11 +168,11 @@ class ZepClient:
         deprecated_warning(self.aget_session)
         return await self.memory.aget_session(session_id)
 
-    def add_session(self, session: Session) -> str:
+    def add_session(self, session: Session) -> Session:
         deprecated_warning(self.add_session)
         return self.memory.add_session(session)
 
-    async def aadd_session(self, session: Session) -> str:
+    async def aadd_session(self, session: Session) -> Session:
         deprecated_warning(self.aadd_session)
         return await self.memory.aadd_session(session)
 
