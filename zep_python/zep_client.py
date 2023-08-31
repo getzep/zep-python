@@ -285,8 +285,11 @@ def parse_version_string(version_string: str) -> Version:
         The parsed version.
     """
 
-    if "-" in version_string:
-        version_str = version_string.split("-")[0]
-        return Version(version_str if version_str else "0.0.0")
+    try:
+        if "-" in version_string:
+            version_str = version_string.split("-")[0]
+            return Version(version_str if version_str else "0.0.0")
+    except Version.InvalidVersion:
+        return Version("0.0.0")
 
     return Version("0.0.0")
