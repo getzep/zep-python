@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, List, Optional, Type
 from urllib.parse import urljoin
 
 import httpx
-from packaging.version import Version
+from packaging.version import InvalidVersion, Version
 
 from zep_python.document.client import DocumentClient
 from zep_python.exceptions import APIError
@@ -117,7 +117,8 @@ class ZepClient:
             if zep_server_version_str:
                 if "dev" in zep_server_version_str:
                     return
-                zep_server_version = Version(zep_server_version_str.split("-")[0])
+
+                zep_server_version = parse_version_string(zep_server_version_str)
             else:
                 zep_server_version = Version("0.0.0")
 
@@ -268,3 +269,28 @@ def deprecated_warning(func: Callable[..., Any]) -> Callable[..., Any]:
         stacklevel=3,
     )
     return func
+
+
+def parse_version_string(version_string: str) -> Version:
+    """
+    Parse a string into a Version object.
+
+    Parameters
+    ----------
+    version_string : str
+        The version string to parse.
+
+    Returns
+    -------
+    Version
+        The parsed version.
+    """
+
+    try:
+        if "-" in version_string:
+            version_str = version_string.split("-")[0]
+            return Version(version_str if version_str else "0.0.0")
+    except InvalidVersion:
+        return Version("0.0.0")
+
+    return Version("0.0.0")
