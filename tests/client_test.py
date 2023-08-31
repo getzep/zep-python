@@ -6,8 +6,7 @@ from pytest_httpx import HTTPXMock
 
 from tests.conftest import API_BASE_URL, mock_healthcheck, undo_mock_healthcheck
 from zep_python import APIError
-from zep_python.zep_client import ZepClient, concat_url
-from zep_python.zep_client import parse_version_string
+from zep_python.zep_client import ZepClient, concat_url, parse_version_string
 
 _ = mock_healthcheck, undo_mock_healthcheck
 
@@ -41,20 +40,20 @@ async def test_set_authorization_header(httpx_mock: HTTPXMock):
 def test_concat_url():
     assert concat_url("https://server.com", "/v1/api") == "https://server.com/v1/api"
     assert (
-            concat_url("https://server.com/zep", "/v1/api")
-            == "https://server.com/zep/v1/api"
+        concat_url("https://server.com/zep", "/v1/api")
+        == "https://server.com/zep/v1/api"
     )
     assert (
-            concat_url("https://server.com/zep/", "/v1/api")
-            == "https://server.com/zep/v1/api"
+        concat_url("https://server.com/zep/", "/v1/api")
+        == "https://server.com/zep/v1/api"
     )
     assert (
-            concat_url("https://server.com/zep", "v1/api")
-            == "https://server.com/zep/v1/api"
+        concat_url("https://server.com/zep", "v1/api")
+        == "https://server.com/zep/v1/api"
     )
     assert (
-            concat_url("https://server.com/zep/", "v1/api")
-            == "https://server.com/zep/v1/api"
+        concat_url("https://server.com/zep/", "v1/api")
+        == "https://server.com/zep/v1/api"
     )
 
 
@@ -64,6 +63,10 @@ def test_parse_version_string_with_dash():
 
 def test_parse_version_string_with_dash_and_empty_prefix():
     assert parse_version_string("-456") == Version("0.0.0")
+
+
+def test_parse_version_string_with_dash_and_empty_prefix():
+    assert parse_version_string("abc") == Version("0.0.0")
 
 
 def test_parse_version_string_without_dash():
