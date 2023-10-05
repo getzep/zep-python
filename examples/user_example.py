@@ -1,7 +1,7 @@
+import asyncio
 import uuid
 
-import asyncio
-from zep_python import APIError, ZepClient, Session
+from zep_python import APIError, Session, ZepClient
 from zep_python.user import CreateUserRequest, UpdateUserRequest
 
 
@@ -12,7 +12,7 @@ async def main() -> None:
     with ZepClient(base_url, api_key) as client:
         # Create multiple users
         for i in range(3):
-            user_id = f"user{i}"+uuid.uuid4().hex
+            user_id = f"user{i}" + uuid.uuid4().hex
             user_request = CreateUserRequest(
                 user_id=user_id,
                 email=f"user{i}@example.com",
