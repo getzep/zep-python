@@ -1,8 +1,14 @@
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+if TYPE_CHECKING:
+    from pydantic import BaseModel
+else:
+    try:
+        from pydantic.v1 import BaseModel
+    except ImportError:
+        from pydantic import BaseModel
 
 
 class User(BaseModel):
