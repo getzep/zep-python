@@ -91,6 +91,8 @@ class DocumentCollection(DocumentCollectionModel):
 
         documents : List[Document]
             A list of Document objects representing the documents to create.
+        batch_size : int, optional
+            The number of documents to upload in each batch. Defaults to 500.
 
         Returns
         -------
@@ -140,6 +142,8 @@ class DocumentCollection(DocumentCollectionModel):
         -------
         List[str]
             The UUIDs of the created documents.
+        batch_size : int, optional
+            The number of documents to upload in each batch. Defaults to 500.
 
         Raises
         ------
