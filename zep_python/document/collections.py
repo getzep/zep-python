@@ -17,7 +17,7 @@ from zep_python.utils import filter_dict
 from .models import Document, DocumentCollectionModel
 
 MIN_DOCS_TO_INDEX = 10_000
-DEFAULT_BATCH_SIZE = 100
+DEFAULT_BATCH_SIZE = 500
 LARGE_BATCH_WARNING_LIMIT = 1000
 LARGE_BATCH_WARNING = (
     f"Batch size is greater than {LARGE_BATCH_WARNING_LIMIT}. "
@@ -80,7 +80,11 @@ class DocumentCollection(DocumentCollectionModel):
         else:
             return "pending"
 
-    async def aadd_documents(self, documents: List[Document]) -> List[str]:
+    async def aadd_documents(
+        self,
+        documents: List[Document],
+        batch_size: int = DEFAULT_BATCH_SIZE,
+    ) -> List[str]:
         """
         Asynchronously create documents.
 
@@ -108,7 +112,7 @@ class DocumentCollection(DocumentCollectionModel):
             raise ValueError("document list must be provided")
 
         uuids: List[str] = []
-        for batch in generate_batches(documents, DEFAULT_BATCH_SIZE):
+        for batch in generate_batches(documents, batch_size):
             response = await self._aclient.post(
                 f"/collection/{self.name}/document",
                 json=batch,
@@ -120,7 +124,11 @@ class DocumentCollection(DocumentCollectionModel):
 
         return uuids
 
-    def add_documents(self, documents: List[Document]) -> List[str]:
+    def add_documents(
+        self,
+        documents: List[Document],
+        batch_size: int = DEFAULT_BATCH_SIZE,
+    ) -> List[str]:
         """
         Create documents.
 
@@ -147,7 +155,7 @@ class DocumentCollection(DocumentCollectionModel):
             raise ValueError("document list must be provided")
 
         uuids: List[str] = []
-        for batch in generate_batches(documents, DEFAULT_BATCH_SIZE):
+        for batch in generate_batches(documents, batch_size):
             response = self._client.post(
                 f"/collection/{self.name}/document",
                 json=batch,
