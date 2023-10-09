@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "zep-python"
-version = "1.2.0"
+version = "1.2.1"
 description = "Zep: Fast, scalable building blocks for LLM apps. This is the Python client for the Zep service."
 authors = ["Daniel Chalef <daniel.chalef@private.org>"]
 readme = "README.md"
