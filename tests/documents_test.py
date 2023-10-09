@@ -12,6 +12,7 @@ from zep_python.document import Document
 from zep_python.document.collections import (
     LARGE_BATCH_WARNING_LIMIT,
     DocumentCollection,
+    generate_batches,
 )
 from zep_python.exceptions import APIError, NotFoundError
 from zep_python.zep_client import ZepClient
@@ -682,6 +683,15 @@ async def test_asearch_documents_api_error(
 
     with pytest.raises(APIError):
         await mock_collection.asearch("search_text", {"key": "value"}, 10)
+
+
+def test_generate_batches():
+    documents = [gen_mock_document("test_collection", i) for i in range(10)]
+    batches = generate_batches(documents, 5)
+
+    assert len(list(batches)) == 2
+    for batch in batches:
+        assert len(batch) == 5
 
 
 def generate_mock_collection(
