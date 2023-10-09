@@ -3,18 +3,18 @@ from typing import List
 from uuid import uuid4
 
 from dotenv import load_dotenv
-from langchain.docstore.base import Document
+from langchain.docstore.document import Document
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores.zep import CollectionConfig, ZepVectorStore
 
 from zep_python import ZepClient
-from zep_python.experimental.langchain import ZepVectorStore
 
 
 def print_results(results: List[Document]):
     for result in results:
         content = " ".join(result.page_content.split(" "))
-        print(f"{content} - ({result.metadata})\n")
+        print(f"{content}\n")
 
 
 def main():
@@ -25,15 +25,28 @@ def main():
     print(f"Creating collection {collection_name}")
 
     client = ZepClient(base_url=zep_api_url)
-    collection = client.document.add_collection(
+    client.document.add_collection(
         name=collection_name,  # required
         description="Charles Babbage's Babbage's Calculating Engine",  # optional
         embedding_dimensions=1536,  # this must match the embedding width
         is_auto_embedded=False,  # we're going to provide our own embeddings
     )
 
+    cfg = CollectionConfig(
+        name=collection_name,
+        description="Charles Babbage's Babbage's Calculating Engine",
+        metadata={},
+        embedding_dimensions=1536,
+        is_auto_embedded=False,
+    )
+
     # Ensure that you have OPENAI_API_KEY set in your environment or .env file
-    vectorstore = ZepVectorStore(collection, embedding=OpenAIEmbeddings())
+    vectorstore = ZepVectorStore(
+        collection_name=collection_name,
+        api_url=zep_api_url,
+        config=cfg,
+        embedding=OpenAIEmbeddings(),
+    )
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=400,

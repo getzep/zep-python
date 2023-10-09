@@ -1,5 +1,5 @@
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Generator, List, Optional, Tuple
 
 import httpx
 
@@ -17,11 +17,29 @@ from zep_python.utils import filter_dict
 from .models import Document, DocumentCollectionModel
 
 MIN_DOCS_TO_INDEX = 10_000
+DEFAULT_BATCH_SIZE = 100
 LARGE_BATCH_WARNING_LIMIT = 1000
 LARGE_BATCH_WARNING = (
     f"Batch size is greater than {LARGE_BATCH_WARNING_LIMIT}. "
     "This may result in slow performance or out-of-memory failures."
 )
+
+
+def generate_batches(
+    documents: List[Document], batch_size: int
+) -> Generator[List[Dict[str, Any]], None, None]:
+    """Generate batches of documents to be sent to the API."""
+
+    document_dicts = (doc.dict(exclude_none=True) for doc in documents)
+    batches = (
+        [
+            doc
+            for doc in (next(document_dicts, None) for _ in range(batch_size))
+            if doc is not None
+        ]
+        for _ in range(0, len(documents), batch_size)
+    )
+    return batches
 
 
 class DocumentCollection(DocumentCollectionModel):
@@ -89,16 +107,18 @@ class DocumentCollection(DocumentCollectionModel):
         if documents is None:
             raise ValueError("document list must be provided")
 
-        documents_dicts = [document.dict(exclude_none=True) for document in documents]
+        uuids: List[str] = []
+        for batch in generate_batches(documents, DEFAULT_BATCH_SIZE):
+            response = await self._aclient.post(
+                f"/collection/{self.name}/document",
+                json=batch,
+            )
 
-        response = await self._aclient.post(
-            f"/collection/{self.name}/document",
-            json=documents_dicts,
-        )
+            handle_response(response)
 
-        handle_response(response)
+            uuids.extend(response.json())
 
-        return response.json()
+        return uuids
 
     def add_documents(self, documents: List[Document]) -> List[str]:
         """
@@ -126,16 +146,18 @@ class DocumentCollection(DocumentCollectionModel):
         if documents is None:
             raise ValueError("document list must be provided")
 
-        documents_dicts = [document.dict(exclude_none=True) for document in documents]
+        uuids: List[str] = []
+        for batch in generate_batches(documents, DEFAULT_BATCH_SIZE):
+            response = self._client.post(
+                f"/collection/{self.name}/document",
+                json=batch,
+            )
 
-        response = self._client.post(
-            f"/collection/{self.name}/document",
-            json=documents_dicts,
-        )
+            handle_response(response)
 
-        handle_response(response)
+            uuids.extend(response.json())
 
-        return response.json()
+        return uuids
 
     async def aupdate_document(
         self,
