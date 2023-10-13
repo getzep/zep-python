@@ -27,8 +27,9 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - run: pip install pdoc3
-      - run: pdoc --html --output-dir docs zep_python
+      - run: pip install poetry
+      - run: poetry install
+      - run: poetry run pdoc --html --output-dir docs zep_python
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
