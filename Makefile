@@ -1,4 +1,4 @@
-.PHONY: all format lint test tests
+.PHONY: all format lint test test coverage docs
 
 all: help
 
@@ -7,6 +7,9 @@ coverage:
 		--cov-config=.coveragerc \
 		--cov-report xml \
 		--cov-report term-missing:skip-covered
+
+docs:
+	poetry run pdoc --html --output-dir docs zep_python
 
 format:
 	poetry run black .
