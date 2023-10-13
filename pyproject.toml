@@ -24,12 +24,10 @@ black = "^23.3.0"
 ruff = "^0.0.265"
 mypy = "^1.2.0"
 pre-commit = "^3.3.1"
-mkdocs = "^1.4.3"
-mkdocstrings = {version = "0.21.2", extras = ["python"]}
-mkdocs-material = "^9.1.13"
 pytest-httpx = "^0.22.0"
 faker = "^19.2.0"
 python-dotenv = "^1.0.0"
+pdoc3 = "^0.10.0"
 
 [build-system]
 requires = ["poetry-core"]
