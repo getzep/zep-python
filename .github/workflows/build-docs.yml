@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload docs folder as artifact
-          path: './docs'
+          path: './docs/zep_python'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
