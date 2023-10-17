@@ -177,10 +177,17 @@ class MemorySearchPayload(BaseModel):
         Metadata associated with the search query.
     text : str
         The text of the search query.
+    search_type : Optional[str]
+        The type of search to perform. Defaults to "similarity".
+        Must be one of "similarity" or "mmr".
+    mmr_lambda : Optional[float]
+        The lambda parameter for the MMR Reranking Algorithm.
     """
 
-    text: str = Field("A text is required")
-    metadata: Optional[Dict[str, Any]] = Field(optional=True, default=None)
+    text: Optional[str] = Field(default=None)
+    metadata: Optional[Dict[str, Any]] = Field(default=None)
+    search_type: Optional[str] = Field(default="similarity")
+    mmr_lambda: Optional[float] = Field(default=None)
 
 
 class MemorySearchResult(BaseModel):

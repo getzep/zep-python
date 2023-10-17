@@ -12,9 +12,9 @@ else:
         from pydantic import PrivateAttr
 
 from zep_python.exceptions import handle_response
-from zep_python.utils import filter_dict
+from zep_python.utils import SearchType, filter_dict
 
-from .models import Document, DocumentCollectionModel
+from .models import Document, DocumentCollectionModel, DocumentSearchPayload
 
 MIN_DOCS_TO_INDEX = 10_000
 DEFAULT_BATCH_SIZE = 500
@@ -544,6 +544,8 @@ class DocumentCollection(DocumentCollectionModel):
         embedding: Optional[List[float]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
+        search_type: Optional[str] = None,
+        mmr_lambda: Optional[float] = None,
     ) -> Tuple[List[Document], List[float]]:
         if not self._aclient:
             raise ValueError(
@@ -556,13 +558,23 @@ class DocumentCollection(DocumentCollectionModel):
         if text is not None and not isinstance(text, str):
             raise ValueError("Text must be a string.")
 
+        search_type_value = SearchType(search_type or "similarity")
+
+        payload = DocumentSearchPayload(
+            text=text,
+            embedding=embedding,
+            metadata=metadata,
+            search_type=search_type_value,
+            mmr_lambda=mmr_lambda,
+        )
+
         url = f"/collection/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
 
         response = await self._aclient.post(
             url,
             params=params,
-            json={"text": text, "embedding": embedding, "metadata": metadata},
+            json=payload.dict(exclude_none=True),
         )
 
         # If the collection is not found, return an empty list
@@ -583,6 +595,8 @@ class DocumentCollection(DocumentCollectionModel):
         embedding: Optional[List[float]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
+        search_type: Optional[str] = None,
+        mmr_lambda: Optional[float] = None,
     ) -> List[Document]:
         """
         Async search over documents in a collection based on provided search criteria.
@@ -600,6 +614,11 @@ class DocumentCollection(DocumentCollectionModel):
             Document metadata to filter on.
         limit : Optional[int], optional
             Limit the number of returned documents.
+        search_type : Optional[str], optional
+            The type of search to perform. Defaults to "similarity".
+            Must be one of "similarity" or "mmr".
+        mmr_lambda : Optional[float], optional
+            The lambda parameter for the MMR Reranking Algorithm.
 
         Returns
         -------
@@ -611,8 +630,14 @@ class DocumentCollection(DocumentCollectionModel):
         APIError
             If the API response format is unexpected or there's an error from the API.
         """
+
         results, _ = await self.asearch_return_query_vector(
-            text=text, embedding=embedding, metadata=metadata, limit=limit
+            text=text,
+            embedding=embedding,
+            metadata=metadata,
+            limit=limit,
+            search_type=search_type,
+            mmr_lambda=mmr_lambda,
         )
 
         return results
@@ -623,6 +648,8 @@ class DocumentCollection(DocumentCollectionModel):
         embedding: Optional[List[float]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
+        search_type: Optional[str] = None,
+        mmr_lambda: Optional[float] = None,
     ) -> Tuple[List[Document], List[float]]:
         if not self._client:
             raise ValueError(
@@ -635,13 +662,23 @@ class DocumentCollection(DocumentCollectionModel):
         if text is not None and not isinstance(text, str):
             raise ValueError("Text must be a string.")
 
+        search_type_value = SearchType(search_type or "similarity")
+
+        payload = DocumentSearchPayload(
+            text=text,
+            embedding=embedding,
+            metadata=metadata,
+            search_type=search_type_value,
+            mmr_lambda=mmr_lambda,
+        )
+
         url = f"/collection/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
 
         response = self._client.post(
             url,
             params=params,
-            json={"text": text, "embedding": embedding, "metadata": metadata},
+            json=payload.dict(exclude_none=True),
         )
 
         # If the collection is not found, return an empty list
@@ -662,6 +699,8 @@ class DocumentCollection(DocumentCollectionModel):
         embedding: Optional[List[float]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
+        search_type: Optional[str] = None,
+        mmr_lambda: Optional[float] = None,
     ) -> List[Document]:
         """
         Searches over documents in a collection based on provided search criteria.
@@ -679,6 +718,11 @@ class DocumentCollection(DocumentCollectionModel):
             Document metadata to filter on.
         limit : Optional[int], optional
             Limit the number of returned documents.
+        search_type : Optional[str], optional
+            The type of search to perform. Defaults to "similarity".
+            Must be one of "similarity" or "mmr".
+        mmr_lambda : Optional[float], optional
+            The lambda parameter for the MMR Reranking Algorithm.
 
         Returns
         -------
@@ -690,8 +734,14 @@ class DocumentCollection(DocumentCollectionModel):
         APIError
             If the API response format is unexpected or there's an error from the API.
         """
+
         results, _ = self.search_return_query_vector(
-            text=text, embedding=embedding, metadata=metadata, limit=limit
+            text=text,
+            embedding=embedding,
+            metadata=metadata,
+            limit=limit,
+            search_type=search_type,
+            mmr_lambda=mmr_lambda,
         )
 
         return results

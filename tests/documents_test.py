@@ -572,6 +572,31 @@ async def test_asearch_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
 
 
 @pytest.mark.asyncio
+async def test_asearch_documents_mmr(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json={
+            "results": [doc.dict() for doc in mock_documents],
+            "query_vector": [random() for _ in range(384)],
+        },
+    )
+
+    response = await mock_collection.asearch(
+        "search_text",
+        metadata={"key": "value"},
+        limit=10,
+        search_type="mmr",
+        mmr_lambda=0.5,
+    )
+
+    assert response == mock_documents
+
+
+@pytest.mark.asyncio
 async def test_asearch_documents_embedding(
     zep_client: ZepClient, httpx_mock: HTTPXMock
 ):
@@ -611,6 +636,30 @@ def test_search_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
 
     response = mock_collection.search(
         "search_text", metadata={"key": "value"}, limit=10
+    )
+
+    assert response == mock_documents
+
+
+def test_search_documents_mmr(zep_client: ZepClient, httpx_mock: HTTPXMock):
+    mock_collection = generate_mock_collection(1, with_clients=True)
+    mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
+
+    httpx_mock.add_response(
+        method="POST",
+        status_code=200,
+        json={
+            "results": [doc.dict() for doc in mock_documents],
+            "query_vector": [random() for _ in range(384)],
+        },
+    )
+
+    response = mock_collection.search(
+        "search_text",
+        metadata={"key": "value"},
+        search_type="mmr",
+        limit=10,
+        mmr_lambda=0.5,
     )
 
     assert response == mock_documents
@@ -682,7 +731,9 @@ async def test_asearch_documents_api_error(
     )
 
     with pytest.raises(APIError):
-        await mock_collection.asearch("search_text", {"key": "value"}, 10)
+        await mock_collection.asearch(
+            "search_text", metadata={"key": "value"}, limit=10
+        )
 
 
 def test_generate_batches():
