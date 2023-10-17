@@ -1,7 +1,14 @@
-""" Example of using the Zep Python SDK.
+""" This is an example of how to use the Zep Python SDK to interact with the Zep API.
 
-    Note: Once a session is deleted, new messages cannot be added to it.
-    The API will return a 400 error if you try to add messages to a deleted session.
+The script demonstrates the following functionalities:
+1. Creating a user using the ZepClient.
+2. Creating a session associated with the created user.
+3. Adding messages to the session.
+4. Searching the session memory for a specific query.
+5. Searching the session memory with MMR reranking.
+6. Deleting the session memory.
+
+Please replace the base_url and api_key with your Zep API URL and your API key respectively.
 """
 import time
 import uuid
@@ -41,9 +48,7 @@ def main() -> None:
         except APIError as e:
             print(f"Failed to create user: {e}")
 
-        #
         # Create session associated with the above user
-        #
         session_id = uuid.uuid4().hex
         print(f"Creating session: {session_id}")
         try:
@@ -51,96 +56,98 @@ def main() -> None:
                 session_id=session_id, user_id=user_id, metadata={"foo": "bar"}
             )
             result = client.memory.add_session(session)
-            print(result)
+            print(f"Session created: {result}")
         except APIError as e:
-            print(f"Unable to create session {session_id} got error: {e}")
+            print(f"Unable to create session {session_id}. Error: {e}")
 
-        #
         # Update session metadata
-        #
         print(f"Updating session: {session_id}")
         try:
             # The new metadata values will be merged with the existing metadata
             session = Session(session_id=session_id, metadata={"bar": "foo"})
             result = client.memory.update_session(session)
-            print(result)
+            print(f"Session updated: {result}")
         except APIError as e:
-            print(f"Unable to update session {session_id} got error: {e}")
+            print(f"Unable to update session {session_id}. Error: {e}")
 
-        #
         # Get session
-        #
         print(f"Getting session: {session_id}")
         try:
             session = client.memory.get_session(session_id)
-            print(session.dict())
+            print(f"Session details: {session.dict()}")
         except NotFoundError:
             print("Session not found")
 
-        #
         # Get memory
-        #
         print(f"\n1---getMemory for Session: {session_id}")
         try:
             memory = client.memory.get_memory(session_id)
             for message in memory.messages:
-                print(message.to_dict())
+                print(f"Message: {message.dict()}")
         except NotFoundError:
             print("Memory not found")
 
-        #
         # Add memory
-        #
         print("\n2---addMemory for Session: " + session_id)
         messages = [Message(**m) for m in history]  # type: ignore
         memory = Memory(messages=messages)
         try:
             result = client.memory.add_memory(session_id, memory)
-            print(result)
+            print(f"Memory added: {result}")
         except APIError as e:
-            print(f"Unable to add memory to session {session_id} got error: {e}")
+            print(f"Unable to add memory to session {session_id}. Error: {e}")
 
         # Naive wait for memory to be enriched and indexed
         time.sleep(2.0)
 
-        #
         # Get memory we just added
-        #
         print(f"\n3---getMemory for Session: {session_id}")
         try:
             memory = client.memory.get_memory(session_id)
             for message in memory.messages:
-                print(message.to_dict())
+                print(f"Message: {message.dict()}")
         except NotFoundError:
             print("Memory not found for Session: " + session_id)
 
-        #
         # Search memory
-        #
+        query = "Can you name some popular destinations in Iceland?"
         search_payload = MemorySearchPayload(
-            text="Name some popular destinations in Iceland?",
+            text=query,
             metadata={
                 "where": {"jsonpath": '$.system.entities[*] ? (@.Label == "LOC")'}
             },
         )
-        print(f"\n4---searchMemory for Query: '{search_payload}'")
-        # Search memory
+        print(f"\n4---searchMemory for Query: '{query}'")
         try:
             search_results = client.memory.search_memory(session_id, search_payload)
             for search_result in search_results:
-                # Access the 'content' field within the 'message' object.
                 message_content = search_result.message
-                print(message_content)
+                print(f"Search result: {message_content}")
         except NotFoundError:
             print("Nothing found for Session" + session_id)
 
-        #
+        # Search memory with MMR reranking
+        search_payload = MemorySearchPayload(
+            text=query,
+            search_type="mmr",
+            mmr_lambda=0.5,
+        )
+        print(f"\n4---searchMemory for MMR Query: '{query}'")
+        try:
+            search_results = client.memory.search_memory(
+                session_id, search_payload, limit=3
+            )
+            for search_result in search_results:
+                message_content = search_result.message
+                print(f"Search result: {message_content}")
+        except NotFoundError:
+            print("Nothing found for Session" + session_id)
+
         # Delete memory
-        #
         print(f"Deleting memory for Session: {session_id}")
         try:
             result = client.memory.delete_memory(session_id)
-            print(result)
+            print(f"Memory deleted: {result}")
         except NotFoundError:
             print("Memory not found for Session" + session_id)
 

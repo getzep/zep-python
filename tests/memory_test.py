@@ -13,6 +13,7 @@ from zep_python.memory.models import (
     Message,
     Session,
 )
+from zep_python.utils import SearchType
 from zep_python.zep_client import ZepClient
 
 _ = mock_healthcheck, undo_mock_healthcheck
@@ -190,7 +191,6 @@ async def test_asearch_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
     search_payload = MemorySearchPayload(
-        meta={},
         text="Test query",
         metadata={"where": {"jsonpath": '$.system.entities[*] ? (@.Label == "DATE")'}},
     )
@@ -218,6 +218,53 @@ async def test_asearch_memory(httpx_mock: HTTPXMock):
 
 
 @pytest.mark.asyncio
+async def test_asearch_memory_mmr(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+
+    search_payload = MemorySearchPayload(
+        text="Test query",
+        metadata={"where": {"jsonpath": '$.system.entities[*] ? (@.Label == "DATE")'}},
+        search_type=SearchType.mmr,
+        mmr_lambda=0.5,
+    )
+    mock_response = [
+        {
+            "message": {
+                "uuid": "msg-uuid",
+                "role": "user",
+                "content": "Test message",
+            },
+            "dist": 0.9,
+        }
+    ]
+
+    httpx_mock.add_response(status_code=200, json=mock_response)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        search_results = await client.memory.asearch_memory(session_id, search_payload)
+
+        assert len(search_results) == 1
+        assert search_results[0].message["uuid"] == "msg-uuid"
+        assert search_results[0].message["role"] == "user"
+        assert search_results[0].message["content"] == "Test message"
+        assert search_results[0].dist == 0.9
+
+
+@pytest.mark.asyncio
+async def test_asearch_memory_invalid_search_type(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+
+    search_payload = MemorySearchPayload(
+        text="Test query",
+        search_type="invalid",
+    )
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = await client.memory.asearch_memory(session_id, search_payload)
+
+
+@pytest.mark.asyncio
 async def test_asearch_memory_no_payload(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
@@ -230,7 +277,6 @@ def test_search_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
     search_payload = MemorySearchPayload(
-        meta={},
         text="Test query",
         metadata={"where": {"jsonpath": '$.system.entities[*] ? (@.Label == "DATE")'}},
     )
@@ -255,6 +301,51 @@ def test_search_memory(httpx_mock: HTTPXMock):
         assert search_results[0].message["role"] == "user"
         assert search_results[0].message["content"] == "Test message"
         assert search_results[0].dist == 0.9
+
+
+def test_search_memory_mmr(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+
+    search_payload = MemorySearchPayload(
+        text="Test query",
+        metadata={"where": {"jsonpath": '$.system.entities[*] ? (@.Label == "DATE")'}},
+        search_type=SearchType.mmr,
+        mmr_lambda=0.5,
+    )
+    mock_response = [
+        {
+            "message": {
+                "uuid": "msg-uuid",
+                "role": "user",
+                "content": "Test message",
+            },
+            "dist": 0.9,
+        }
+    ]
+
+    httpx_mock.add_response(status_code=200, json=mock_response)
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        search_results = client.memory.search_memory(session_id, search_payload)
+
+        assert len(search_results) == 1
+        assert search_results[0].message["uuid"] == "msg-uuid"
+        assert search_results[0].message["role"] == "user"
+        assert search_results[0].message["content"] == "Test message"
+        assert search_results[0].dist == 0.9
+
+
+def test_search_memory_invalid_search_type(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+
+    search_payload = MemorySearchPayload(
+        text="Test query",
+        search_type="invalid",
+    )
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = client.memory.search_memory(session_id, search_payload)
 
 
 # Predefined session response
