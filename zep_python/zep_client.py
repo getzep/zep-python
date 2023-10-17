@@ -126,7 +126,7 @@ class ZepClient:
                 warnings.warn(
                     (
                         "You are using an incompatible Zep server version. Please"
-                        " upgrade to {MINIMUM_SERVER_VERSION} or later."
+                        f" upgrade to {MINIMUM_SERVER_VERSION} or later."
                     ),
                     Warning,
                     stacklevel=2,
