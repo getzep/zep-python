@@ -112,7 +112,7 @@ async def main() -> None:
             )
 
         # Naive wait for memory to be enriched and indexed
-        time.sleep(2.0)
+        time.sleep(5.0)
 
         # Get Memory for session
         print(f"\n3---getMemory for Session: {session_id}")
@@ -128,7 +128,7 @@ async def main() -> None:
         search_payload = MemorySearchPayload(
             text=query,
             metadata={
-                "where": {"jsonpath": '$.system.entities[*] ? (@.Label == "LOC")'}
+                "where": {"jsonpath": '$.system.entities[*] ? (@.Label == "GPE")'}
             },
         )
         print(f"\n4---searchMemory for Query: '{query}'")
@@ -158,6 +158,24 @@ async def main() -> None:
                 print(f"Search result: {message_content}")
         except NotFoundError:
             print(f"Nothing found for Session {session_id}")
+
+        # Search Summary with MMR reranking
+        search_payload = MemorySearchPayload(
+            text=query,
+            search_scope="summary",
+            search_type="mmr",
+            mmr_lambda=0.5,
+        )
+        print(f"\n4---searchMemory for MMR Query: '{query}'")
+        try:
+            search_results = client.memory.search_memory(
+                session_id, search_payload, limit=3
+            )
+            for search_result in search_results:
+                message_content = search_result.summary
+                print(f"Search result: {message_content}")
+        except NotFoundError:
+            print("Nothing found for Session" + session_id)
 
         # Delete Memory for session
         print(f"\n5---deleteMemory for Session: {session_id}")

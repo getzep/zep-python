@@ -10,6 +10,7 @@ from zep_python.memory.models import (
     MemorySearchPayload,
     MemorySearchResult,
     Message,
+    SearchScope,
     Session,
     Summary,
 )
@@ -719,6 +720,9 @@ class MemoryClient:
         if search_payload.search_type not in SearchType.__members__:
             raise ValueError("search_type must be one of 'similarity' or 'mmr'")
 
+        if search_payload.search_scope not in SearchScope.__members__:
+            raise ValueError("search_scope must be one of 'messages' or 'summary'")
+
         params = {"limit": limit} if limit is not None else {}
         response = self.client.post(
             f"/sessions/{session_id}/search",
@@ -769,6 +773,9 @@ class MemoryClient:
 
         if search_payload.search_type not in SearchType.__members__:
             raise ValueError("search_type must be one of 'similarity' or 'mmr'")
+
+        if search_payload.search_scope not in SearchScope.__members__:
+            raise ValueError("search_scope must be one of 'messages' or 'summary'")
 
         params = {"limit": limit} if limit is not None else {}
         response = await self.aclient.post(
