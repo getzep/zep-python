@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 if TYPE_CHECKING:
@@ -9,6 +10,11 @@ else:
         from pydantic.v1 import BaseModel, Field
     except ImportError:
         from pydantic import BaseModel, Field
+
+
+class SearchScope(str, Enum):
+    messages = "messages"
+    summary = "summary"
 
 
 class Session(BaseModel):
@@ -177,6 +183,9 @@ class MemorySearchPayload(BaseModel):
         Metadata associated with the search query.
     text : str
         The text of the search query.
+    search_scope : Optional[str]
+        Search over messages or summaries. Defaults to "messages".
+        Must be one of "messages" or "summary".
     search_type : Optional[str]
         The type of search to perform. Defaults to "similarity".
         Must be one of "similarity" or "mmr".
@@ -186,6 +195,7 @@ class MemorySearchPayload(BaseModel):
 
     text: Optional[str] = Field(default=None)
     metadata: Optional[Dict[str, Any]] = Field(default=None)
+    search_scope: Optional[str] = Field(default="messages")
     search_type: Optional[str] = Field(default="similarity")
     mmr_lambda: Optional[float] = Field(default=None)
 
@@ -197,16 +207,17 @@ class MemorySearchResult(BaseModel):
     Attributes
     ----------
     message : Optional[Dict[str, Any]]
-        The message associated with the search result.
+        The message matched by search.
+    summary : Optional[Summary]
+        The summary matched by search.
     metadata : Optional[Dict[str, Any]]
         Metadata associated with the search result.
-    summary : Optional[str]
-        The summary of the search result.
     dist : Optional[float]
         The distance metric of the search result.
     """
 
+    # TODO: Legacy bug. message should be a Message object.
     message: Optional[Dict[str, Any]] = None
+    summary: Optional[Summary] = None
     metadata: Optional[Dict[str, Any]] = None
-    summary: Optional[str] = None
     dist: Optional[float] = None

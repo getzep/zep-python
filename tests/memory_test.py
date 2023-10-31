@@ -11,6 +11,7 @@ from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
     Message,
+    SearchScope,
     Session,
 )
 from zep_python.utils import SearchType
@@ -257,6 +258,51 @@ async def test_asearch_memory_invalid_search_type(httpx_mock: HTTPXMock):
     search_payload = MemorySearchPayload(
         text="Test query",
         search_type="invalid",
+    )
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = await client.memory.asearch_memory(session_id, search_payload)
+
+
+@pytest.mark.asyncio
+async def test_asearch_memory_scope_summary(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+
+    search_payload = MemorySearchPayload(
+        text="Test query",
+        metadata={"where": {"jsonpath": '$.system.entities[*] ? (@.Label == "DATE")'}},
+        search_scope=SearchScope.summary,
+        mmr_lambda=0.5,
+    )
+    mock_response = [
+        {
+            "summary": {
+                "uuid": "msg-uuid",
+                "content": "Test summary",
+            },
+            "dist": 0.9,
+        }
+    ]
+
+    httpx_mock.add_response(status_code=200, json=mock_response)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        search_results = await client.memory.asearch_memory(session_id, search_payload)
+
+        assert len(search_results) == 1
+        assert search_results[0].summary.uuid == "msg-uuid"
+        assert search_results[0].summary.content == "Test summary"
+        assert search_results[0].dist == 0.9
+
+
+@pytest.mark.asyncio
+async def test_asearch_memory_invalid_search_scope(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+
+    search_payload = MemorySearchPayload(
+        text="Test query",
+        search_scope="invalid",
     )
 
     with ZepClient(base_url=API_BASE_URL) as client:
