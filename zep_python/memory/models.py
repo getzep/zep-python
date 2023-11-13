@@ -49,7 +49,7 @@ class Session(BaseModel):
     deleted_at: Optional[str] = None
     session_id: str
     user_id: Optional[str] = None
-    metadata: Dict[str, Any]
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class Summary(BaseModel):
