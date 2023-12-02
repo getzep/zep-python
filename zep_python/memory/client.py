@@ -44,8 +44,6 @@ class MemoryClient:
             messages = [
                 Message.parse_obj(m) for m in response_data.get("messages", None)
             ]
-            if len(messages) == 0:
-                raise ValueError("Messages can't be empty")
         except (TypeError, ValueError) as e:
             raise APIError(message="Unexpected response format from the API") from e
 

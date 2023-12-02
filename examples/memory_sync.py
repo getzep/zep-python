@@ -78,22 +78,14 @@ def main() -> None:
         except NotFoundError:
             print("Session not found")
 
-        # Get memory
-        print(f"\n1---getMemory for Session: {session_id}")
-        try:
-            memory = client.memory.get_memory(session_id)
-            for message in memory.messages:
-                print(f"Message: {message.dict()}")
-        except NotFoundError:
-            print("Memory not found")
-
         # Add memory
         print("\n2---addMemory for Session: " + session_id)
-        messages = [Message(**m) for m in history]  # type: ignore
-        memory = Memory(messages=messages)
         try:
-            result = client.memory.add_memory(session_id, memory)
-            print(f"Memory added: {result}")
+            for m in history:
+                message = Message(**m)
+                memory = Memory(messages=[message])
+                client.memory.add_memory(session_id, memory)
+            print(f"Added {len(history)} messages to memory for session {session_id}")
         except APIError as e:
             print(f"Unable to add memory to session {session_id}. Error: {e}")
 
