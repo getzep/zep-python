@@ -87,22 +87,14 @@ async def main() -> None:
         except NotFoundError:
             print("Session not found")
 
-        # Get Memory for session
-        print(f"\n1---getMemory for Session: {session_id}")
-        try:
-            memory = await client.memory.aget_memory(session_id)
-            for message in memory.messages:
-                print(f"Message: {message.to_dict()}")
-        except NotFoundError:
-            print("Memory not found")
-
         # Add Memory for session
         print(f"\n2---addMemory for Session: {session_id}")
-        messages = [Message(**m) for m in history]
-        memory = Memory(messages=messages)
         try:
-            result = await client.memory.aadd_memory(session_id, memory)
-            print(f"Memory added: {result}")
+            for m in history:
+                message = Message(**m)
+                memory = Memory(messages=[message])
+                await client.memory.aadd_memory(session_id, memory)
+            print(f"Added {len(history)} messages to memory for session {session_id}")
         except NotFoundError as e:
             print(f"Memory not found for session {session_id}. Got error: {e}")
         except APIError as e:
