@@ -62,9 +62,37 @@ def main() -> None:
                 f"API error occurred while adding memory to session {session_id}. Got"
                 f" error: {e}"
             )
-        session_messages = client.message.get_session_messages(session_id)
 
-        print(f"Session messages: {session_messages}")
+        # Get session messages
+        session_messages = client.message.get_session_messages(session_id)
+        print(f"Get Session Messages: {session_messages}")
+
+        # Get Session Message
+        
+        # get first session message
+        first_session_message_id = session_messages[0].uuid
+        print(f"Get Session Message: {first_session_message_id}")
+
+        session_message = client.message.get_session_message(session_id, first_session_message_id)
+        print(f"Get Session Message: {session_message}")
+
+        updated_session_message_metadata = {"metadata": {"foo": "bar"}}
+        updated_session_message = client.message.update_message_metadata(
+            session_id, first_session_message_id, updated_session_message_metadata
+        )
+        print(f"Updated Session Message Metadata: {updated_session_message}")
+
+        # Delete memory
+        print(f"Deleting memory for Session: {session_id}")
+        try:
+            result = client.memory.delete_memory(session_id)
+            print(f"Memory deleted: {result}")
+        except NotFoundError:
+            print("Memory not found for Session" + session_id)
+
+
+
+
 
 
 if __name__ == "__main__":
