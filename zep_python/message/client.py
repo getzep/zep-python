@@ -151,7 +151,7 @@ class MessageClient:
         response_data = response.json()
         return Message.parse_obj(response_data)
 
-    async def get_session_message(self, session_id: str, message_id: str) -> List[Message]:
+    async def aget_session_message(self, session_id: str, message_id: str) -> List[Message]:
         """
         Gets a specific message from a session
 
@@ -178,7 +178,7 @@ class MessageClient:
 
         try:
             print(f"url: {url}")
-            response = await self.aclient.get(url=url)
+            response = await self.client.get(url=url)
         except httpx.NetworkError as e:
             raise ConnectionError("Unable to connect to server.")
 
@@ -226,7 +226,7 @@ class MessageClient:
         response_data = response.json()
         return Message.parse_obj(response_data) 
 
-    async def update_message_metadata(
+    async def aupdate_message_metadata(
         self, session_id: str, message_id: str, metadata: Dict[str, Any]
     ) -> Message:
         """
