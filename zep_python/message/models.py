@@ -35,8 +35,8 @@ class Message(BaseModel):
     """
 
      
-    role: Optional[str] = Field(optional=True, default=None) #Field("A role is required")
-    content: str = Field(optional=True, default=None) #Field("Content is required")
+    role: str = Field("A role is required")
+    content: str = Field("Content is required")
     uuid: Optional[str] = Field(optional=True, default=None)
     created_at: Optional[str] = Field(optional=True, default=None)
     token_count: Optional[int] = Field(optional=True, default=None)
