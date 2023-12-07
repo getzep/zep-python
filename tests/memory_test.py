@@ -10,10 +10,10 @@ from zep_python import NotFoundError
 from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
-    Message,
     SearchScope,
     Session,
 )
+from zep_python.message.models import Message
 from zep_python.utils import SearchType
 from zep_python.zep_client import ZepClient
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from zep_python.message.models import Message
 
 if TYPE_CHECKING:
     from pydantic import BaseModel, Field
@@ -91,49 +92,6 @@ class Summary(BaseModel):
             A dictionary containing the attributes of the summary.
         """
         return self.dict()
-
-
-class Message(BaseModel):
-    """
-    Represents a message in a conversation.
-
-    Attributes
-    ----------
-    uuid : str, optional
-        The unique identifier of the message.
-    created_at : str, optional
-        The timestamp of when the message was created.
-    role : str
-        The role of the sender of the message (e.g., "user", "assistant").
-    content : str
-        The content of the message.
-    token_count : int, optional
-        The number of tokens in the message.
-
-    Methods
-    -------
-    to_dict() -> Dict[str, Any]:
-        Returns a dictionary representation of the message.
-    """
-
-    role: str = Field("A role is required")
-    content: str = Field("Content is required")
-    uuid: Optional[str] = Field(optional=True, default=None)
-    created_at: Optional[str] = Field(optional=True, default=None)
-    token_count: Optional[int] = Field(optional=True, default=None)
-    metadata: Optional[Dict[str, Any]] = Field(optional=True, default=None)
-
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Returns a dictionary representation of the message.
-
-        Returns
-        -------
-        Dict[str, Any]
-            A dictionary containing the attributes of the message.
-        """
-        return self.dict()
-
 
 class Memory(BaseModel):
     """

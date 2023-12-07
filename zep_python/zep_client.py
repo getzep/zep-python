@@ -17,6 +17,9 @@ from zep_python.memory.models import (
     MemorySearchResult,
     Session,
 )
+from zep_python.message.client import MessageClient
+from zep_python.message.models import Message
+
 from zep_python.user.client import UserClient
 
 API_BASE_PATH = "/api/v1"
@@ -86,6 +89,7 @@ class ZepClient:
         self._healthcheck(base_url)
 
         self.memory = MemoryClient(self.aclient, self.client)
+        self.message = MessageClient(self.aclient, self.client)
         self.document = DocumentClient(self.aclient, self.client)
         self.user = UserClient(self.aclient, self.client)
 
