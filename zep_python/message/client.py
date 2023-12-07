@@ -56,7 +56,9 @@ class MessageClient:
             print(f"url: {url}")
             response = self.client.get(url=url)
         except httpx.NetworkError as e:
-            raise ConnectionError("Unable to connect to server.") 
+            raise ConnectionError("Unable to connect to server.")
+
+        handle_response(response, f"Unable to get messages for session {session_id}.")
 
         return [Message.parse_obj(message) for message in response.json()['messages']]
         
@@ -92,6 +94,8 @@ class MessageClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Unable to connect to server.")
 
+        handle_response(response, f"Unable to get message {message_id} for session {session_id}.")
+
         response_data = response.json()
         return Message.parse_obj(response_data)
 
@@ -125,32 +129,11 @@ class MessageClient:
         url = f"/sessions/{session_id}/messages/{message_id}"
 
         try:
-            print(f"url: {url}")
             response = self.client.patch(url=url, json=metadata)
         except httpx.NetworkError as e:
             raise ConnectionError("Unable to connect to server.")
 
+        handle_response(response, f"Unable to update message metadata {message_id} for session {session_id}.")
+
         response_data = response.json()
         return Message.parse_obj(response_data) 
-
-    # def update_message_metadata(
-    #     self, request: UpdateMessageMetadataRequest
-    # ) -> Message:
-    #     """
-    #     Updates the metadata of a message.
-
-    #     Parameters
-    #     ----------
-    #     request : UpdateMessageMetadataRequest
-    #         The request to update the metadata of a message.
-
-    #     Returns
-    #     -------
-    #     Message
-    #         The updated message.
-    #     """
-    #     response = self.client.patch(
-    #         url="/messages/metadata",
-    #         json=request.dict(),
-    #     )
-    #     return Message(**response.json())
