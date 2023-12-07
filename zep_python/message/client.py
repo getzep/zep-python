@@ -178,7 +178,7 @@ class MessageClient:
 
         try:
             print(f"url: {url}")
-            response = await self.client.get(url=url)
+            response = await self.aclient.get(url=url)
         except httpx.NetworkError as e:
             raise ConnectionError("Unable to connect to server.")
 
