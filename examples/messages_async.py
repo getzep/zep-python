@@ -17,7 +17,7 @@ from zep_python.message import Message
 from zep_python.user import CreateUserRequest
 
 
-def create_user(client):
+async def create_user(client):
     user_id = uuid.uuid4().hex
     user_request = CreateUserRequest(
         user_id=user_id,
@@ -27,34 +27,34 @@ def create_user(client):
         metadata={"foo": "bar"},
     )
     try:
-        user = client.user.add(user_request)
+        user = await client.user.aadd(user_request)
         print(f"Created user: {user.user_id}")
         return user
     except APIError as e:
         print(f"Failed to create user: {e}")
 
 
-def create_session(client, user_id):
+async def create_session(client, user_id):
     session_id = uuid.uuid4().hex
     print(f"Creating session: {session_id}")
     try:
         session = Session(
             session_id=session_id, user_id=user_id, metadata={"foo": "bar"}
         )
-        result = client.memory.add_session(session)
+        result = await client.memory.aadd_session(session)
         print(f"Session created: {result}")
         return session_id
     except APIError as e:
         print(f"Unable to create session {session_id}. Error: {e}")
 
 
-def add_memory_to_session(client, session_id, history):
+async def add_memory_to_session(client, session_id, history):
     print(f"addMemory for Session: {session_id}")
     try:
         for m in history:
             message = Message(**m)
             memory = Memory(messages=[message])
-            client.memory.add_memory(session_id, memory)
+            await client.memory.aadd_memory(session_id, memory)
         print(f"Added {len(history)} messages to memory for session {session_id}")
     except NotFoundError as e:
         print(f"Memory not found for session {session_id}. Got error: {e}")
@@ -125,9 +125,9 @@ async def main():
     base_url = "http://localhost:8000"
     api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.nEJCptN3CRfD_SQ4om4Oa2yh-ARPI41qkjj0La0Hw54"
     with ZepClient(base_url, api_key) as client:
-        user = create_user(client)
-        session_id = create_session(client, user.user_id)
-        add_memory_to_session(client, session_id, history)
+        user = await create_user(client)
+        session_id = await create_session(client, user.user_id)
+        await add_memory_to_session(client, session_id, history)
         session_messages = await get_and_print_session_messages(client, session_id)
         first_session_message_id = session_messages[0].uuid
         await get_and_print_first_session_message(
