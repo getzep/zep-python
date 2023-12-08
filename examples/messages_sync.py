@@ -121,7 +121,7 @@ def delete_and_print_memory_for_session(client, session_id):
 
 def main():
     base_url = "http://localhost:8000"
-    api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.nEJCptN3CRfD_SQ4om4Oa2yh-ARPI41qkjj0La0Hw54"
+    api_key = "your_api_key"
     with ZepClient(base_url, api_key) as client:
         user = create_user(client)
         session_id = create_session(client, user.user_id)
