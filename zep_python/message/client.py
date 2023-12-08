@@ -18,7 +18,10 @@ class MessageClient:
         The client used for making API requests.
     """
 
-    def __init__(self, aclient: AsyncClient, client: Client) -> None:
+    aclient: httpx.AsyncClient
+    client: httpx.Client
+
+    def __init__(self, aclient: httpx.AsyncClient, client: httpx.Client) -> None:
         """
         Initializes a MessageClient object.
 
@@ -124,7 +127,7 @@ class MessageClient:
         return [Message.parse_obj(message) for message in response.json()['messages']]
         
 
-    def get_session_message(self, session_id: str, message_id: str) -> List[Message]:
+    def get_session_message(self, session_id: str, message_id: str) -> Message:
         """
         Gets a specific message from a session
 
@@ -160,7 +163,7 @@ class MessageClient:
         response_data = response.json()
         return Message.parse_obj(response_data)
 
-    async def aget_session_message(self, session_id: str, message_id: str) -> List[Message]:
+    async def aget_session_message(self, session_id: str, message_id: str) -> Message:
         """
         Gets a specific message from a session
 
