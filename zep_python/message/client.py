@@ -32,7 +32,7 @@ class MessageClient:
         self.aclient = aclient
         self.client = client
 
-    def get_session_messages(self, session_id: str, limit: int = 100, offset: int = 1) -> List[Message]:
+    def get_session_messages(self, session_id: str, limit: int = 100, cursor: int = 1) -> List[Message]:
         """
         Gets all messages for a session.
 
@@ -40,9 +40,9 @@ class MessageClient:
         ----------
         session_id : str
             The ID of the session.
-        page_size : int
+        limit : int
             The number of messages to return per page.
-        page_number : int
+        cursor : int
             The page number to return.
 
         Returns
@@ -65,11 +65,11 @@ class MessageClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
-        if limit is not None and offset is not None:
-            if not isinstance(limit, int) or not isinstance(offset, int) or limit <= 0 or offset <= 0:
+        if limit is not None and cursor is not None:
+            if not isinstance(limit, int) or not isinstance(cursor, int) or limit <= 0 or cursor <= 0:
                 raise ValueError("Both page_size and page_number must be positive integers")
 
-            url = f"/sessions/{session_id}/messages?limit={limit}&offset={offset}"
+            url = f"/sessions/{session_id}/messages?limit={limit}&cursor={cursor}"
         else:
             url = f"/sessions/{session_id}/messages"
 
