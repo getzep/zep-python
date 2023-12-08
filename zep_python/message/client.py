@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
-from .models import Message, UpdateMessageMetadataRequest
-from zep_python.exceptions import APIError, handle_response
+from typing import Any, Dict, List
+from .models import Message
+from zep_python.exceptions import handle_response
 
 import httpx
 
@@ -88,7 +88,7 @@ class MessageClient:
 
         try:
             response = self.client.get(url=url)
-        except httpx.NetworkError as e:
+        except httpx.NetworkError:
             raise ConnectionError("Unable to connect to server.")
 
         handle_response(response, f"Unable to get messages for session {session_id}.")
@@ -129,7 +129,7 @@ class MessageClient:
         try:
             print(f"url: {url}")
             response = await self.aclient.get(url=url)
-        except httpx.NetworkError as e:
+        except httpx.NetworkError:
             raise ConnectionError("Unable to connect to server.")
 
         handle_response(response, f"Unable to get messages for session {session_id}.")
@@ -164,7 +164,7 @@ class MessageClient:
         try:
             print(f"url: {url}")
             response = self.client.get(url=url)
-        except httpx.NetworkError as e:
+        except httpx.NetworkError:
             raise ConnectionError("Unable to connect to server.")
 
         handle_response(
@@ -202,7 +202,7 @@ class MessageClient:
         try:
             print(f"url: {url}")
             response = await self.aclient.get(url=url)
-        except httpx.NetworkError as e:
+        except httpx.NetworkError:
             raise ConnectionError("Unable to connect to server.")
 
         handle_response(
@@ -243,7 +243,7 @@ class MessageClient:
 
         try:
             response = self.client.patch(url=url, json=metadata)
-        except httpx.NetworkError as e:
+        except httpx.NetworkError:
             raise ConnectionError("Unable to connect to server.")
 
         handle_response(
@@ -285,7 +285,7 @@ class MessageClient:
 
         try:
             response = await self.aclient.patch(url=url, json=metadata)
-        except httpx.NetworkError as e:
+        except httpx.NetworkError:
             raise ConnectionError("Unable to connect to server.")
 
         handle_response(

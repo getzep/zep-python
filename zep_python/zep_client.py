@@ -18,7 +18,6 @@ from zep_python.memory.models import (
     Session,
 )
 from zep_python.message.client import MessageClient
-from zep_python.message.models import Message
 
 from zep_python.user.client import UserClient
 
