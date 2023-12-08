@@ -6,6 +6,7 @@ from zep_python.exceptions import APIError, handle_response
 
 import httpx
 
+
 class MessageClient:
     """
     MessageClient class for interacting with the Zep message API.
@@ -35,7 +36,9 @@ class MessageClient:
         self.aclient = aclient
         self.client = client
 
-    def get_session_messages(self, session_id: str, limit: int = 100, cursor: int = 1) -> List[Message]:
+    def get_session_messages(
+        self, session_id: str, limit: int = 100, cursor: int = 1
+    ) -> List[Message]:
         """
         Gets all messages for a session.
 
@@ -64,13 +67,20 @@ class MessageClient:
         NotFoundError
             If the session is not found.
         """
-        
+
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
         if limit is not None and cursor is not None:
-            if not isinstance(limit, int) or not isinstance(cursor, int) or limit <= 0 or cursor <= 0:
-                raise ValueError("Both page_size and page_number must be positive integers")
+            if (
+                not isinstance(limit, int)
+                or not isinstance(cursor, int)
+                or limit <= 0
+                or cursor <= 0
+            ):
+                raise ValueError(
+                    "Both page_size and page_number must be positive integers"
+                )
 
             url = f"/sessions/{session_id}/messages?limit={limit}&cursor={cursor}"
         else:
@@ -83,7 +93,7 @@ class MessageClient:
 
         handle_response(response, f"Unable to get messages for session {session_id}.")
 
-        return [Message.parse_obj(message) for message in response.json()['messages']]
+        return [Message.parse_obj(message) for message in response.json()["messages"]]
 
     async def aget_session_messages(self, session_id: str) -> List[Message]:
         """
@@ -110,7 +120,7 @@ class MessageClient:
         NotFoundError
             If the session is not found.
         """
-        
+
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
@@ -124,8 +134,7 @@ class MessageClient:
 
         handle_response(response, f"Unable to get messages for session {session_id}.")
 
-        return [Message.parse_obj(message) for message in response.json()['messages']]
-        
+        return [Message.parse_obj(message) for message in response.json()["messages"]]
 
     def get_session_message(self, session_id: str, message_id: str) -> Message:
         """
@@ -143,7 +152,7 @@ class MessageClient:
         Message
             The message.
         """
-        
+
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
@@ -158,7 +167,9 @@ class MessageClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Unable to connect to server.")
 
-        handle_response(response, f"Unable to get message {message_id} for session {session_id}.")
+        handle_response(
+            response, f"Unable to get message {message_id} for session {session_id}."
+        )
 
         response_data = response.json()
         return Message.parse_obj(response_data)
@@ -179,7 +190,7 @@ class MessageClient:
         Message
             The message.
         """
-        
+
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
@@ -194,7 +205,9 @@ class MessageClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Unable to connect to server.")
 
-        handle_response(response, f"Unable to get message {message_id} for session {session_id}.")
+        handle_response(
+            response, f"Unable to get message {message_id} for session {session_id}."
+        )
 
         response_data = response.json()
         return Message.parse_obj(response_data)
@@ -219,7 +232,7 @@ class MessageClient:
         Message
             The updated message.
         """
-        
+
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
@@ -233,10 +246,13 @@ class MessageClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Unable to connect to server.")
 
-        handle_response(response, f"Unable to update message metadata {message_id} for session {session_id}.")
+        handle_response(
+            response,
+            f"Unable to update message metadata {message_id} for session {session_id}.",
+        )
 
         response_data = response.json()
-        return Message.parse_obj(response_data) 
+        return Message.parse_obj(response_data)
 
     async def aupdate_message_metadata(
         self, session_id: str, message_id: str, metadata: Dict[str, Any]
@@ -258,7 +274,7 @@ class MessageClient:
         Message
             The updated message.
         """
-        
+
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
@@ -272,7 +288,10 @@ class MessageClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Unable to connect to server.")
 
-        handle_response(response, f"Unable to update message metadata {message_id} for session {session_id}.")
+        handle_response(
+            response,
+            f"Unable to update message metadata {message_id} for session {session_id}.",
+        )
 
         response_data = response.json()
-        return Message.parse_obj(response_data) 
+        return Message.parse_obj(response_data)

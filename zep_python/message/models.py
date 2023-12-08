@@ -34,7 +34,6 @@ class Message(BaseModel):
         Returns a dictionary representation of the message.
     """
 
-     
     role: str = Field("A role is required")
     content: str = Field("Content is required")
     uuid: Optional[str] = Field(optional=True, default=None)
@@ -52,6 +51,7 @@ class Message(BaseModel):
             A dictionary containing the attributes of the message.
         """
         return self.dict()
+
 
 class UpdateMessageMetadataRequest(BaseModel):
     """

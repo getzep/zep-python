@@ -93,6 +93,7 @@ class Summary(BaseModel):
         """
         return self.dict()
 
+
 class Memory(BaseModel):
     """
     Represents a memory object with messages, metadata, and other attributes.

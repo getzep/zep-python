@@ -16,6 +16,7 @@ from zep_python.memory import Session
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
 
+
 def create_user(client):
     user_id = uuid.uuid4().hex
     user_request = CreateUserRequest(
@@ -32,6 +33,7 @@ def create_user(client):
     except APIError as e:
         print(f"Failed to create user: {e}")
 
+
 def create_session(client, user_id):
     session_id = uuid.uuid4().hex
     print(f"Creating session: {session_id}")
@@ -45,6 +47,7 @@ def create_session(client, user_id):
     except APIError as e:
         print(f"Unable to create session {session_id}. Error: {e}")
 
+
 def add_memory_to_session(client, session_id, history):
     print(f"addMemory for Session: {session_id}")
     try:
@@ -56,7 +59,10 @@ def add_memory_to_session(client, session_id, history):
     except NotFoundError as e:
         print(f"Memory not found for session {session_id}. Got error: {e}")
     except APIError as e:
-        print(f"API error occurred while adding memory to session {session_id}. Got error: {e}")
+        print(
+            f"API error occurred while adding memory to session {session_id}. Got error: {e}"
+        )
+
 
 async def get_and_print_session_messages(client, session_id):
     try:
@@ -66,19 +72,30 @@ async def get_and_print_session_messages(client, session_id):
     except NotFoundError as e:
         print(f"Session not found for Session {session_id}. Got error: {e}")
     except APIError as e:
-        print(f"API error occurred while getting messages for Session {session_id}. Got error: {e}")
+        print(
+            f"API error occurred while getting messages for Session {session_id}. Got error: {e}"
+        )
+
 
 async def get_and_print_first_session_message(client, session_id, message_id):
     try:
-        session_message = await client.message.aget_session_message(session_id, message_id)
+        session_message = await client.message.aget_session_message(
+            session_id, message_id
+        )
         print(f"Get Session Message: {session_message}")
     except NotFoundError as e:
-        print(f"Session Message not found for Session {session_id} and Message {message_id}. Got error: {e}")
-    except APIError as e:    
-        print(f"API error occurred while getting message for Session {session_id} and Message {message_id}. Got error: {e}")
+        print(
+            f"Session Message not found for Session {session_id} and Message {message_id}. Got error: {e}"
+        )
+    except APIError as e:
+        print(
+            f"API error occurred while getting message for Session {session_id} and Message {message_id}. Got error: {e}"
+        )
 
 
-async def update_and_print_session_message_metadata(client, session_id, first_session_message_id):
+async def update_and_print_session_message_metadata(
+    client, session_id, first_session_message_id
+):
     updated_session_message_metadata = {"metadata": {"foo": "bar"}}
     try:
         updated_session_message = await client.message.aupdate_message_metadata(
@@ -86,9 +103,14 @@ async def update_and_print_session_message_metadata(client, session_id, first_se
         )
         print(f"Updated Session Message Metadata: {updated_session_message}")
     except NotFoundError:
-        print(f"Session Message not found for Session {session_id} and Message {first_session_message_id}. Got error: {e}")
+        print(
+            f"Session Message not found for Session {session_id} and Message {first_session_message_id}. Got error: {e}"
+        )
     except APIError as e:
-        print(f"API error occurred while updating message metadata for Session {session_id} and Message {first_session_message_id}. Got error: {e}")
+        print(
+            f"API error occurred while updating message metadata for Session {session_id} and Message {first_session_message_id}. Got error: {e}"
+        )
+
 
 def delete_and_print_memory_for_session(client, session_id):
     print(f"Deleting memory for Session: {session_id}")
@@ -97,6 +119,7 @@ def delete_and_print_memory_for_session(client, session_id):
         print(f"Memory deleted: {result}")
     except NotFoundError:
         print("Memory not found for Session" + session_id)
+
 
 async def main():
     base_url = "http://localhost:8000"
@@ -107,9 +130,14 @@ async def main():
         add_memory_to_session(client, session_id, history)
         session_messages = await get_and_print_session_messages(client, session_id)
         first_session_message_id = session_messages[0].uuid
-        await get_and_print_first_session_message(client, session_id, first_session_message_id)
-        await update_and_print_session_message_metadata(client, session_id, first_session_message_id)
+        await get_and_print_first_session_message(
+            client, session_id, first_session_message_id
+        )
+        await update_and_print_session_message_metadata(
+            client, session_id, first_session_message_id
+        )
         delete_and_print_memory_for_session(client, session_id)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
