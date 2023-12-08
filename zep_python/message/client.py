@@ -32,7 +32,7 @@ class MessageClient:
         self.aclient = aclient
         self.client = client
 
-    def get_session_messages(self, session_id: str) -> List[Message]:
+    def get_session_messages(self, session_id: str, limit: int = 100, offset: int = 1) -> List[Message]:
         """
         Gets all messages for a session.
 
@@ -40,6 +40,10 @@ class MessageClient:
         ----------
         session_id : str
             The ID of the session.
+        page_size : int
+            The number of messages to return per page.
+        page_number : int
+            The page number to return.
 
         Returns
         -------
@@ -61,10 +65,15 @@ class MessageClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
-        url = f"/sessions/{session_id}/messages"
+        if limit is not None and offset is not None:
+            if not isinstance(limit, int) or not isinstance(offset, int) or limit <= 0 or offset <= 0:
+                raise ValueError("Both page_size and page_number must be positive integers")
+
+            url = f"/sessions/{session_id}/messages?limit={limit}&offset={offset}"
+        else:
+            url = f"/sessions/{session_id}/messages"
 
         try:
-            print(f"url: {url}")
             response = self.client.get(url=url)
         except httpx.NetworkError as e:
             raise ConnectionError("Unable to connect to server.")
