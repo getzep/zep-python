@@ -91,9 +91,7 @@ def get_and_print_first_session_message(client, session_id, message_id):
         )
 
 
-def update_and_print_session_message_metadata(
-    client, session_id, message_id
-):
+def update_and_print_session_message_metadata(client, session_id, message_id):
     updated_session_message_metadata = {"metadata": {"foo": "bar"}}
     try:
         updated_session_message = client.message.update_message_metadata(
