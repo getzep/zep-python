@@ -144,7 +144,7 @@ class MessageClient:
         url = f"/sessions/{session_id}/messages"
 
         try:
-            response = await self.aclient.get(url=url)
+            response = await self.aclient.get(url=url, params=params)
         except httpx.NetworkError:
             raise ConnectionError("Unable to connect to server.")
 
