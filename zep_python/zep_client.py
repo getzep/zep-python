@@ -24,7 +24,7 @@ from zep_python.user.client import UserClient
 API_BASE_PATH = "/api/v1"
 API_TIMEOUT = 10
 
-MINIMUM_SERVER_VERSION = "0.17.0"
+MINIMUM_SERVER_VERSION = "0.21.0"
 
 
 class ZepClient:
