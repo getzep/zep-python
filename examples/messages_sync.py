@@ -92,21 +92,21 @@ def get_and_print_first_session_message(client, session_id, message_id):
 
 
 def update_and_print_session_message_metadata(
-    client, session_id, first_session_message_id
+    client, session_id, message_id
 ):
     updated_session_message_metadata = {"metadata": {"foo": "bar"}}
     try:
         updated_session_message = client.message.update_message_metadata(
-            session_id, first_session_message_id, updated_session_message_metadata
+            session_id, message_id, updated_session_message_metadata
         )
         print(f"Updated Session Message Metadata: {updated_session_message}")
     except NotFoundError:
         print(
-            f"Session Message not found for Session {session_id} and Message {first_session_message_id}. Got error: {e}"
+            f"Session Message not found for Session {session_id} and Message {message_id}. Got error: {e}"
         )
     except APIError as e:
         print(
-            f"API error occurred while updating message metadata for Session {session_id} and Message {first_session_message_id}. Got error: {e}"
+            f"API error occurred while updating message metadata for Session {session_id} and Message {message_id}. Got error: {e}"
         )
 
 
