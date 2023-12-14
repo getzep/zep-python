@@ -10,10 +10,10 @@ from zep_python import NotFoundError
 from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
-    Message,
     SearchScope,
     Session,
 )
+from zep_python.message.models import Message
 from zep_python.utils import SearchType
 from zep_python.zep_client import ZepClient
 
@@ -294,6 +294,321 @@ async def test_asearch_memory_scope_summary(httpx_mock: HTTPXMock):
         assert search_results[0].summary.uuid == "msg-uuid"
         assert search_results[0].summary.content == "Test summary"
         assert search_results[0].dist == 0.9
+
+
+# get session messages
+
+
+@pytest.mark.asyncio
+async def test_aget_session_messages(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    httpx_mock.add_response(status_code=200, json=mock_messages)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        session_messages = await client.message.aget_session_messages(session_id)
+        assert len(session_messages) == len(mock_messages["messages"])
+
+        for i in range(len(session_messages)):
+            assert session_messages[i].uuid == mock_messages["messages"][i]["uuid"]
+            assert session_messages[i].role == mock_messages["messages"][i]["role"]
+            assert (
+                session_messages[i].content == mock_messages["messages"][i]["content"]
+            )
+            assert (
+                session_messages[i].metadata == mock_messages["messages"][i]["metadata"]
+            )
+        assert [
+            filter_unset_fields(message.dict()) for message in session_messages
+        ] == mock_messages["messages"]
+
+
+@pytest.mark.asyncio
+async def test_aget_session_messages_missing_session(httpx_mock: HTTPXMock):
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = await client.message.aget_session_messages(session_id=None)
+
+
+@pytest.mark.asyncio
+async def test_aget_session_messages_not_found(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    empty_mock_response = {}
+    httpx_mock.add_response(status_code=404, json=empty_mock_response)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(NotFoundError):
+            _ = await client.message.aget_session_messages(session_id)
+
+
+@pytest.mark.asyncio
+async def test_aget_session_messages_throws_500(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    httpx_mock.add_response(status_code=500)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(Exception):
+            _ = await client.message.aget_session_messages(session_id)
+
+
+def test_get_session_messages(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    httpx_mock.add_response(status_code=200, json=mock_messages)
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        session_messages = client.message.get_session_messages(session_id)
+        assert len(session_messages) == len(mock_messages["messages"])
+
+        for i in range(len(session_messages)):
+            assert session_messages[i].uuid == mock_messages["messages"][i]["uuid"]
+            assert session_messages[i].role == mock_messages["messages"][i]["role"]
+            assert (
+                session_messages[i].content == mock_messages["messages"][i]["content"]
+            )
+            assert (
+                session_messages[i].metadata == mock_messages["messages"][i]["metadata"]
+            )
+        assert [
+            filter_unset_fields(message.dict()) for message in session_messages
+        ] == mock_messages["messages"]
+
+
+def test_get_session_messages_missing_session(httpx_mock: HTTPXMock):
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = client.message.get_session_messages(session_id=None)
+
+
+def test_get_session_messages_not_found(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    empty_mock_response = {}
+    httpx_mock.add_response(status_code=404, json=empty_mock_response)
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(NotFoundError):
+            _ = client.message.get_session_messages(session_id)
+
+
+def test_get_session_messages_throws_500(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    httpx_mock.add_response(status_code=500)
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(Exception):
+            _ = client.message.get_session_messages(session_id)
+
+
+# get session message
+
+
+@pytest.mark.asyncio
+async def test_aget_session_message(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    message_id = str(uuid4())
+    mock_message = {
+        "uuid": message_id,
+        "role": "user",
+        "content": "Test message",
+        "metadata": {"key": "value"},
+    }
+    httpx_mock.add_response(status_code=200, json=mock_message)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        session_message = await client.message.aget_session_message(
+            session_id, message_id
+        )
+        assert session_message.uuid == mock_message["uuid"]
+        assert session_message.role == mock_message["role"]
+        assert session_message.content == mock_message["content"]
+        assert session_message.metadata == mock_message["metadata"]
+        assert filter_unset_fields(session_message.dict()) == mock_message
+
+
+@pytest.mark.asyncio
+async def test_aget_session_message_missing_session(httpx_mock: HTTPXMock):
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = await client.message.aget_session_message(
+                session_id=None, message_id=str(uuid4())
+            )
+
+
+@pytest.mark.asyncio
+async def test_aget_session_message_missing_message(httpx_mock: HTTPXMock):
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = await client.message.aget_session_message(
+                session_id=str(uuid4()), message_id=None
+            )
+
+
+@pytest.mark.asyncio
+async def test_aget_session_message_throws_500(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    message_id = str(uuid4())
+    httpx_mock.add_response(status_code=500)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(Exception):
+            _ = await client.message.aget_session_message(session_id, message_id)
+
+
+def test_get_session_message(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    message_id = str(uuid4())
+    mock_message = {
+        "uuid": message_id,
+        "role": "user",
+        "content": "Test message",
+        "metadata": {"key": "value"},
+    }
+    httpx_mock.add_response(status_code=200, json=mock_message)
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        session_message = client.message.get_session_message(session_id, message_id)
+        assert session_message.uuid == mock_message["uuid"]
+        assert session_message.role == mock_message["role"]
+        assert session_message.content == mock_message["content"]
+        assert session_message.metadata == mock_message["metadata"]
+        assert filter_unset_fields(session_message.dict()) == mock_message
+
+
+def test_get_session_message_missing_session(httpx_mock: HTTPXMock):
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = client.message.get_session_message(
+                session_id=None, message_id=str(uuid4())
+            )
+
+
+def test_get_session_message_missing_message(httpx_mock: HTTPXMock):
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = client.message.get_session_message(
+                session_id=str(uuid4()), message_id=None
+            )
+
+
+def test_get_session_message_throws_500(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    message_id = str(uuid4())
+    httpx_mock.add_response(status_code=500)
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(Exception):
+            _ = client.message.get_session_message(session_id, message_id)
+
+
+# update message metadata
+@pytest.mark.asyncio
+async def test_aupdate_message_metadata(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    message_id = str(uuid4())
+    mock_message = {
+        "uuid": message_id,
+        "role": "user",
+        "content": "Test message",
+        "metadata": {"metadata": {"foo": "bar"}},
+    }
+    httpx_mock.add_response(status_code=200, json=mock_message)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        updated_message = await client.message.aupdate_message_metadata(
+            session_id, message_id, {"metadata": {"foo": "bar"}}
+        )
+        assert updated_message.uuid == mock_message["uuid"]
+        assert updated_message.role == mock_message["role"]
+        assert updated_message.content == mock_message["content"]
+        assert updated_message.metadata == mock_message["metadata"]
+        assert filter_unset_fields(updated_message.dict()) == mock_message
+
+
+@pytest.mark.asyncio
+async def test_aupdate_message_metadata_missing_session(httpx_mock: HTTPXMock):
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = await client.message.aupdate_message_metadata(
+                session_id=None,
+                message_id=str(uuid4()),
+                metadata={"metadata": {"foo": "bar"}},
+            )
+
+
+@pytest.mark.asyncio
+async def test_aupdate_message_metadata_missing_message(httpx_mock: HTTPXMock):
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = await client.message.aupdate_message_metadata(
+                session_id=str(uuid4()),
+                message_id=None,
+                metadata={"metadata": {"foo": "bar"}},
+            )
+
+
+@pytest.mark.asyncio
+async def test_aupdate_message_metadata_throws_500(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    message_id = str(uuid4())
+    httpx_mock.add_response(status_code=500)
+
+    async with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(Exception):
+            _ = await client.message.aupdate_message_metadata(
+                session_id, message_id, {"metadata": {"foo": "bar"}}
+            )
+
+
+def test_update_message_metadata(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    message_id = str(uuid4())
+    mock_message = {
+        "uuid": message_id,
+        "role": "user",
+        "content": "Test message",
+        "metadata": {"metadata": {"foo": "bar"}},
+    }
+    httpx_mock.add_response(status_code=200, json=mock_message)
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        updated_message = client.message.update_message_metadata(
+            session_id, message_id, {"metadata": {"foo": "bar"}}
+        )
+        assert updated_message.uuid == mock_message["uuid"]
+        assert updated_message.role == mock_message["role"]
+        assert updated_message.content == mock_message["content"]
+        assert updated_message.metadata == mock_message["metadata"]
+        assert filter_unset_fields(updated_message.dict()) == mock_message
+
+
+def test_update_message_metadata_missing_session(httpx_mock: HTTPXMock):
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = client.message.update_message_metadata(
+                session_id=None,
+                message_id=str(uuid4()),
+                metadata={"metadata": {"foo": "bar"}},
+            )
+
+
+def test_update_message_metadata_missing_message(httpx_mock: HTTPXMock):
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(ValueError):
+            _ = client.message.update_message_metadata(
+                session_id=str(uuid4()),
+                message_id=None,
+                metadata={"metadata": {"foo": "bar"}},
+            )
+
+
+def test_update_message_metadata_throws_500(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+    message_id = str(uuid4())
+    httpx_mock.add_response(status_code=500)
+
+    with ZepClient(base_url=API_BASE_URL) as client:
+        with pytest.raises(Exception):
+            _ = client.message.update_message_metadata(
+                session_id, message_id, {"metadata": {"foo": "bar"}}
+            )
 
 
 @pytest.mark.asyncio
