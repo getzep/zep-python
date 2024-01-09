@@ -56,36 +56,60 @@ class ZepClient:
     """
 
     base_url: str
+    project_api_key: Optional[str] = None
     memory: MemoryClient
     document: DocumentClient
     user: UserClient
 
-    def __init__(self, base_url: str, api_key: Optional[str] = None) -> None:
+    def __init__(self, project_api_key: Optional[str], base_url: Optional[str], api_key: Optional[str] = None) -> None:
         """
         Initialize the ZepClient with the specified base URL.
 
         Parameters
         ----------
-        base_url : str
-            The base URL of the API.
+
+        project_api_key : Optional[str]
+            The API key to use for authentication. (optional)
+
+        base_url : Optional[str]
+            The base URL of the API. (optional)
 
         api_key : Optional[str]
             The API key to use for authentication. (optional)
         """
 
+        if project_api_key is None and base_url is None:
+            raise ValueError("Either project_api_key or base_url must be specified")
+
+        if project_api_key is not None and api_key is not None:
+            raise ValueError("Only one of project_api_key or api_key must be specified")
+
         headers: Dict[str, str] = {}
+
+        if project_api_key is not None:
+            headers["Authorization"] = f"Api-Key {project_api_key}"
+            self.project_api_key = project_api_key
+
         if api_key is not None:
             headers["Authorization"] = f"Bearer {api_key}"
 
-        self.base_url = concat_url(base_url, API_BASE_PATH)
+        if project_api_key is None:
+            self.base_url = concat_url(base_url, API_BASE_PATH)
+        else:
+            self.base_url = "http://localhost:8000/api/v2"
+
         self.aclient = httpx.AsyncClient(
             base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
         )
         self.client = httpx.Client(
             base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
         )
-
-        self._healthcheck(base_url)
+        print(headers["Authorization"])
+        print(self.aclient.headers["Authorization"])
+        if project_api_key is not None:
+            self._healthcheck("http://localhost:8000")
+        else:
+            self._healthcheck(base_url)
 
         self.memory = MemoryClient(self.aclient, self.client)
         self.message = MessageClient(self.aclient, self.client)
@@ -125,7 +149,7 @@ class ZepClient:
             else:
                 zep_server_version = Version("0.0.0")
 
-            if zep_server_version < Version(MINIMUM_SERVER_VERSION):
+            if zep_server_version < Version(MINIMUM_SERVER_VERSION) and self.project_api_key is None:
                 warnings.warn(
                     (
                         "You are using an incompatible Zep server version. Please"

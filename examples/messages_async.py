@@ -1,4 +1,5 @@
 import asyncio
+import os
 import time
 import uuid
 
@@ -120,9 +121,10 @@ def delete_and_print_memory_for_session(client, session_id):
 
 
 async def main():
-    base_url = "http://localhost:8000"
-    api_key = "your_api_key"
-    with ZepClient(base_url, api_key) as client:
+    project_api_key = os.environ.get("PROJECT_API_KEY")
+    if project_api_key is None:
+        raise ValueError("PROJECT_API_KEY environment variable must be set")
+    with ZepClient(project_api_key=project_api_key, base_url=None, api_key=None) as client:
         user = await create_user(client)
         session_id = await create_session(client, user.user_id)
         await add_memory_to_session(client, session_id, history)

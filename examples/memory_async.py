@@ -11,6 +11,7 @@ Please replace the base_url and api_key with your Zep API URL and your API key r
 
 """
 import asyncio
+import os
 import time
 import uuid
 
@@ -29,9 +30,11 @@ from zep_python.user import CreateUserRequest
 
 
 async def main() -> None:
-    base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
-    api_key = "YOUR_API_KEY"  # TODO: Replace with your API key
-    async with ZepClient(base_url, api_key) as client:
+    project_api_key = os.environ.get("PROJECT_API_KEY")
+    if project_api_key is None:
+        raise ValueError("PROJECT_API_KEY environment variable must be set")
+
+    async with ZepClient(project_api_key=project_api_key, base_url=None, api_key=None) as client:
         # Create a user
         user_id = uuid.uuid4().hex
         user_request = CreateUserRequest(

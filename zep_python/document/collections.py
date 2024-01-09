@@ -116,7 +116,7 @@ class DocumentCollection(DocumentCollectionModel):
         uuids: List[str] = []
         for batch in generate_batches(documents, batch_size):
             response = await self._aclient.post(
-                f"/collection/{self.name}/document",
+                f"/collections/{self.name}/documents",
                 json=batch,
             )
 
@@ -161,7 +161,7 @@ class DocumentCollection(DocumentCollectionModel):
         uuids: List[str] = []
         for batch in generate_batches(documents, batch_size):
             response = self._client.post(
-                f"/collection/{self.name}/document",
+                f"/collections/{self.name}/documents",
                 json=batch,
             )
 
@@ -216,7 +216,7 @@ class DocumentCollection(DocumentCollectionModel):
         payload = filter_dict({"description": description, "metadata": metadata})
 
         response = await self._aclient.patch(
-            f"/collection/{self.name}/document/uuid/{uuid}",
+            f"/collections/{self.name}/documents/uuid/{uuid}",
             json=payload,
         )
 
@@ -267,7 +267,7 @@ class DocumentCollection(DocumentCollectionModel):
         payload = filter_dict({"document_id": document_id, "metadata": metadata})
 
         response = self._client.patch(
-            f"/collection/{self.name}/document/uuid/{uuid}",
+            f"/collections/{self.name}/documents/uuid/{uuid}",
             json=payload,
         )
 
@@ -303,7 +303,7 @@ class DocumentCollection(DocumentCollectionModel):
             raise ValueError("document uuid must be provided")
 
         response = await self._aclient.delete(
-            f"/collection/{self.name}/document/uuid/{uuid}",
+            f"/collections/{self.name}/documents/uuid/{uuid}",
         )
 
         handle_response(response)
@@ -338,7 +338,7 @@ class DocumentCollection(DocumentCollectionModel):
             raise ValueError("document uuid must be provided")
 
         response = self._client.delete(
-            f"/collection/{self.name}/document/uuid/{uuid}",
+            f"/collections/{self.name}/documents/uuid/{uuid}",
         )
 
         handle_response(response)
@@ -374,7 +374,7 @@ class DocumentCollection(DocumentCollectionModel):
             raise ValueError("document uuid must be provided")
 
         response = await self._aclient.get(
-            f"/collection/{self.name}/document/uuid/{uuid}",
+            f"/collections/{self.name}/documents/uuid/{uuid}",
         )
 
         handle_response(response)
@@ -412,7 +412,7 @@ class DocumentCollection(DocumentCollectionModel):
             raise ValueError("document uuid must be provided")
 
         response = self._client.get(
-            f"/collection/{self.name}/document/uuid/{uuid}",
+            f"/collections/{self.name}/documents/uuid/{uuid}",
         )
 
         handle_response(response)
@@ -450,7 +450,7 @@ class DocumentCollection(DocumentCollectionModel):
             warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
 
         response = await self._aclient.post(
-            f"/collection/{self.name}/document/list/get",
+            f"/collections/{self.name}/documents/list/get",
             json={"uuids": uuids},
         )
 
@@ -489,7 +489,7 @@ class DocumentCollection(DocumentCollectionModel):
             warnings.warn(LARGE_BATCH_WARNING, stacklevel=2)
 
         response = self._client.post(
-            f"/collection/{self.name}/document/list/get",
+            f"/collections/{self.name}/documents/list/get",
             json={"uuids": uuids},
         )
 
@@ -532,7 +532,7 @@ class DocumentCollection(DocumentCollectionModel):
         params = filter_dict({"force": force})
 
         response = self._client.post(
-            f"/collection/{self.name}/index/create",
+            f"/collections/{self.name}/index/create",
             params=params,
         )
 
@@ -568,7 +568,7 @@ class DocumentCollection(DocumentCollectionModel):
             mmr_lambda=mmr_lambda,
         )
 
-        url = f"/collection/{self.name}/search"
+        url = f"/collections/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
 
         response = await self._aclient.post(
@@ -672,7 +672,7 @@ class DocumentCollection(DocumentCollectionModel):
             mmr_lambda=mmr_lambda,
         )
 
-        url = f"/collection/{self.name}/search"
+        url = f"/collections/{self.name}/search"
         params = {"limit": limit} if limit is not None and limit > 0 else {}
 
         response = self._client.post(

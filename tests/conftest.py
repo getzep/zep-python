@@ -8,7 +8,7 @@ API_BASE_URL = "http://localhost:8000"
 
 @pytest.fixture
 def zep_client():
-    return ZepClient(base_url=API_BASE_URL)
+    return ZepClient(base_url=API_BASE_URL, project_api_key="z_test-api-key", api_key=None)
 
 
 @pytest.fixture(autouse=True)

@@ -115,7 +115,7 @@ class DocumentClient:
         )
 
         response = await self.aclient.post(
-            f"/collection/{name}",
+            f"/collections/{name}",
             json=collection.dict(exclude_none=True),
         )
 
@@ -169,9 +169,9 @@ class DocumentClient:
             metadata=metadata,
             is_auto_embedded=is_auto_embedded,
         )
-
+        print(self.client.headers["Authorization"])
         response = self.client.post(
-            f"/collection/{name}",
+            f"/collections/{name}",
             json=collection.dict(exclude_none=True),
         )
 
@@ -208,7 +208,7 @@ class DocumentClient:
         if name is None or name.strip() == "":
             raise ValueError("collection name must be provided")
         response = await self.aclient.get(
-            f"/collection/{name}",
+            f"/collections/{name}",
         )
 
         handle_response(response)
@@ -247,7 +247,7 @@ class DocumentClient:
         if name is None or name.strip() == "":
             raise ValueError("collection name must be provided")
         response = self.client.get(
-            f"/collection/{name}",
+            f"/collections/{name}",
         )
 
         handle_response(response)
@@ -298,7 +298,7 @@ class DocumentClient:
         )
 
         response = await self.aclient.patch(
-            f"/collection/{collection.name}",
+            f"/collections/{collection.name}",
             json=collection.dict(exclude_none=True),
         )
 
@@ -346,7 +346,7 @@ class DocumentClient:
         )
 
         response = self.client.patch(
-            f"/collection/{collection.name}",
+            f"/collections/{collection.name}",
             json=collection.dict(exclude_none=True),
         )
 
@@ -371,7 +371,7 @@ class DocumentClient:
             If the API key is invalid.
         """
         response = await self.aclient.get(
-            "/collection",
+            "/collections",
         )
 
         handle_response(response)
@@ -394,7 +394,7 @@ class DocumentClient:
             If the API key is invalid.
         """
         response = self.client.get(
-            "/collection",
+            "/collections",
         )
 
         handle_response(response)
@@ -426,7 +426,7 @@ class DocumentClient:
             raise ValueError("collection name must be provided")
 
         response = await self.aclient.delete(
-            f"/collection/{collection_name}",
+            f"/collections/{collection_name}",
         )
 
         handle_response(response)
@@ -457,7 +457,7 @@ class DocumentClient:
             raise ValueError("collection name must be provided")
 
         response = self.client.delete(
-            f"/collection/{collection_name}",
+            f"/collections/{collection_name}",
         )
 
         handle_response(response)

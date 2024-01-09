@@ -1,6 +1,7 @@
 """ Using Zep as a vector database. A simple sync example. """
 import asyncio
 import time
+import os
 from typing import List
 from uuid import uuid4
 
@@ -63,18 +64,21 @@ def print_results(results: List[Document]):
 
 
 async def main(file: str):
-    zep_api_url = "http://localhost:8000"
     max_chunk_size = 500
     collection_name = f"babbage{uuid4()}".replace("-", "")
 
     print(f"Creating collection {collection_name}")
 
-    client = ZepClient(base_url=zep_api_url)
+    project_api_key = os.environ.get("PROJECT_API_KEY")
+    if project_api_key is None:
+        raise ValueError("PROJECT_API_KEY environment variable must be set")
+
+    client = ZepClient(project_api_key=project_api_key)
     collection = client.document.add_collection(
         name=collection_name,  # required
         description="Charles Babbage's Babbage's Calculating Engine",  # optional
         metadata=fake.pydict(allowed_types=[str]),  # optional metadata
-        embedding_dimensions=1536,  # this must match the model you've configured in Zep
+        embedding_dimensions=768,  # this must match the model you've configured in Zep
         is_auto_embedded=True,  # use Zep's built-in embedder. Defaults to True
     )
 

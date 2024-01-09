@@ -59,7 +59,7 @@ class UserClient:
 
         """
         try:
-            response = self.client.post("/user", json=user.dict(exclude_none=True))
+            response = self.client.post("/users", json=user.dict(exclude_none=True))
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -90,7 +90,7 @@ class UserClient:
         """
         try:
             response = await self.aclient.post(
-                "/user", json=user.dict(exclude_none=True)
+                "/users", json=user.dict(exclude_none=True)
             )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
@@ -122,7 +122,7 @@ class UserClient:
             If the user does not exist.
         """
         try:
-            response = self.client.get(f"/user/{user_id}")
+            response = self.client.get(f"/users/{user_id}")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -155,7 +155,7 @@ class UserClient:
         if user_id is None:
             raise ValueError("user_id must be provided")
         try:
-            response = await self.aclient.get(f"/user/{user_id}")
+            response = await self.aclient.get(f"/users/{user_id}")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -190,7 +190,7 @@ class UserClient:
 
         try:
             response = self.client.patch(
-                f"/user/{user.user_id}", json=user.dict(exclude_none=True)
+                f"/users/{user.user_id}", json=user.dict(exclude_none=True)
             )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
@@ -225,7 +225,7 @@ class UserClient:
             raise ValueError("user_id must be provided")
         try:
             response = await self.aclient.patch(
-                f"/user/{user.user_id}", json=user.dict(exclude_none=True)
+                f"/users/{user.user_id}", json=user.dict(exclude_none=True)
             )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
@@ -257,7 +257,7 @@ class UserClient:
             If the user does not exist.
         """
         try:
-            response = self.client.delete(f"/user/{user_id}")
+            response = self.client.delete(f"/users/{user_id}")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -286,7 +286,7 @@ class UserClient:
             If the user does not exist.
         """
         try:
-            response = await self.aclient.delete(f"/user/{user_id}")
+            response = await self.aclient.delete(f"/users/{user_id}")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -319,7 +319,7 @@ class UserClient:
         """
         try:
             response = self.client.get(
-                "/user", params={"limit": limit, "cursor": cursor}
+                "/users", params={"limit": limit, "cursor": cursor}
             )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
@@ -353,7 +353,7 @@ class UserClient:
         """
         try:
             response = await self.aclient.get(
-                "/user", params={"limit": limit, "cursor": cursor}
+                "/users", params={"limit": limit, "cursor": cursor}
             )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
@@ -461,7 +461,7 @@ class UserClient:
             If the server returns an error.
         """
         try:
-            response = self.client.get(f"/user/{user_id}/sessions")
+            response = self.client.get(f"/users/{user_id}/sessions")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -490,7 +490,7 @@ class UserClient:
             If the server returns an error.
         """
         try:
-            response = await self.aclient.get(f"/user/{user_id}/sessions")
+            response = await self.aclient.get(f"/users/{user_id}/sessions")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
