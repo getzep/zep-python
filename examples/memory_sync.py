@@ -33,7 +33,9 @@ def main() -> None:
     if project_api_key is None:
         raise ValueError("PROJECT_API_KEY environment variable must be set")
 
-    with ZepClient(project_api_key=project_api_key, base_url=None, api_key=None) as client:
+    with ZepClient(
+        project_api_key=project_api_key, base_url=None, api_key=None
+    ) as client:
         # Example usage
 
         # Create a user

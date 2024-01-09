@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List
-from .models import Message
-from zep_python.exceptions import handle_response
 
 import httpx
+
+from zep_python.exceptions import handle_response
+
+from .models import Message
 
 
 class MessageClient:

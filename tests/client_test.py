@@ -14,7 +14,7 @@ _ = mock_healthcheck, undo_mock_healthcheck
 @pytest.mark.usefixtures("undo_mock_healthcheck")
 def test_client_connect_healthcheck_fail():
     with pytest.raises(APIError):
-        ZepClient(base_url=API_BASE_URL, project_api_key='z_test-api-key')
+        ZepClient(base_url=API_BASE_URL, project_api_key="z_test-api-key")
 
 
 @pytest.mark.usefixtures("undo_mock_healthcheck")
@@ -22,12 +22,14 @@ def test_client_connect_healthcheck_pass(httpx_mock: HTTPXMock):
     """Explicitly undo the mock healthcheck and then add a new mock response"""
     httpx_mock.add_response(status_code=200, text=".")
 
-    ZepClient(base_url=API_BASE_URL, project_api_key='z_test-api-key')
+    ZepClient(base_url=API_BASE_URL, project_api_key="z_test-api-key")
 
 
 @pytest.mark.asyncio
 async def test_set_cloud_authorization_header(httpx_mock: HTTPXMock):
-    with ZepClient(base_url=API_BASE_URL, api_key=None, project_api_key="z_test-api-key") as client:
+    with ZepClient(
+        base_url=API_BASE_URL, api_key=None, project_api_key="z_test-api-key"
+    ) as client:
         httpx_mock.add_response(status_code=200)
         response = await client.aclient.get(f"{client.base_url}/my-endpoint")
 
@@ -35,9 +37,12 @@ async def test_set_cloud_authorization_header(httpx_mock: HTTPXMock):
     assert "Authorization" in response.request.headers
     assert response.request.headers["Authorization"] == "Api-Key z_test-api-key"
 
+
 @pytest.mark.asyncio
 async def test_set_open_source_authorization_header(httpx_mock: HTTPXMock):
-    with ZepClient(base_url=API_BASE_URL, api_key="myapikey", project_api_key=None) as client:
+    with ZepClient(
+        base_url=API_BASE_URL, api_key="myapikey", project_api_key=None
+    ) as client:
         httpx_mock.add_response(status_code=200)
         response = await client.aclient.get(f"{client.base_url}/my-endpoint")
 

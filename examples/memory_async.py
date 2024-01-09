@@ -34,7 +34,9 @@ async def main() -> None:
     if project_api_key is None:
         raise ValueError("PROJECT_API_KEY environment variable must be set")
 
-    async with ZepClient(project_api_key=project_api_key, base_url=None, api_key=None) as client:
+    async with ZepClient(
+        project_api_key=project_api_key, base_url=None, api_key=None
+    ) as client:
         # Create a user
         user_id = uuid.uuid4().hex
         user_request = CreateUserRequest(

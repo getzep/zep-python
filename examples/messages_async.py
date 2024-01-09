@@ -124,7 +124,9 @@ async def main():
     project_api_key = os.environ.get("PROJECT_API_KEY")
     if project_api_key is None:
         raise ValueError("PROJECT_API_KEY environment variable must be set")
-    with ZepClient(project_api_key=project_api_key, base_url=None, api_key=None) as client:
+    with ZepClient(
+        project_api_key=project_api_key, base_url=None, api_key=None
+    ) as client:
         user = await create_user(client)
         session_id = await create_session(client, user.user_id)
         await add_memory_to_session(client, session_id, history)

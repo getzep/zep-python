@@ -1,11 +1,12 @@
 """ Using Zep as a vector database. A simple sync example. """
 import asyncio
-import time
 import os
+import time
 from typing import List
 from uuid import uuid4
 
 from faker import Faker
+
 from zep_python import ZepClient
 from zep_python.document import Document
 

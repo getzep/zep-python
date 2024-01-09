@@ -18,7 +18,6 @@ from zep_python.memory.models import (
     Session,
 )
 from zep_python.message.client import MessageClient
-
 from zep_python.user.client import UserClient
 
 API_BASE_PATH = "/api/v1"
@@ -61,7 +60,12 @@ class ZepClient:
     document: DocumentClient
     user: UserClient
 
-    def __init__(self, project_api_key: Optional[str], base_url: Optional[str], api_key: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        project_api_key: Optional[str],
+        base_url: Optional[str],
+        api_key: Optional[str] = None,
+    ) -> None:
         """
         Initialize the ZepClient with the specified base URL.
 
@@ -94,6 +98,8 @@ class ZepClient:
             headers["Authorization"] = f"Bearer {api_key}"
 
         if project_api_key is None:
+            if base_url is None:
+                raise ValueError("Either project_api_key or base_url must be specified")
             self.base_url = concat_url(base_url, API_BASE_PATH)
         else:
             self.base_url = "http://localhost:8000/api/v2"
@@ -109,6 +115,8 @@ class ZepClient:
         if project_api_key is not None:
             self._healthcheck("http://localhost:8000")
         else:
+            if base_url is None:
+                raise ValueError("Either project_api_key or base_url must be specified")
             self._healthcheck(base_url)
 
         self.memory = MemoryClient(self.aclient, self.client)
@@ -149,7 +157,10 @@ class ZepClient:
             else:
                 zep_server_version = Version("0.0.0")
 
-            if zep_server_version < Version(MINIMUM_SERVER_VERSION) and self.project_api_key is None:
+            if (
+                zep_server_version < Version(MINIMUM_SERVER_VERSION)
+                and self.project_api_key is None
+            ):
                 warnings.warn(
                     (
                         "You are using an incompatible Zep server version. Please"

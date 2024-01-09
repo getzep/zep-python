@@ -5,7 +5,6 @@ from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
 import httpx
 
 from zep_python.exceptions import APIError, handle_response
-from zep_python.message.models import Message
 from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
@@ -14,6 +13,7 @@ from zep_python.memory.models import (
     Session,
     Summary,
 )
+from zep_python.message.models import Message
 from zep_python.utils import SearchType
 
 
