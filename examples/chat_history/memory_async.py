@@ -15,15 +15,15 @@ import os
 import time
 import uuid
 
+from chat_history import history
 from dotenv import load_dotenv
 
-from chat_history import history
 from zep_python import (
     APIError,
     NotFoundError,
     ZepClient,
 )
-from zep_python.memory import Session, Memory, MemorySearchPayload
+from zep_python.memory import Memory, MemorySearchPayload, Session
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
 

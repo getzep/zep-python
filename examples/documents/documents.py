@@ -4,11 +4,10 @@ import time
 from uuid import uuid4
 
 from faker import Faker
+from utils import print_results, read_chunk_from_file
 
 from zep_python import ZepClient
 from zep_python.document import Document
-
-from utils import read_chunk_from_file, print_results
 
 fake = Faker()
 fake.random.seed(42)

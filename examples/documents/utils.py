@@ -1,6 +1,5 @@
 from typing import List
 
-
 from zep_python.document import Document
 
 
