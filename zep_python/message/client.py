@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import httpx
 
@@ -38,6 +38,35 @@ class MessageClient:
         self.aclient = aclient
         self.client = client
 
+    def _validate_cursor_limit(
+        self, limit: int, cursor: int
+    ) -> Optional[Dict[str, int]]:
+        """
+        Validates the cursor and limit parameters.
+
+        Parameters
+        ----------
+        limit : int
+            The number of messages to return per page.
+        cursor : int
+            The page number to return.
+
+        Raises
+        ------
+        ValueError
+            If the limit or cursor is invalid.
+        """
+        if limit is not None and cursor is not None:
+            if (
+                not isinstance(limit, int)
+                or not isinstance(cursor, int)
+                or limit <= 0
+                or cursor <= 0
+            ):
+                raise ValueError("Both limit and cursor must be positive integers")
+            return {"limit": limit, "cursor": cursor}
+        return None
+
     def get_session_messages(
         self, session_id: str, limit: int = 100, cursor: int = 1
     ) -> List[Message]:
@@ -73,17 +102,7 @@ class MessageClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
-        if limit is not None and cursor is not None:
-            if (
-                not isinstance(limit, int)
-                or not isinstance(cursor, int)
-                or limit <= 0
-                or cursor <= 0
-            ):
-                raise ValueError("Both limit and cursor must be positive integers")
-            params = {"limit": limit, "cursor": cursor}
-        else:
-            params = None
+        params = self._validate_cursor_limit(limit, cursor)
 
         url = f"/sessions/{session_id}/messages"
 
@@ -94,7 +113,9 @@ class MessageClient:
 
         handle_response(response, f"Unable to get messages for session {session_id}.")
 
-        return [Message.parse_obj(message) for message in response.json()["messages"]]
+        return [
+            Message.model_validate(message) for message in response.json()["messages"]
+        ]
 
     async def aget_session_messages(
         self, session_id: str, limit: int = 100, cursor: int = 1
@@ -131,17 +152,7 @@ class MessageClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("Session ID cannot be empty.")
 
-        if limit is not None and cursor is not None:
-            if (
-                not isinstance(limit, int)
-                or not isinstance(cursor, int)
-                or limit <= 0
-                or cursor <= 0
-            ):
-                raise ValueError("Both limit and cursor must be positive integers")
-            params = {"limit": limit, "cursor": cursor}
-        else:
-            params = None
+        params = self._validate_cursor_limit(limit, cursor)
 
         url = f"/sessions/{session_id}/messages"
 
@@ -152,7 +163,9 @@ class MessageClient:
 
         handle_response(response, f"Unable to get messages for session {session_id}.")
 
-        return [Message.parse_obj(message) for message in response.json()["messages"]]
+        return [
+            Message.model_validate(message) for message in response.json()["messages"]
+        ]
 
     def get_session_message(self, session_id: str, message_id: str) -> Message:
         """
@@ -188,7 +201,7 @@ class MessageClient:
             response, f"Unable to get message {message_id} for session {session_id}."
         )
 
-        return Message.parse_obj(response.json())
+        return Message.model_validate(response.json())
 
     async def aget_session_message(self, session_id: str, message_id: str) -> Message:
         """
@@ -224,7 +237,7 @@ class MessageClient:
             response, f"Unable to get message {message_id} for session {session_id}."
         )
 
-        return Message.parse_obj(response.json())
+        return Message.model_validate(response.json())
 
     def update_message_metadata(
         self, session_id: str, message_id: str, metadata: Dict[str, Any]
@@ -266,7 +279,7 @@ class MessageClient:
         )
 
         response_data = response.json()
-        return Message.parse_obj(response_data)
+        return Message.model_validate(response_data)
 
     async def aupdate_message_metadata(
         self, session_id: str, message_id: str, metadata: Dict[str, Any]
@@ -308,4 +321,4 @@ class MessageClient:
         )
 
         response_data = response.json()
-        return Message.parse_obj(response_data)
+        return Message.model_validate(response_data)

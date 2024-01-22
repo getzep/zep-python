@@ -21,7 +21,7 @@ mock_user = {
 
 
 def validate_user(user: User):
-    assert User.parse_obj(mock_user) == user
+    assert User.model_validate(mock_user) == user
 
 
 @pytest.mark.asyncio

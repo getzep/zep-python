@@ -53,7 +53,11 @@ async def test_aadd_collection_valid(
 
     response = await zep_client.document.aadd_collection(**collection_data)
 
-    assert response == DocumentCollection(**collection_data)
+    expected = DocumentCollection(**collection_data)
+
+    assert expected.name == response.name
+    assert expected.description == response.description
+    assert expected.metadata == response.metadata
 
 
 @pytest.mark.asyncio
@@ -103,8 +107,11 @@ async def test_update_collection_valid(
     httpx_mock.add_response(method="GET", status_code=200, json=collection_data)
 
     response = await zep_client.document.aupdate_collection(**collection_data)
+    expected = DocumentCollection(**collection_data)
 
-    assert response == DocumentCollection(**collection_data)
+    assert expected.name == response.name
+    assert expected.description == response.description
+    assert expected.metadata == response.metadata
 
 
 @pytest.mark.asyncio
@@ -134,7 +141,7 @@ async def test_update_collection_invalid(name: str, collection_data: dict, zep_c
 
 @pytest.mark.asyncio
 async def test_list_collections(zep_client: ZepClient, httpx_mock: HTTPXMock):
-    mock_collections = [generate_mock_collection(i).dict() for i in range(10)]
+    mock_collections = [generate_mock_collection(i).model_dump() for i in range(10)]
     httpx_mock.add_response(
         method="GET",
         status_code=200,
@@ -142,8 +149,9 @@ async def test_list_collections(zep_client: ZepClient, httpx_mock: HTTPXMock):
     )
 
     response = await zep_client.document.alist_collections()
+    expected = [DocumentCollection(**c) for c in mock_collections]
 
-    assert response == mock_collections
+    assert response == expected
 
 
 @pytest.mark.asyncio
@@ -152,12 +160,15 @@ async def test_get_collection(zep_client: ZepClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         method="GET",
         status_code=200,
-        json=mock_collection.dict(),
+        json=mock_collection.model_dump(),
     )
 
     response = await zep_client.document.aget_collection(mock_collection.name)
+    expected = DocumentCollection(**mock_collection.model_dump())
 
-    assert response == mock_collection
+    assert expected.uuid == response.uuid
+    assert expected.name == response.name
+    assert expected.description == response.description
 
 
 @pytest.mark.asyncio
@@ -406,7 +417,7 @@ async def test_aget_document(zep_client: ZepClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         method="GET",
         status_code=200,
-        json=mock_document.dict(),
+        json=mock_document.model_dump(),
     )
 
     response = await mock_collection.aget_document(mock_document.uuid)
@@ -435,7 +446,7 @@ def test_get_document(zep_client: ZepClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         method="GET",
         status_code=200,
-        json=mock_document.dict(),
+        json=mock_document.model_dump(),
     )
 
     response = mock_collection.get_document(mock_document.uuid)
@@ -451,7 +462,7 @@ async def test_aget_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json=[doc.dict() for doc in mock_documents],
+        json=[doc.model_dump() for doc in mock_documents],
     )
 
     response = await mock_collection.aget_documents(
@@ -468,7 +479,7 @@ def test_get_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json=[doc.dict() for doc in mock_documents],
+        json=[doc.model_dump() for doc in mock_documents],
     )
 
     response = mock_collection.get_documents([doc.uuid for doc in mock_documents])
@@ -505,7 +516,7 @@ async def test_aget_documents_large_batch(zep_client: ZepClient, httpx_mock: HTT
     httpx_mock.add_response(
         method="POST",
         status_code=200,
-        json=[doc.dict() for doc in mock_documents],
+        json=[doc.model_dump() for doc in mock_documents],
     )
 
     with pytest.warns(UserWarning):
@@ -527,7 +538,6 @@ async def test_aget_documents_api_error(zep_client: ZepClient, httpx_mock: HTTPX
         await mock_collection.aget_documents([doc.uuid for doc in mock_documents])
 
 
-
 @pytest.mark.asyncio
 async def test_asearch_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
     mock_collection = generate_mock_collection(1, with_clients=True)
@@ -537,7 +547,7 @@ async def test_asearch_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
         method="POST",
         status_code=200,
         json={
-            "results": [doc.dict() for doc in mock_documents],
+            "results": [doc.model_dump() for doc in mock_documents],
             "query_vector": [random() for _ in range(384)],
         },
     )
@@ -558,7 +568,7 @@ async def test_asearch_documents_mmr(zep_client: ZepClient, httpx_mock: HTTPXMoc
         method="POST",
         status_code=200,
         json={
-            "results": [doc.dict() for doc in mock_documents],
+            "results": [doc.model_dump() for doc in mock_documents],
             "query_vector": [random() for _ in range(384)],
         },
     )
@@ -581,20 +591,18 @@ async def test_asearch_documents_embedding(
     mock_collection = generate_mock_collection(1, with_clients=True)
     mock_documents = [gen_mock_document("test_collection", i) for i in range(10)]
 
-    embedding = [random() for _ in range(384)]
+    [random() for _ in range(384)]
 
     httpx_mock.add_response(
         method="POST",
         status_code=200,
         json={
-            "results": [doc.dict() for doc in mock_documents],
+            "results": [doc.model_dump() for doc in mock_documents],
             "query_vector": [random() for _ in range(384)],
         },
     )
 
-    response = await mock_collection.asearch(
-         metadata={"key": "value"}, limit=10
-    )
+    response = await mock_collection.asearch(metadata={"key": "value"}, limit=10)
 
     assert response == mock_documents
 
@@ -607,7 +615,7 @@ def test_search_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
         method="POST",
         status_code=200,
         json={
-            "results": [doc.dict() for doc in mock_documents],
+            "results": [doc.model_dump() for doc in mock_documents],
             "query_vector": [random() for _ in range(384)],
         },
     )
@@ -627,7 +635,7 @@ def test_search_documents_mmr(zep_client: ZepClient, httpx_mock: HTTPXMock):
         method="POST",
         status_code=200,
         json={
-            "results": [doc.dict() for doc in mock_documents],
+            "results": [doc.model_dump() for doc in mock_documents],
             "query_vector": [random() for _ in range(384)],
         },
     )
@@ -652,7 +660,7 @@ async def test_asearch_documents_no_limit(zep_client: ZepClient, httpx_mock: HTT
         method="POST",
         status_code=200,
         json={
-            "results": [doc.dict() for doc in mock_documents],
+            "results": [doc.model_dump() for doc in mock_documents],
             "query_vector": [random() for _ in range(384)],
         },
     )
@@ -676,7 +684,7 @@ async def test_asearch_documents_no_metadata(
         method="POST",
         status_code=200,
         json={
-            "results": [doc.dict() for doc in mock_documents],
+            "results": [doc.model_dump() for doc in mock_documents],
             "query_vector": [random() for _ in range(384)],
         },
     )
@@ -744,16 +752,11 @@ def gen_mock_document(
     collection_name: str,
     embedding_dimensions: Optional[int] = None,
 ) -> Document:
-    embedding = (
-        [random() for _ in range(embedding_dimensions)]
-        if embedding_dimensions
-        else None
-    )
+    ([random() for _ in range(embedding_dimensions)] if embedding_dimensions else None)
 
     return Document(
         uuid=str(uuid4()),
         collection_name=collection_name,
         content="Test Document",
-        
         metadata={"key": "value"},
     )

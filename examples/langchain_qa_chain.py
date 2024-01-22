@@ -27,7 +27,7 @@ def main():
     collection_name = f"babbage{uuid4()}".replace("-", "")
     file = "babbages_calculating_engine.txt"
 
-    client = ZepClient(base_url=zep_api_url)
+    client = ZepClient(api_url=zep_api_url)
 
     print(f"Creating collection {collection_name}")
 

@@ -1,15 +1,8 @@
 import warnings
 from typing import TYPE_CHECKING, Any, Dict, Generator, List, Optional, Tuple
-
+from pydantic import PrivateAttr
 import httpx
 
-if TYPE_CHECKING:
-    from pydantic import PrivateAttr
-else:
-    try:
-        from pydantic.v1 import PrivateAttr
-    except ImportError:
-        from pydantic import PrivateAttr
 
 from zep_python.exceptions import handle_response
 from zep_python.utils import SearchType, filter_dict
@@ -29,7 +22,9 @@ def generate_batches(
 ) -> Generator[List[Dict[str, Any]], None, None]:
     """Generate batches of documents to be sent to the API."""
 
-    document_dicts = (doc.dict(exclude_none=True) for doc in documents)
+    document_dicts = (
+        doc.model_dump(exclude_none=True, exclude_unset=True) for doc in documents
+    )
     batches = (
         [
             doc
@@ -530,7 +525,7 @@ class DocumentCollection(DocumentCollectionModel):
         response = await self._aclient.post(
             url,
             params=params,
-            json=payload.dict(exclude_none=True),
+            json=payload.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         # If the collection is not found, return an empty list
@@ -628,7 +623,7 @@ class DocumentCollection(DocumentCollectionModel):
         response = self._client.post(
             url,
             params=params,
-            json=payload.dict(exclude_none=True),
+            json=payload.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         # If the collection is not found, return an empty list

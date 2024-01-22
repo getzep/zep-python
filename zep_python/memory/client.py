@@ -42,14 +42,14 @@ class MemoryClient:
         messages: List[Message]
         try:
             messages = [
-                Message.parse_obj(m) for m in response_data.get("messages", None)
+                Message.model_validate(m) for m in response_data.get("messages", None)
             ]
         except (TypeError, ValueError) as e:
             raise APIError(message="Unexpected response format from the API") from e
 
         summary: Optional[Summary] = None
         if response_data.get("summary", None) is not None:
-            summary = Summary.parse_obj(response_data["summary"])
+            summary = Summary.model_validate(response_data["summary"])
 
         memory = Memory(
             messages=messages,
@@ -106,7 +106,7 @@ class MemoryClient:
 
         response_data = response.json()
 
-        return Session.parse_obj(response_data)
+        return Session.model_validate(response_data)
 
     # Memory APIs : Get a Session Asynchronously
     async def aget_session(self, session_id: str) -> Session:
@@ -148,7 +148,7 @@ class MemoryClient:
 
         response_data = response.json()
 
-        return Session.parse_obj(response_data)
+        return Session.model_validate(response_data)
 
     # Memory APIs : Add a Session
     def add_session(self, session: Session) -> Session:
@@ -182,13 +182,15 @@ class MemoryClient:
         url = "sessions"
 
         try:
-            response = self.client.post(url, json=session.dict(exclude_none=True))
+            response = self.client.post(
+                url, json=session.model_dump(exclude_none=True, exclude_unset=True)
+            )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response, f"Failed to add session {session.session_id}")
 
-        return Session.parse_obj(response.json())
+        return Session.model_validate(response.json())
 
     # Memory APIs : Add a Session Asynchronously
     async def aadd_session(self, session: Session) -> Session:
@@ -223,14 +225,14 @@ class MemoryClient:
 
         try:
             response = await self.aclient.post(
-                url, json=session.dict(exclude_none=True)
+                url, json=session.model_dump(exclude_none=True, exclude_unset=True)
             )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response, f"Failed to add session {session.session_id}")
 
-        return Session.parse_obj(response.json())
+        return Session.model_validate(response.json())
 
     # Memory APIs : Update a Session
     def update_session(self, session: Session) -> Session:
@@ -263,12 +265,12 @@ class MemoryClient:
 
         response = self.client.patch(
             f"/sessions/{session.session_id}",
-            json=session.dict(exclude_none=True),
+            json=session.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response, f"Failed to update session {session.session_id}")
 
-        return Session.parse_obj(response.json())
+        return Session.model_validate(response.json())
 
     # Memory APIs : Update a Session Asynchronously
     async def aupdate_session(self, session: Session) -> Session:
@@ -301,12 +303,12 @@ class MemoryClient:
 
         response = await self.aclient.patch(
             f"/sessions/{session.session_id}",
-            json=session.dict(exclude_none=True),
+            json=session.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response, f"Failed to update session {session.session_id}")
 
-        return Session.parse_obj(response.json())
+        return Session.model_validate(response.json())
 
     # Memory APIs : Get a List of Sessions
     def list_sessions(
@@ -350,7 +352,7 @@ class MemoryClient:
 
         response_data = response.json()
 
-        return [Session.parse_obj(session) for session in response_data]
+        return [Session.model_validate(session) for session in response_data]
 
     # Memory APIs : Get a List of Sessions Asynchronously
     async def alist_sessions(
@@ -392,7 +394,7 @@ class MemoryClient:
 
         response_data = response.json()
 
-        return [Session.parse_obj(session) for session in response_data]
+        return [Session.model_validate(session) for session in response_data]
 
     def list_all_sessions(
         self, chunk_size: int = 100
@@ -577,7 +579,7 @@ class MemoryClient:
 
         response = self.client.post(
             f"/sessions/{session_id}/memory",
-            json=memory_messages.dict(exclude_none=True),
+            json=memory_messages.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
@@ -613,7 +615,7 @@ class MemoryClient:
 
         response = await self.aclient.post(
             f"/sessions/{session_id}/memory",
-            json=memory_messages.dict(exclude_none=True),
+            json=memory_messages.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
@@ -678,6 +680,16 @@ class MemoryClient:
         handle_response(response)
         return response.text
 
+    def _validate_search_payload(self, search_payload: MemorySearchPayload) -> None:
+        if search_payload is None:
+            raise ValueError("search_payload must be provided")
+
+        if search_payload.search_type not in SearchType.__members__:
+            raise ValueError("search_type must be one of 'similarity' or 'mmr'")
+
+        if search_payload.search_scope not in SearchScope.__members__:
+            raise ValueError("search_scope must be one of 'messages' or 'summary'")
+
     # Memory APIs : Search Memory
     def search_memory(
         self,
@@ -712,14 +724,7 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        if search_payload is None:
-            raise ValueError("search_payload must be provided")
-
-        if search_payload.search_type not in SearchType.__members__:
-            raise ValueError("search_type must be one of 'similarity' or 'mmr'")
-
-        if search_payload.search_scope not in SearchScope.__members__:
-            raise ValueError("search_scope must be one of 'messages' or 'summary'")
+        self._validate_search_payload(search_payload)
 
         params = {"limit": limit} if limit is not None else {}
         response = self.client.post(
@@ -766,14 +771,7 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        if search_payload is None:
-            raise ValueError("search_payload must be provided")
-
-        if search_payload.search_type not in SearchType.__members__:
-            raise ValueError("search_type must be one of 'similarity' or 'mmr'")
-
-        if search_payload.search_scope not in SearchScope.__members__:
-            raise ValueError("search_scope must be one of 'messages' or 'summary'")
+        self._validate_search_payload(search_payload)
 
         params = {"limit": limit} if limit is not None else {}
         response = await self.aclient.post(

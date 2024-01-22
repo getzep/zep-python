@@ -7,12 +7,10 @@ from zep_python.user import CreateUserRequest, UpdateUserRequest
 
 
 async def main() -> None:
-    project_api_key = os.environ.get("PROJECT_API_KEY")
-    if project_api_key is None:
-        raise ValueError("PROJECT_API_KEY environment variable must be set")
-    with ZepClient(
-        project_api_key=project_api_key, base_url=None, api_key=None
-    ) as client:
+    api_key = os.environ.get("API_KEY")
+    if api_key is None:
+        raise ValueError("API_KEY environment variable must be set")
+    with ZepClient(api_key=api_key, api_url=None, api_key=None) as client:
         # Create multiple users
         for i in range(3):
             user_id = f"user{i}" + uuid.uuid4().hex

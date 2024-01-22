@@ -24,7 +24,7 @@ def main():
 
     print(f"Creating collection {collection_name}")
 
-    client = ZepClient(base_url=zep_api_url)
+    client = ZepClient(api_url=zep_api_url)
     client.document.add_collection(
         name=collection_name,  # required
         description="Charles Babbage's Babbage's Calculating Engine",  # optional

@@ -121,12 +121,10 @@ def delete_and_print_memory_for_session(client, session_id):
 
 
 async def main():
-    project_api_key = os.environ.get("PROJECT_API_KEY")
-    if project_api_key is None:
-        raise ValueError("PROJECT_API_KEY environment variable must be set")
-    with ZepClient(
-        project_api_key=project_api_key, base_url=None, api_key=None
-    ) as client:
+    api_key = os.environ.get("API_KEY")
+    if api_key is None:
+        raise ValueError("API_KEY environment variable must be set")
+    with ZepClient(api_key=api_key, api_url=None, api_key=None) as client:
         user = await create_user(client)
         session_id = await create_session(client, user.user_id)
         await add_memory_to_session(client, session_id, history)

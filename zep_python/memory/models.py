@@ -1,17 +1,10 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field
 
 from zep_python.message.models import Message
-
-if TYPE_CHECKING:
-    from pydantic import BaseModel, Field
-else:
-    try:
-        from pydantic.v1 import BaseModel, Field
-    except ImportError:
-        from pydantic import BaseModel, Field
 
 
 class SearchScope(str, Enum):
@@ -92,7 +85,7 @@ class Summary(BaseModel):
         Dict[str, Any]
             A dictionary containing the attributes of the summary.
         """
-        return self.dict()
+        return self.model_dump(exclude_unset=True, exclude_none=True)
 
 
 class Memory(BaseModel):
@@ -101,7 +94,7 @@ class Memory(BaseModel):
 
     Attributes
     ----------
-    messages : Optional[List[Dict[str, Any]]]
+    messages : Optional[List[Message]]
         A list of message objects, where each message contains a role and content.
     metadata : Optional[Dict[str, Any]]
         A dictionary containing metadata associated with the memory.
@@ -120,17 +113,18 @@ class Memory(BaseModel):
         Returns a dictionary representation of the message.
     """
 
-    messages: List[Message] = Field(
-        default=[], description="A List of Messages or empty List is required"
+    messages: Optional[List[Message]] = Field(
+        default=[],
+        description="A List of Messages or empty List is required",
     )
-    metadata: Optional[Dict[str, Any]] = Field(optional=True, default=None)
-    summary: Optional[Summary] = Field(optional=True, default=None)
-    uuid: Optional[str] = Field(optional=True, default=None)
-    created_at: Optional[str] = Field(optional=True, default=None)
-    token_count: Optional[int] = Field(optional=True, default=None)
+    metadata: Optional[Dict[str, Any]] = Field(default=None)
+    summary: Optional[Summary] = Field(default=None)
+    uuid: Optional[str] = Field(default=None)
+    created_at: Optional[str] = Field(default=None)
+    token_count: Optional[int] = Field(default=None)
 
     def to_dict(self) -> Dict[str, Any]:
-        return self.dict()
+        return self.model_dump(exclude_unset=True, exclude_none=True)
 
 
 class MemorySearchPayload(BaseModel):
@@ -166,7 +160,7 @@ class MemorySearchResult(BaseModel):
 
     Attributes
     ----------
-    message : Optional[Dict[str, Any]]
+    message : Optional[Message]
         The message matched by search.
     summary : Optional[Summary]
         The summary matched by search.
@@ -176,8 +170,7 @@ class MemorySearchResult(BaseModel):
         The distance metric of the search result.
     """
 
-    # TODO: Legacy bug. message should be a Message object.
-    message: Optional[Dict[str, Any]] = None
+    message: Optional[Message] = None
     summary: Optional[Summary] = None
     metadata: Optional[Dict[str, Any]] = None
     dist: Optional[float] = None

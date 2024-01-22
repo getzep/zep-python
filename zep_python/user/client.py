@@ -59,12 +59,14 @@ class UserClient:
 
         """
         try:
-            response = self.client.post("/users", json=user.dict(exclude_none=True))
+            response = self.client.post(
+                "/users", json=user.model_dump(exclude_none=True, exclude_unset=True)
+            )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response)
-        return User.parse_obj(response.json())
+        return User.model_validate(response.json())
 
     async def aadd(self, user: CreateUserRequest) -> User:
         """
@@ -90,13 +92,13 @@ class UserClient:
         """
         try:
             response = await self.aclient.post(
-                "/users", json=user.dict(exclude_none=True)
+                "/users", json=user.model_dump(exclude_none=True, exclude_unset=True)
             )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response)
-        return User.parse_obj(response.json())
+        return User.model_validate(response.json())
 
     def get(self, user_id: str) -> User:
         """
@@ -127,7 +129,7 @@ class UserClient:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response)
-        return User.parse_obj(response.json())
+        return User.model_validate(response.json())
 
     async def aget(self, user_id: str) -> User:
         """
@@ -160,7 +162,7 @@ class UserClient:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response)
-        return User.parse_obj(response.json())
+        return User.model_validate(response.json())
 
     def update(self, user: UpdateUserRequest) -> User:
         """
@@ -190,13 +192,14 @@ class UserClient:
 
         try:
             response = self.client.patch(
-                f"/users/{user.user_id}", json=user.dict(exclude_none=True)
+                f"/users/{user.user_id}",
+                json=user.model_dump(exclude_none=True, exclude_unset=True),
             )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
         handle_response(response)
 
-        return User.parse_obj(response.json())
+        return User.model_validate(response.json())
 
     async def aupdate(self, user: UpdateUserRequest) -> User:
         """
@@ -225,14 +228,15 @@ class UserClient:
             raise ValueError("user_id must be provided")
         try:
             response = await self.aclient.patch(
-                f"/users/{user.user_id}", json=user.dict(exclude_none=True)
+                f"/users/{user.user_id}",
+                json=user.model_dump(exclude_none=True, exclude_unset=True),
             )
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response)
 
-        return User.parse_obj(response.json())
+        return User.model_validate(response.json())
 
     def delete(self, user_id: str) -> None:
         """
@@ -324,7 +328,7 @@ class UserClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
         handle_response(response)
-        return [User.parse_obj(user) for user in response.json()]
+        return [User.model_validate(user) for user in response.json()]
 
     async def alist(
         self, limit: Optional[int] = None, cursor: Optional[int] = None
@@ -358,7 +362,7 @@ class UserClient:
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
         handle_response(response)
-        return [User.parse_obj(user) for user in response.json()]
+        return [User.model_validate(user) for user in response.json()]
 
     def list_chunked(self, chunk_size: int = 100) -> Generator[List[User], None, None]:
         """
@@ -466,7 +470,7 @@ class UserClient:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response)
-        return [Session.parse_obj(session) for session in response.json()]
+        return [Session.model_validate(session) for session in response.json()]
 
     async def aget_sessions(self, user_id: str) -> List[Session]:
         """
@@ -495,4 +499,4 @@ class UserClient:
             raise ConnectionError("Failed to connect to server") from e
 
         handle_response(response)
-        return [Session.parse_obj(session) for session in response.json()]
+        return [Session.model_validate(session) for session in response.json()]

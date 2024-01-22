@@ -27,7 +27,7 @@ def main():
 
     print(f"Creating collection {collection_name}")
 
-    client = ZepClient(base_url=zep_api_url)
+    client = ZepClient(api_url=zep_api_url)
 
     cfg = CollectionConfig(
         name=collection_name,

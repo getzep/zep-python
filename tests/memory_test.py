@@ -214,9 +214,9 @@ async def test_asearch_memory(httpx_mock: HTTPXMock):
         search_results = await client.memory.asearch_memory(session_id, search_payload)
 
         assert len(search_results) == 1
-        assert search_results[0].message["uuid"] == "msg-uuid"
-        assert search_results[0].message["role"] == "user"
-        assert search_results[0].message["content"] == "Test message"
+        assert search_results[0].message.uuid == "msg-uuid"
+        assert search_results[0].message.role == "user"
+        assert search_results[0].message.content == "Test message"
         assert search_results[0].dist == 0.9
 
 
@@ -247,9 +247,9 @@ async def test_asearch_memory_mmr(httpx_mock: HTTPXMock):
         search_results = await client.memory.asearch_memory(session_id, search_payload)
 
         assert len(search_results) == 1
-        assert search_results[0].message["uuid"] == "msg-uuid"
-        assert search_results[0].message["role"] == "user"
-        assert search_results[0].message["content"] == "Test message"
+        assert search_results[0].message.uuid == "msg-uuid"
+        assert search_results[0].message.role == "user"
+        assert search_results[0].message.content == "Test message"
         assert search_results[0].dist == 0.9
 
 
@@ -660,9 +660,9 @@ def test_search_memory(httpx_mock: HTTPXMock):
         search_results = client.memory.search_memory(session_id, search_payload)
 
         assert len(search_results) == 1
-        assert search_results[0].message["uuid"] == "msg-uuid"
-        assert search_results[0].message["role"] == "user"
-        assert search_results[0].message["content"] == "Test message"
+        assert search_results[0].message.uuid == "msg-uuid"
+        assert search_results[0].message.role == "user"
+        assert search_results[0].message.content == "Test message"
         assert search_results[0].dist == 0.9
 
 
@@ -692,9 +692,9 @@ def test_search_memory_mmr(httpx_mock: HTTPXMock):
         search_results = client.memory.search_memory(session_id, search_payload)
 
         assert len(search_results) == 1
-        assert search_results[0].message["uuid"] == "msg-uuid"
-        assert search_results[0].message["role"] == "user"
-        assert search_results[0].message["content"] == "Test message"
+        assert search_results[0].message.uuid == "msg-uuid"
+        assert search_results[0].message.role == "user"
+        assert search_results[0].message.content == "Test message"
         assert search_results[0].dist == 0.9
 
 
@@ -726,7 +726,7 @@ mock_session = {
 
 def validate_session(session):
     # Validate the session object here
-    assert Session.parse_obj(mock_session) == session
+    assert Session.model_validate(mock_session) == session
 
 
 @pytest.mark.asyncio
@@ -911,7 +911,7 @@ mock_sessions = [
 
 def validate_sessions(sessions: List[Session]) -> None:
     # Validate the sessions list here
-    assert [Session.parse_obj(session) for session in mock_sessions] == sessions
+    assert [Session.model_validate(session) for session in mock_sessions] == sessions
 
 
 @pytest.mark.asyncio
@@ -939,7 +939,7 @@ def test_list_all_sessions(httpx_mock: HTTPXMock):
         httpx_mock.add_response(status_code=200, json=[mock_sessions[0]])
         sessions_generator = client.memory.list_all_sessions(1)
         for i, session in enumerate(sessions_generator):
-            assert session == [Session.parse_obj(mock_sessions[i])]
+            assert session == [Session.model_validate(mock_sessions[i])]
             if i == 0:
                 httpx_mock.add_response(status_code=200, json=[mock_sessions[i + 1]])
             else:
@@ -956,7 +956,7 @@ async def test_alist_all_sessions(httpx_mock: HTTPXMock):
         i = 0
         try:
             async for session in sessions_generator:
-                assert session == [Session.parse_obj(mock_sessions[i])]
+                assert session == [Session.model_validate(mock_sessions[i])]
                 if i == 0:
                     httpx_mock.add_response(
                         status_code=200, json=[mock_sessions[i + 1]]

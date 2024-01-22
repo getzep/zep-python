@@ -11,6 +11,7 @@ from .collections import DocumentCollection
 
 DEFAULT_EMBEDDING_DIMENSIONS = 1024
 
+
 class DocumentClient:
     """
     This class implements Zep's document APIs.
@@ -105,7 +106,7 @@ class DocumentClient:
 
         response = await self.aclient.post(
             f"/collections/{name}",
-            json=collection.dict(exclude_none=True),
+            json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
@@ -154,7 +155,7 @@ class DocumentClient:
         print(self.client.headers["Authorization"])
         response = self.client.post(
             f"/collections/{name}",
-            json=collection.dict(exclude_none=True),
+            json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
@@ -281,7 +282,7 @@ class DocumentClient:
 
         response = await self.aclient.patch(
             f"/collections/{collection.name}",
-            json=collection.dict(exclude_none=True),
+            json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
@@ -329,7 +330,7 @@ class DocumentClient:
 
         response = self.client.patch(
             f"/collections/{collection.name}",
-            json=collection.dict(exclude_none=True),
+            json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
