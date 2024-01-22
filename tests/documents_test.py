@@ -30,15 +30,12 @@ validation_error_types = (ValidationError, ValueError)
                 "name": "test_collection",
                 "description": "Test Collection",
                 "metadata": {"key": "value"},
-                "is_auto_embedded": True,
-                "embedding_dimensions": 10,
             },
         ),
         (
             "collection_required_fields",
             {
                 "name": "test_collection",
-                "embedding_dimensions": 10,
             },
         ),
     ],
@@ -68,15 +65,6 @@ async def test_aadd_collection_valid(
             {
                 "name": "",
                 "description": "Test Collection",
-                "is_auto_embedded": True,
-                "embedding_dimensions": 10,
-            },
-        ),
-        (
-            "collection_dims_none",
-            {
-                "name": "test_collection",
-                "embedding_dimensions": None,
             },
         ),
     ],
@@ -539,16 +527,6 @@ async def test_aget_documents_api_error(zep_client: ZepClient, httpx_mock: HTTPX
         await mock_collection.aget_documents([doc.uuid for doc in mock_documents])
 
 
-def test_create_collection_index(zep_client: ZepClient, httpx_mock: HTTPXMock):
-    mock_collection = generate_mock_collection(1, with_clients=True)
-
-    httpx_mock.add_response(
-        method="POST",
-        status_code=200,
-    )
-
-    mock_collection.create_index(force=True)
-
 
 @pytest.mark.asyncio
 async def test_asearch_documents(zep_client: ZepClient, httpx_mock: HTTPXMock):
@@ -615,7 +593,7 @@ async def test_asearch_documents_embedding(
     )
 
     response = await mock_collection.asearch(
-        embedding=embedding, metadata={"key": "value"}, limit=10
+         metadata={"key": "value"}, limit=10
     )
 
     assert response == mock_documents
@@ -759,8 +737,6 @@ def generate_mock_collection(
         uuid=str(uuid4()),
         name=f"test_collection_{col_id}",
         description="Test Collection",
-        is_auto_embedded=True,
-        embedding_dimensions=10,
     )
 
 
@@ -778,6 +754,6 @@ def gen_mock_document(
         uuid=str(uuid4()),
         collection_name=collection_name,
         content="Test Document",
-        embedding=embedding,
+        
         metadata={"key": "value"},
     )

@@ -9,6 +9,7 @@ from zep_python.utils import filter_dict
 
 from .collections import DocumentCollection
 
+DEFAULT_EMBEDDING_DIMENSIONS = 1024
 
 class DocumentClient:
     """
@@ -19,16 +20,14 @@ class DocumentClient:
         aclient (httpx.AsyncClient): Asynchronous API client.
 
     Methods:
-        aadd_collection(name: str, embedding_dimensions: int,
+        aadd_collection(name: str,
                         description: Optional[str] = "",
-                        metadata: Optional[Dict[str, Any]] = None,
-                        is_auto_embedded: bool = True) -> DocumentCollection:
+                        metadata: Optional[Dict[str, Any]] = None) -> DocumentCollection:
             Asynchronously creates a collection.
 
-        add_collection(name: str, embedding_dimensions: int,
+        add_collection(name: str,
                        description: Optional[str] = "",
-                       metadata: Optional[Dict[str, Any]] = None,
-                       is_auto_embedded: bool = True) -> DocumentCollection:
+                       metadata: Optional[Dict[str, Any]] = None) -> DocumentCollection:
             Synchronously creates a collection.
 
         aupdate_collection(name: str, description: Optional[str] = "",
@@ -69,10 +68,8 @@ class DocumentClient:
     async def aadd_collection(
         self,
         name: str,
-        embedding_dimensions: int,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        is_auto_embedded: bool = True,
     ) -> DocumentCollection:
         """
         Asynchronously creates a collection.
@@ -83,14 +80,9 @@ class DocumentClient:
             The name of the collection to be created.
         description: str
             The description of the collection to be created.
-        embedding_dimensions : int
-            The number of dimensions of the embeddings to use for documents
-            in this collection. This must match your model's embedding dimensions.
         metadata : Optional[Dict[str, Any]], optional
             A dictionary of metadata to be associated with the collection,
             by default None.
-        is_auto_embedded : bool, optional
-            Whether the collection is automatically embedded, by default True.
 
         Returns
         -------
@@ -103,15 +95,12 @@ class DocumentClient:
             If the API response format is unexpected, or if the server returns an error.
         """
 
-        if embedding_dimensions is None or embedding_dimensions <= 0:
-            raise ValueError("embedding_dimensions must be a positive integer")
-
         collection = DocumentCollection(
             name=name,
             description=description,
-            embedding_dimensions=embedding_dimensions,
+            embedding_dimensions=DEFAULT_EMBEDDING_DIMENSIONS,
             metadata=metadata,
-            is_auto_embedded=is_auto_embedded,
+            is_auto_embedded=True,
         )
 
         response = await self.aclient.post(
@@ -126,10 +115,8 @@ class DocumentClient:
     def add_collection(
         self,
         name: str,
-        embedding_dimensions: int,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        is_auto_embedded: bool = True,
     ) -> DocumentCollection:
         """
         Creates a collection.
@@ -140,14 +127,9 @@ class DocumentClient:
             The name of the collection to be created.
         description: str
             The description of the collection to be created.
-        embedding_dimensions : int
-            The number of dimensions of the embeddings to use for documents
-            in this collection. This must match your model's embedding dimensions.
         metadata : Optional[Dict[str, Any]], optional
             A dictionary of metadata to be associated with the collection,
             by default None.
-        is_auto_embedded : bool, optional
-            Whether the collection is automatically embedded, by default True.
 
         Returns
         -------
@@ -165,9 +147,9 @@ class DocumentClient:
         collection = DocumentCollection(
             name=name,
             description=description,
-            embedding_dimensions=embedding_dimensions,
+            embedding_dimensions=DEFAULT_EMBEDDING_DIMENSIONS,
             metadata=metadata,
-            is_auto_embedded=is_auto_embedded,
+            is_auto_embedded=True,
         )
         print(self.client.headers["Authorization"])
         response = self.client.post(

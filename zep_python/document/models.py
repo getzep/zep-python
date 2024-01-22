@@ -131,8 +131,6 @@ class DocumentSearchPayload(BaseModel):
     ----------
     text : Optional[str]
         The text of the search query.
-    embedding : Optional[List[float]]
-        The embedding of the search query.
     metadata : Optional[Dict[str, Any]]
         Metadata associated with the search query.
     type : SearchType
@@ -142,7 +140,6 @@ class DocumentSearchPayload(BaseModel):
     """
 
     text: Optional[str] = Field(default=None)
-    embedding: Optional[List[float]] = Field(default=None)
     metadata: Optional[Dict[str, Any]] = Field(default=None)
     search_type: Optional[SearchType] = Field(default="similarity")
     mmr_lambda: Optional[float] = Field(default=None)

@@ -70,11 +70,11 @@ async def main(file: str):
 
     print(f"Creating collection {collection_name}")
 
-    project_api_key = os.environ.get("PROJECT_API_KEY")
-    if project_api_key is None:
-        raise ValueError("PROJECT_API_KEY environment variable must be set")
+    api_key = os.environ.get("API_KEY")
+    if api_key is None:
+        raise ValueError("API_KEY environment variable must be set")
 
-    client = ZepClient(project_api_key=project_api_key)
+    client = ZepClient(api_key=api_key)
     collection = client.document.add_collection(
         name=collection_name,  # required
         description="Charles Babbage's Babbage's Calculating Engine",  # optional

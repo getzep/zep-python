@@ -16,9 +16,8 @@ from zep_python.utils import SearchType, filter_dict
 
 from .models import Document, DocumentCollectionModel, DocumentSearchPayload
 
-MIN_DOCS_TO_INDEX = 10_000
-DEFAULT_BATCH_SIZE = 500
-LARGE_BATCH_WARNING_LIMIT = 1000
+DEFAULT_BATCH_SIZE = 1000
+LARGE_BATCH_WARNING_LIMIT = 5000
 LARGE_BATCH_WARNING = (
     f"Batch size is greater than {LARGE_BATCH_WARNING_LIMIT}. "
     "This may result in slow performance or out-of-memory failures."
@@ -497,51 +496,9 @@ class DocumentCollection(DocumentCollectionModel):
 
         return [Document(**document) for document in response.json()]
 
-    def create_index(
-        self,
-        force: bool = False,
-    ) -> None:
-        """
-        Creates an index for a DocumentCollection.
-
-        Parameters
-        ----------
-        force : bool, optional
-            If True, forces the creation of the index even if the number of documents
-            is less than then minimum recommended for indexing. Defaults to False.
-
-        Raises
-        ------
-        APIError
-            If the API response format is unexpected.
-        """
-        if not self._client:
-            raise ValueError("Can only index a collection it has been retrieved")
-
-        if (
-            not force
-            and self.document_count
-            and (self.document_count <= MIN_DOCS_TO_INDEX)
-        ):
-            raise ValueError(
-                f"Collection must have at least {MIN_DOCS_TO_INDEX} documents to be"
-                " indexed. Please see the Zep documentation on index best practices."
-                " Pass force=True to override."
-            )
-
-        params = filter_dict({"force": force})
-
-        response = self._client.post(
-            f"/collections/{self.name}/index/create",
-            params=params,
-        )
-
-        handle_response(response)
-
     async def asearch_return_query_vector(
         self,
         text: Optional[str] = None,
-        embedding: Optional[List[float]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
         search_type: Optional[str] = None,
@@ -552,8 +509,8 @@ class DocumentCollection(DocumentCollectionModel):
                 "Can only search documents once a collection has been retrieved"
             )
 
-        if text is None and embedding is None and metadata is None:
-            raise ValueError("One of text, embedding, or metadata must be provided.")
+        if text is None and metadata is None:
+            raise ValueError("One of text or metadata must be provided.")
 
         if text is not None and not isinstance(text, str):
             raise ValueError("Text must be a string.")
@@ -562,7 +519,6 @@ class DocumentCollection(DocumentCollectionModel):
 
         payload = DocumentSearchPayload(
             text=text,
-            embedding=embedding,
             metadata=metadata,
             search_type=search_type_value,
             mmr_lambda=mmr_lambda,
@@ -592,7 +548,6 @@ class DocumentCollection(DocumentCollectionModel):
     async def asearch(
         self,
         text: Optional[str] = None,
-        embedding: Optional[List[float]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
         search_type: Optional[str] = None,
@@ -600,7 +555,7 @@ class DocumentCollection(DocumentCollectionModel):
     ) -> List[Document]:
         """
         Async search over documents in a collection based on provided search criteria.
-        One of text, embedding, or metadata must be provided.
+        One of tex or metadata must be provided.
 
         Returns an empty list if no documents are found.
 
@@ -608,8 +563,6 @@ class DocumentCollection(DocumentCollectionModel):
         ----------
         text : Optional[str], optional
             The search text.
-        embedding : Optional[List[float]], optional
-            The embedding vector to search for.
         metadata : Optional[Dict[str, Any]], optional
             Document metadata to filter on.
         limit : Optional[int], optional
@@ -633,7 +586,6 @@ class DocumentCollection(DocumentCollectionModel):
 
         results, _ = await self.asearch_return_query_vector(
             text=text,
-            embedding=embedding,
             metadata=metadata,
             limit=limit,
             search_type=search_type,
@@ -645,7 +597,6 @@ class DocumentCollection(DocumentCollectionModel):
     def search_return_query_vector(
         self,
         text: Optional[str] = None,
-        embedding: Optional[List[float]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
         search_type: Optional[str] = None,
@@ -656,8 +607,8 @@ class DocumentCollection(DocumentCollectionModel):
                 "Can only search documents once a collection has been retrieved"
             )
 
-        if text is None and embedding is None and metadata is None:
-            raise ValueError("One of text, embedding, or metadata must be provided.")
+        if text is None is None and metadata is None:
+            raise ValueError("One of text or metadata must be provided.")
 
         if text is not None and not isinstance(text, str):
             raise ValueError("Text must be a string.")
@@ -666,7 +617,6 @@ class DocumentCollection(DocumentCollectionModel):
 
         payload = DocumentSearchPayload(
             text=text,
-            embedding=embedding,
             metadata=metadata,
             search_type=search_type_value,
             mmr_lambda=mmr_lambda,
@@ -696,7 +646,6 @@ class DocumentCollection(DocumentCollectionModel):
     def search(
         self,
         text: Optional[str] = None,
-        embedding: Optional[List[float]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
         search_type: Optional[str] = None,
@@ -704,7 +653,7 @@ class DocumentCollection(DocumentCollectionModel):
     ) -> List[Document]:
         """
         Searches over documents in a collection based on provided search criteria.
-        One of text, embedding, or metadata must be provided.
+        One of text, or metadata must be provided.
 
         Returns an empty list if no documents are found.
 
@@ -712,8 +661,6 @@ class DocumentCollection(DocumentCollectionModel):
         ----------
         text : Optional[str], optional
             The search text.
-        embedding : Optional[List[float]], optional
-            The embedding vector to search for.
         metadata : Optional[Dict[str, Any]], optional
             Document metadata to filter on.
         limit : Optional[int], optional
@@ -737,7 +684,6 @@ class DocumentCollection(DocumentCollectionModel):
 
         results, _ = self.search_return_query_vector(
             text=text,
-            embedding=embedding,
             metadata=metadata,
             limit=limit,
             search_type=search_type,

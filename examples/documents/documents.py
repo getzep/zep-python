@@ -66,11 +66,11 @@ def print_results(results: List[Document]):
 def main(file: str):
     max_chunk_size = 500
     collection_name = f"babbage{uuid4()}".replace("-", "")
-    project_api_key = os.environ.get("PROJECT_API_KEY")
-    if project_api_key is None:
-        raise ValueError("PROJECT_API_KEY environment variable must be set")
+    api_key = os.environ.get("API_KEY")
+    if api_key is None:
+        raise ValueError("API_KEY environment variable must be set")
 
-    client = ZepClient(project_api_key=project_api_key, base_url=None, api_key=None)
+    client = ZepClient(api_key=api_key, api_url=None, api_key=None)
     collection = client.document.add_collection(
         name=collection_name,  # required
         description="Charles Babbage's Babbage's Calculating Engine",  # optional
