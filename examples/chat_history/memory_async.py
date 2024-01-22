@@ -1,14 +1,14 @@
-""" Example of using the Zep Python SDK asynchronously.
-This script demonstrates the following functionalities:
-1. Creating a user using the ZepClient.
-2. Creating a session associated with the created user.
-3. Adding messages to the session.
-4. Searching the session memory for a specific query.
-5. Searching the session memory with MMR reranking.
-6. Deleting the session memory.
+"""
+Example of using the Zep Python SDK asynchronously.
 
-Please replace the base_url and api_key with your Zep API URL and your API key respectively.
-
+This script demonstrates the following functionality:
+- Creating a user.
+- Creating a session associated with the created user.
+- Adding messages to the session.
+- Searching the session memory for a specific query.
+- Searching the session memory with MMR reranking.
+- Searching the session memory with a metadata filter.
+- optionally deleting the session.
 """
 import asyncio
 import os
@@ -101,11 +101,14 @@ async def add_memory_to_session(client, session_id):
 
 
 async def get_memory_from_session(client, session_id):
+    print(
+        f"\nGetting most recent memory. We're pausing until all {len(history)} messages are embedded and summarized.\n"
+    )
     memory = Memory()
     try:
         while memory.summary is None:
             memory = await client.memory.aget_memory(session_id)
-            time.sleep(1.0)
+            time.sleep(0.5)
 
         print(f"Summary: {memory.summary.content}")
         for message in memory.messages:
@@ -114,21 +117,22 @@ async def get_memory_from_session(client, session_id):
         print(f"Memory not found for Session: {session_id}")
 
 
-async def search_memory(client, session_id, query):
-    search_payload = MemorySearchPayload(
-        text=query,
-        metadata={"where": {"jsonpath": '$[*] ? (@.Label == "foo")'}},
-    )
+async def search_memory(client, session_id, search_payload: MemorySearchPayload):
     try:
-        search_results = await client.memory.asearch_memory(session_id, search_payload)
+        search_results = await client.memory.asearch_memory(
+            session_id, search_payload, limit=3
+        )
         for search_result in search_results:
-            message_content = search_result.message
-            print(f"Search result: {message_content}")
+            if search_payload.search_scope == "messages":
+                print(f"Result: {search_result.message.content}")
+            else:
+                print(f"Result: {search_result.summary.content}")
+            print(f"Score: {search_result.dist}")
     except NotFoundError:
         print(f"Nothing found for Session {session_id}")
 
 
-async def delete_memory_from_session(client, session_id):
+async def delete_session(client, session_id):
     try:
         result = await client.memory.adelete_memory(session_id)
         print(f"Memory deleted: {result}")
@@ -144,37 +148,56 @@ async def main() -> None:
     await create_user(client, user_id)
 
     session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
-    print(f"------Memory operations: {session_id}")
 
     # Create session associated with the above user
-    print(f"Creating session: {session_id}")
+    print(f"\n---Creating session: {session_id}")
     await create_session(client, user_id, session_id)
 
     # Update session metadata
-    print(f"Updating session: {session_id}")
+    print(f"\n---Updating session: {session_id}")
     await update_session(client, session_id)
 
     # Get session
-    print(f"Getting session: {session_id}")
+    print(f"\n---Getting session: {session_id}")
     await get_session(client, session_id)
 
     # Add Memory for session
-    print(f"\n2---addMemory for Session: {session_id}")
+    print(f"\n---Add Memory for Session: {session_id}")
     await add_memory_to_session(client, session_id)
 
     # Get Memory for session
-    print(f"\n3---getMemory for Session: {session_id}")
+    print(f"\n---Get Memory for Session: {session_id}")
     await get_memory_from_session(client, session_id)
 
     # Search Memory for session
     query = "Can you name some popular destinations in Iceland?"
-    print(f"\n4---searchMemory for Query: '{query}'")
-    await search_memory(client, session_id, query)
+    print(f"\n---Searching over summaries for: '{query}'")
+    search_payload = MemorySearchPayload(
+        text=query,
+        search_scope="summary",
+    )
+    await search_memory(client, session_id, search_payload)
+
+    print("\n---Searching over summaries with MMR Reranking")
+    search_payload = MemorySearchPayload(
+        text=query,
+        search_scope="summary",
+        search_type="mmr",
+    )
+    await search_memory(client, session_id, search_payload)
+
+    print("\n---Searching over messages using a metadata filter")
+    search_payload = MemorySearchPayload(
+        text=query,
+        search_scope="messages",
+        metadata={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}},
+    )
+    await search_memory(client, session_id, search_payload)
 
     # Delete Memory for session
     # Uncomment to run
-    #print(f"\n5---deleteMemory for Session: {session_id}")
-    #await delete_memory_from_session(client, session_id)
+    # print(f"\n5---deleteMemory for Session: {session_id}")
+    # await delete_memory_from_session(client, session_id)
 
 
 if __name__ == "__main__":
