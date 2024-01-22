@@ -22,8 +22,8 @@ class DocumentClient:
 
     Methods:
         aadd_collection(name: str,
-                        description: Optional[str] = "",
-                        metadata: Optional[Dict[str, Any]] = None) -> DocumentCollection:
+                    description: Optional[str] = "",
+                    metadata: Optional[Dict[str, Any]] = None) -> DocumentCollection:
             Asynchronously creates a collection.
 
         add_collection(name: str,
