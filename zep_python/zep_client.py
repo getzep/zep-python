@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from types import TracebackType
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Dict, Optional, Type
 from urllib.parse import urljoin
 
 import httpx
@@ -11,19 +11,14 @@ from packaging.version import InvalidVersion, Version
 from zep_python.document.client import DocumentClient
 from zep_python.exceptions import APIError
 from zep_python.memory.client import MemoryClient
-from zep_python.memory.models import (
-    Memory,
-    MemorySearchPayload,
-    MemorySearchResult,
-    Session,
-)
 from zep_python.message.client import MessageClient
 from zep_python.user.client import UserClient
 
-API_BASE_PATH = "/api/v1"
+API_URL = "https://api.getzep.com"
+API_BASE_PATH = "/api/v2"
 API_TIMEOUT = 10
 
-MINIMUM_SERVER_VERSION = "0.21.0"
+MINIMUM_SERVER_VERSION = "0.22.0"
 
 
 class ZepClient:
@@ -32,38 +27,29 @@ class ZepClient:
 
     Attributes
     ----------
-    base_url : str
-        The base URL of the API.
+    api_url : str
+        The Zep API service URL.
     memory : MemoryClient
         The client used for making Memory API requests.
     document : DocumentClient
         The client used for making Document API requests.
+    user : UserClient
+        The client used for making User API requests.
 
     Methods
     -------
-    get_memory(session_id: str, lastn: Optional[int] = None) -> List[Memory]:
-        Retrieve memory for the specified session. (Deprecated)
-    add_memory(session_id: str, memory_messages: Memory) -> str:
-        Add memory to the specified session. (Deprecated)
-    delete_memory(session_id: str) -> str:
-        Delete memory for the specified session. (Deprecated)
-    search_memory(session_id: str, search_payload: SearchPayload,
-                  limit: Optional[int] = None) -> List[SearchResult]:
-        Search memory for the specified session. (Deprecated)
     close() -> None:
         Close the HTTP client.
     """
 
-    base_url: str
-    project_api_key: Optional[str] = None
+    api_url: str
     memory: MemoryClient
     document: DocumentClient
     user: UserClient
 
     def __init__(
         self,
-        project_api_key: Optional[str],
-        base_url: Optional[str],
+        api_url: Optional[str],
         api_key: Optional[str] = None,
     ) -> None:
         """
@@ -72,52 +58,44 @@ class ZepClient:
         Parameters
         ----------
 
-        project_api_key : Optional[str]
-            The API key to use for authentication. (optional)
-
-        base_url : Optional[str]
+        api_url : Optional[str]
             The base URL of the API. (optional)
 
         api_key : Optional[str]
             The API key to use for authentication. (optional)
         """
 
-        if project_api_key is None and base_url is None:
-            raise ValueError("Either project_api_key or base_url must be specified")
+        # Zep Cloud API keys start with "z_". A url is not required for Zep Cloud.
+        # Zep Open Source API keys do not start with "z_". A url is required for
+        # Zep On-Premise. Check if both zep_url and api_key are None
+        if api_url is None and api_key is None:
+            raise ValueError("Please provide an api_key to access the Zep service.")
+        # Check if api_key is not None and doesn't start with "z_" and zep_url is None
+        elif api_key and not api_key.startswith("z_") and api_url is None:
+            raise ValueError(
+                "Please provide the zep_url which is the address of your Zep service."
+            )
 
-        if project_api_key is not None and api_key is not None:
-            raise ValueError("Only one of project_api_key or api_key must be specified")
-
+        self.api_key = api_key
         headers: Dict[str, str] = {}
-
-        if project_api_key is not None:
-            headers["Authorization"] = f"Api-Key {project_api_key}"
-            self.project_api_key = project_api_key
-
-        if api_key is not None:
+        if api_key and api_key.startswith("z_"):
+            headers["Authorization"] = f"Api-Key {api_key}"
+        elif api_key is not None:
             headers["Authorization"] = f"Bearer {api_key}"
 
-        if project_api_key is None:
-            if base_url is None:
-                raise ValueError("Either project_api_key or base_url must be specified")
-            self.base_url = concat_url(base_url, API_BASE_PATH)
+        if api_url is None:
+            self._healthcheck(API_URL)
+            self.api_url = concat_url(API_URL, API_BASE_PATH)
         else:
-            self.base_url = "http://localhost:8000/api/v2"
+            self._healthcheck(api_url)
+            self.api_url = concat_url(api_url, API_BASE_PATH)
 
         self.aclient = httpx.AsyncClient(
-            base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
+            base_url=self.api_url, headers=headers, timeout=API_TIMEOUT
         )
         self.client = httpx.Client(
-            base_url=self.base_url, headers=headers, timeout=API_TIMEOUT
+            base_url=self.api_url, headers=headers, timeout=API_TIMEOUT
         )
-        print(headers["Authorization"])
-        print(self.aclient.headers["Authorization"])
-        if project_api_key is not None:
-            self._healthcheck("http://localhost:8000")
-        else:
-            if base_url is None:
-                raise ValueError("Either project_api_key or base_url must be specified")
-            self._healthcheck(base_url)
 
         self.memory = MemoryClient(self.aclient, self.client)
         self.message = MessageClient(self.aclient, self.client)
@@ -126,7 +104,7 @@ class ZepClient:
 
     def _healthcheck(self, base_url: str) -> None:
         """
-        Check that the Zep server is running, the API URL is correct,
+        Check that the Zep service is running, the API URL is correct,
         and that the server version is compatible with this client.
 
         Raises
@@ -138,9 +116,10 @@ class ZepClient:
         url = concat_url(base_url, "/healthz")
 
         error_msg = """Failed to connect to Zep server. Please check that:
-         - the server is running 
-         - the API URL is correct
-         - No other process is using the same port
+         - the status of the service 
+         - your internet connection is working
+         - the API URL is correct (not required for Zep Cloud)
+         - No other process is using the same port (not required for Zep Cloud)
          """
 
         try:
@@ -159,7 +138,7 @@ class ZepClient:
 
             if (
                 zep_server_version < Version(MINIMUM_SERVER_VERSION)
-                and self.project_api_key is None
+                and self.api_key is None
             ):
                 warnings.warn(
                     (
@@ -197,65 +176,6 @@ class ZepClient:
     ) -> None:
         """Sync context manager exit point"""
         self.close()
-
-    # Facade methods for Memory API
-    def get_session(self, session_id: str) -> Session:
-        deprecated_warning(self.get_session)
-        return self.memory.get_session(session_id)
-
-    async def aget_session(self, session_id: str) -> Session:
-        deprecated_warning(self.aget_session)
-        return await self.memory.aget_session(session_id)
-
-    def add_session(self, session: Session) -> Session:
-        deprecated_warning(self.add_session)
-        return self.memory.add_session(session)
-
-    async def aadd_session(self, session: Session) -> Session:
-        deprecated_warning(self.aadd_session)
-        return await self.memory.aadd_session(session)
-
-    def get_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
-        deprecated_warning(self.get_memory)
-        return self.memory.get_memory(session_id, lastn)
-
-    async def aget_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
-        deprecated_warning(self.aget_memory)
-        return await self.memory.aget_memory(session_id, lastn)
-
-    def add_memory(self, session_id: str, memory_messages: Memory) -> str:
-        deprecated_warning(self.add_memory)
-        return self.memory.add_memory(session_id, memory_messages)
-
-    async def aadd_memory(self, session_id: str, memory_messages: Memory) -> str:
-        deprecated_warning(self.aadd_memory)
-        return await self.memory.aadd_memory(session_id, memory_messages)
-
-    def delete_memory(self, session_id: str) -> str:
-        deprecated_warning(self.delete_memory)
-        return self.memory.delete_memory(session_id)
-
-    async def adelete_memory(self, session_id: str) -> str:
-        deprecated_warning(self.adelete_memory)
-        return await self.memory.adelete_memory(session_id)
-
-    def search_memory(
-        self,
-        session_id: str,
-        search_payload: MemorySearchPayload,
-        limit: Optional[int] = None,
-    ) -> List[MemorySearchResult]:
-        deprecated_warning(self.search_memory)
-        return self.memory.search_memory(session_id, search_payload, limit)
-
-    async def asearch_memory(
-        self,
-        session_id: str,
-        search_payload: MemorySearchPayload,
-        limit: Optional[int] = None,
-    ) -> List[MemorySearchResult]:
-        deprecated_warning(self.asearch_memory)
-        return await self.memory.asearch_memory(session_id, search_payload, limit)
 
     # Close the HTTP client
     async def aclose(self) -> None:
@@ -295,18 +215,6 @@ def concat_url(base_url: str, path: str) -> str:
     """
     base_url = base_url.rstrip("/")
     return urljoin(base_url + "/", path.lstrip("/"))
-
-
-def deprecated_warning(func: Callable[..., Any]) -> Callable[..., Any]:
-    warnings.warn(
-        (
-            f"{func.__name__} method from the base client path is deprecated, "
-            "please use the corresponding method from zep_python.memory instead"
-        ),
-        DeprecationWarning,
-        stacklevel=3,
-    )
-    return func
 
 
 def parse_version_string(version_string: str) -> Version:
