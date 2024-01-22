@@ -1,6 +1,5 @@
 # mypy: ignore-errors
 
-from uuid import uuid4
 
 import pytest
 from pytest_httpx import HTTPXMock
