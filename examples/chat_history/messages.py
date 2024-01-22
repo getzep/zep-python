@@ -136,7 +136,8 @@ def main():
         update_and_print_session_message_metadata(
             client, session_id, first_session_message_id
         )
-        delete_and_print_memory_for_session(client, session_id)
+        # Uncomment the following line to delete the memory for the session
+        #delete_and_print_memory_for_session(client, session_id)
 
 
 if __name__ == "__main__":
