@@ -64,7 +64,7 @@ class MemoryClient:
     def _gen_get_params(
         self, lastn: Optional[int] = None, memory_type: Optional[str] = None
     ) -> Dict[str, Any]:
-        params = {}
+        params: dict[str, Any] = {}
         if lastn is not None:
             params["lastn"] = lastn
         if memory_type is not None:
