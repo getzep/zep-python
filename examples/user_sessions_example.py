@@ -1,16 +1,20 @@
 import os
 import uuid
 
+from dotenv import load_dotenv
+
 from zep_python import APIError, ZepClient
-from zep_python.memory.models import Session
+from zep_python.memory import Session
 from zep_python.user import CreateUserRequest
+
+load_dotenv()  # load environment variables from .env file, if present
+
+API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
 
 
 def main() -> None:
-    api_key = os.environ.get("API_KEY")
-    if api_key is None:
-        raise ValueError("API_KEY environment variable must be set")
-    with ZepClient(api_key=api_key, api_url=None, api_key=None) as client:
+    with ZepClient(api_key=API_KEY, api_url=API_URL) as client:
         # Create a user
         user_id = uuid.uuid4().hex
         user_request = CreateUserRequest(

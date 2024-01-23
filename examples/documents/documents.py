@@ -4,7 +4,6 @@ import time
 from uuid import uuid4
 
 from dotenv import load_dotenv
-
 from faker import Faker
 from utils import print_results, read_chunk_from_file
 
@@ -19,6 +18,7 @@ API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
 API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
 
 INPUT_FILE = "babbages_calculating_engine.txt"
+
 
 def main():
     max_chunk_size = 500

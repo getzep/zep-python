@@ -6,8 +6,8 @@ from uuid import uuid4
 
 from dotenv import load_dotenv
 from faker import Faker
-
 from utils import print_results, read_chunk_from_file
+
 from zep_python import ZepClient
 from zep_python.document import Document
 

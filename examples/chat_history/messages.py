@@ -1,9 +1,9 @@
 import os
 import uuid
 
+from chat_history import history
 from dotenv import load_dotenv
 
-from chat_history import history
 from zep_python import (
     APIError,
     NotFoundError,
@@ -137,7 +137,7 @@ def main():
             client, session_id, first_session_message_id
         )
         # Uncomment the following line to delete the memory for the session
-        #delete_and_print_memory_for_session(client, session_id)
+        # delete_and_print_memory_for_session(client, session_id)
 
 
 if __name__ == "__main__":
