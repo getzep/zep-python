@@ -729,7 +729,7 @@ class MemoryClient:
         params = {"limit": limit} if limit is not None else {}
         response = self.client.post(
             f"/sessions/{session_id}/search",
-            json=search_payload.dict(),
+            json=search_payload.model_dump(exclude_unset=True, exclude_none=True),
             params=params,
         )
         handle_response(response)
@@ -776,7 +776,7 @@ class MemoryClient:
         params = {"limit": limit} if limit is not None else {}
         response = await self.aclient.post(
             f"/sessions/{session_id}/search",
-            json=search_payload.dict(),
+            json=search_payload.model_dump(exclude_unset=True, exclude_none=True),
             params=params,
         )
         handle_response(response)

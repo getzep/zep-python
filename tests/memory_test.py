@@ -73,7 +73,7 @@ def validate_memory(memory: Memory):
         assert memory.messages[i].content == mock_messages["messages"][i]["content"]
         assert memory.messages[i].metadata == mock_messages["messages"][i]["metadata"]
 
-    assert filter_unset_fields(memory.dict()) == mock_messages
+    assert filter_unset_fields(memory.model_dump()) == mock_messages
 
 
 @pytest.mark.asyncio
@@ -320,7 +320,7 @@ async def test_aget_session_messages(httpx_mock: HTTPXMock):
                 session_messages[i].metadata == mock_messages["messages"][i]["metadata"]
             )
         assert [
-            filter_unset_fields(message.dict()) for message in session_messages
+            filter_unset_fields(message.model_dump()) for message in session_messages
         ] == mock_messages["messages"]
 
 
@@ -370,7 +370,7 @@ def test_get_session_messages(httpx_mock: HTTPXMock):
                 session_messages[i].metadata == mock_messages["messages"][i]["metadata"]
             )
         assert [
-            filter_unset_fields(message.dict()) for message in session_messages
+            filter_unset_fields(message.model_dump()) for message in session_messages
         ] == mock_messages["messages"]
 
 
@@ -422,7 +422,7 @@ async def test_aget_session_message(httpx_mock: HTTPXMock):
         assert session_message.role == mock_message["role"]
         assert session_message.content == mock_message["content"]
         assert session_message.metadata == mock_message["metadata"]
-        assert filter_unset_fields(session_message.dict()) == mock_message
+        assert filter_unset_fields(session_message.model_dump()) == mock_message
 
 
 @pytest.mark.asyncio
@@ -471,7 +471,7 @@ def test_get_session_message(httpx_mock: HTTPXMock):
         assert session_message.role == mock_message["role"]
         assert session_message.content == mock_message["content"]
         assert session_message.metadata == mock_message["metadata"]
-        assert filter_unset_fields(session_message.dict()) == mock_message
+        assert filter_unset_fields(session_message.model_dump()) == mock_message
 
 
 def test_get_session_message_missing_session(httpx_mock: HTTPXMock):
@@ -521,7 +521,7 @@ async def test_aupdate_message_metadata(httpx_mock: HTTPXMock):
         assert updated_message.role == mock_message["role"]
         assert updated_message.content == mock_message["content"]
         assert updated_message.metadata == mock_message["metadata"]
-        assert filter_unset_fields(updated_message.dict()) == mock_message
+        assert filter_unset_fields(updated_message.model_dump()) == mock_message
 
 
 @pytest.mark.asyncio
@@ -578,7 +578,7 @@ def test_update_message_metadata(httpx_mock: HTTPXMock):
         assert updated_message.role == mock_message["role"]
         assert updated_message.content == mock_message["content"]
         assert updated_message.metadata == mock_message["metadata"]
-        assert filter_unset_fields(updated_message.dict()) == mock_message
+        assert filter_unset_fields(updated_message.model_dump()) == mock_message
 
 
 def test_update_message_metadata_missing_session(httpx_mock: HTTPXMock):
