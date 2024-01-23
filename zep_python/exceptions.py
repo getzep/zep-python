@@ -65,7 +65,7 @@ class AuthError(ZepClientError):
     def __init__(
         self,
         response: Union[httpx.Response, None] = None,
-        message: str = "Authentication error",
+        message: str = "Authentication Failed. Please check your API key is valid",
     ) -> None:
         if response:
             response_data = {

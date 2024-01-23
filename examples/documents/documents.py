@@ -3,6 +3,8 @@ import os
 import time
 from uuid import uuid4
 
+from dotenv import load_dotenv
+
 from faker import Faker
 from utils import print_results, read_chunk_from_file
 
@@ -10,24 +12,26 @@ from zep_python import ZepClient
 from zep_python.document import Document
 
 fake = Faker()
-fake.random.seed(42)
 
+load_dotenv()  # load environment variables from .env file, if present
 
-def main(file: str):
+API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
+
+INPUT_FILE = "babbages_calculating_engine.txt"
+
+def main():
     max_chunk_size = 500
     collection_name = f"babbage{uuid4()}".replace("-", "")
-    api_key = os.environ.get("API_KEY")
-    if api_key is None:
-        raise ValueError("API_KEY environment variable must be set")
 
-    client = ZepClient(api_key=api_key, api_url=None)
+    client = ZepClient(api_key=API_KEY, api_url=API_URL)
     collection = client.document.add_collection(
         name=collection_name,  # required
         description="Charles Babbage's Babbage's Calculating Engine",  # optional
         metadata=fake.pydict(allowed_types=[str]),  # optional metadata
     )
 
-    chunks = read_chunk_from_file(file, max_chunk_size)
+    chunks = read_chunk_from_file(INPUT_FILE, max_chunk_size)
 
     documents = [
         Document(
@@ -38,11 +42,11 @@ def main(file: str):
         for chunk in chunks
     ]
 
-    print(f"Adding {len(documents)} documents to collection {collection_name}")
+    print(f"\nAdding {len(documents)} documents to collection {collection_name}")
 
     uuids = collection.add_documents(documents)
 
-    print(f"Added {len(uuids)} documents to collection {collection_name}")
+    print(f"\nAdded {len(uuids)} documents to collection {collection_name}")
 
     # monitor embedding progress
     while True:
@@ -57,7 +61,7 @@ def main(file: str):
 
     # List all collections
     collections = client.document.list_collections()
-    print(f"Found {len(collections)} collections")
+    print(f"\nFound {len(collections)} collections")
     print("\n".join([c.name for c in collections]))
 
     # Update collection description and metadata
@@ -69,23 +73,23 @@ def main(file: str):
 
     # Get updated collection
     collection = client.document.get_collection(collection_name)
-    print(f"Updated collection description: {collection.description}")
+    print(f"\nUpdated collection description: {collection.description}")
 
     # search for documents
     # Using "the moon" here as we should find documents related to "astronomy"
     query = "the moon"
-    search_results = collection.search(text=query, limit=5)
-    print(f"Found {len(search_results)} documents matching query '{query}'")
+    search_results = collection.search(text=query, limit=3)
+    print(f"\nFound {len(search_results)} documents matching query '{query}'")
     print_results(search_results)
 
     # retrieve a single document by uuid
     document_to_retrieve = uuids[25]
-    print(f"Retrieving document {document_to_retrieve}")
+    print(f"\nRetrieving document {document_to_retrieve}")
     retrieved_document = collection.get_document(document_to_retrieve)
-    print(retrieved_document.dict())
+    print(retrieved_document.to_dict())
 
     # Update a document's metadata
-    print(f"Updating document {document_to_retrieve} metadata")
+    print(f"\nUpdating document {document_to_retrieve} metadata")
     collection.update_document(
         document_to_retrieve,
         document_id="new_document_id",
@@ -96,50 +100,29 @@ def main(file: str):
     metadata_query = {
         "where": {"jsonpath": '$[*] ? (@.baz == "qux")'},
     }
-    new_search_results = collection.search(text=query, metadata=metadata_query, limit=5)
+    new_search_results = collection.search(text=query, metadata=metadata_query, limit=3)
     print(
-        f"Found {len(new_search_results)} documents matching query '{query}'"
+        f"\nFound {len(new_search_results)} documents matching query '{query}'"
         f" {metadata_query}"
     )
     print_results(new_search_results)
 
-    # Search by embedding
-    interesting_document = search_results[0]
-    print(f"Searching for documents similar to:\n{interesting_document.content}\n")
-    embedding_search_results = collection.search(
-        embedding=interesting_document.embedding, limit=5
-    )
-    print(f"Found {len(embedding_search_results)} documents matching embedding")
-    print("Most similar documents:")
-    print_results(embedding_search_results)
-
     # delete a document
-    print(f"Deleting document {document_to_retrieve}")
+    print(f"\nDeleting document {document_to_retrieve}")
     collection.delete_document(document_to_retrieve)
 
     # Get a list of documents in the collection by uuid
-    docs_to_get = uuids[40:50]
-    print(f"Getting documents: {docs_to_get}")
+    docs_to_get = uuids[40:43]
+    print(f"\nGetting documents: {docs_to_get}")
     documents = collection.get_documents(docs_to_get)
     print(f"Got {len(documents)} documents")
     print_results(documents)
 
-    # Index the collection
-    # We wouldn't ordinarily do this until the collection is larger.
-    # See the documentation for more details.
-    print(f"Indexing collection {collection_name}")
-    collection.create_index(force=True)  # Do not use force unless testing!
-
-    # search for documents now that the collection is indexed
-    search_results = collection.search(text=query, limit=5)
-    print(f"Found {len(search_results)} documents matching query '{query}'")
-    print_results(search_results)
-
     # Delete the collection
-    print(f"Deleting collection {collection_name}")
-    client.document.delete_collection(collection_name)
+    # Uncomment to delete the collection
+    # print(f"Deleting collection {collection_name}")
+    # client.document.delete_collection(collection_name)
 
 
 if __name__ == "__main__":
-    file = "babbages_calculating_engine.txt"
-    main(file)
+    main()

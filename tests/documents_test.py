@@ -291,7 +291,7 @@ async def test_aupdate_document_valid(zep_client: ZepClient, httpx_mock: HTTPXMo
 
     await mock_collection.aupdate_document(
         uuid=str(uuid4()),
-        description="test_document",
+        document_id="test_document",
         metadata={"name": "test_document"},
     )
 
@@ -308,7 +308,7 @@ async def test_aupdate_document_not_found(zep_client: ZepClient, httpx_mock: HTT
     with pytest.raises(NotFoundError):
         await mock_collection.aupdate_document(
             uuid=str(uuid4()),
-            description="test_document",
+            document_id="test_document",
             metadata={"name": "test_document"},
         )
 
@@ -342,7 +342,7 @@ async def test_aupdate_document_invalid_uuid(
     with pytest.raises(ValueError):
         await mock_collection.aupdate_document(
             uuid=None,  # type: ignore
-            description="test_document",
+            document_id="test_document",
             metadata={"name": "test_document"},
         )
 

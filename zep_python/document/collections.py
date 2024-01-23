@@ -1,8 +1,8 @@
 import warnings
 from typing import Any, Dict, Generator, List, Optional, Tuple
-from pydantic import PrivateAttr
-import httpx
 
+import httpx
+from pydantic import PrivateAttr
 
 from zep_python.exceptions import handle_response
 from zep_python.utils import SearchType, filter_dict
@@ -168,7 +168,7 @@ class DocumentCollection(DocumentCollectionModel):
     async def aupdate_document(
         self,
         uuid: str,
-        description: Optional[str] = None,
+        document_id: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         """
@@ -178,8 +178,8 @@ class DocumentCollection(DocumentCollectionModel):
         ----------
         uuid : str
             The UUID of the document to update.
-        description : Optional[str]
-            The description of the document.
+        document_id : Optional[str]
+            The document_id of the document.
         metadata : Optional[Dict[str, Any]]
             The metadata of the document.
 
@@ -204,10 +204,10 @@ class DocumentCollection(DocumentCollectionModel):
         if uuid is None:
             raise ValueError("document uuid must be provided")
 
-        if description is None and metadata is None:
-            raise ValueError("description or metadata must be provided")
+        if document_id is None and metadata is None:
+            raise ValueError("document_id or metadata must be provided")
 
-        payload = filter_dict({"description": description, "metadata": metadata})
+        payload = filter_dict({"document_id": document_id, "metadata": metadata})
 
         response = await self._aclient.patch(
             f"/collections/{self.name}/documents/uuid/{uuid}",

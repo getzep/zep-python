@@ -112,8 +112,8 @@ async def update_and_print_session_message_metadata(client, session_id, message_
         )
     except APIError as e:
         print(
-            f"API error occurred while updating message metadata for Session {session_id} "
-            f"and Message {message_id}. Got error: {e}"
+            f"API error occurred while updating message metadata for Session "
+            f"{session_id} and Message {message_id}. Got error: {e}"
         )
 
 
