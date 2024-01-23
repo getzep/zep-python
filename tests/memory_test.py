@@ -10,6 +10,7 @@ from zep_python import NotFoundError
 from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
+    MemoryType,
     SearchScope,
     Session,
 )
@@ -128,6 +129,17 @@ def test_get_memory(httpx_mock: HTTPXMock):
 
     with ZepClient(**mock_auth) as client:
         memory = client.memory.get_memory(session_id)
+
+        validate_memory(memory)
+
+
+def test_get_memory_perpetual(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+
+    httpx_mock.add_response(status_code=200, json=mock_messages)
+
+    with ZepClient(**mock_auth) as client:
+        memory = client.memory.get_memory(session_id, memory_type=MemoryType.perpetual)
 
         validate_memory(memory)
 

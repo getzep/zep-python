@@ -9,6 +9,7 @@ from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
     MemorySearchResult,
+    MemoryType,
     SearchScope,
     Session,
     Summary,
@@ -60,10 +61,18 @@ class MemoryClient:
         )
         return memory
 
-    def _gen_get_params(self, lastn: Optional[int] = None) -> Dict[str, Any]:
+    def _gen_get_params(
+        self, lastn: Optional[int] = None, memory_type: Optional[str] = None
+    ) -> Dict[str, Any]:
         params = {}
         if lastn is not None:
             params["lastn"] = lastn
+        if memory_type is not None:
+            if memory_type not in MemoryType.__members__:
+                raise ValueError(
+                    f"memory_type must be one of {list(MemoryType.__members__)}"
+                )
+            params["memoryType"] = memory_type
         return params
 
     # Memory APIs : Get a Session
@@ -474,7 +483,12 @@ class MemoryClient:
             cursor += chunk_size
 
     # Memory APIs : Get Memory
-    def get_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
+    def get_memory(
+        self,
+        session_id: str,
+        memory_type: Optional[str] = None,
+        lastn: Optional[int] = None,
+    ) -> Memory:
         """
         Retrieve memory for the specified session.
 
@@ -482,6 +496,8 @@ class MemoryClient:
         ----------
         session_id : str
             The ID of the session for which to retrieve memory.
+        memory_type : Optional[str]
+            The type of memory to retrieve: message_window or perpetual.
         lastn : Optional[int], optional
             The number of most recent memory entries to retrieve. Defaults to None (all
             entries).
@@ -503,7 +519,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         url = f"/sessions/{session_id}/memory"
-        params = self._gen_get_params(lastn)
+        params = self._gen_get_params(lastn, memory_type)
         response = self.client.get(url, params=params)
 
         handle_response(response, f"No memory found for session {session_id}")
@@ -513,7 +529,12 @@ class MemoryClient:
         return self._parse_get_memory_response(response_data)
 
     # Memory APIs : Get Memory Asynchronously
-    async def aget_memory(self, session_id: str, lastn: Optional[int] = None) -> Memory:
+    async def aget_memory(
+        self,
+        session_id: str,
+        memory_type: Optional[str] = None,
+        lastn: Optional[int] = None,
+    ) -> Memory:
         """
         Asynchronously retrieve memory for the specified session.
 
@@ -521,6 +542,8 @@ class MemoryClient:
         ----------
         session_id : str
             The ID of the session for which to retrieve memory.
+        memory_type : Optional[str]
+            The type of memory to retrieve: message_window or perpetual.
         lastn : Optional[int], optional
             The number of most recent memory entries to retrieve. Defaults to None (all
             entries).
@@ -541,7 +564,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         url = f"/sessions/{session_id}/memory"
-        params = self._gen_get_params(lastn)
+        params = self._gen_get_params(lastn, memory_type)
         response = await self.aclient.get(url, params=params)
 
         handle_response(response, f"No memory found for session {session_id}")

@@ -13,6 +13,11 @@ class SearchScope(str, Enum):
     summary = "summary"
 
 
+class MemoryType(str, Enum):
+    message_window = "message_window"
+    perpetual = "perpetual"
+
+
 class Session(BaseModel):
     """
     Represents a session object with a unique identifier, metadata,
