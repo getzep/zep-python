@@ -49,7 +49,7 @@ class ZepClient:
 
     def __init__(
         self,
-        api_url: Optional[str],
+        api_url: Optional[str] = None,
         api_key: Optional[str] = None,
     ) -> None:
         """

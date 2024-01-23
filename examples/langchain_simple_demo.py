@@ -1,83 +1,75 @@
-import time
-from typing import List
-from uuid import uuid4
+import os
+import uuid
 
-from faker import Faker
-from langchain.docstore.document import Document
-from langchain.embeddings import FakeEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores.zep import CollectionConfig, ZepVectorStore
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+from zep_python.langchain.history import ZepChatMessageHistory
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables.history import RunnableWithMessageHistory
 
 from zep_python import ZepClient
+from zep_python.user import CreateUserRequest
 
-fake = Faker()
-fake.random.seed(42)
+load_dotenv()  # load environment variables from .env file, if present
 
+API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
 
-def print_results(results: List[Document]):
-    for result in results:
-        content = " ".join(result.page_content.split(" "))
-        print(f"{content} - ({result.metadata})\n")
+OPENAI_API_KEY = os.environ.get(
+    "OPENAI_API_KEY"
+)  # ensure your environment contains a valid OpenAI API key
 
 
 def main():
-    zep_api_url = "http://localhost:8000"
-    collection_name = f"babbage{uuid4()}".replace("-", "")
-    file = "babbages_calculating_engine.txt"
+    zep = ZepClient(
+        api_key=API_KEY,
+        api_url=API_URL,  # only required if you're using Zep Open Source
+    )
+    user_id = uuid.uuid4().hex  # unique user id. can be any alphanum string
+    session_id = (
+        uuid.uuid4().hex
+    )  # unique session id for this chat session. can be any alphanum string
 
-    print(f"Creating collection {collection_name}")
+    # Create a new user that we'll associate our chat session with
+    # doing so allows us to organize our chat sessions by user, and delete all user data
+    # when a user requests to be forgotten
+    user_request = CreateUserRequest(
+        user_id=user_id,
+        email="jane@example.com",
+        first_name="Jane",
+        last_name="Smith",
+        metadata={"foo": "bar"},
+    )
+    zep.user.add(user_request)
 
-    client = ZepClient(api_url=zep_api_url)
-
-    cfg = CollectionConfig(
-        name=collection_name,
-        description="Charles Babbage's Babbage's Calculating Engine",
-        metadata={},
-        embedding_dimensions=1536,
-        is_auto_embedded=True,
+    zep_chat_history = ZepChatMessageHistory(
+        zep_client=zep,
+        session_id=session_id,
     )
 
-    vectorstore = ZepVectorStore(
-        collection_name=collection_name,
-        config=cfg,
-        api_url=zep_api_url,
-        embedding=FakeEmbeddings(size=1),
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", "You're an assistant who's good at {ability}"),
+            MessagesPlaceholder(variable_name="history"),
+            ("human", "{question}"),
+        ]
     )
 
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=400,
-        chunk_overlap=50,
-        length_function=len,
+    chain = prompt | ChatOpenAI(model="gpt-3.5-turbo-1106", api_key=OPENAI_API_KEY)
+
+    chain_with_history = RunnableWithMessageHistory(
+        chain,
+        lambda session_id: zep_chat_history,
+        input_messages_key="question",
+        history_messages_key="history",
     )
 
-    with open(file) as f:
-        raw_text = f.read()
+    output = chain_with_history.invoke(
+        {"ability": "math", "question": "What does cosine mean?"},
+        config={"configurable": {"session_id": session_id}},
+    )
 
-    print("Splitting text into chunks and adding them to the Zep vector store.")
-    docs = text_splitter.create_documents([raw_text])
-    uuids = vectorstore.add_documents(docs)
-    print(f"Added {len(uuids)} documents to collection {collection_name}")
-
-    print("Waiting for documents to be embedded")
-    while True:
-        c = client.document.get_collection(collection_name)
-        print(
-            "Embedding status: "
-            f"{c.document_embedded_count}/{c.document_count} documents embedded"
-        )
-        time.sleep(1)
-        if c.status == "ready":
-            break
-
-    query = "What is Charles Babbage best known for?"
-
-    print(f"\nSearching for '{query}'\n")
-    results = vectorstore.search(query, search_type="similarity", k=5)
-    print_results(results)
-
-    print(f"\nSearching for '{query}' with MMR reranking\n")
-    results = vectorstore.search(query, search_type="mmr", k=5)
-    print_results(results)
+    print(output)
 
 
 if __name__ == "__main__":

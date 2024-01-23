@@ -107,7 +107,9 @@ async def get_memory_from_session(client, session_id):
     memory = Memory()
     try:
         while memory.summary is None:
-            memory = await client.memory.aget_memory(session_id)
+            memory = await client.memory.aget_memory(
+                session_id, memory_type="perpetual"
+            )
             time.sleep(0.5)
 
         print(f"Summary: {memory.summary.content}")
@@ -170,7 +172,7 @@ async def main() -> None:
     await get_memory_from_session(client, session_id)
 
     # Search Memory for session
-    query = "Can you name some popular destinations in Iceland?"
+    query = "What type of food can you eat in Iceland?"
     print(f"\n---Searching over summaries for: '{query}'")
     search_payload = MemorySearchPayload(
         text=query,
