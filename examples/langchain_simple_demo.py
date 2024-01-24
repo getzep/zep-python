@@ -2,12 +2,12 @@ import os
 import uuid
 
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from zep_python.langchain.history import ZepChatMessageHistory
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_openai import ChatOpenAI
 
 from zep_python import ZepClient
+from zep_python.langchain.history import ZepChatMessageHistory
 from zep_python.user import CreateUserRequest
 
 load_dotenv()  # load environment variables from .env file, if present
