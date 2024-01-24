@@ -6,9 +6,19 @@ from typing import Any, Dict, List, Optional, Union
 from zep_python import NotFoundError, ZepClient
 from zep_python.memory.models import Memory, Message
 
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.messages import BaseMessage
-
+try:
+    from langchain_core.chat_history import BaseChatMessageHistory
+    from langchain_core.messages import (
+        AIMessage,
+        BaseMessage,
+        HumanMessage,
+        SystemMessage,
+    )
+except ImportError:
+    raise ImportError(
+        "Could not import langchain-core package. "
+        "Please install it with `pip install langchain-core`."
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -25,13 +35,6 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         api_url: Optional[str] = "https://api.getzep.com",
         api_key: Optional[str] = None,
     ) -> None:
-        try:
-            import langchain_core.messages.base  # noqa: F401
-        except ImportError:
-            raise ImportError(
-                "Could not import langchain-core package. "
-                "Please install it with `pip install langchain-core`."
-            )
         if zep_client is None and api_key is None and api_url is None:
             raise ValueError("Either zep_client or api_key must be provided.")
 
@@ -46,13 +49,6 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
     def messages(self) -> List[BaseMessage]:  # type: ignore
         """Retrieve messages from Zep memory"""
 
-        from langchain_core.messages import (
-            AIMessage,
-            BaseMessage,
-            HumanMessage,
-            SystemMessage,
-        )
-
         zep_memory: Optional[Memory] = self._get_memory()
         if not zep_memory:
             return []
@@ -62,23 +58,19 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         if zep_memory.summary:
             if len(zep_memory.summary.content) > 0:
                 messages.append(SystemMessage(content=zep_memory.summary.content))
+
         if zep_memory.messages:
-            msg: Message
             for msg in zep_memory.messages:
-                metadata: Dict = {
+                metadata = {
                     "uuid": msg.uuid,
                     "created_at": msg.created_at,
                     "token_count": msg.token_count,
                     "metadata": msg.metadata,
                 }
-                if msg.role == "ai":
-                    messages.append(
-                        AIMessage(content=msg.content, additional_kwargs=metadata)
-                    )
-                else:
-                    messages.append(
-                        HumanMessage(content=msg.content, additional_kwargs=metadata)
-                    )
+                message_class = AIMessage if msg.role == "ai" else HumanMessage
+                messages.append(
+                    message_class(content=msg.content, additional_kwargs=metadata)
+                )
 
         return messages
 
@@ -102,8 +94,6 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
 
     def _get_memory(self) -> Optional[Memory]:
         """Retrieve memory from Zep"""
-        from zep_python import NotFoundError
-
         try:
             zep_memory: Memory = self.zep_client.memory.get_memory(self.session_id)
         except NotFoundError:

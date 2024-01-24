@@ -56,16 +56,9 @@ class MessageClient:
         ValueError
             If the limit or cursor is invalid.
         """
-        if limit is not None and cursor is not None:
-            if (
-                not isinstance(limit, int)
-                or not isinstance(cursor, int)
-                or limit <= 0
-                or cursor <= 0
-            ):
-                raise ValueError("Both limit and cursor must be positive integers")
-            return {"limit": limit, "cursor": cursor}
-        return None
+        if limit <= 0 or cursor <= 0:
+            raise ValueError("Both limit and cursor must be positive integers")
+        return {"limit": limit, "cursor": cursor}
 
     def get_session_messages(
         self, session_id: str, limit: int = 100, cursor: int = 1
