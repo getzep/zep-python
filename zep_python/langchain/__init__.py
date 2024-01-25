@@ -1,17 +1,7 @@
-from zep_python.memory.models import (
-    Memory,
-    MemorySearchPayload,
-    MemorySearchResult,
-    Message,
-    Session,
-    Summary,
-)
+from zep_python.langchain.history import ZepChatMessageHistory
+from zep_python.langchain.vectorstore import ZepVectorStore
 
 __all__ = [
-    "Memory",
-    "Message",
-    "MemorySearchPayload",
-    "MemorySearchResult",
-    "Summary",
-    "Session",
+    "ZepChatMessageHistory",
+    "ZepVectorStore",
 ]

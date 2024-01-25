@@ -458,7 +458,78 @@ class ZepVectorStore(VectorStore):
             api_key=api_key,
         )
         vecstore.add_texts(texts, metadatas)
+
         return vecstore
+
+    @classmethod
+    async def afrom_texts(  # type: ignore # ignore inconsistent override
+        cls,
+        texts: List[str],
+        collection_name: str,
+        metadatas: Optional[List[dict]] = None,
+        description: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        zep_client: Optional[ZepClient] = None,
+        api_url: Optional[str] = API_URL,
+        api_key: Optional[str] = None,
+        **kwargs: Any,
+    ) -> ZepVectorStore:
+        """
+        Class method that asynchronously returns a ZepVectorStore instance
+        initialized from texts.
+
+        If the collection does not exist, it will be created.
+
+        Args:
+            texts (List[str]): The list of texts to add to the vectorstore.
+            collection_name (str): The name of the collection in the Zep store.
+            metadatas (Optional[List[Dict[str, Any]]]): Optional list of metadata
+               associated with the texts.
+            description (Optional[str]): The description of the collection.
+            metadata (Optional[Dict[str, Any]]): The metadata to associate with the
+                collection.
+            zep_client (Optional[ZepClient]): The Zep client to use.
+            api_url (Optional[str]): The URL of the Zep API. Defaults to
+                "https://api.getzep.com". Not required if passing in a ZepClient.
+            api_key (Optional[str]): The API key for the Zep API. Not required if
+                passing in a ZepClient.
+            **kwargs: Additional parameters specific to the vectorstore.
+
+        Returns:
+            ZepVectorStore: An instance of ZepVectorStore.
+        """
+        vecstore = cls(
+            collection_name,
+            description=description,
+            metadata=metadata,
+            zep_client=zep_client,
+            api_url=api_url,
+            api_key=api_key,
+        )
+        await vecstore.aadd_texts(texts, metadatas)
+        return vecstore
+
+    @classmethod
+    def from_documents(  # type: ignore # ignore inconsistent override
+        cls,
+        documents: List[Document],
+        **kwargs: Any,
+    ) -> ZepVectorStore:
+        """Return VectorStore initialized from documents."""
+        texts = [d.page_content for d in documents]
+        metadatas = [d.metadata for d in documents]
+        return cls.from_texts(texts, metadatas=metadatas, **kwargs)
+
+    @classmethod
+    async def afrom_documents(  # type: ignore # ignore inconsistent override
+        cls,
+        documents: List[Document],
+        **kwargs: Any,
+    ) -> ZepVectorStore:
+        """Asynchronously return VectorStore initialized from documents."""
+        texts = [d.page_content for d in documents]
+        metadatas = [d.metadata for d in documents]
+        return await cls.afrom_texts(texts, metadatas=metadatas, **kwargs)
 
     def delete(self, ids: Optional[List[str]] = None, **kwargs: Any) -> None:
         """Delete by Zep vector UUIDs.
