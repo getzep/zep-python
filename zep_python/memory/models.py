@@ -172,11 +172,11 @@ class MemorySearchResult(BaseModel):
         The summary matched by search.
     metadata : Optional[Dict[str, Any]]
         Metadata associated with the search result.
-    dist : Optional[float]
-        The distance metric of the search result.
+    score : Optional[float]
+        The score of the search result.
     """
 
     message: Optional[Message] = None
     summary: Optional[Summary] = None
     metadata: Optional[Dict[str, Any]] = None
-    dist: Optional[float] = None
+    score: Optional[float] = None

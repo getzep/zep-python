@@ -216,7 +216,7 @@ async def test_asearch_memory(httpx_mock: HTTPXMock):
                 "role": "user",
                 "content": "Test message",
             },
-            "dist": 0.9,
+            "score": 0.9,
         }
     ]
 
@@ -229,7 +229,7 @@ async def test_asearch_memory(httpx_mock: HTTPXMock):
         assert search_results[0].message.uuid == "msg-uuid"
         assert search_results[0].message.role == "user"
         assert search_results[0].message.content == "Test message"
-        assert search_results[0].dist == 0.9
+        assert search_results[0].score == 0.9
 
 
 @pytest.mark.asyncio
@@ -249,7 +249,7 @@ async def test_asearch_memory_mmr(httpx_mock: HTTPXMock):
                 "role": "user",
                 "content": "Test message",
             },
-            "dist": 0.9,
+            "score": 0.9,
         }
     ]
 
@@ -262,7 +262,7 @@ async def test_asearch_memory_mmr(httpx_mock: HTTPXMock):
         assert search_results[0].message.uuid == "msg-uuid"
         assert search_results[0].message.role == "user"
         assert search_results[0].message.content == "Test message"
-        assert search_results[0].dist == 0.9
+        assert search_results[0].score == 0.9
 
 
 @pytest.mark.asyncio
@@ -295,7 +295,7 @@ async def test_asearch_memory_scope_summary(httpx_mock: HTTPXMock):
                 "uuid": "msg-uuid",
                 "content": "Test summary",
             },
-            "dist": 0.9,
+            "score": 0.9,
         }
     ]
 
@@ -307,7 +307,7 @@ async def test_asearch_memory_scope_summary(httpx_mock: HTTPXMock):
         assert len(search_results) == 1
         assert search_results[0].summary.uuid == "msg-uuid"
         assert search_results[0].summary.content == "Test summary"
-        assert search_results[0].dist == 0.9
+        assert search_results[0].score == 0.9
 
 
 # get session messages
@@ -662,7 +662,7 @@ def test_search_memory(httpx_mock: HTTPXMock):
                 "role": "user",
                 "content": "Test message",
             },
-            "dist": 0.9,
+            "score": 0.9,
         }
     ]
 
@@ -675,7 +675,7 @@ def test_search_memory(httpx_mock: HTTPXMock):
         assert search_results[0].message.uuid == "msg-uuid"
         assert search_results[0].message.role == "user"
         assert search_results[0].message.content == "Test message"
-        assert search_results[0].dist == 0.9
+        assert search_results[0].score == 0.9
 
 
 def test_search_memory_mmr(httpx_mock: HTTPXMock):
@@ -694,7 +694,7 @@ def test_search_memory_mmr(httpx_mock: HTTPXMock):
                 "role": "user",
                 "content": "Test message",
             },
-            "dist": 0.9,
+            "score": 0.9,
         }
     ]
 
@@ -707,7 +707,7 @@ def test_search_memory_mmr(httpx_mock: HTTPXMock):
         assert search_results[0].message.uuid == "msg-uuid"
         assert search_results[0].message.role == "user"
         assert search_results[0].message.content == "Test message"
-        assert search_results[0].dist == 0.9
+        assert search_results[0].score == 0.9
 
 
 def test_search_memory_invalid_search_type(httpx_mock: HTTPXMock):

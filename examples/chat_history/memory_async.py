@@ -129,7 +129,7 @@ async def search_memory(client, session_id, search_payload: MemorySearchPayload)
                 print(f"Result: {search_result.message.content}")
             else:
                 print(f"Result: {search_result.summary.content}")
-            print(f"Score: {search_result.dist}")
+            print(f"Score: {search_result.score}")
     except NotFoundError:
         print(f"Nothing found for Session {session_id}")
 
