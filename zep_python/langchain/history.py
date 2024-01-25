@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Union
 
-from zep_python import NotFoundError, ZepClient
+from zep_python import API_URL, NotFoundError, ZepClient
 from zep_python.memory.models import Memory, Message
 
 try:
@@ -32,16 +32,13 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         self,
         session_id: str,
         zep_client: Optional[ZepClient] = None,
-        api_url: Optional[str] = "https://api.getzep.com",
+        api_url: Optional[str] = API_URL,
         api_key: Optional[str] = None,
     ) -> None:
-        if zep_client is None and api_key is None and api_url is None:
-            raise ValueError("Either zep_client or api_key must be provided.")
-
         if zep_client is None:
-            self.zep_client = ZepClient(api_url=api_url, api_key=api_key)
+            self._client = ZepClient(api_url=api_url, api_key=api_key)
         else:
-            self.zep_client = zep_client
+            self._client = zep_client
 
         self.session_id = session_id
 
@@ -95,7 +92,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
     def _get_memory(self) -> Optional[Memory]:
         """Retrieve memory from Zep"""
         try:
-            zep_memory: Memory = self.zep_client.memory.get_memory(self.session_id)
+            zep_memory: Memory = self._client.memory.get_memory(self.session_id)
         except NotFoundError:
             logger.warning(
                 f"Session {self.session_id} not found in Zep. Returning None"
@@ -145,14 +142,14 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         )
         zep_memory = Memory(messages=[zep_message])
 
-        self.zep_client.memory.add_memory(self.session_id, zep_memory)
+        self._client.memory.add_memory(self.session_id, zep_memory)
 
     def clear(self) -> None:
         """Clear session memory from Zep. Note that Zep is long-term storage for memory
         and this is not advised unless you have specific data retention requirements.
         """
         try:
-            self.zep_client.memory.delete_memory(self.session_id)
+            self._client.memory.delete_memory(self.session_id)
         except NotFoundError:
             logger.warning(
                 f"Session {self.session_id} not found in Zep. Skipping delete."
