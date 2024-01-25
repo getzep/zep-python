@@ -10,6 +10,7 @@ from zep_python.memory.models import (
     MemorySearchPayload,
     MemorySearchResult,
     MemoryType,
+    Question,
     SearchScope,
     Session,
     Summary,
@@ -806,3 +807,73 @@ class MemoryClient:
         return [
             MemorySearchResult(**search_result) for search_result in response.json()
         ]
+
+    def synthesize_question(self, session_id: str, last_n: int = 3) -> str:
+        """
+        Synthesize a question from the last N messages in the chat history.
+
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session.
+        last_n : int
+            The number of messages to use for question synthesis.
+
+        Returns
+        -------
+        str
+            The synthesized question.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
+        if session_id is None or session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        params = {"lastNMessages": last_n}
+        response = self.client.get(
+            f"/sessions/{session_id}/synthesize_question", params=params
+        )
+
+        handle_response(response)
+
+        question = Question(**response.json())
+
+        return question.question
+
+    async def asynthesize_question(self, session_id: str, last_n: int = 3) -> str:
+        """
+        Synthesize a question from the last N messages in the chat history.
+
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session.
+        last_n : int
+            The number of messages to use for question synthesis.
+
+        Returns
+        -------
+        str
+            The synthesized question.
+
+        Raises
+        ------
+        APIError
+            If the API response format is unexpected.
+        """
+        if session_id is None or session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        params = {"lastNMessages": last_n}
+        response = await self.aclient.get(
+            f"/sessions/{session_id}/synthesize_question", params=params
+        )
+
+        handle_response(response)
+
+        question = Question(**response.json())
+
+        return question.question

@@ -180,3 +180,11 @@ class MemorySearchResult(BaseModel):
     summary: Optional[Summary] = None
     metadata: Optional[Dict[str, Any]] = None
     score: Optional[float] = None
+
+
+class Question(BaseModel):
+    """
+    Represents a question object with a question.
+    """
+
+    question: str
