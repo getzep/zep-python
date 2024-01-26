@@ -8,30 +8,31 @@ env:
   POETRY_VERSION: "1.7.1"
 
 jobs:
-  runs-on: ubuntu-latest
-  permissions:
-    id-token: write
-    contents: write
-  environment:
-    name: release
-    url: https://pypi.org/p/zep-python
-  steps:
-    - uses: actions/checkout@v3
-    - name: Install poetry
-      run: pipx install poetry==$POETRY_VERSION
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.10"
-        cache: "poetry"
-    - name: Compare pyproject version with tag
-      run: |
-        TAG_VERSION=${GITHUB_REF#refs/tags/}
-        if [ "$TAG_VERSION" != "$(poetry version --short)" ]; then
-          echo "Tag version $TAG_VERSION does not match the project version $(poetry version --short)"
-          exit 1
-        fi
-    - name: Build project for distribution
-      run: poetry build
-    - name: Publish package distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    environment:
+      name: release
+      url: https://pypi.org/p/zep-python
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry==$POETRY_VERSION
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "poetry"
+      - name: Compare pyproject version with tag
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/}
+          if [ "$TAG_VERSION" != "$(poetry version --short)" ]; then
+            echo "Tag version $TAG_VERSION does not match the project version $(poetry version --short)"
+            exit 1
+          fi
+      - name: Build project for distribution
+        run: poetry build
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
