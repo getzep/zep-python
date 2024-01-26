@@ -1,7 +1,8 @@
 name: Release to PyPI
 
 on:
-  tags: [ 'v*.*.*' ]
+  push:
+    tags: [ 'v*.*.*' ]
 
 env:
   POETRY_VERSION: "1.7.1"
