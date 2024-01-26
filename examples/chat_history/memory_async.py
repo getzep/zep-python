@@ -87,6 +87,7 @@ async def get_session(client, session_id):
 async def add_memory_to_session(client, session_id):
     try:
         for m in history:
+            print(f"{m['role']}: {m['content']}")
             message = Message(**m)
             memory = Memory(messages=[message])
             await client.memory.aadd_memory(session_id, memory)
@@ -110,8 +111,9 @@ async def get_memory_from_session(client, session_id):
             memory = await client.memory.aget_memory(
                 session_id, memory_type="perpetual"
             )
-            time.sleep(0.5)
+            time.sleep(1)
 
+        time.sleep(10)
         print(f"Summary: {memory.summary.content}")
         for message in memory.messages:
             print(f"Message: {message.to_dict()}")
@@ -166,6 +168,12 @@ async def main() -> None:
     # Add Memory for session
     print(f"\n---Add Memory for Session: {session_id}")
     await add_memory_to_session(client, session_id)
+
+    # Synthesize a question from most recent messages.
+    # Useful for RAG apps. This is faster than using an LLM chain.
+    print("\n---Synthesize a question from most recent messages")
+    question = await client.memory.asynthesize_question(session_id, last_n=3)
+    print(f"Question: {question}")
 
     # Get Memory for session
     print(f"\n---Get Memory for Session: {session_id}")
