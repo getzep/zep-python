@@ -1,11 +1,7 @@
 name: Release to PyPI
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'pyproject.toml'
+  tags: [ 'v*.*.*' ]
 
 env:
   POETRY_VERSION: "1.6.1"
