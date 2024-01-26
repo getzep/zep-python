@@ -1,17 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 from ..utils import SearchType
-
-if TYPE_CHECKING:
-    from pydantic import BaseModel, Extra, Field
-else:
-    try:
-        from pydantic.v1 import BaseModel, Extra, Field
-    except ImportError:
-        from pydantic import BaseModel, Extra, Field
 
 
 class Document(BaseModel):
@@ -60,7 +54,7 @@ class Document(BaseModel):
         Dict[str, Any]
             A dictionary containing the attributes of the document.
         """
-        return self.dict()
+        return self.model_dump()
 
 
 class DocumentCollectionModel(BaseModel):
@@ -97,7 +91,7 @@ class DocumentCollectionModel(BaseModel):
         ...,
         min_length=5,
         max_length=40,
-        regex="^[a-zA-Z0-9_-]*$",
+        pattern="^[a-zA-Z0-9_-]*$",
     )
     description: Optional[str] = Field(default=None, max_length=1000)
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
@@ -108,9 +102,6 @@ class DocumentCollectionModel(BaseModel):
     document_embedded_count: Optional[int] = None
     is_normalized: Optional[bool] = None
 
-    class Config:
-        extra = Extra.forbid
-
     def to_dict(self) -> Dict[str, Any]:
         """
         Returns a dictionary representation of the document collection.
@@ -120,7 +111,7 @@ class DocumentCollectionModel(BaseModel):
         Dict[str, Any]
             A dictionary containing the attributes of the document collection.
         """
-        return self.dict()
+        return self.model_dump()
 
 
 class DocumentSearchPayload(BaseModel):
@@ -131,8 +122,6 @@ class DocumentSearchPayload(BaseModel):
     ----------
     text : Optional[str]
         The text of the search query.
-    embedding : Optional[List[float]]
-        The embedding of the search query.
     metadata : Optional[Dict[str, Any]]
         Metadata associated with the search query.
     type : SearchType
@@ -142,7 +131,6 @@ class DocumentSearchPayload(BaseModel):
     """
 
     text: Optional[str] = Field(default=None)
-    embedding: Optional[List[float]] = Field(default=None)
     metadata: Optional[Dict[str, Any]] = Field(default=None)
     search_type: Optional[SearchType] = Field(default="similarity")
     mmr_lambda: Optional[float] = Field(default=None)

@@ -9,6 +9,8 @@ from zep_python.utils import filter_dict
 
 from .collections import DocumentCollection
 
+DEFAULT_EMBEDDING_DIMENSIONS = 1024
+
 
 class DocumentClient:
     """
@@ -19,16 +21,14 @@ class DocumentClient:
         aclient (httpx.AsyncClient): Asynchronous API client.
 
     Methods:
-        aadd_collection(name: str, embedding_dimensions: int,
-                        description: Optional[str] = "",
-                        metadata: Optional[Dict[str, Any]] = None,
-                        is_auto_embedded: bool = True) -> DocumentCollection:
+        aadd_collection(name: str,
+                    description: Optional[str] = "",
+                    metadata: Optional[Dict[str, Any]] = None) -> DocumentCollection:
             Asynchronously creates a collection.
 
-        add_collection(name: str, embedding_dimensions: int,
+        add_collection(name: str,
                        description: Optional[str] = "",
-                       metadata: Optional[Dict[str, Any]] = None,
-                       is_auto_embedded: bool = True) -> DocumentCollection:
+                       metadata: Optional[Dict[str, Any]] = None) -> DocumentCollection:
             Synchronously creates a collection.
 
         aupdate_collection(name: str, description: Optional[str] = "",
@@ -69,10 +69,8 @@ class DocumentClient:
     async def aadd_collection(
         self,
         name: str,
-        embedding_dimensions: int,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        is_auto_embedded: bool = True,
     ) -> DocumentCollection:
         """
         Asynchronously creates a collection.
@@ -83,14 +81,9 @@ class DocumentClient:
             The name of the collection to be created.
         description: str
             The description of the collection to be created.
-        embedding_dimensions : int
-            The number of dimensions of the embeddings to use for documents
-            in this collection. This must match your model's embedding dimensions.
         metadata : Optional[Dict[str, Any]], optional
             A dictionary of metadata to be associated with the collection,
             by default None.
-        is_auto_embedded : bool, optional
-            Whether the collection is automatically embedded, by default True.
 
         Returns
         -------
@@ -103,20 +96,17 @@ class DocumentClient:
             If the API response format is unexpected, or if the server returns an error.
         """
 
-        if embedding_dimensions is None or embedding_dimensions <= 0:
-            raise ValueError("embedding_dimensions must be a positive integer")
-
         collection = DocumentCollection(
             name=name,
             description=description,
-            embedding_dimensions=embedding_dimensions,
+            embedding_dimensions=DEFAULT_EMBEDDING_DIMENSIONS,
             metadata=metadata,
-            is_auto_embedded=is_auto_embedded,
+            is_auto_embedded=True,
         )
 
         response = await self.aclient.post(
-            f"/collection/{name}",
-            json=collection.dict(exclude_none=True),
+            f"/collections/{name}",
+            json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
@@ -126,10 +116,8 @@ class DocumentClient:
     def add_collection(
         self,
         name: str,
-        embedding_dimensions: int,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        is_auto_embedded: bool = True,
     ) -> DocumentCollection:
         """
         Creates a collection.
@@ -140,14 +128,9 @@ class DocumentClient:
             The name of the collection to be created.
         description: str
             The description of the collection to be created.
-        embedding_dimensions : int
-            The number of dimensions of the embeddings to use for documents
-            in this collection. This must match your model's embedding dimensions.
         metadata : Optional[Dict[str, Any]], optional
             A dictionary of metadata to be associated with the collection,
             by default None.
-        is_auto_embedded : bool, optional
-            Whether the collection is automatically embedded, by default True.
 
         Returns
         -------
@@ -165,14 +148,14 @@ class DocumentClient:
         collection = DocumentCollection(
             name=name,
             description=description,
-            embedding_dimensions=embedding_dimensions,
+            embedding_dimensions=DEFAULT_EMBEDDING_DIMENSIONS,
             metadata=metadata,
-            is_auto_embedded=is_auto_embedded,
+            is_auto_embedded=True,
         )
 
         response = self.client.post(
-            f"/collection/{name}",
-            json=collection.dict(exclude_none=True),
+            f"/collections/{name}",
+            json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
@@ -208,7 +191,7 @@ class DocumentClient:
         if name is None or name.strip() == "":
             raise ValueError("collection name must be provided")
         response = await self.aclient.get(
-            f"/collection/{name}",
+            f"/collections/{name}",
         )
 
         handle_response(response)
@@ -247,7 +230,7 @@ class DocumentClient:
         if name is None or name.strip() == "":
             raise ValueError("collection name must be provided")
         response = self.client.get(
-            f"/collection/{name}",
+            f"/collections/{name}",
         )
 
         handle_response(response)
@@ -298,8 +281,8 @@ class DocumentClient:
         )
 
         response = await self.aclient.patch(
-            f"/collection/{collection.name}",
-            json=collection.dict(exclude_none=True),
+            f"/collections/{collection.name}",
+            json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
@@ -346,8 +329,8 @@ class DocumentClient:
         )
 
         response = self.client.patch(
-            f"/collection/{collection.name}",
-            json=collection.dict(exclude_none=True),
+            f"/collections/{collection.name}",
+            json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
         handle_response(response)
@@ -371,7 +354,7 @@ class DocumentClient:
             If the API key is invalid.
         """
         response = await self.aclient.get(
-            "/collection",
+            "/collections",
         )
 
         handle_response(response)
@@ -394,7 +377,7 @@ class DocumentClient:
             If the API key is invalid.
         """
         response = self.client.get(
-            "/collection",
+            "/collections",
         )
 
         handle_response(response)
@@ -426,7 +409,7 @@ class DocumentClient:
             raise ValueError("collection name must be provided")
 
         response = await self.aclient.delete(
-            f"/collection/{collection_name}",
+            f"/collections/{collection_name}",
         )
 
         handle_response(response)
@@ -457,7 +440,7 @@ class DocumentClient:
             raise ValueError("collection name must be provided")
 
         response = self.client.delete(
-            f"/collection/{collection_name}",
+            f"/collections/{collection_name}",
         )
 
         handle_response(response)

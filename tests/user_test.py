@@ -1,6 +1,5 @@
 # mypy: ignore-errors
 
-from uuid import uuid4
 
 import pytest
 from pytest_httpx import HTTPXMock
@@ -22,7 +21,7 @@ mock_user = {
 
 
 def validate_user(user: User):
-    assert User.parse_obj(mock_user) == user
+    assert User.model_validate(mock_user) == user
 
 
 @pytest.mark.asyncio

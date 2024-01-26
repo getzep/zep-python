@@ -1,13 +1,7 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import Any, Dict, Optional
 from uuid import UUID
 
-if TYPE_CHECKING:
-    from pydantic import BaseModel, Field
-else:
-    try:
-        from pydantic.v1 import BaseModel, Field
-    except ImportError:
-        from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field
 
 
 class Message(BaseModel):
@@ -35,10 +29,10 @@ class Message(BaseModel):
 
     role: str = Field("A role is required")
     content: str = Field("Content is required")
-    uuid: Optional[str] = Field(optional=True, default=None)
-    created_at: Optional[str] = Field(optional=True, default=None)
-    token_count: Optional[int] = Field(optional=True, default=None)
-    metadata: Optional[Dict[str, Any]] = Field(optional=True, default=None)
+    uuid: Optional[str] = Field(default=None)
+    created_at: Optional[str] = Field(default=None)
+    token_count: Optional[int] = Field(default=None)
+    metadata: Optional[Dict[str, Any]] = Field(default=None)
 
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -49,7 +43,7 @@ class Message(BaseModel):
         Dict[str, Any]
             A dictionary containing the attributes of the message.
         """
-        return self.dict()
+        return self.model_dump(exclude_unset=True, exclude_none=True)
 
 
 class UpdateMessageMetadataRequest(BaseModel):

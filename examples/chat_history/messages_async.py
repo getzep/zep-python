@@ -1,20 +1,23 @@
 import asyncio
-import time
+import os
 import uuid
 
 from chat_history import history
+from dotenv import load_dotenv
 
 from zep_python import (
     APIError,
-    Memory,
-    MemorySearchPayload,
-    Message,
     NotFoundError,
     ZepClient,
 )
-from zep_python.memory import Session
+from zep_python.memory import Memory, Session
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
+
+load_dotenv()  # load environment variables from .env file, if present
+
+API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
 
 
 async def create_user(client):
@@ -85,11 +88,13 @@ async def get_and_print_first_session_message(client, session_id, message_id):
         print(f"Get Session Message: {session_message}")
     except NotFoundError as e:
         print(
-            f"Session Message not found for Session {session_id} and Message {message_id}. Got error: {e}"
+            f"Session Message not found for Session {session_id} and Message "
+            f"{message_id}. Got error: {e}"
         )
     except APIError as e:
         print(
-            f"API error occurred while getting message for Session {session_id} and Message {message_id}. Got error: {e}"
+            f"API error occurred while getting message for Session {session_id} and "
+            f"Message {message_id}. Got error: {e}"
         )
 
 
@@ -100,13 +105,15 @@ async def update_and_print_session_message_metadata(client, session_id, message_
             session_id, message_id, updated_session_message_metadata
         )
         print(f"Updated Session Message Metadata: {updated_session_message}")
-    except NotFoundError:
+    except NotFoundError as e:
         print(
-            f"Session Message not found for Session {session_id} and Message {message_id}. Got error: {e}"
+            f"Session Message not found for Session {session_id} and "
+            f"Message {message_id}. Got error: {e}"
         )
     except APIError as e:
         print(
-            f"API error occurred while updating message metadata for Session {session_id} and Message {message_id}. Got error: {e}"
+            f"API error occurred while updating message metadata for Session "
+            f"{session_id} and Message {message_id}. Got error: {e}"
         )
 
 
@@ -120,9 +127,7 @@ def delete_and_print_memory_for_session(client, session_id):
 
 
 async def main():
-    base_url = "http://localhost:8000"
-    api_key = "your_api_key"
-    with ZepClient(base_url, api_key) as client:
+    with ZepClient(api_key=API_KEY, api_url=API_URL) as client:
         user = await create_user(client)
         session_id = await create_session(client, user.user_id)
         await add_memory_to_session(client, session_id, history)
@@ -134,7 +139,8 @@ async def main():
         await update_and_print_session_message_metadata(
             client, session_id, first_session_message_id
         )
-        delete_and_print_memory_for_session(client, session_id)
+        # Uncomment the following line to delete the memory for the session
+        # delete_and_print_memory_for_session(client, session_id)
 
 
 if __name__ == "__main__":

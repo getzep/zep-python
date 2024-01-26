@@ -1,15 +1,20 @@
+import os
 import uuid
 
+from dotenv import load_dotenv
+
 from zep_python import APIError, ZepClient
-from zep_python.memory.models import Session
+from zep_python.memory import Session
 from zep_python.user import CreateUserRequest
+
+load_dotenv()  # load environment variables from .env file, if present
+
+API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
 
 
 def main() -> None:
-    base_url = "http://localhost:8000"  # TODO: Replace with Zep API URL
-    api_key = "YOUR_API_KEY"  # TODO: Replace with your API key
-
-    with ZepClient(base_url, api_key) as client:
+    with ZepClient(api_key=API_KEY, api_url=API_URL) as client:
         # Create a user
         user_id = uuid.uuid4().hex
         user_request = CreateUserRequest(

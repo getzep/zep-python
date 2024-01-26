@@ -1,56 +1,36 @@
 name: Release to PyPI
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'pyproject.toml'
+  tags: [ 'v*.*.*' ]
 
 env:
-  POETRY_VERSION: "1.6.1"
+  POETRY_VERSION: "1.7.1"
 
 jobs:
-  if_release:
-    if: |
-        ${{ github.event.pull_request.merged == true }}
-        && ${{ contains(github.event.pull_request.labels.*.name, 'release') }}
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
-    environment:
-      name: release
-      url: https://pypi.org/p/zep-python
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
-        run: pipx install poetry==$POETRY_VERSION
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-          cache: "poetry"
-      - name: Build project for distribution
-        run: poetry build
-      - name: Check Version
-        id: check-version
-        run: |
-          echo version=$(poetry version --short) >> $GITHUB_OUTPUT
-      - uses: rickstaa/action-create-tag@v1
-        id: "tag_create"
-        with:
-          tag: v${{ steps.check-version.outputs.version }}
-          tag_exists_error: false
-          message: "Latest release"
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "dist/*"
-          makeLatest: true
-          draft: false
-          generateReleaseNotes: true
-          tag: v${{ steps.check-version.outputs.version }}
-          commit: main
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+  runs-on: ubuntu-latest
+  permissions:
+    id-token: write
+    contents: write
+  environment:
+    name: release
+    url: https://pypi.org/p/zep-python
+  steps:
+    - uses: actions/checkout@v3
+    - name: Install poetry
+      run: pipx install poetry==$POETRY_VERSION
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: "poetry"
+    - name: Compare pyproject version with tag
+      run: |
+        TAG_VERSION=${GITHUB_REF#refs/tags/}
+        if [ "$TAG_VERSION" != "$(poetry version --short)" ]; then
+          echo "Tag version $TAG_VERSION does not match the project version $(poetry version --short)"
+          exit 1
+        fi
+    - name: Build project for distribution
+      run: poetry build
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1

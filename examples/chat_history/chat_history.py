@@ -107,14 +107,6 @@ history = [
     },
     {
         "role": "user",
-        "content": (
-            "Thank you for all this information! I'm excited to start planning my trip."
-        ),
-    },
-    {
-        "role": "assistant",
-        "content": (
-            "You're welcome! Have a great time planning and enjoy your trip to Iceland!"
-        ),
+        "content": ("OK, I am allergic to dairy."),
     },
 ]
