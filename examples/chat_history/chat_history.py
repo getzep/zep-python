@@ -107,8 +107,6 @@ history = [
     },
     {
         "role": "user",
-        "content": (
-            "OK, I am allergic to dairy."
-        ),
-    }
+        "content": ("OK, I am allergic to dairy."),
+    },
 ]
