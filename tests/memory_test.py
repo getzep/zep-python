@@ -6,7 +6,7 @@ import pytest
 from pytest_httpx import HTTPXMock
 
 from tests.conftest import API_BASE_URL, mock_healthcheck, undo_mock_healthcheck
-from zep_python import NotFoundError
+from zep_python import APIError, NotFoundError
 from zep_python.memory.models import (
     Memory,
     MemorySearchPayload,
@@ -978,3 +978,37 @@ async def test_alist_all_sessions(httpx_mock: HTTPXMock):
                 i += 1
         except StopAsyncIteration:
             pass
+
+
+@pytest.mark.asyncio
+async def test_asynthesize_question(httpx_mock: HTTPXMock):
+    session_id = "abc123"
+    last_n = 3
+    mock_question = {"question": "What is the meaning of life?"}
+
+    httpx_mock.add_response(status_code=200, json=mock_question)
+
+    async with ZepClient(**mock_auth) as client:
+        question = await client.memory.asynthesize_question(session_id, last_n)
+        assert question == mock_question["question"]
+
+
+@pytest.mark.asyncio
+async def test_asynthesize_question_missing_session_id(httpx_mock: HTTPXMock):
+    session_id = None
+    last_n = 3
+
+    async with ZepClient(**mock_auth) as client:
+        with pytest.raises(ValueError):
+            _ = await client.memory.asynthesize_question(session_id, last_n)
+
+
+@pytest.mark.asyncio
+async def test_asynthesize_question_api_error(httpx_mock: HTTPXMock):
+    session_id = "abc123"
+    last_n = 3
+    httpx_mock.add_response(status_code=500)
+
+    async with ZepClient(**mock_auth) as client:
+        with pytest.raises(APIError):
+            _ = await client.memory.asynthesize_question(session_id, last_n)

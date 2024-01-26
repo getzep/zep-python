@@ -152,7 +152,7 @@ class DocumentClient:
             metadata=metadata,
             is_auto_embedded=True,
         )
-        print(self.client.headers["Authorization"])
+
         response = self.client.post(
             f"/collections/{name}",
             json=collection.model_dump(exclude_none=True, exclude_unset=True),

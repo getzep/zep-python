@@ -168,6 +168,12 @@ def main() -> None:
     print(f"\n---Get Memory for Session: {session_id}")
     get_memory_from_session(client, session_id)
 
+    # Synthesize a question from most recent messages.
+    # Useful for RAG apps. This is faster than using an LLM chain.
+    print("\n---Synthesize a question from most recent messages")
+    question = client.memory.synthesize_question(session_id, last_n=3)
+    print(f"Question: {question}")
+
     # Search Memory for session
     query = "Can you name some popular destinations in Iceland?"
     print(f"\n---Searching over summaries for: '{query}'")
