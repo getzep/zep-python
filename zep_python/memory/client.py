@@ -829,9 +829,10 @@ class MemoryClient:
         APIError
             If the API response format is unexpected.
         """
+        print("session_id inside synthesize_question", session_id)
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
-
+        print("Inside synthesize_question")
         params = {"lastNMessages": last_n}
         response = self.client.get(
             f"/sessions/{session_id}/synthesize_question", params=params

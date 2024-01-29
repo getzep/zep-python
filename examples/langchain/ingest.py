@@ -14,7 +14,7 @@ SOURCE = "https://www.theguardian.com/environment/2023/sep/28/plastic-eating-bac
 
 ZEP_API_URL = (
     os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
-    or "https://api.getzep.com"
+    or "http://localhost:8000"
 )
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY", None)  # Required for Zep Cloud
 ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION", "langchaintest")

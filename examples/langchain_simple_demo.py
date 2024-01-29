@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
+from zep_python.memory.models import Session
 
 from zep_python import ZepClient
 from zep_python.langchain.history import ZepChatMessageHistory
@@ -36,11 +37,17 @@ def main():
     user_request = CreateUserRequest(
         user_id=user_id,
         email="jane@example.com",
-        first_name="Jane",
+        first_name="Jane 2",
         last_name="Smith",
         metadata={"foo": "bar"},
     )
     zep.user.add(user_request)
+    session = Session(
+        session_id=session_id, user_id=user_id, metadata={"foo": "bar"}
+    )
+
+    zep.memory.add_session(session)
+
 
     zep_chat_history = ZepChatMessageHistory(
         zep_client=zep,
@@ -68,6 +75,8 @@ def main():
         {"ability": "math", "question": "What does cosine mean?"},
         config={"configurable": {"session_id": session_id}},
     )
+
+    print("zep_chat_history.messages", zep_chat_history.messages)
 
     print(output)
 
