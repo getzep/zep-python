@@ -15,6 +15,7 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.runnables import (
     ConfigurableField,
     RunnableBranch,
+    ConfigurableFieldSpec,
     RunnableLambda,
     RunnableParallel,
     RunnablePassthrough,
@@ -65,7 +66,7 @@ def main():
         search_type=ConfigurableFieldSingleOption(
             id="search_type",
             options={"Similarity": "similarity", "Similarity with MMR Reranking": "mmr"},
-            default="mmr",
+            default="Similarity with MMR Reranking",
             name="Search Type",
             description="Type of search to perform: 'similarity' or 'mmr'",
         ),
@@ -101,6 +102,7 @@ def main():
         document_prompt: PromptTemplate = DEFAULT_DOCUMENT_PROMPT,
         document_separator: str = "\n\n",
     ):
+        print("conbining dopcs", docs)
         doc_strings = [format_document(doc, document_prompt) for doc in docs]
         return document_separator.join(doc_strings)
 
@@ -154,7 +156,12 @@ def main():
 
     output = chain.invoke(
         {"ability": "math", "question": "What does cosine mean?"},
-        config={"configurable": {"session_id": test_session_id}, "callbacks": [ConsoleCallbackHandler()]},
+        config={
+            "configurable": {
+                "session_id": test_session_id,
+            },
+            "callbacks": [ConsoleCallbackHandler()]
+        },
     )
 
     print(output)
