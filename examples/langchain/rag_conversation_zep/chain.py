@@ -26,7 +26,7 @@ from langchain_openai import ChatOpenAI
 from zep_python import ZepClient
 from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
 def main():
-    test_session_id = "97206785434642c3b3d90fdc793c299a"
+    test_session_id = "30efa1a44c2348b7afbba7676a19f5ad"
     ZEP_API_KEY = os.environ.get("ZEP_API_KEY", None)  # Required for Zep Cloud
     ZEP_API_URL = os.environ.get(
         "ZEP_API_URL"
@@ -102,7 +102,6 @@ def main():
         document_prompt: PromptTemplate = DEFAULT_DOCUMENT_PROMPT,
         document_separator: str = "\n\n",
     ):
-        print("conbining dopcs", docs)
         doc_strings = [format_document(doc, document_prompt) for doc in docs]
         return document_separator.join(doc_strings)
 
@@ -139,23 +138,29 @@ def main():
     class ChatHistory(BaseModel):
         chat_history: List[Tuple[str, str]] = Field(..., extra={"widget": {"type": "chat"}})
         question: str
+        session_id: str
 
     _inputs = RunnableParallel(
         {
             "question": lambda x: (print("whole x", x), x["question"]),
+            "chat_history": lambda x: x["chat_history"],
+            "session_id": lambda x: x["session_id"],
             "context": _search_query | retriever | _combine_documents
         },
     ).with_types(input_type=ChatHistory)
 
     chain = RunnableWithMessageHistory(
         _inputs | ANSWER_PROMPT | ChatOpenAI() | StrOutputParser(),
-        lambda session_id: chat_history,
+        lambda session_id: ZepChatMessageHistory(
+            session_id=session_id,  # This uniquely identifies the conversation
+            zep_client=zep,
+        ),
         input_messages_key="question",
         history_messages_key="chat_history",
     )
 
     output = chain.invoke(
-        {"ability": "math", "question": "What does cosine mean?"},
+        {"question": "What did japanese scientists discover?"},
         config={
             "configurable": {
                 "session_id": test_session_id,
