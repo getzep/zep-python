@@ -1228,6 +1228,19 @@ files = [
 ]
 
 [[package]]
+name = "rag-vector-store"
+version = "0.0.1"
+description = "A RAG application built with Zep. Zep provides a VectorStore implementation to the chain."
+optional = false
+python-versions = "*"
+files = []
+develop = true
+
+[package.source]
+type = "directory"
+url = "packages/rag_vector_store"
+
+[[package]]
 name = "requests"
 version = "2.31.0"
 description = "Python HTTP for Humans."
@@ -1636,4 +1649,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "402be4bade7601a03a1387b5a1167b1f34744eabf1918bbdb1f35e8499c68096"
+content-hash = "404c0425ad9c9ccb4ca7bc4ab6fc043210a9ad1813e5a6e653d40ff3134da365"

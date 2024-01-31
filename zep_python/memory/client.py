@@ -809,6 +809,7 @@ class MemoryClient:
         ]
 
     def synthesize_question(self, session_id: str, last_n: int = 3) -> str:
+        print("session_id", session_id)
         """
         Synthesize a question from the last N messages in the chat history.
 

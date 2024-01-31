@@ -542,7 +542,7 @@ class DocumentCollection(DocumentCollectionModel):
 
     async def asearch(
         self,
-        text: Optional[str] = None,
+        text: Optional[str or Dict[str, str]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
         search_type: Optional[str] = None,
@@ -580,7 +580,7 @@ class DocumentCollection(DocumentCollectionModel):
         """
 
         results, _ = await self.asearch_return_query_vector(
-            text=text,
+            text=str(text),
             metadata=metadata,
             limit=limit,
             search_type=search_type,
@@ -640,7 +640,7 @@ class DocumentCollection(DocumentCollectionModel):
 
     def search(
         self,
-        text: Optional[str] = None,
+        text: Optional[str or Dict[str, str]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
         search_type: Optional[str] = None,
@@ -678,7 +678,7 @@ class DocumentCollection(DocumentCollectionModel):
         """
 
         results, _ = self.search_return_query_vector(
-            text=text,
+            text=str(text),
             metadata=metadata,
             limit=limit,
             search_type=search_type,

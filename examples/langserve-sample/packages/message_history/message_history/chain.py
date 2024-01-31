@@ -1,28 +1,18 @@
 import os
-from typing import List, Tuple, Optional, Any
-from operator import itemgetter
+from typing import List, Tuple
 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.runnables import (
-    RunnableLambda,
     RunnableParallel,
-    RunnableSerializable,
-    RunnableConfig,
-    ConfigurableField
 )
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 from zep_python import ZepClient
-from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
+from zep_python.langchain import ZepChatMessageHistory
 
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY", None)  # Required for Zep Cloud
-ZEP_API_URL = os.environ.get(
-    "ZEP_API_URL"
-)  # only required if you're using Zep Open Source
-
 
 if ZEP_API_KEY is None:
     raise ValueError(
@@ -32,7 +22,6 @@ if ZEP_API_KEY is None:
 
 zep = ZepClient(
     api_key=ZEP_API_KEY,
-    # api_url=ZEP_API_URL,  # only required if you're using Zep Open Source
 )
 
 # RAG answer synthesis prompt
@@ -46,11 +35,13 @@ ANSWER_PROMPT = ChatPromptTemplate.from_messages(
     ]
 )
 
+
 # User input
 class ChatHistory(BaseModel):
     chat_history: List[Tuple[str, str]] = Field(..., extra={"widget": {"type": "chat"}})
     question: str
     session_id: str
+
 
 _inputs = RunnableParallel(
     {
@@ -69,6 +60,3 @@ chain = RunnableWithMessageHistory(
     input_messages_key="question",
     history_messages_key="chat_history",
 )
-
-
-

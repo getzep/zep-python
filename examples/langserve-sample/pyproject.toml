@@ -14,6 +14,7 @@ uvicorn = "^0.23.2"
 langserve = {extras = ["server"], version = ">=0.0.30"}
 pydantic = ">2"
 message_history = {path = "packages/message_history", develop = true}
+rag_vector_store = {path = "packages/rag_vector_store", develop = true}
 
 
 [tool.poetry.group.dev.dependencies]
