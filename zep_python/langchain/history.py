@@ -32,7 +32,8 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
     session_id : str
         The unique identifier of the session.
     zep_client : ZepClient
-        The Zep client used for making API requests. Pass in this rather than the API key and URL.
+        The Zep client used for making API requests.
+        Pass in this rather than the API key and URL.
     api_url : str
         The Zep API service URL. Not required if using Zep Cloud.
     api_key : str
