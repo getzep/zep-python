@@ -14,7 +14,7 @@ from zep_python.memory.client import MemoryClient
 from zep_python.message.client import MessageClient
 from zep_python.user.client import UserClient
 
-API_URL = "http://localhost:8000"
+API_URL = "https://api.development.getzep.com"
 API_BASE_PATH = "/api/v2"
 API_TIMEOUT = 10
 

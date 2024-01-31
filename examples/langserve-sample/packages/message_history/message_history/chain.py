@@ -64,6 +64,7 @@ chain = RunnableWithMessageHistory(
     lambda session_id: ZepChatMessageHistory(
         session_id=session_id,  # This uniquely identifies the conversation
         zep_client=zep,
+        memory_type="perpetual"
     ),
     input_messages_key="question",
     history_messages_key="chat_history",
