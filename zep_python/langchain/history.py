@@ -26,6 +26,20 @@ logger = logging.getLogger(__name__)
 class ZepChatMessageHistory(BaseChatMessageHistory):
     """
     LangChain Chat message history that uses Zep as a backend.
+
+    Attributes
+    ----------
+    session_id : str
+        The unique identifier of the session.
+    zep_client : ZepClient
+        The Zep client used for making API requests.
+        Pass in this rather than the API key and URL.
+    api_url : str
+        The Zep API service URL. Not required if using Zep Cloud.
+    api_key : str
+        The Zep API key. Not required if using Zep Open Source.
+    memory_type : str
+        The type of memory to use. Can be "message_window" or "perpetual".
     """
 
     def __init__(
@@ -34,6 +48,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         zep_client: Optional[ZepClient] = None,
         api_url: Optional[str] = API_URL,
         api_key: Optional[str] = None,
+        memory_type: Optional[str] = None,
     ) -> None:
         if zep_client is None:
             self._client = ZepClient(api_url=api_url, api_key=api_key)
@@ -41,6 +56,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
             self._client = zep_client
 
         self.session_id = session_id
+        self.memory_type = memory_type or "message_window"
 
     @property
     def messages(self) -> List[BaseMessage]:  # type: ignore
@@ -92,7 +108,9 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
     def _get_memory(self) -> Optional[Memory]:
         """Retrieve memory from Zep"""
         try:
-            zep_memory: Memory = self._client.memory.get_memory(self.session_id)
+            zep_memory: Memory = self._client.memory.get_memory(
+                self.session_id, self.memory_type
+            )
         except NotFoundError:
             logger.warning(
                 f"Session {self.session_id} not found in Zep. Returning None"
