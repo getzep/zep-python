@@ -107,7 +107,9 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
     def _get_memory(self) -> Optional[Memory]:
         """Retrieve memory from Zep"""
         try:
-            zep_memory: Memory = self._client.memory.get_memory(self.session_id, self.memory_type)
+            zep_memory: Memory = self._client.memory.get_memory(
+                self.session_id, self.memory_type
+            )
         except NotFoundError:
             logger.warning(
                 f"Session {self.session_id} not found in Zep. Returning None"
