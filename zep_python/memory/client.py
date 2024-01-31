@@ -840,6 +840,8 @@ class MemoryClient:
 
         handle_response(response)
 
+        print("response.json()", response.json())
+
         question = Question(**response.json())
 
         return question.question

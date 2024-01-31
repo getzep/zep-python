@@ -26,13 +26,8 @@ from langchain_openai import ChatOpenAI
 from zep_python import ZepClient
 from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
 def main():
-    test_session_id = "52c57a03e61041b9b5f8c314d03b380e"
+    test_session_id = "ec0b3368269a41a4b8ba5bffe7270709"
     ZEP_API_KEY = os.environ.get("ZEP_API_KEY", None)  # Required for Zep Cloud
-    ZEP_API_URL = os.environ.get(
-        "ZEP_API_URL"
-    )  # only required if you're using Zep Open Source
-
-    ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION", "langchaintest")
 
     if ZEP_API_KEY is None:
         raise ValueError(
@@ -43,41 +38,6 @@ def main():
     zep = ZepClient(
         api_key=ZEP_API_KEY,
         # api_url=ZEP_API_URL,  # only required if you're using Zep Open Source
-    )
-
-    # Initialize ZepVectorStore and ZepChatMessageHistory
-    vectorstore = ZepVectorStore(
-        collection_name=ZEP_COLLECTION_NAME,
-        zep_client=zep,
-    )
-    print("ZepVectorStore initialized")
-    chat_history = ZepChatMessageHistory(
-        session_id=test_session_id,  # This uniquely identifies the conversation
-        zep_client=zep,
-    )
-
-    print("ZepVectorStore and ZepChatMessageHistory initialized")
-
-    # Zep offers native, hardware-accelerated MMR. Enabling this will improve
-    # the diversity of results, but may also reduce relevance. You can tune
-    # the lambda parameter to control the tradeoff between relevance and diversity.
-    # Enabling is a good default.
-    retriever = vectorstore.as_retriever().configurable_fields(
-        search_type=ConfigurableFieldSingleOption(
-            id="search_type",
-            options={"Similarity": "similarity", "Similarity with MMR Reranking": "mmr"},
-            default="Similarity with MMR Reranking",
-            name="Search Type",
-            description="Type of search to perform: 'similarity' or 'mmr'",
-        ),
-        search_kwargs=ConfigurableField(
-            id="search_kwargs",
-            name="Search kwargs",
-            description=(
-                "Specify 'k' for number of results to return and 'lambda_mult' for tuning"
-                " MMR relevance vs diversity."
-            ),
-        ),
     )
 
     # RAG answer synthesis prompt
@@ -92,19 +52,6 @@ def main():
             ("user", "{question}"),
         ]
     )
-
-    # Conversational Retrieval Chain
-    DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}")
-
-
-    def _combine_documents(
-        docs: List[Document],
-        document_prompt: PromptTemplate = DEFAULT_DOCUMENT_PROMPT,
-        document_separator: str = "\n\n",
-    ):
-        doc_strings = [format_document(doc, document_prompt) for doc in docs]
-        return document_separator.join(doc_strings)
-
 
     _search_query = RunnableLambda(
         lambda session_id: zep.memory.synthesize_question(session_id=test_session_id),
@@ -138,14 +85,12 @@ def main():
     class ChatHistory(BaseModel):
         chat_history: List[Tuple[str, str]] = Field(..., extra={"widget": {"type": "chat"}})
         question: str
-        session_id: str
 
     _inputs = RunnableParallel(
         {
             "question": lambda x: (print("whole x", x), x["question"]),
             "chat_history": lambda x: x["chat_history"],
-            "session_id": lambda x: x["session_id"],
-            "context": _search_query | retriever | _combine_documents
+            "context": _search_query
         },
     ).with_types(input_type=ChatHistory)
 
@@ -157,10 +102,10 @@ def main():
         ),
         input_messages_key="question",
         history_messages_key="chat_history",
-    )
+        )
 
     output = chain.invoke(
-        {"session_id": test_session_id, "question": "What did japanese scientists discover?"},
+        {"question": "What did we talk about recently?"},
         config={
             "configurable": {
                 "session_id": test_session_id,
