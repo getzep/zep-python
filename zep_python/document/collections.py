@@ -1,5 +1,5 @@
 import warnings
-from typing import Any, Dict, Generator, List, Optional, Tuple
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 import httpx
 from pydantic import PrivateAttr
@@ -542,7 +542,7 @@ class DocumentCollection(DocumentCollectionModel):
 
     async def asearch(
         self,
-        text: Optional[str or Dict[str, str]] = None,
+        text: Optional[Union[str, Dict[str, str]]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
         search_type: Optional[str] = None,
@@ -640,7 +640,7 @@ class DocumentCollection(DocumentCollectionModel):
 
     def search(
         self,
-        text: Optional[str or Dict[str, str]] = None,
+        text: Optional[Union[str, Dict[str, str]]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = None,
         search_type: Optional[str] = None,

@@ -9,6 +9,7 @@ from langchain_core.runnables import (
 )
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
+
 from zep_python import ZepClient
 from zep_python.langchain import ZepChatMessageHistory
 
@@ -55,7 +56,7 @@ chain = RunnableWithMessageHistory(
     lambda session_id: ZepChatMessageHistory(
         session_id=session_id,  # This uniquely identifies the conversation
         zep_client=zep,
-        memory_type="perpetual"
+        memory_type="perpetual",
     ),
     input_messages_key="question",
     history_messages_key="chat_history",

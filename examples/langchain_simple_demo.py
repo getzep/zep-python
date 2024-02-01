@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
-from zep_python.memory.models import Session
 
 from zep_python import ZepClient
 from zep_python.langchain.history import ZepChatMessageHistory
+from zep_python.memory.models import Session
 from zep_python.user import CreateUserRequest
 
 load_dotenv()  # load environment variables from .env file, if present
@@ -42,12 +42,9 @@ def main():
         metadata={"foo": "bar"},
     )
     zep.user.add(user_request)
-    session = Session(
-        session_id=session_id, user_id=user_id, metadata={"foo": "bar"}
-    )
+    session = Session(session_id=session_id, user_id=user_id, metadata={"foo": "bar"})
 
     zep.memory.add_session(session)
-
 
     zep_chat_history = ZepChatMessageHistory(
         zep_client=zep,

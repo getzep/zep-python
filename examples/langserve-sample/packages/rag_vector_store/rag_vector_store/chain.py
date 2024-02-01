@@ -1,19 +1,19 @@
 import os
 from typing import List
 
+from langchain.schema import format_document
+from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.runnables import (
-    RunnableParallel,
     ConfigurableField,
+    RunnableParallel,
 )
-from langchain_core.documents import Document
-from langchain_core.prompts.prompt import PromptTemplate
-from langchain.schema import format_document
-
 from langchain_core.runnables.utils import ConfigurableFieldSingleOption
 from langchain_openai import ChatOpenAI
+
 from zep_python import ZepClient
 from zep_python.langchain import ZepVectorStore
 
@@ -80,19 +80,16 @@ class UserInput(BaseModel):
 
 
 def _combine_documents(
-        docs: List[Document],
-        document_prompt: PromptTemplate = DEFAULT_DOCUMENT_PROMPT,
-        document_separator: str = "\n\n",
+    docs: List[Document],
+    document_prompt: PromptTemplate = DEFAULT_DOCUMENT_PROMPT,
+    document_separator: str = "\n\n",
 ):
     doc_strings = [format_document(doc, document_prompt) for doc in docs]
     return document_separator.join(doc_strings)
 
 
 _inputs = RunnableParallel(
-    {
-        "question": lambda x: x["question"],
-        "context": retriever | _combine_documents
-    },
+    {"question": lambda x: x["question"], "context": retriever | _combine_documents},
 ).with_types(input_type=UserInput)
 
 chain = _inputs | answer_prompt | ChatOpenAI() | StrOutputParser()

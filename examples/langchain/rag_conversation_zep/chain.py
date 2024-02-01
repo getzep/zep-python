@@ -1,10 +1,7 @@
 import os
-from operator import itemgetter
 from typing import List, Tuple
-import uuid
-from langchain.globals import set_verbose
-from langchain.callbacks.tracers import ConsoleCallbackHandler
 
+from langchain.callbacks.tracers import ConsoleCallbackHandler
 from langchain.schema import AIMessage, HumanMessage, format_document
 from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
@@ -14,8 +11,6 @@ from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.runnables import (
     ConfigurableField,
-    RunnableBranch,
-    ConfigurableFieldSpec,
     RunnableLambda,
     RunnableParallel,
     RunnablePassthrough,
@@ -23,14 +18,14 @@ from langchain_core.runnables import (
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.runnables.utils import ConfigurableFieldSingleOption
 from langchain_openai import ChatOpenAI
+
 from zep_python import ZepClient
 from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
+
+
 def main():
     test_session_id = "52c57a03e61041b9b5f8c314d03b380e"
     ZEP_API_KEY = os.environ.get("ZEP_API_KEY", None)  # Required for Zep Cloud
-    ZEP_API_URL = os.environ.get(
-        "ZEP_API_URL"
-    )  # only required if you're using Zep Open Source
 
     ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION", "langchaintest")
 
@@ -65,7 +60,10 @@ def main():
     retriever = vectorstore.as_retriever().configurable_fields(
         search_type=ConfigurableFieldSingleOption(
             id="search_type",
-            options={"Similarity": "similarity", "Similarity with MMR Reranking": "mmr"},
+            options={
+                "Similarity": "similarity",
+                "Similarity with MMR Reranking": "mmr",
+            },
             default="Similarity with MMR Reranking",
             name="Search Type",
             description="Type of search to perform: 'similarity' or 'mmr'",
@@ -96,7 +94,6 @@ def main():
     # Conversational Retrieval Chain
     DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}")
 
-
     def _combine_documents(
         docs: List[Document],
         document_prompt: PromptTemplate = DEFAULT_DOCUMENT_PROMPT,
@@ -104,7 +101,6 @@ def main():
     ):
         doc_strings = [format_document(doc, document_prompt) for doc in docs]
         return document_separator.join(doc_strings)
-
 
     _search_query = RunnableLambda(
         lambda session_id: zep.memory.synthesize_question(session_id=test_session_id),
@@ -117,6 +113,7 @@ def main():
     Follow Up Input: {question}
     Standalone question:"""  # noqa: E501
     CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_template)
+
     def _format_chat_history(chat_history: List[Tuple[str, str]]) -> List[BaseMessage]:
         print("_format_chat_history chat_history", chat_history)
         buffer: List[BaseMessage] = []
@@ -126,17 +123,19 @@ def main():
         return buffer
 
     _condense_chain = (
-            RunnablePassthrough.assign(
-                chat_history=lambda x: _format_chat_history(x["chat_history"])
-            )
-            | CONDENSE_QUESTION_PROMPT
-            | ChatOpenAI(temperature=0)
-            | StrOutputParser()
+        RunnablePassthrough.assign(
+            chat_history=lambda x: _format_chat_history(x["chat_history"])
+        )
+        | CONDENSE_QUESTION_PROMPT
+        | ChatOpenAI(temperature=0)
+        | StrOutputParser()
     )
 
     # User input
     class ChatHistory(BaseModel):
-        chat_history: List[Tuple[str, str]] = Field(..., extra={"widget": {"type": "chat"}})
+        chat_history: List[Tuple[str, str]] = Field(
+            ..., extra={"widget": {"type": "chat"}}
+        )
         question: str
         session_id: str
 
@@ -145,7 +144,7 @@ def main():
             "question": lambda x: (print("whole x", x), x["question"]),
             "chat_history": lambda x: x["chat_history"],
             "session_id": lambda x: x["session_id"],
-            "context": _search_query | retriever | _combine_documents
+            "context": _search_query | retriever | _combine_documents,
         },
     ).with_types(input_type=ChatHistory)
 
@@ -160,17 +159,20 @@ def main():
     )
 
     output = chain.invoke(
-        {"session_id": test_session_id, "question": "What did japanese scientists discover?"},
+        {
+            "session_id": test_session_id,
+            "question": "What did japanese scientists discover?",
+        },
         config={
             "configurable": {
                 "session_id": test_session_id,
             },
-            "callbacks": [ConsoleCallbackHandler()]
+            "callbacks": [ConsoleCallbackHandler()],
         },
     )
 
     print(output)
 
+
 if __name__ == "__main__":
     main()
-

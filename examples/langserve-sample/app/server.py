@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse
 from langserve import add_routes
 from message_history import chain as message_history_chain
 from rag_vector_store import chain as rag_vector_store_chain
+
 app = FastAPI()
 
 
