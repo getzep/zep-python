@@ -809,7 +809,6 @@ class MemoryClient:
         ]
 
     def synthesize_question(self, session_id: str, last_n: int = 3) -> str:
-        print("session_id", session_id)
         """
         Synthesize a question from the last N messages in the chat history.
 
@@ -830,18 +829,14 @@ class MemoryClient:
         APIError
             If the API response format is unexpected.
         """
-        print("session_id inside synthesize_question", session_id)
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
-        print("Inside synthesize_question")
         params = {"lastNMessages": last_n}
         response = self.client.get(
             f"/sessions/{session_id}/synthesize_question", params=params
         )
 
         handle_response(response)
-
-        print("response.json()", response.json())
 
         question = Question(**response.json())
 

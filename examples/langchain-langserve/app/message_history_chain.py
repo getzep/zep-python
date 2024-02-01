@@ -60,4 +60,4 @@ chain = RunnableWithMessageHistory(
     ),
     input_messages_key="question",
     history_messages_key="chat_history",
-)
+    )
