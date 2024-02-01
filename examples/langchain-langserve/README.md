@@ -2,78 +2,120 @@
 
 ## Installation
 
-Install the LangChain CLI if you haven't yet
+This project uses [Poetry](https://python-poetry.org/) for dependency management.
 
-```bash
-pip install -U langchain-cli
+Follow these steps to install the project:
+
+1. **Install Poetry**
+
+   If you haven't installed Poetry yet, you can do so by following the instructions on the [official Poetry website](https://python-poetry.org/docs/#installation).
+
+2. **Activate the Poetry environment**
+
+    Use the following command to create a new virtual environment for the project:
+    ```bash
+    poetry shell
+    ```
+
+3. **Install environment dependencies**
+
+    Use the following command to install the projects dependencies
+    ```bash
+    poetry install
+    ```
+
+
+## Setting Environment Variables
+
+Environment variables are used to configure the application. Some of these are required for the application to run, while others are optional and can be used to enable additional features or change the default behavior.
+
+1. **Required Variables**
+
+   These variables must be set for the application to run:
+
+   ```shell
+   export OPENAI_API_KEY=<your-openai-api-key>
+   export ZEP_API_KEY=<your-zep-project-api-key>
+   ```
+
+2. **Optional Variables**
+
+   These variables are not required, but can be set to enable langserve:
+
+   ```shell
+   export LANGCHAIN_TRACING_V2=true
+   export LANGCHAIN_API_KEY=<your-langchain-api-key>
+   export LANGCHAIN_PROJECT=<your-project-name>  # If not specified, defaults to "default"
+   ```
+
+## Data Ingestion
+
+The ingest.py script is used to create collections and populate them with documents from the article. To run this script, use the following command:
+
+```
+python app/ingest.py
 ```
 
-## Adding packages
+## Starting the Server
 
-```bash
-# adding packages from 
-# https://github.com/langchain-ai/langchain/tree/master/templates
-langchain app add $PROJECT_NAME
+To start the server, navigate to the application directory and run the following command:
 
-# adding custom GitHub repo packages
-langchain app add --repo $OWNER/$REPO
-# or with whole git string (supports other git providers):
-# langchain app add git+https://github.com/hwchase17/chain-of-verification
-
-# with a custom api mount point (defaults to `/{package_name}`)
-langchain app add $PROJECT_NAME --api_path=/my/custom/path/rag
+```python
+python app/server.py
 ```
 
-Note: you remove packages by their api path
+This will start the server and listen for incoming connections.
 
-```bash
-langchain app remove my/custom/path/rag
-```
+## Running the Message History Chain
 
-## Setup LangSmith (Optional)
-LangSmith will help us trace, monitor and debug LangChain applications. 
-LangSmith is currently in private beta, you can sign up [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
+The `memory.py` script is used to create a session and populate it with a series of messages.
+
+1. **Execute the script**
+
+   ```bash
+   python ../chat_history/memory.py
+   ```
+
+2. **Copy the Session ID**
+   After running the script, you'll see an output similar to the following:
+
+   ```bash
+   ---Add Memory for Session: 0d1c45eaa52b4a2ba51988329c07e2eb
+   ```
+   The alphanumeric string after "Session:" is your Session ID. You'll need to copy this for future use.
+
+   You will use this Session Id in your langserve playground.
 
 
-```shell
-export LANGCHAIN_TRACING_V2=true
-export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
-```
+## Running the Message History Chain
 
-## Launch LangServe
+To run the message history chain, follow these steps:
 
-```bash
-langchain serve
-```
+1. **Start the server**
 
-## Running in Docker
+   Ensure that your server is running. If it's not, start it using the appropriate command.
 
-This project folder includes a Dockerfile that allows you to easily build and host your LangServe app.
+2. **Navigate to the Playground**
 
-### Building the Image
+   Open your web browser and navigate to the following URL:
+   http://localhost:8050/message_history/playground
 
-To build the image, you simply:
+   This will take you to the playground where you can interact with the message history chain.
+   Please note that you need to have the server running and accessible at `localhost:8050` for this to work.
 
-```shell
-docker build . -t my-langserve-app
-```
+## Running the RAG Vector Store Chain
 
-If you tag your image with something other than `my-langserve-app`,
-note it for use in the next step.
+To run the message history chain, follow these steps:
 
-### Running the Image Locally
+1. **Start the server**
 
-To run the image, you'll need to include any environment variables
-necessary for your application.
+   Ensure that your server is running. If it's not, start it using the appropriate command.
 
-In the below example, we inject the `OPENAI_API_KEY` environment
-variable with the value set in my local environment
-(`$OPENAI_API_KEY`)
+2. **Navigate to the Playground**
 
-We also expose port 8080 with the `-p 8080:8080` option.
+   Open your web browser and navigate to the following URL:
+   http://localhost:8050/rag_vector_store/playground
 
-```shell
-docker run -e OPENAI_API_KEY=$OPENAI_API_KEY -p 8080:8080 my-langserve-app
-```
+   This will take you to the playground where you can interact with the RAG Vector Store chain.
+   Please note that you need to have the server running and accessible at `localhost:8050` for this to work.
+
