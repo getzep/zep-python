@@ -2,7 +2,7 @@
 name = "langserve-sample"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Paul Paliychuk <paul@getzep.com>"]
 readme = "README.md"
 packages = [
     { include = "app" },

@@ -12,11 +12,10 @@ load_dotenv()
 
 SOURCE = "https://www.theguardian.com/environment/2023/sep/28/plastic-eating-bacteria-enzyme-recycling-waste"  # noqa: E501
 
-ZEP_API_URL = (
-    os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
-    or "http://localhost:8000"
-)
-ZEP_API_KEY = os.environ.get("ZEP_API_KEY", None)  # Required for Zep Cloud
+ZEP_API_URL = os.environ.get(
+    "ZEP_API_URL"
+)  # only required if you're using Zep Open Source
+ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
 ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION", "langchaintest")
 
 if ZEP_API_KEY is None:

@@ -17,8 +17,10 @@ from langchain_openai import ChatOpenAI
 from zep_python import ZepClient
 from zep_python.langchain import ZepVectorStore
 
-ZEP_API_KEY = os.environ.get("ZEP_API_KEY", None)  # Required for Zep Cloud
-
+ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
+ZEP_API_URL = os.environ.get(
+    "ZEP_API_URL"
+)  # only required if you're using Zep Open Source
 ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION", "langchaintest")
 
 if ZEP_API_KEY is None:
@@ -29,6 +31,7 @@ if ZEP_API_KEY is None:
 
 zep = ZepClient(
     api_key=ZEP_API_KEY,
+    api_url=ZEP_API_URL,  # only required if you're using Zep Open Source
 )
 
 # Initialize ZepVectorStore
