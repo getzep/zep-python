@@ -119,3 +119,6 @@ To run the message history chain, follow these steps:
    This will take you to the playground where you can interact with the RAG Vector Store chain.
    Please note that you need to have the server running and accessible at `localhost:8050` for this to work.
 
+   This RAG pipeline is based on the article https://www.theguardian.com/environment/2023/sep/28/plastic-eating-bacteria-enzyme-recycling-waste.
+
+   Try asking "Which sample did they place under a microscope?"
