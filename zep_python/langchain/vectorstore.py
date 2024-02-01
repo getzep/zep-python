@@ -162,7 +162,6 @@ class ZepVectorStore(VectorStore):
         k: int = 3,
         **kwargs: Any,
     ) -> List[Document]:
-        print("inside of vector store search")
         """Return docs most similar to query using specified search type."""
         if search_type == "similarity":
             return self.similarity_search(
@@ -186,7 +185,6 @@ class ZepVectorStore(VectorStore):
         k: int = 3,
         **kwargs: Any,
     ) -> List[Document]:
-        print("inside of vector store asearch")
         """Return docs most similar to query using specified search type."""
         if search_type == "similarity":
             return await self.asimilarity_search(
@@ -326,7 +324,6 @@ class ZepVectorStore(VectorStore):
         lambda_mult: float = 0.5,
         metadata_filter: Optional[Dict[str, Any]] = None,
     ) -> List[Document]:
-        print("inside of vector store max_marginal_relevance_search")
         """Return docs selected using the maximal marginal relevance reranking.
 
         Maximal marginal relevance optimizes for similarity to query AND diversity
@@ -354,7 +351,6 @@ class ZepVectorStore(VectorStore):
             raise ValueError(
                 "collection should be an instance of a Zep DocumentCollection"
             )
-        print("before search")
         results = self._collection.search(
             query,
             limit=k,
@@ -362,7 +358,6 @@ class ZepVectorStore(VectorStore):
             search_type="mmr",
             mmr_lambda=lambda_mult,
         )
-        print("after search")
 
         return [
             Document(page_content=d.content, metadata=d.metadata or {}) for d in results
