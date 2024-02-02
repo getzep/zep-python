@@ -63,6 +63,4 @@ chain = RunnableWithMessageHistory(
     ),
     input_messages_key="question",
     history_messages_key="chat_history",
-).with_config(
-    callbacks=[ConsoleCallbackHandler()]
-)
+).with_config(callbacks=[ConsoleCallbackHandler()])

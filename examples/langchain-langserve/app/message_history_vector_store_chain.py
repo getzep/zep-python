@@ -131,6 +131,8 @@ def invoke_chain(user_input: UserInput):
     )
 
 
-chain = RunnableLambda(invoke_chain).with_types(input_type=UserInput).with_config(
-    callbacks=[ConsoleCallbackHandler()]
+chain = (
+    RunnableLambda(invoke_chain)
+    .with_types(input_type=UserInput)
+    .with_config(callbacks=[ConsoleCallbackHandler()])
 )
