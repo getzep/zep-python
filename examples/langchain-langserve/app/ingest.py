@@ -10,7 +10,7 @@ from zep_python.langchain.vectorstore import ZepVectorStore
 
 load_dotenv()
 
-SOURCE = "https://www.theguardian.com/environment/2023/sep/28/plastic-eating-bacteria-enzyme-recycling-waste"  # noqa: E501
+SOURCE = "https://en.wikipedia.org/wiki/Leonard_Bernstein"  # noqa: E501
 
 ZEP_API_URL = os.environ.get(
     "ZEP_API_URL"

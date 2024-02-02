@@ -119,6 +119,27 @@ To run the message history chain, follow these steps:
    This will take you to the playground where you can interact with the RAG Vector Store chain.
    Please note that you need to have the server running and accessible at `localhost:8050` for this to work.
 
-   This RAG pipeline is based on the article https://www.theguardian.com/environment/2023/sep/28/plastic-eating-bacteria-enzyme-recycling-waste.
+   This RAG pipeline is based on the article https://en.wikipedia.org/wiki/Leonard_Bernstein.
 
-   Try asking "Which sample did they place under a microscope?"
+   Try asking "Who was a famous American conductor?"
+
+## Running the RAG Vector Store + Message History Chain
+
+To run the message history chain, follow these steps:
+
+1. **Start the server**
+
+   Ensure that your server is running. If it's not, start it using the appropriate command.
+
+2. **Navigate to the Playground**
+
+   Open your web browser and navigate to the following URL:
+   http://localhost:8050/message_history_vector_store/playground
+   You will need to provide a session_id and a question to the playground.
+
+   This will take you to the playground where you can interact with the RAG Vector Store chain.
+   Please note that you need to have the server running and accessible at `localhost:8050` for this to work.
+
+   This RAG pipeline is based on the article https://en.wikipedia.org/wiki/Leonard_Bernstein.
+
+   Try asking "Who was a famous American conductor?" and then having a conversation about Leonard Bernstein's biography. You should be able to see the message history along with the summary in zep portal's session details page.
