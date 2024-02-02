@@ -7,11 +7,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel
-from langchain_core.runnables import (
-    ConfigurableField,
-    RunnableParallel,
-    RunnableLambda
-)
+from langchain_core.runnables import ConfigurableField, RunnableLambda, RunnableParallel
 from langchain_core.runnables.utils import ConfigurableFieldSingleOption
 from langchain_openai import ChatOpenAI
 
@@ -91,12 +87,14 @@ def _combine_documents(
     doc_strings = [format_document(doc, document_prompt) for doc in docs]
     return document_separator.join(doc_strings)
 
-extract_question = RunnableLambda(
-    lambda x: x["question"]
-)
+
+extract_question = RunnableLambda(lambda x: x["question"])
 
 _inputs = RunnableParallel(
-    {"question": lambda x: x["question"], "context": extract_question | retriever | _combine_documents},
+    {
+        "question": lambda x: x["question"],
+        "context": extract_question | retriever | _combine_documents,
+    },
 ).with_types(input_type=UserInput)
 
 chain = _inputs | answer_prompt | ChatOpenAI() | StrOutputParser()
