@@ -831,6 +831,7 @@ class MemoryClient:
         """
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
+
         params = {"lastNMessages": last_n}
         response = self.client.get(
             f"/sessions/{session_id}/synthesize_question", params=params

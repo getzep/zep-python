@@ -30,7 +30,7 @@ zep = ZepClient(
 )
 
 # RAG answer synthesis prompt
-template = """I want you to answer to the following question, concisely to the best of your ability:"""
+template = """Answer the user's question below. Be polite and helpful:"""
 ANSWER_PROMPT = ChatPromptTemplate.from_messages(
     [
         ("system", template),

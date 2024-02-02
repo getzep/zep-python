@@ -33,13 +33,13 @@ zep = ZepClient(
 loader = WebBaseLoader(SOURCE)
 data = loader.load()
 
-print("Loaded", len(data), "documents")
+print(f"Loaded: {len(data)} documents")
 
 # Split
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=200)
 all_splits = text_splitter.split_documents(data)
 
-print("Split", len(all_splits), "documents")
+print(f"Adding {len(all_splits)} documents to {ZEP_COLLECTION_NAME}...")
 
 # Add to vectorDB
 vectorstore = ZepVectorStore.from_documents(
@@ -48,4 +48,4 @@ vectorstore = ZepVectorStore.from_documents(
     zep_client=zep,
 )
 
-print("Added", len(all_splits), "documents to vectorDB")
+print(f"Added {len(all_splits)} documents to {ZEP_COLLECTION_NAME}...")

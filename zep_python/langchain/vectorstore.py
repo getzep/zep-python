@@ -351,6 +351,7 @@ class ZepVectorStore(VectorStore):
             raise ValueError(
                 "collection should be an instance of a Zep DocumentCollection"
             )
+
         results = self._collection.search(
             query,
             limit=k,
