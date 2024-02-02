@@ -1,6 +1,7 @@
 import os
 from typing import List
 
+from langchain.callbacks.tracers import ConsoleCallbackHandler
 from langchain.schema import format_document
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
@@ -130,4 +131,6 @@ def invoke_chain(user_input: UserInput):
     )
 
 
-chain = RunnableLambda(invoke_chain).with_types(input_type=UserInput)
+chain = RunnableLambda(invoke_chain).with_types(input_type=UserInput).with_config(
+    callbacks=[ConsoleCallbackHandler()]
+)

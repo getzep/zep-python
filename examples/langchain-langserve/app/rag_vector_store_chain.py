@@ -1,6 +1,7 @@
 import os
 from typing import List
 
+from langchain.callbacks.tracers import ConsoleCallbackHandler
 from langchain.schema import format_document
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
@@ -97,4 +98,6 @@ _inputs = RunnableParallel(
     },
 ).with_types(input_type=UserInput)
 
-chain = _inputs | answer_prompt | ChatOpenAI() | StrOutputParser()
+chain = (_inputs | answer_prompt | ChatOpenAI() | StrOutputParser()).with_config(
+    callbacks=[ConsoleCallbackHandler()]
+)

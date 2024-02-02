@@ -1,6 +1,7 @@
 import os
 from typing import List, Tuple
 
+from langchain.callbacks.tracers import ConsoleCallbackHandler
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.pydantic_v1 import BaseModel, Field
@@ -62,4 +63,6 @@ chain = RunnableWithMessageHistory(
     ),
     input_messages_key="question",
     history_messages_key="chat_history",
+).with_config(
+    callbacks=[ConsoleCallbackHandler()]
 )
