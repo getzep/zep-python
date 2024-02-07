@@ -47,7 +47,7 @@ def main() -> None:
             sessions = client.user.get_sessions(user_id)
             print(f"Sessions for user {user_id}:")
             for session in sessions:
-                print(session.dict(exclude_unset=True), "\n")
+                print(session.model_dump(exclude_unset=True), "\n")
         except APIError as e:
             print(f"Failed to list sessions for user {user_id}: {e}")
 

@@ -16,7 +16,7 @@ ZEP_API_URL = os.environ.get(
     "ZEP_API_URL"
 )  # only required if you're using Zep Open Source
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
-ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION", "langchaintest")
+ZEP_COLLECTION_NAME = "leobernstein"
 
 if ZEP_API_KEY is None:
     raise ValueError(
