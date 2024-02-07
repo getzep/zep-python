@@ -45,3 +45,38 @@ pip install zep-python
 ```bash
 poetry add zep-python
 ```
+
+## Zep cloud Installation
+In order to install zep python sdk with zep-cloud support, you will need to install
+a release candidate version.
+
+```bash
+pip install --pre zep-python
+```
+
+-- OR --
+
+```bash
+poetry add zep-python@^2.0.0-rc
+```
+
+You will also need to provide a Zep Project API key to your zep client for cloud support.
+You can find out about zep projects in our [cloud docs](https://help.getzep.com/projects.html)
+
+### Using langchain zep classes with `zep-python`
+
+(Currently only available on release candidate versions)
+
+In the pre-release version `zep-python` sdk comes with `ZepChatMessageHistory` and `ZepVectorStore`
+classes that are compatible with [Langchain's Python expression language](https://python.langchain.com/docs/expression_language/)
+
+In order to use these classes in your application, you need to make sure that you have
+`langchain_core` package installed, please refer to [Langchain's docs installation section](https://python.langchain.com/docs/get_started/installation#langchain-core).
+
+We support `langchain_core@^0.1.3`
+
+You can import these classes in the following way:
+
+```python
+from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
+```
