@@ -91,7 +91,7 @@ class DocumentCollectionModel(BaseModel):
         ...,
         min_length=5,
         max_length=40,
-        pattern="^[a-zA-Z0-9_-]*$",
+        pattern="^[a-zA-Z0-9]*$",
     )
     description: Optional[str] = Field(default=None, max_length=1000)
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
