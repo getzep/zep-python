@@ -46,8 +46,8 @@ pip install zep-python
 poetry add zep-python
 ```
 
-## Zep cloud Installation
-In order to install zep python sdk with zep-cloud support, you will need to install
+## Zep Cloud Installation
+In order to install Zep Python SDK with Zep Cloud support, you will need to install
 a release candidate version.
 
 ```bash
@@ -61,9 +61,9 @@ poetry add zep-python@^2.0.0-rc
 ```
 
 You will also need to provide a Zep Project API key to your zep client for cloud support.
-You can find out about zep projects in our [cloud docs](https://help.getzep.com/projects.html)
+You can find out about Zep Projects in our [cloud docs](https://help.getzep.com/projects.html)
 
-### Using langchain zep classes with `zep-python`
+### Using LangChain zep classes with `zep-python`
 
 (Currently only available on release candidate versions)
 
@@ -80,3 +80,23 @@ You can import these classes in the following way:
 ```python
 from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
 ```
+
+### Running Examples
+You will need to set the following environment variables to run examples in the `examples` directory:
+
+```dotenv
+# Please use examples/.env.example as a template for .env file
+
+# Required
+ZEP_API_KEY=<zep-project-api-key># Your Zep Project API Key
+ZEP_COLLECTION=<zep-collection-name># used in ingestion script and in vector store examples
+OPENAI_API_KEY=<openai-api-key># Your OpenAI API Key
+
+# Optional (If you want to use langsmith with LangServe Sample App)
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=<your-langchain-api-key>
+LANGCHAIN_PROJECT=<your-langchain-project-name># If not specified, defaults to "default"
+```
+
+
+

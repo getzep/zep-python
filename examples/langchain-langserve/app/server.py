@@ -1,4 +1,7 @@
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(dotenv_path=find_dotenv())
+
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from langserve import add_routes
@@ -8,7 +11,6 @@ from message_history_vector_store_chain import (
 )
 from rag_vector_store_chain import chain as rag_vector_store_chain
 
-load_dotenv()
 app = FastAPI()
 
 

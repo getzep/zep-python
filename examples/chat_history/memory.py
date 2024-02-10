@@ -10,12 +10,11 @@ This script demonstrates the following functionality:
 - Searching the session memory with a metadata filter.
 - optionally deleting the session.
 """
-import os
 import time
 import uuid
 
 from chat_history import history
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 from zep_python import (
     APIError,
@@ -25,11 +24,13 @@ from zep_python import (
 from zep_python.memory import Memory, MemorySearchPayload, Session
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
+import os
 
-load_dotenv()  # load environment variables from .env file, if present
+load_dotenv(dotenv_path=find_dotenv())  # load environment variables from .env file, if present
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
 API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
+print("API_KEY", API_KEY, API_URL)
 
 
 def create_user(client, user_id):

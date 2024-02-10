@@ -27,32 +27,27 @@ Follow these steps to install the project:
 
 ## Setting Environment Variables
 
-Environment variables are used to configure the application. Some of these are required for the application to run, while others are optional and can be used to enable additional features or change the default behavior.
+You will need to set the following environment variables to run the LangServe Sample App:
 
-1. **Required Variables**
+```dotenv
+# Please use examples/.env.example as a template for .env file
 
-   These variables must be set for the application to run:
+# Required
+ZEP_API_KEY=<zep-project-api-key># Your Zep Project API Key
+ZEP_COLLECTION=<zep-collection-name># used in ingestion script and in vector store examples
+OPENAI_API_KEY=<openai-api-key># Your OpenAI API Key
 
-   ```shell
-   export OPENAI_API_KEY=<your-openai-api-key>
-   export ZEP_API_KEY=<your-zep-project-api-key>
-   ```
-
-2. **Optional Variables**
-
-   These variables are not required, but can be set to enable langserve:
-
-   ```shell
-   export LANGCHAIN_TRACING_V2=true
-   export LANGCHAIN_API_KEY=<your-langchain-api-key>
-   export LANGCHAIN_PROJECT=<your-project-name>  # If not specified, defaults to "default"
-   ```
+# Optional (If you want to use langsmith with LangServe Sample App)
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=<your-langchain-api-key>
+LANGCHAIN_PROJECT=<your-langchain-project-name># If not specified, defaults to "default"
+```
 
 ## Data Ingestion
 
 The ingest.py script is used to create collections and populate them with documents from the article. To run this script, use the following command:
 
-```
+```bash
 python app/ingest.py
 ```
 
@@ -60,7 +55,7 @@ python app/ingest.py
 
 To start the server, navigate to the application directory and run the following command:
 
-```python
+```bash
 python app/server.py
 ```
 
@@ -142,4 +137,4 @@ To run the message history chain, follow these steps:
 
    This RAG pipeline is based on the article https://en.wikipedia.org/wiki/Leonard_Bernstein.
 
-   Try asking "Who was a famous American conductor?" and then having a conversation about Leonard Bernstein's biography. You should be able to see the message history along with the summary in zep portal's session details page.
+   Try asking "Who was a famous American conductor?" and then having a conversation about Leonard Bernstein's biography. You should be able to see the message history along with the summary in Zep Portal's session details page.
