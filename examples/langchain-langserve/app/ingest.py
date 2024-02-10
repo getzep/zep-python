@@ -1,14 +1,14 @@
 # Ingest Documents into a Zep Collection
 import os
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import WebBaseLoader
 
 from zep_python import ZepClient
 from zep_python.langchain.vectorstore import ZepVectorStore
 
-load_dotenv()
+load_dotenv(dotenv_path=find_dotenv())
 
 SOURCE = "https://en.wikipedia.org/wiki/Leonard_Bernstein"  # noqa: E501
 
