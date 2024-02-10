@@ -1,5 +1,5 @@
-from fastapi import FastAPI
 from dotenv import load_dotenv
+from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from langserve import add_routes
 from message_history_chain import chain as message_history_chain

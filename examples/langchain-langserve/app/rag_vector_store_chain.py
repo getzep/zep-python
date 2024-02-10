@@ -21,9 +21,7 @@ ZEP_API_URL = os.environ.get(
 
 ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION")
 if ZEP_COLLECTION_NAME is None:
-    raise ValueError(
-        "ZEP_COLLECTION_NAME is required for ingestion. "
-    )
+    raise ValueError("ZEP_COLLECTION_NAME is required for ingestion. ")
 
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
 if ZEP_API_KEY is None:
