@@ -3,7 +3,7 @@ import os
 import uuid
 
 from chat_history import history
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 from zep_python import (
     APIError,
@@ -14,7 +14,9 @@ from zep_python.memory import Memory, Session
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
 
-load_dotenv(dotenv_path=find_dotenv())  # load environment variables from .env file, if present
+load_dotenv(
+    dotenv_path=find_dotenv()
+)  # load environment variables from .env file, if present
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
 API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
