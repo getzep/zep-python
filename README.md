@@ -68,7 +68,7 @@ You can find out about Zep Projects in our [cloud docs](https://help.getzep.com/
 (Currently only available on release candidate versions)
 
 In the pre-release version `zep-python` sdk comes with `ZepChatMessageHistory` and `ZepVectorStore`
-classes that are compatible with [Langchain's Python expression language](https://python.langchain.com/docs/expression_language/)
+classes that are compatible with [LangChain's Python expression language](https://python.langchain.com/docs/expression_language/)
 
 In order to use these classes in your application, you need to make sure that you have
 `langchain_core` package installed, please refer to [Langchain's docs installation section](https://python.langchain.com/docs/get_started/installation#langchain-core).
