@@ -63,7 +63,7 @@ poetry add zep-python@^2.0.0-rc
 You will also need to provide a Zep Project API key to your zep client for cloud support.
 You can find out about Zep Projects in our [cloud docs](https://help.getzep.com/projects.html)
 
-### Using LangChain zep classes with `zep-python`
+### Using LangChain Zep Classes with `zep-python`
 
 (Currently only available on release candidate versions)
 
@@ -73,7 +73,7 @@ classes that are compatible with [Langchain's Python expression language](https:
 In order to use these classes in your application, you need to make sure that you have
 `langchain_core` package installed, please refer to [Langchain's docs installation section](https://python.langchain.com/docs/get_started/installation#langchain-core).
 
-We support `langchain_core@^0.1.3`
+We support `langchain_core@>=0.1.3<0.2.0`
 
 You can import these classes in the following way:
 
