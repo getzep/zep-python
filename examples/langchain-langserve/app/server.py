@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from dotenv import load_dotenv
 from fastapi.responses import RedirectResponse
 from langserve import add_routes
 from message_history_chain import chain as message_history_chain
@@ -7,6 +8,7 @@ from message_history_vector_store_chain import (
 )
 from rag_vector_store_chain import chain as rag_vector_store_chain
 
+load_dotenv()
 app = FastAPI()
 
 

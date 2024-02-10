@@ -15,13 +15,18 @@ SOURCE = "https://en.wikipedia.org/wiki/Leonard_Bernstein"  # noqa: E501
 ZEP_API_URL = os.environ.get(
     "ZEP_API_URL"
 )  # only required if you're using Zep Open Source
-ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
-ZEP_COLLECTION_NAME = "leobernstein"
 
+ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
 if ZEP_API_KEY is None:
     raise ValueError(
         "ZEP_API_KEY is required for Zep Cloud. "
         "Remove this check if using Zep Open Source."
+    )
+
+ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION")
+if ZEP_COLLECTION_NAME is None:
+    raise ValueError(
+        "ZEP_COLLECTION_NAME is required for ingestion. "
     )
 
 zep = ZepClient(
