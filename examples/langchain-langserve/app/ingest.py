@@ -1,28 +1,31 @@
 # Ingest Documents into a Zep Collection
 import os
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import WebBaseLoader
 
 from zep_python import ZepClient
 from zep_python.langchain.vectorstore import ZepVectorStore
 
-load_dotenv()
+load_dotenv(dotenv_path=find_dotenv())
 
 SOURCE = "https://en.wikipedia.org/wiki/Leonard_Bernstein"  # noqa: E501
 
 ZEP_API_URL = os.environ.get(
     "ZEP_API_URL"
 )  # only required if you're using Zep Open Source
-ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
-ZEP_COLLECTION_NAME = "leobernstein"
 
+ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
 if ZEP_API_KEY is None:
     raise ValueError(
         "ZEP_API_KEY is required for Zep Cloud. "
         "Remove this check if using Zep Open Source."
     )
+
+ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION")
+if ZEP_COLLECTION_NAME is None:
+    raise ValueError("ZEP_COLLECTION_NAME is required for ingestion. ")
 
 zep = ZepClient(
     api_key=ZEP_API_KEY,

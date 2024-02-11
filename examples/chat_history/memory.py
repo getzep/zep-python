@@ -15,7 +15,7 @@ import time
 import uuid
 
 from chat_history import history
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 from zep_python import (
     APIError,
@@ -26,10 +26,13 @@ from zep_python.memory import Memory, MemorySearchPayload, Session
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
 
-load_dotenv()  # load environment variables from .env file, if present
+load_dotenv(
+    dotenv_path=find_dotenv()
+)  # load environment variables from .env file, if present
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
 API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
+print("API_KEY", API_KEY, API_URL)
 
 
 def create_user(client, user_id):
@@ -107,7 +110,9 @@ def get_memory_from_session(client, session_id):
     try:
         while memory.summary is None:
             memory = client.memory.get_memory(session_id, "perpetual")
-            time.sleep(0.5)
+            time.sleep(1)
+
+        time.sleep(10)
 
         print(f"Summary: {memory.summary.content}")
         for message in memory.messages:

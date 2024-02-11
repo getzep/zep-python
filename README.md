@@ -45,3 +45,58 @@ pip install zep-python
 ```bash
 poetry add zep-python
 ```
+
+## Zep Cloud Installation
+In order to install Zep Python SDK with Zep Cloud support, you will need to install
+a release candidate version.
+
+```bash
+pip install --pre zep-python
+```
+
+-- OR --
+
+```bash
+poetry add zep-python@^2.0.0-rc
+```
+
+You will also need to provide a Zep Project API key to your zep client for cloud support.
+You can find out about Zep Projects in our [cloud docs](https://help.getzep.com/projects.html)
+
+### Using LangChain Zep Classes with `zep-python`
+
+(Currently only available on release candidate versions)
+
+In the pre-release version `zep-python` sdk comes with `ZepChatMessageHistory` and `ZepVectorStore`
+classes that are compatible with [LangChain's Python expression language](https://python.langchain.com/docs/expression_language/)
+
+In order to use these classes in your application, you need to make sure that you have
+`langchain_core` package installed, please refer to [Langchain's docs installation section](https://python.langchain.com/docs/get_started/installation#langchain-core).
+
+We support `langchain_core@>=0.1.3<0.2.0`
+
+You can import these classes in the following way:
+
+```python
+from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
+```
+
+### Running Examples
+You will need to set the following environment variables to run examples in the `examples` directory:
+
+```dotenv
+# Please use examples/.env.example as a template for .env file
+
+# Required
+ZEP_API_KEY=<zep-project-api-key># Your Zep Project API Key
+ZEP_COLLECTION=<zep-collection-name># used in ingestion script and in vector store examples
+OPENAI_API_KEY=<openai-api-key># Your OpenAI API Key
+
+# Optional (If you want to use langsmith with LangServe Sample App)
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=<your-langchain-api-key>
+LANGCHAIN_PROJECT=<your-langchain-project-name># If not specified, defaults to "default"
+```
+
+
+
