@@ -110,7 +110,9 @@ def get_memory_from_session(client, session_id):
     try:
         while memory.summary is None:
             memory = client.memory.get_memory(session_id, "perpetual")
-            time.sleep(0.5)
+            time.sleep(1)
+
+        time.sleep(10)
 
         print(f"Summary: {memory.summary.content}")
         for message in memory.messages:
