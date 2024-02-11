@@ -13,7 +13,7 @@ To get started with the installation, follow these steps:
    Haven't got Poetry on your machine yet? You can install it by following the instructions on the [Poetry website](https://python-poetry.org/docs/#installation).
 
 2. **Create the Poetry Environment and Install Dependencies**
-    Run the command below to create a new virtual environment for the project:
+    Run the command below to create a new virtual environment for the project and install dependencies:
     ```bash
     poetry install
     ```
