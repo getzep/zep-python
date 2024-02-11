@@ -22,7 +22,7 @@ To get started with the installation, follow these steps:
 
     Use the following command to activate the Poetry environment.
     ```bash
-    poetry install
+    poetry shell
     ```
 
 
