@@ -57,7 +57,7 @@ pip install --pre zep-python
 -- OR --
 
 ```bash
-poetry add zep-python@^2.0.0-rc
+poetry add zep-python@^2.0.0rc
 ```
 
 You will also need to provide a Zep Project API key to your zep client for cloud support.
