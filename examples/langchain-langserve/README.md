@@ -1,58 +1,54 @@
-# langserve-sample
+# LangServe Example
+
+This README provides a comprehensive guide to setting up and running the Zep LangServe Example project.
 
 ## Installation
 
-This project uses [Poetry](https://python-poetry.org/) for dependency management.
+This project uses [Poetry](https://python-poetry.org/) for managing dependencies.
 
-Follow these steps to install the project:
+To get started with the installation, follow these steps:
 
 1. **Install Poetry**
 
-   If you haven't installed Poetry yet, you can do so by following the instructions on the [official Poetry website](https://python-poetry.org/docs/#installation).
+   Haven't got Poetry on your machine yet? You can install it by following the instructions on the [Poetry website](https://python-poetry.org/docs/#installation).
 
-2. **Activate the Poetry environment**
-
-    Use the following command to create a new virtual environment for the project:
-    ```bash
-    poetry shell
-    ```
-
-3. **Install environment dependencies**
-
-    Use the following command to install the projects dependencies
+2. **Create the Poetry Environment and Install Dependencies**
+    Run the command below to create a new virtual environment for the project and install dependencies:
     ```bash
     poetry install
     ```
 
+3. **Activate the Poetry Environment**
 
-## Setting Environment Variables
+    Use the following command to activate the Poetry environment.
+    ```bash
+    poetry shell
+    ```
 
-Environment variables are used to configure the application. Some of these are required for the application to run, while others are optional and can be used to enable additional features or change the default behavior.
 
-1. **Required Variables**
+## Setting Up Environment Variables
 
-   These variables must be set for the application to run:
+To run the LangServe Sample App, please set the following environment variables:
 
-   ```shell
-   export OPENAI_API_KEY=<your-openai-api-key>
-   export ZEP_API_KEY=<your-zep-project-api-key>
-   ```
+```dotenv
+# Please use examples/.env.example as a template for .env file
 
-2. **Optional Variables**
+# Required
+ZEP_API_KEY=<zep-project-api-key># Your Zep Project API Key
+ZEP_COLLECTION=<zep-collection-name># used in ingestion script and in vector store examples
+OPENAI_API_KEY=<openai-api-key># Your OpenAI API Key
 
-   These variables are not required, but can be set to enable langserve:
-
-   ```shell
-   export LANGCHAIN_TRACING_V2=true
-   export LANGCHAIN_API_KEY=<your-langchain-api-key>
-   export LANGCHAIN_PROJECT=<your-project-name>  # If not specified, defaults to "default"
-   ```
+# Optional (If you want to use langsmith with LangServe Sample App)
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=<your-langchain-api-key>
+LANGCHAIN_PROJECT=<your-langchain-project-name># If not specified, defaults to "default"
+```
 
 ## Data Ingestion
 
-The ingest.py script is used to create collections and populate them with documents from the article. To run this script, use the following command:
+The `ingest.py` script creates Document Collections and populates them with content from a web article. To use this script, simply run the following command:
 
-```
+```bash
 python app/ingest.py
 ```
 
@@ -60,7 +56,7 @@ python app/ingest.py
 
 To start the server, navigate to the application directory and run the following command:
 
-```python
+```bash
 python app/server.py
 ```
 
@@ -68,7 +64,7 @@ This will start the server and listen for incoming connections.
 
 ## Running the Message History Chain
 
-The `memory.py` script is used to create a session and populate it with a series of messages.
+The `memory.py` script is used to create a session and populate it with a series of Messages.
 
 1. **Execute the script**
 
@@ -77,69 +73,67 @@ The `memory.py` script is used to create a session and populate it with a series
    ```
 
 2. **Copy the Session ID**
-   After running the script, you'll see an output similar to the following:
+   Once you've executed the script, you'll see an output that looks something like this:
 
    ```bash
    ---Add Memory for Session: 0d1c45eaa52b4a2ba51988329c07e2eb
    ```
-   The alphanumeric string after "Session:" is your Session ID. You'll need to copy this for future use.
+   The alphanumeric sequence following "Session:" is your Session ID. Make sure to copy it for later use.
 
-   You will use this Session Id in your langserve playground.
+   This Session ID will be needed when you're working in the LangServe Playground.
 
 
 ## Running the Message History Chain
 
-To run the message history chain, follow these steps:
+Here's how to get the Message History chain up and running:
 
-1. **Start the server**
+1. **Start the Server**
 
-   Ensure that your server is running. If it's not, start it using the appropriate command.
+   First, make sure your server is up and running. If it isn't, start it with the command provided in the setup instructions.
 
-2. **Navigate to the Playground**
+2. **Head to the Playground**
 
-   Open your web browser and navigate to the following URL:
+   Next, open your web browser and go to:
    http://localhost:8050/message_history/playground
 
-   This will take you to the playground where you can interact with the message history chain.
-   Please note that you need to have the server running and accessible at `localhost:8050` for this to work.
+   You'll land on the playground page, where you can start interacting with the Message History chain. 
+   Just a heads-up, you'll need the server to be live and reachable at `http://localhost:8050` for this to work.
 
 ## Running the RAG Vector Store Chain
 
-To run the message history chain, follow these steps:
+To get the RAG Vector Store chain up and running, follow these steps:
 
-1. **Start the server**
+1. **Start the Server**
 
-   Ensure that your server is running. If it's not, start it using the appropriate command.
+   Make sure your server is up and running. If not, start it with the command provided in the setup instructions.
 
-2. **Navigate to the Playground**
+2. **Head to the Playground**
 
-   Open your web browser and navigate to the following URL:
+   Pop open your web browser and navigate to:
    http://localhost:8050/rag_vector_store/playground
 
-   This will take you to the playground where you can interact with the RAG Vector Store chain.
-   Please note that you need to have the server running and accessible at `localhost:8050` for this to work.
+   You'll land in the playground, ready to interact with the RAG Vector Store chain. Remember, your server needs to be live and accessible at `http://localhost:8050` for this to work.
 
-   This RAG pipeline is based on the article https://en.wikipedia.org/wiki/Leonard_Bernstein.
+   This RAG uses the content we ingested above, which is an article on Leonard Bernstein found here: https://en.wikipedia.org/wiki/Leonard_Bernstein.
 
-   Try asking "Who was a famous American conductor?"
+   Try asking: "Who was a famous American conductor?"
 
 ## Running the RAG Vector Store + Message History Chain
 
-To run the message history chain, follow these steps:
+To get the message history chain up and running, just follow these simple steps:
 
-1. **Start the server**
+1. **Start the Server**
 
-   Ensure that your server is running. If it's not, start it using the appropriate command.
+   Make sure your server is up and running. If not, go ahead and start it with the command provided in the setup instructions.
 
-2. **Navigate to the Playground**
+2. **Head to the Playground**
 
-   Open your web browser and navigate to the following URL:
+   Launch your web browser and head over to:
    http://localhost:8050/message_history_vector_store/playground
-   You will need to provide a session_id and a question to the playground.
+   Here, you'll need to input a Session ID and a question into the playground.
 
-   This will take you to the playground where you can interact with the RAG Vector Store chain.
-   Please note that you need to have the server running and accessible at `localhost:8050` for this to work.
+   This step will bring you to the playground, where you can interact with the RAG Vector Store chain. Remember, your server needs to be live and reachable at `http://localhost:8050` for this to work.
 
-   This RAG pipeline is based on the article https://en.wikipedia.org/wiki/Leonard_Bernstein.
+   This RAG uses the content we ingested above, which is an article on Leonard Bernstein found here: https://en.wikipedia.org/wiki/Leonard_Bernstein.
 
-   Try asking "Who was a famous American conductor?" and then having a conversation about Leonard Bernstein's biography. You should be able to see the message history along with the summary in zep portal's session details page.
+   Give it a try by asking, "Who was a famous American conductor?" Then, dive into a conversation about Leonard Bernstein's life. You'll be able to view the message history and the summary in the [Zep web app's](https://app.getzep.com/) session details page.

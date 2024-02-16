@@ -28,7 +28,7 @@ jobs:
       - name: Compare pyproject version with tag
         run: |
           TAG_VERSION=${GITHUB_REF#refs/tags/}
-          if [ "$TAG_VERSION" != "$(poetry version --short)" ]; then
+          if [ "$TAG_VERSION" != "v$(poetry version --short)" ]; then
             echo "Tag version $TAG_VERSION does not match the project version $(poetry version --short)"
             exit 1
           fi
