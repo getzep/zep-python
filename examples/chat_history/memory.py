@@ -132,6 +132,8 @@ def search_memory(client, session_id, search_payload: MemorySearchPayload):
 
 
 def delete_session(client, session_id):
+    print("Sleeping for 5 seconds before deleting session")
+    time.sleep(5)
     try:
         result = client.memory.delete_memory(session_id)
         print(f"Memory deleted: {result}")
@@ -202,8 +204,9 @@ def main() -> None:
     # Delete Memory for session
     # Uncomment to run
     # print(f"\n5---deleteMemory for Session: {session_id}")
-    # delete_memory_from_session(client, session_id)
+    delete_session(client, session_id)
 
 
 if __name__ == "__main__":
     main()
+# """
