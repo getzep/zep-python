@@ -328,7 +328,7 @@ class MemoryClient:
         name: str,
         classes: List[str],
         last_n: Optional[int] = None,
-        persist: Optional[bool] = None,
+        persist: Optional[bool] = True,
     ) -> ClassifySessionResponse:
         """
         Classify the session with the specified ID. Asynchronous version.
@@ -394,7 +394,7 @@ class MemoryClient:
         name: str,
         classes: List[str],
         last_n: Optional[int] = None,
-        persist: Optional[bool] = None,
+        persist: Optional[bool] = True,
     ) -> ClassifySessionResponse:
         """
         Classify the session with the specified ID.
