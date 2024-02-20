@@ -14,9 +14,9 @@ import os
 import time
 import uuid
 
-from chat_history import history
 from dotenv import find_dotenv, load_dotenv
 
+from chat_history import history
 from zep_python import (
     APIError,
     NotFoundError,
@@ -178,6 +178,13 @@ def main() -> None:
     print("\n---Synthesize a question from most recent messages")
     question = client.memory.synthesize_question(session_id, last_n=3)
     print(f"Question: {question}")
+
+    # Classify the session.
+    # Useful for semantic routing, filtering, and many other use cases.
+    print("\n---Classify the session")
+    classes = ["health", "history", "science", "travel", "other"]
+    classification = client.memory.classify_session(session_id, "topic", classes)
+    print(f"Classification: {classification}")
 
     # Search Memory for session
     query = "Can you name some popular destinations in Iceland?"

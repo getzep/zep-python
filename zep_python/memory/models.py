@@ -188,3 +188,45 @@ class Question(BaseModel):
     """
 
     question: str
+
+
+class ClassifySessionRequest(BaseModel):
+    """
+    Represents a request to classify a session.
+
+    Attributes
+    ----------
+    session_id : str
+        The unique identifier of the session.
+    name : str
+        The name of the classifier. e.g. "emotion" or "intent". This will be used to
+        store the classification in session metadata if persist is True.
+    classes : List[str]
+        A list of classes to classify the session into.
+    last_n : Optional[int]
+        The number of session messages to consider for classification. Defaults to 4.
+    persist : Optional[bool]
+        Whether to persist the classification to session metadata. Defaults to True.
+    """
+
+    session_id: str
+    name: str
+    classes: List[str]
+    last_n: Optional[int] = None
+    persist: Optional[bool] = True
+
+
+class ClassifySessionResponse(BaseModel):
+    """
+    Represents a response to classify a session.
+
+    Attributes
+    ----------
+    name : str
+        The name of the class list. e.g. "emotion" or "intent".
+    class_ : str
+        The class the session was classified into.
+    """
+
+    name: str
+    class_: str = Field(alias="class")
