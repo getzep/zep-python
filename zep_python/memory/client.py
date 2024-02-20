@@ -14,6 +14,8 @@ from zep_python.memory.models import (
     SearchScope,
     Session,
     Summary,
+    ClassifySessionRequest,
+    ClassifySessionResponse,
 )
 from zep_python.message.models import Message
 from zep_python.utils import SearchType
@@ -319,6 +321,138 @@ class MemoryClient:
         handle_response(response, f"Failed to update session {session.session_id}")
 
         return Session.model_validate(response.json())
+
+    async def aclassify_session(
+        self,
+        session_id: str,
+        name: str,
+        classes: List[str],
+        last_n: Optional[int] = None,
+        persist: Optional[bool] = True,
+    ) -> ClassifySessionResponse:
+        """
+        Classify the session with the specified ID. Asynchronous version.
+
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session to classify.
+        name : str
+            The name of the classifier. Will be used to store the classification in
+            session metadata if persist is True.
+        classes : List[str]
+            The classes to use for classification.
+        last_n : Optional[int], optional
+            The number of session messages to consider for classification.
+            Defaults to 4.
+        persist : Optional[bool], optional
+            Whether to persist the classification to session metadata.
+            Defaults to True.
+
+        Returns
+        -------
+        ClassifySessionResponse
+            A response object containing the name of the classifier.
+
+        Raises
+        ------
+        NotFoundError
+            If the session with the specified ID is not found.
+        ValueError
+            If required values are not provided or are invalid.
+        APIError
+            If the API response format is unexpected.
+        """
+        if session_id is None or session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        if name is None or name.strip() == "":
+            raise ValueError("name must be provided")
+
+        if classes is None or len(classes) == 0:
+            raise ValueError("classes must be provided")
+
+        request = ClassifySessionRequest(
+            session_id=session_id,
+            name=name,
+            classes=classes,
+            last_n=last_n,
+            persist=persist,
+        )
+
+        response = await self.aclient.post(
+            f"/sessions/{session_id}/classify",
+            json=request.model_dump(exclude_none=True, exclude_unset=True),
+        )
+        handle_response(response)
+
+        return ClassifySessionResponse(**response.json())
+
+    def classify_session(
+        self,
+        session_id: str,
+        name: str,
+        classes: List[str],
+        last_n: Optional[int] = None,
+        persist: Optional[bool] = True,
+    ) -> ClassifySessionResponse:
+        """
+        Classify the session with the specified ID.
+
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session to classify.
+        name : str
+            The name of the classifier. Will be used to store the classification in
+            session metadata if persist is True.
+        classes : List[str]
+            The classes to use for classification.
+        last_n : Optional[int], optional
+            The number of session messages to consider for classification.
+            Defaults to 4.
+        persist : Optional[bool], optional
+            Whether to persist the classification to session metadata.
+            Defaults to True.
+
+        Returns
+        -------
+        ClassifySessionResponse
+            A response object containing the name of the classifier.
+
+        Raises
+        ------
+        NotFoundError
+            If the session with the specified ID is not found.
+        ValueError
+            If required values are not provided or are invalid.
+        APIError
+            If the API response format is unexpected.
+        """
+        if session_id is None or session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        if name is None or name.strip() == "":
+            raise ValueError("name must be provided")
+
+        if classes is None or len(classes) == 0:
+            raise ValueError("classes must be provided")
+
+        request = ClassifySessionRequest(
+            session_id=session_id,
+            name=name,
+            classes=classes,
+            last_n=last_n,
+            persist=persist,
+        )
+
+        response = self.client.post(
+            f"/sessions/{session_id}/classify",
+            json=request.model_dump(exclude_none=True, exclude_unset=True),
+        )
+        handle_response(response)
+
+        return ClassifySessionResponse(**response.json())
 
     # Memory APIs : Get a List of Sessions
     def list_sessions(

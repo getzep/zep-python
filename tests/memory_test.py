@@ -1012,3 +1012,50 @@ async def test_asynthesize_question_api_error(httpx_mock: HTTPXMock):
     async with ZepClient(**mock_auth) as client:
         with pytest.raises(APIError):
             _ = await client.memory.asynthesize_question(session_id, last_n)
+
+
+def test_classify_session(httpx_mock: HTTPXMock):
+    session_id = "abc123"
+    name = "test_classifier"
+    classes = ["class1", "class2", "class3"]
+
+    expected_response = {
+        "name": name,
+        "class": "class1",
+    }
+
+    # Add the expected response to the httpx_mock
+    httpx_mock.add_response(status_code=200, json=expected_response)
+
+    # Initialize the ZepClient
+    with ZepClient(**mock_auth) as client:
+        # Call the classify_session method
+        response = client.memory.classify_session(session_id, name, classes)
+
+        # Assert that the response is as expected
+        assert response.name == expected_response["name"]
+        assert response.class_ == expected_response["class"]
+
+
+@pytest.mark.asyncio
+async def test_aclassify_session(httpx_mock: HTTPXMock):
+    session_id = "abc123"
+    name = "test_classifier"
+    classes = ["class1", "class2", "class3"]
+
+    expected_response = {
+        "name": name,
+        "class": "class1",
+    }
+
+    # Add the expected response to the httpx_mock
+    httpx_mock.add_response(status_code=200, json=expected_response)
+
+    # Initialize the ZepClient
+    async with ZepClient(**mock_auth) as client:
+        # Call the classify_session method
+        response = await client.memory.aclassify_session(session_id, name, classes)
+
+        # Assert that the response is as expected
+        assert response.name == expected_response["name"]
+        assert response.class_ == expected_response["class"]

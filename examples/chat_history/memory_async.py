@@ -15,9 +15,9 @@ import os
 import time
 import uuid
 
-from chat_history import history
 from dotenv import find_dotenv, load_dotenv
 
+from chat_history import history
 from zep_python import (
     APIError,
     NotFoundError,
@@ -176,6 +176,13 @@ async def main() -> None:
     print("\n---Synthesize a question from most recent messages")
     question = await client.memory.asynthesize_question(session_id, last_n=3)
     print(f"Question: {question}")
+
+    # Classify the session.
+    # Useful for semantic routing, filtering, and many other use cases.
+    print("\n---Classify the session")
+    classes = ["health", "history", "science", "travel", "other"]
+    classification = await client.memory.aclassify_session(session_id, "topic", classes)
+    print(f"Classification: {classification}")
 
     # Get Memory for session
     print(f"\n---Get Memory for Session: {session_id}")
