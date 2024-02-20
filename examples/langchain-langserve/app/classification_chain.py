@@ -1,26 +1,18 @@
 import os
-from typing import List
 
 from langchain.callbacks.tracers import ConsoleCallbackHandler
-from langchain.schema import format_document
-from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.runnables import (
-    ConfigurableField,
     RunnableLambda,
-    RunnableParallel,
     RunnablePassthrough,
     RunnableBranch
 )
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_core.runnables.utils import ConfigurableFieldSingleOption
-from langchain_openai import ChatOpenAI
 
 from zep_python import ZepClient
-from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
+from zep_python.langchain import ZepChatMessageHistory
 
 from langchain_community.chat_models import ChatAnthropic
 
@@ -100,13 +92,24 @@ class UserInput(BaseModel):
     question: str
     session_id: str
 
+
+def classify_session(session_id: str):
+    result = zep.memory.classify_session(
+        session_id,
+        "tool",
+        ["langchain", "anthropic", "none"],
+        last_n=1,
+        persist=False
+    )
+    return result.class_
+
+
 def invoke_chain(user_input: UserInput):
     result_chain = RunnableWithMessageHistory(
         RunnablePassthrough.assign(session_id=lambda x: user_input["session_id"])
         | {
-            "topic": topic_classifier,
             "question": lambda x: x["question"],
-            "topic_z": lambda x: zep.memory.class,
+            "topic": lambda x: classify_session(x["session_id"]),
         } | branch,
         lambda session_id: ZepChatMessageHistory(
             session_id=session_id,
@@ -115,11 +118,12 @@ def invoke_chain(user_input: UserInput):
         ),
         input_messages_key="question",
         history_messages_key="chat_history",
-        )
+    )
 
     return result_chain.invoke(
         user_input, config={"configurable": {"session_id": user_input["session_id"]}}
     )
+
 
 chain = (
     RunnableLambda(invoke_chain)
