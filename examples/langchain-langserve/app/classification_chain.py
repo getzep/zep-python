@@ -1,20 +1,15 @@
 import os
 
 from langchain.callbacks.tracers import ConsoleCallbackHandler
+from langchain_community.chat_models import ChatAnthropic
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel
-from langchain_core.runnables import (
-    RunnableLambda,
-    RunnablePassthrough,
-    RunnableBranch
-)
+from langchain_core.runnables import RunnableBranch, RunnableLambda, RunnablePassthrough
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 from zep_python import ZepClient
 from zep_python.langchain import ZepChatMessageHistory
-
-from langchain_community.chat_models import ChatAnthropic
 
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
 ZEP_API_URL = os.environ.get(
@@ -33,35 +28,35 @@ zep = ZepClient(
 )
 
 langchain_chain = (
-        PromptTemplate.from_template(
-            """You are an expert in langchain. \
+    PromptTemplate.from_template(
+        """You are an expert in langchain. \
     Always answer questions starting with "As Harrison Chase told me". \
     Respond to the following question:
     
     Question: {question}
     Answer:"""
-        )
-        | ChatAnthropic()
+    )
+    | ChatAnthropic()
 )
 anthropic_chain = (
-        PromptTemplate.from_template(
-            """You are an expert in anthropic. \
+    PromptTemplate.from_template(
+        """You are an expert in anthropic. \
     Always answer questions starting with "As Dario Amodei told me". \
     Respond to the following question:
     
     Question: {question}
     Answer:"""
-        )
-        | ChatAnthropic()
+    )
+    | ChatAnthropic()
 )
 general_chain = (
-        PromptTemplate.from_template(
-            """Respond to the following question:
+    PromptTemplate.from_template(
+        """Respond to the following question:
     
     Question: {question}
     Answer:"""
-        )
-        | ChatAnthropic()
+    )
+    | ChatAnthropic()
 )
 
 branch = RunnableBranch(
@@ -71,8 +66,8 @@ branch = RunnableBranch(
 )
 
 topic_classifier = (
-        PromptTemplate.from_template(
-            """Given the user question below, classify it as either being about `LangChain`, `Anthropic`, or `Other`.
+    PromptTemplate.from_template(
+        """Given the user question below, classify it as either being about `LangChain`, `Anthropic`, or `Other`.
     
     Do not respond with more than one word.
     
@@ -81,9 +76,9 @@ topic_classifier = (
     </question>
     
     Classification:"""
-        )
-        | ChatAnthropic()
-        | StrOutputParser()
+    )
+    | ChatAnthropic()
+    | StrOutputParser()
 )
 
 
@@ -95,10 +90,7 @@ class UserInput(BaseModel):
 
 def classify_session(session_id: str):
     result = zep.memory.classify_session(
-        session_id,
-        "intent",
-        ["langchain", "anthropic", "none"],
-        persist=True
+        session_id, "intent", ["langchain", "anthropic", "none"], persist=True
     )
     return result.class_
 
@@ -109,7 +101,8 @@ def invoke_chain(user_input: UserInput):
         | {
             "question": lambda x: x["question"],
             "topic": lambda x: classify_session(x["session_id"]),
-        } | branch,
+        }
+        | branch,
         lambda session_id: ZepChatMessageHistory(
             session_id=session_id,
             zep_client=zep,

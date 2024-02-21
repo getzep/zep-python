@@ -1,22 +1,19 @@
 import os
-from langchain_core.output_parsers import StrOutputParser
+
+from langchain.agents import AgentExecutor, AgentType, initialize_agent, load_tools
 from langchain.callbacks.tracers import ConsoleCallbackHandler
+from langchain_community.chat_models import ChatOpenAI
+from langchain_community.tools import WikipediaQueryRun
+from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
+from langchain_community.utilities import WikipediaAPIWrapper
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel
-from langchain_core.runnables import (
-    RunnableLambda,
-    RunnablePassthrough,
-    RunnableBranch
-)
+from langchain_core.runnables import RunnableBranch, RunnableLambda, RunnablePassthrough
 from langchain_core.runnables.history import RunnableWithMessageHistory
+
 from zep_python import ZepClient
 from zep_python.langchain import ZepChatMessageHistory
-from langchain_community.utilities import WikipediaAPIWrapper
-from langchain_community.chat_models import ChatOpenAI
-from langchain.agents import AgentType, initialize_agent, AgentExecutor
-from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
-from langchain_community.tools import WikipediaQueryRun
-from langchain.agents import load_tools
 
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
 ZEP_API_URL = os.environ.get(
@@ -80,9 +77,18 @@ Answer:"""
 )
 
 branch = RunnableBranch(
-    (lambda x: "research" in x["topic"].lower(), lambda x: invoke_agent_executor(wiki_chain, x)),
-    (lambda x: "finance_news" in x["topic"].lower(), lambda x: invoke_agent_executor(yahoo_chain, x)),
-    (lambda x: "dev_question" in x["topic"].lower(), lambda x: invoke_agent_executor(stack_chain, x)),
+    (
+        lambda x: "research" in x["topic"].lower(),
+        lambda x: invoke_agent_executor(wiki_chain, x),
+    ),
+    (
+        lambda x: "finance_news" in x["topic"].lower(),
+        lambda x: invoke_agent_executor(yahoo_chain, x),
+    ),
+    (
+        lambda x: "dev_question" in x["topic"].lower(),
+        lambda x: invoke_agent_executor(stack_chain, x),
+    ),
     general_chain | StrOutputParser(),
 )
 
@@ -113,7 +119,8 @@ def invoke_chain(user_input: UserInput):
         | {
             "question": lambda x: x["question"],
             "topic": lambda x: classify_session(x["session_id"]),
-        } | branch,
+        }
+        | branch,
         lambda session_id: ZepChatMessageHistory(
             session_id=session_id,
             zep_client=zep,
