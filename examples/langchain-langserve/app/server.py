@@ -11,7 +11,7 @@ from message_history_vector_store_chain import (
 )
 from rag_vector_store_chain import chain as rag_vector_store_chain
 from classification_chain import chain as classification_chain
-
+from real_world_classification import chain as real_world_classification_chain
 app = FastAPI()
 
 
@@ -26,6 +26,7 @@ add_routes(
     app, message_history_vector_store_chain, path="/message_history_vector_store"
 )
 add_routes(app, classification_chain, path="/classification")
+add_routes(app, real_world_classification_chain, path="/real_world_classification")
 
 if __name__ == "__main__":
     import uvicorn

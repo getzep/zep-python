@@ -1,7 +1,6 @@
 import os
-
-from langchain.callbacks.tracers import ConsoleCallbackHandler
 from langchain_core.output_parsers import StrOutputParser
+from langchain.callbacks.tracers import ConsoleCallbackHandler
 from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.runnables import (
@@ -10,16 +9,44 @@ from langchain_core.runnables import (
     RunnableBranch
 )
 from langchain_core.runnables.history import RunnableWithMessageHistory
-
 from zep_python import ZepClient
 from zep_python.langchain import ZepChatMessageHistory
-
-from langchain_community.chat_models import ChatAnthropic
+from langchain_community.utilities import WikipediaAPIWrapper
+from langchain_community.chat_models import ChatOpenAI
+from langchain.agents import AgentType, initialize_agent, AgentExecutor
+from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
+from langchain_community.tools import WikipediaQueryRun
+from langchain.agents import load_tools
 
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
 ZEP_API_URL = os.environ.get(
     "ZEP_API_URL"
 )  # only required if you're using Zep Open Source
+
+llm = ChatOpenAI(temperature=0.0)
+yahoo_chain = initialize_agent(
+    [YahooFinanceNewsTool()],
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True,
+    handle_parsing_errors=True,
+)
+
+stack_chain = initialize_agent(
+    load_tools(["stackexchange"]),
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True,
+    handle_parsing_errors=True,
+)
+
+wiki_chain = initialize_agent(
+    [WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())],
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True,
+    handle_parsing_errors=True,
+)
 
 if ZEP_API_KEY is None:
     raise ValueError(
@@ -32,58 +59,31 @@ zep = ZepClient(
     api_url=ZEP_API_URL,  # only required if you're using Zep Open Source
 )
 
-langchain_chain = (
-        PromptTemplate.from_template(
-            """You are an expert in langchain. \
-    Always answer questions starting with "As Harrison Chase told me". \
-    Respond to the following question:
-    
-    Question: {question}
-    Answer:"""
-        )
-        | ChatAnthropic()
+wikipedia_search_prompt = PromptTemplate.from_template(
+    """Please answer the question based only on the following context:
+Context: {context}
+Question: {question}
+Answer:"""
 )
-anthropic_chain = (
-        PromptTemplate.from_template(
-            """You are an expert in anthropic. \
-    Always answer questions starting with "As Dario Amodei told me". \
-    Respond to the following question:
-    
-    Question: {question}
-    Answer:"""
-        )
-        | ChatAnthropic()
-)
-general_chain = (
-        PromptTemplate.from_template(
-            """Respond to the following question:
-    
-    Question: {question}
-    Answer:"""
-        )
-        | ChatAnthropic()
+
+
+def invoke_agent_executor(agent: AgentExecutor, x: any):
+    result = agent.invoke(input=x["question"])
+    return result["output"]
+
+
+general_chain = PromptTemplate.from_template(
+    """Please say that you cannot answer the question, be sarcastic:
+
+Question: {question}
+Answer:"""
 )
 
 branch = RunnableBranch(
-    (lambda x: "anthropic" in x["topic"].lower(), anthropic_chain),
-    (lambda x: "langchain" in x["topic"].lower(), langchain_chain),
-    general_chain,
-)
-
-topic_classifier = (
-        PromptTemplate.from_template(
-            """Given the user question below, classify it as either being about `LangChain`, `Anthropic`, or `Other`.
-    
-    Do not respond with more than one word.
-    
-    <question>
-    {question}
-    </question>
-    
-    Classification:"""
-        )
-        | ChatAnthropic()
-        | StrOutputParser()
+    (lambda x: "research" in x["topic"].lower(), lambda x: invoke_agent_executor(wiki_chain, x)),
+    (lambda x: "finance_news" in x["topic"].lower(), lambda x: invoke_agent_executor(yahoo_chain, x)),
+    (lambda x: "dev_question" in x["topic"].lower(), lambda x: invoke_agent_executor(stack_chain, x)),
+    general_chain | StrOutputParser(),
 )
 
 
@@ -97,8 +97,12 @@ def classify_session(session_id: str):
     result = zep.memory.classify_session(
         session_id,
         "intent",
-        ["langchain", "anthropic", "none"],
-        persist=True
+        [
+            "research",
+            "dev_question",
+            "finance_news",
+            "none",
+        ],
     )
     return result.class_
 
