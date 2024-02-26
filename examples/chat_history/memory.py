@@ -16,7 +16,7 @@ import uuid
 
 from dotenv import find_dotenv, load_dotenv
 
-from chat_history import history
+from examples.chat_history.chat_history_shoe_purchase import history
 from zep_python import (
     APIError,
     NotFoundError,

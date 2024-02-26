@@ -2,7 +2,6 @@ history = [
     {
         "role": "user",
         "content": "Hello",
-        "metadata": None,
     },
     {
         "role": "assistant",
