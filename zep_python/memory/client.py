@@ -6,6 +6,8 @@ import httpx
 
 from zep_python.exceptions import APIError, handle_response
 from zep_python.memory.models import (
+    ClassifySessionRequest,
+    ClassifySessionResponse,
     Memory,
     MemorySearchPayload,
     MemorySearchResult,
@@ -14,8 +16,6 @@ from zep_python.memory.models import (
     SearchScope,
     Session,
     Summary,
-    ClassifySessionRequest,
-    ClassifySessionResponse,
 )
 from zep_python.message.models import Message
 from zep_python.utils import SearchType

@@ -14,9 +14,9 @@ import os
 import time
 import uuid
 
+from chat_history import history
 from dotenv import find_dotenv, load_dotenv
 
-from chat_history import history
 from zep_python import (
     APIError,
     NotFoundError,
