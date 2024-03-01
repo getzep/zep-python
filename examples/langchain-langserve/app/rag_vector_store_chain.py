@@ -8,7 +8,11 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel
-from langchain_core.runnables import ConfigurableField, RunnableLambda, RunnableParallel
+from langchain_core.runnables import (
+    ConfigurableField,
+    RunnableLambda,
+    RunnableParallel,
+)
 from langchain_core.runnables.utils import ConfigurableFieldSingleOption
 from langchain_openai import ChatOpenAI
 
@@ -48,7 +52,10 @@ vectorstore = ZepVectorStore(
 retriever = vectorstore.as_retriever().configurable_fields(
     search_type=ConfigurableFieldSingleOption(
         id="search_type",
-        options={"Similarity": "similarity", "Similarity with MMR Reranking": "mmr"},
+        options={
+            "Similarity": "similarity",
+            "Similarity with MMR Reranking": "mmr",
+        },
         default="Similarity with MMR Reranking",
         name="Search Type",
         description="Type of search to perform: 'similarity' or 'mmr'",
@@ -57,8 +64,8 @@ retriever = vectorstore.as_retriever().configurable_fields(
         id="search_kwargs",
         name="Search kwargs",
         description=(
-            "Specify 'k' for number of results to return and 'lambda_mult' for tuning"
-            " MMR relevance vs diversity."
+            "Specify 'k' for number of results to return and 'lambda_mult' for"
+            " tuning MMR relevance vs diversity."
         ),
     ),
 )

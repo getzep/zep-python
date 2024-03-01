@@ -28,8 +28,8 @@ history = [
     {
         "role": "assistant",
         "content": (
-            "The best time to visit Iceland is from June to August. The weather is"
-            " milder, and you'll have more daylight for sightseeing."
+            "The best time to visit Iceland is from June to August. The weather"
+            " is milder, and you'll have more daylight for sightseeing."
         ),
     },
     {
@@ -39,9 +39,9 @@ history = [
     {
         "role": "assistant",
         "content": (
-            "Visa requirements depend on your nationality. Citizens of the Schengen"
-            " Area, the US, Canada, and several other countries can visit Iceland for"
-            " up to 90 days without a visa."
+            "Visa requirements depend on your nationality. Citizens of the"
+            " Schengen Area, the US, Canada, and several other countries can"
+            " visit Iceland for up to 90 days without a visa."
         ),
     },
     {
@@ -52,8 +52,8 @@ history = [
         "role": "assistant",
         "content": (
             "Some popular attractions include the Blue Lagoon, Golden Circle,"
-            " Reynisfjara Black Sand Beach, Gulfoss waterfall, and the Jökulsárlón"
-            " Glacier Lagoon."
+            " Reynisfjara Black Sand Beach, Gulfoss waterfall, and the"
+            " Jökulsárlón Glacier Lagoon."
         ),
     },
     {
@@ -64,8 +64,8 @@ history = [
         "role": "assistant",
         "content": (
             "Pack warm and waterproof clothing, layers for temperature changes,"
-            " comfortable walking shoes, a swimsuit for hot springs, and a camera to"
-            " capture the beautiful scenery."
+            " comfortable walking shoes, a swimsuit for hot springs, and a"
+            " camera to capture the beautiful scenery."
         ),
     },
     {
@@ -75,9 +75,9 @@ history = [
     {
         "role": "assistant",
         "content": (
-            "Renting a car is a great idea if you plan on exploring areas outside of"
-            " Reykjavik. It gives you more freedom to travel at your own pace and visit"
-            " remote locations."
+            "Renting a car is a great idea if you plan on exploring areas"
+            " outside of Reykjavik. It gives you more freedom to travel at your"
+            " own pace and visit remote locations."
         ),
     },
     {
@@ -87,9 +87,10 @@ history = [
     {
         "role": "assistant",
         "content": (
-            "Iceland can be expensive. Costs depend on factors like accommodations,"
-            " activities, and dining preferences. However, you can expect to spend"
-            " around $200-$300 per day, not including flights."
+            "Iceland can be expensive. Costs depend on factors like"
+            " accommodations, activities, and dining preferences. However, you"
+            " can expect to spend around $200-$300 per day, not including"
+            " flights."
         ),
     },
     {
@@ -99,13 +100,13 @@ history = [
     {
         "role": "assistant",
         "content": (
-            "Yes, Reykjavik has several vegetarian and vegan-friendly restaurants. In"
-            " smaller towns, you may find fewer options, but most places will have some"
-            " vegetarian dishes available."
+            "Yes, Reykjavik has several vegetarian and vegan-friendly"
+            " restaurants. In smaller towns, you may find fewer options, but"
+            " most places will have some vegetarian dishes available."
         ),
     },
     {
         "role": "user",
-        "content": ("OK, I am allergic to dairy."),
+        "content": "OK, I am allergic to dairy.",
     },
 ]

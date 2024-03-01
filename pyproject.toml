@@ -10,6 +10,7 @@ python = ">=3.9.0,<4"
 httpx = "^0.26.0"
 pydantic = ">=2.0.0"
 packaging = "^23.1"
+black = "24.2.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.3.1"
@@ -20,7 +21,7 @@ mypy = "^1.2.0"
 pytest-mock = "^3.10.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.3.0"
+black = "^24.2.0"
 ruff = ">=0.0.291"
 mypy = "^1.2.0"
 pre-commit = "^3.3.1"

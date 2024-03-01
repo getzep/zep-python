@@ -1,4 +1,5 @@
-""" Using Zep as a vector database. A simple sync example. """
+"""Using Zep as a vector database. A simple sync example."""
+
 import asyncio
 import os
 import time
