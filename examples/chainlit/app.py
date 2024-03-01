@@ -9,6 +9,8 @@ from openai import AsyncOpenAI
 from zep_python import ZepClient
 from zep_python.memory import Memory
 from zep_python.message import Message
+from examples.chat_history.chat_history_travel import history as travel_history
+from examples.chat_history.chat_history_shoe_purchase import history as sales_history
 
 load_dotenv(dotenv_path=find_dotenv())
 
@@ -50,6 +52,31 @@ async def on_chat_start():
         except Exception as e:
             raise ValueError(f"Error accessing collection {collection_name}: {e}")
 
+    if chat_profile != "Memory + RAG":
+        await cl.Message(
+            content="You can optionally populate session with some relevant messages",
+            actions=[
+                cl.Action(name="Populate Messages", value="populate_messages", description="Will populate session with relevant messages")
+            ]
+        ).send()
+
+
+
+@cl.action_callback("Populate Messages")
+async def on_action():
+    example_history = travel_history if cl.user_session.get("chat_profile") == "Memory" else sales_history
+    session_id = cl.user_session.get("id")
+    try:
+        for m in example_history:
+            message = Message(**m)
+            memory = Memory(messages=[message])
+            await zep.memory.aadd_memory(session_id, memory)
+        memory = await zep.memory.aget_memory(session_id, cl.user_session.get("memory_type"))
+        for m in memory.messages:
+            await cl.Message(author="Assistant" if m.role == "assistant" else "You", content=m.content).send()
+    except Exception as e:
+        raise ValueError(f"Error adding memory to session {session_id}: {e}")
+
 
 @cl.on_settings_update
 async def update_settings(settings):
@@ -89,26 +116,35 @@ async def synthesize_question(session_id: str):
     question = await zep.memory.asynthesize_question(session_id, last_n=3)
     return question
 
+@cl.step(name="Classify Conversation", type="tool")
+async def classify_conversation(session_id: str):
+    classes = [
+        "low spender <$50",
+        "medium spender >=$50, <$100",
+        "high spender >=$100",
+        "unknown",
+    ]
+    classification = await zep.memory.aclassify_session(
+        session_id, "spender_category", classes
+    )
+    return classification
+
 
 @cl.set_chat_profiles
 async def chat_profile():
     return [
         cl.ChatProfile(
             name="Memory",
-            markdown_description="The underlying LLM model is **GPT-3.5**.",
+            markdown_description="Basic LLM app with persistent memory.",
         ),
         cl.ChatProfile(
             name="Memory + RAG",
-            markdown_description="The underlying LLM model is **GPT-4**.",
+            markdown_description="LLM app with persistent memory and RAG context retrieval.",
         ),
         cl.ChatProfile(
             name="Classification",
-            markdown_description="The underlying LLM model is **GPT-4**.",
-        ),
-        cl.ChatProfile(
-            name="Fact Extraction",
-            markdown_description="The underlying LLM model is **GPT-4**.",
-        ),
+            markdown_description="Dialog Classification Example",
+        )
     ]
 
 
@@ -144,6 +180,8 @@ async def on_message(message: cl.Message):
         {context}
         </context>"""
         history.append({"role": "system", "content": system_prompt})
+    if cl.user_session.get("chat_profile") == "Classification":
+        classification = await classify_conversation(session_id)
     response_message = await call_openai(history)
     msg.content = response_message.content or ""
     await msg.update()
