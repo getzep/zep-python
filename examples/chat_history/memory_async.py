@@ -17,7 +17,7 @@ import uuid
 
 from dotenv import find_dotenv, load_dotenv
 
-from chat_history import history
+from examples.chat_history.chat_history_shoe_purchase import history
 from zep_python import (
     APIError,
     NotFoundError,
@@ -39,9 +39,9 @@ async def create_user(client, user_id):
     user_request = CreateUserRequest(
         user_id=user_id,
         email="user@example.com",
-        first_name="John",
-        last_name="Doe",
-        metadata={"foo": "bar"},
+        first_name="Jane",
+        last_name="Smith",
+        metadata={"vip": "true"},
     )
     try:
         user = await client.user.aadd(user_request)
@@ -113,9 +113,8 @@ async def get_memory_from_session(client, session_id):
             memory = await client.memory.aget_memory(
                 session_id, memory_type="perpetual"
             )
-            time.sleep(1)
+            time.sleep(5)
 
-        time.sleep(10)
         print(f"Summary: {memory.summary.content}")
         for message in memory.messages:
             print(f"Message: {message.to_dict()}")
@@ -180,16 +179,24 @@ async def main() -> None:
     # Classify the session.
     # Useful for semantic routing, filtering, and many other use cases.
     print("\n---Classify the session")
-    classes = ["health", "history", "science", "travel", "other"]
-    classification = await client.memory.aclassify_session(session_id, "topic", classes)
+    classes = [
+        "low spender <$50",
+        "medium spender >=$50, <$100",
+        "high spender >=$100",
+        "unknown",
+    ]
+    classification = await client.memory.aclassify_session(
+        session_id, "spender_category", classes
+    )
     print(f"Classification: {classification}")
 
     # Get Memory for session
-    print(f"\n---Get Memory for Session: {session_id}")
+    print(f"\n---Get Perpetual Memory for Session: {session_id}")
     await get_memory_from_session(client, session_id)
+    print("\n---End of Memory")
 
     # Search Memory for session
-    query = "What type of food can you eat in Iceland?"
+    query = "What are Jane's favorite show brands?"
     print(f"\n---Searching over summaries for: '{query}'")
     search_payload = MemorySearchPayload(
         text=query,

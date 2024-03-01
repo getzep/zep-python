@@ -16,7 +16,7 @@ import uuid
 
 from dotenv import find_dotenv, load_dotenv
 
-from chat_history import history
+from examples.chat_history.chat_history_shoe_purchase import history
 from zep_python import (
     APIError,
     NotFoundError,
@@ -32,7 +32,6 @@ load_dotenv(
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
 API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
-print("API_KEY", API_KEY, API_URL)
 
 
 def create_user(client, user_id):
@@ -110,9 +109,7 @@ def get_memory_from_session(client, session_id):
     try:
         while memory.summary is None:
             memory = client.memory.get_memory(session_id, "perpetual")
-            time.sleep(1)
-
-        time.sleep(10)
+            time.sleep(5)
 
         print(f"Summary: {memory.summary.content}")
         for message in memory.messages:
@@ -182,12 +179,19 @@ def main() -> None:
     # Classify the session.
     # Useful for semantic routing, filtering, and many other use cases.
     print("\n---Classify the session")
-    classes = ["health", "history", "science", "travel", "other"]
-    classification = client.memory.classify_session(session_id, "topic", classes)
+    classes = [
+        "low spender <$50",
+        "medium spender >=$50, <$100",
+        "high spender >=$100",
+        "unknown",
+    ]
+    classification = client.memory.classify_session(
+        session_id, "spender_category", classes
+    )
     print(f"Classification: {classification}")
 
     # Search Memory for session
-    query = "Can you name some popular destinations in Iceland?"
+    query = "What are Jane's favorite show brands?"
     print(f"\n---Searching over summaries for: '{query}'")
     search_payload = MemorySearchPayload(
         text=query,

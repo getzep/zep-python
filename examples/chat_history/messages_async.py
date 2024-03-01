@@ -2,9 +2,9 @@ import asyncio
 import os
 import uuid
 
-from chat_history import history
 from dotenv import find_dotenv, load_dotenv
 
+from examples.chat_history.chat_history_shoe_purchase import history
 from zep_python import (
     APIError,
     NotFoundError,
