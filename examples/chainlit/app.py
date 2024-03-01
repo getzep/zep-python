@@ -6,11 +6,11 @@ from chainlit.input_widget import Select
 from dotenv import find_dotenv, load_dotenv
 from openai import AsyncOpenAI
 
+from examples.chat_history.chat_history_shoe_purchase import history as sales_history
+from examples.chat_history.chat_history_travel import history as travel_history
 from zep_python import ZepClient
 from zep_python.memory import Memory
 from zep_python.message import Message
-from examples.chat_history.chat_history_travel import history as travel_history
-from examples.chat_history.chat_history_shoe_purchase import history as sales_history
 
 load_dotenv(dotenv_path=find_dotenv())
 
@@ -56,24 +56,36 @@ async def on_chat_start():
         await cl.Message(
             content="You can optionally populate session with some relevant messages",
             actions=[
-                cl.Action(name="Populate Messages", value="populate_messages", description="Will populate session with relevant messages")
-            ]
+                cl.Action(
+                    name="Populate Messages",
+                    value="populate_messages",
+                    description="Will populate session with relevant messages",
+                )
+            ],
         ).send()
-
 
 
 @cl.action_callback("Populate Messages")
 async def on_action():
-    example_history = travel_history if cl.user_session.get("chat_profile") == "Memory" else sales_history
+    example_history = (
+        travel_history
+        if cl.user_session.get("chat_profile") == "Memory"
+        else sales_history
+    )
     session_id = cl.user_session.get("id")
     try:
         for m in example_history:
             message = Message(**m)
             memory = Memory(messages=[message])
             await zep.memory.aadd_memory(session_id, memory)
-        memory = await zep.memory.aget_memory(session_id, cl.user_session.get("memory_type"))
+        memory = await zep.memory.aget_memory(
+            session_id, cl.user_session.get("memory_type")
+        )
         for m in memory.messages:
-            await cl.Message(author="Assistant" if m.role == "assistant" else "You", content=m.content).send()
+            await cl.Message(
+                author="Assistant" if m.role == "assistant" else "You",
+                content=m.content,
+            ).send()
     except Exception as e:
         raise ValueError(f"Error adding memory to session {session_id}: {e}")
 
@@ -116,6 +128,7 @@ async def synthesize_question(session_id: str):
     question = await zep.memory.asynthesize_question(session_id, last_n=3)
     return question
 
+
 @cl.step(name="Classify Conversation", type="tool")
 async def classify_conversation(session_id: str):
     classes = [
@@ -144,7 +157,7 @@ async def chat_profile():
         cl.ChatProfile(
             name="Classification",
             markdown_description="Dialog Classification Example",
-        )
+        ),
     ]
 
 
