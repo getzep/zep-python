@@ -1,4 +1,5 @@
-""" Using Zep as a vector database. A simple sync example. """
+"""Using Zep as a vector database. A simple sync example."""
+
 import os
 import time
 from uuid import uuid4

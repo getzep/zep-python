@@ -46,6 +46,12 @@ mock_memory = Memory(
     ]
 )
 
+mock_messages_with_facts = mock_messages.copy()
+mock_messages_with_facts["facts"] = [
+    "fact1",
+    "fact2",
+]
+
 
 def filter_unset_fields(d: Dict) -> Dict:
     filtered = {}
@@ -65,16 +71,18 @@ def filter_unset_fields(d: Dict) -> Dict:
     return filtered
 
 
-def validate_memory(memory: Memory):
-    assert len(memory.messages) == len(mock_messages["messages"])
+def validate_memory(memory: Memory, with_facts: bool = False):
+    mock_values = mock_messages_with_facts if with_facts else mock_messages
+
+    assert len(memory.messages) == len(mock_values["messages"])
 
     for i in range(len(memory.messages)):
-        assert memory.messages[i].uuid == mock_messages["messages"][i]["uuid"]
-        assert memory.messages[i].role == mock_messages["messages"][i]["role"]
-        assert memory.messages[i].content == mock_messages["messages"][i]["content"]
-        assert memory.messages[i].metadata == mock_messages["messages"][i]["metadata"]
+        assert memory.messages[i].uuid == mock_values["messages"][i]["uuid"]
+        assert memory.messages[i].role == mock_values["messages"][i]["role"]
+        assert memory.messages[i].content == mock_values["messages"][i]["content"]
+        assert memory.messages[i].metadata == mock_values["messages"][i]["metadata"]
 
-    assert filter_unset_fields(memory.model_dump()) == mock_messages
+    assert filter_unset_fields(memory.model_dump()) == mock_values
 
 
 @pytest.mark.asyncio
@@ -122,6 +130,17 @@ async def test_aget_memory_missing_values(httpx_mock: HTTPXMock):
     assert len(memory.messages) == 2
 
 
+@pytest.mark.asyncio
+async def test_aget_memory_with_facts(httpx_mock: HTTPXMock):
+    session_id = str(uuid4())
+
+    async with ZepClient(**mock_auth) as client:
+        httpx_mock.add_response(status_code=200, json=mock_messages_with_facts)
+        memory = await client.memory.aget_memory(session_id)
+
+        validate_memory(memory, with_facts=True)
+
+
 def test_get_memory(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
@@ -133,7 +152,7 @@ def test_get_memory(httpx_mock: HTTPXMock):
         validate_memory(memory)
 
 
-def test_get_memory_perpetual(httpx_mock: HTTPXMock):
+def test_get_memory_summary_retriever(httpx_mock: HTTPXMock):
     session_id = str(uuid4())
 
     httpx_mock.add_response(status_code=200, json=mock_messages)

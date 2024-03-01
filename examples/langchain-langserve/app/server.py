@@ -22,7 +22,9 @@ async def redirect_root_to_docs():
 add_routes(app, message_history_chain, path="/message_history")
 add_routes(app, rag_vector_store_chain, path="/rag_vector_store")
 add_routes(
-    app, message_history_vector_store_chain, path="/message_history_vector_store"
+    app,
+    message_history_vector_store_chain,
+    path="/message_history_vector_store",
 )
 
 if __name__ == "__main__":
