@@ -179,12 +179,19 @@ def main() -> None:
     # Classify the session.
     # Useful for semantic routing, filtering, and many other use cases.
     print("\n---Classify the session")
-    classes = ["health", "history", "science", "travel", "other"]
-    classification = client.memory.classify_session(session_id, "topic", classes)
+    classes = [
+        "low spender <$50",
+        "medium spender >=$50, <$100",
+        "high spender >=$100",
+        "unknown",
+    ]
+    classification = client.memory.classify_session(
+        session_id, "spender_category", classes
+    )
     print(f"Classification: {classification}")
 
     # Search Memory for session
-    query = "Can you name some popular destinations in Iceland?"
+    query = "What are Jane's favorite show brands?"
     print(f"\n---Searching over summaries for: '{query}'")
     search_payload = MemorySearchPayload(
         text=query,
