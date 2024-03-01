@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "zep-chainlit"
+version = "0.1.0"
+description = ""
+authors = ["paulpaliychuk <pavlo.paliychuk.ca@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+chainlit = "^1.0.301"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
