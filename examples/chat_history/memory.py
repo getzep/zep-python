@@ -32,7 +32,6 @@ load_dotenv(
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
 API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
-print("API_KEY", API_KEY, API_URL)
 
 
 def create_user(client, user_id):
@@ -110,9 +109,7 @@ def get_memory_from_session(client, session_id):
     try:
         while memory.summary is None:
             memory = client.memory.get_memory(session_id, "perpetual")
-            time.sleep(1)
-
-        time.sleep(10)
+            time.sleep(5)
 
         print(f"Summary: {memory.summary.content}")
         for message in memory.messages:

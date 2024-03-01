@@ -41,9 +41,7 @@ history = [
     },
     {
         "role": "user",
-        "content": (
-            "I wear a men's size 10, and I'm not sure about the foot width."
-        ),
+        "content": ("I wear a men's size 10, and I'm not sure about the foot width."),
     },
     {
         "role": "assistant",
