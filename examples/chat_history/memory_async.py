@@ -113,9 +113,8 @@ async def get_memory_from_session(client, session_id):
             memory = await client.memory.aget_memory(
                 session_id, memory_type="perpetual"
             )
-            time.sleep(1)
+            time.sleep(5)
 
-        time.sleep(10)
         print(f"Summary: {memory.summary.content}")
         for message in memory.messages:
             print(f"Message: {message.to_dict()}")

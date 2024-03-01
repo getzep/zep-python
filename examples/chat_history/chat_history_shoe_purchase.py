@@ -89,6 +89,7 @@ history = [
             " ideal for runners with pronation issues. It's available in your"
             " size, and it's within your budget."
         ),
+        "metadata": {"bar": "foo"},
     },
     {
         "role": "user",
