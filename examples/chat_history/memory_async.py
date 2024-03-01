@@ -10,6 +10,7 @@ This script demonstrates the following functionality:
 - Searching the session memory with a metadata filter.
 - optionally deleting the session.
 """
+
 import asyncio
 import os
 import time
@@ -59,8 +60,8 @@ async def create_session(client, user_id, session_id):
         print(f"Session created: {result}")
     except APIError as e:
         print(
-            f"API error occurred while adding memory to session {session_id}. Got"
-            f" error: {e}"
+            f"API error occurred while adding memory to session {session_id}."
+            f" Got error: {e}"
         )
 
 
@@ -73,8 +74,8 @@ async def update_session(client, session_id):
         print(f"Memory not found for session {session_id}. Got error: {e}")
     except APIError as e:
         print(
-            f"API error occurred while adding memory to session {session_id}. Got"
-            f" error: {e}"
+            f"API error occurred while adding memory to session {session_id}."
+            f" Got error: {e}"
         )
 
 
@@ -98,24 +99,28 @@ async def add_memory_to_session(client, session_id):
         print(f"Memory not found for session {session_id}. Got error: {e}")
     except APIError as e:
         print(
-            f"API error occurred while adding memory to session {session_id}. Got"
-            f" error: {e}"
+            f"API error occurred while adding memory to session {session_id}."
+            f" Got error: {e}"
         )
 
 
 async def get_memory_from_session(client, session_id):
     print(
-        f"\nGetting most recent memory. We're pausing until all {len(history)} messages are embedded and summarized.\n"
+        "\nGetting most recent memory. We're pausing until all"
+        f" {len(history)} messages have facts extracted, are summarized and"
+        " embedded.\n"
     )
     memory = Memory()
     try:
-        while memory.summary is None:
+        while memory.facts is None and memory.summary is None:
             memory = await client.memory.aget_memory(
                 session_id, memory_type="perpetual"
             )
             time.sleep(5)
 
-        print(f"Summary: {memory.summary.content}")
+        print(f"Fact Table: {memory.facts}")
+        if memory.summary:
+            print(f"Summary: {memory.summary.content}")
         for message in memory.messages:
             print(f"Message: {message.to_dict()}")
     except NotFoundError:

@@ -65,7 +65,8 @@ async def add_memory_to_session(client, session_id, history):
         print(f"Memory not found for session {session_id}. Got error: {e}")
     except APIError as e:
         print(
-            f"API error occurred while adding memory to session {session_id}. Got error: {e}"
+            f"API error occurred while adding memory to session {session_id}."
+            f" Got error: {e}"
         )
 
 
@@ -78,7 +79,8 @@ async def get_and_print_session_messages(client, session_id):
         print(f"Session not found for Session {session_id}. Got error: {e}")
     except APIError as e:
         print(
-            f"API error occurred while getting messages for Session {session_id}. Got error: {e}"
+            "API error occurred while getting messages for Session"
+            f" {session_id}. Got error: {e}"
         )
 
 
@@ -95,8 +97,8 @@ async def get_and_print_first_session_message(client, session_id, message_id):
         )
     except APIError as e:
         print(
-            f"API error occurred while getting message for Session {session_id} and "
-            f"Message {message_id}. Got error: {e}"
+            "API error occurred while getting message for Session"
+            f" {session_id} and Message {message_id}. Got error: {e}"
         )
 
 
@@ -114,7 +116,7 @@ async def update_and_print_session_message_metadata(client, session_id, message_
         )
     except APIError as e:
         print(
-            f"API error occurred while updating message metadata for Session "
+            "API error occurred while updating message metadata for Session "
             f"{session_id} and Message {message_id}. Got error: {e}"
         )
 

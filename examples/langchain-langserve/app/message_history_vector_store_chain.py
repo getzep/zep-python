@@ -54,7 +54,10 @@ vectorstore = ZepVectorStore(
 retriever = vectorstore.as_retriever().configurable_fields(
     search_type=ConfigurableFieldSingleOption(
         id="search_type",
-        options={"Similarity": "similarity", "Similarity with MMR Reranking": "mmr"},
+        options={
+            "Similarity": "similarity",
+            "Similarity with MMR Reranking": "mmr",
+        },
         default="Similarity with MMR Reranking",
         name="Search Type",
         description="Type of search to perform: 'similarity' or 'mmr'",
@@ -63,8 +66,8 @@ retriever = vectorstore.as_retriever().configurable_fields(
         id="search_kwargs",
         name="Search kwargs",
         description=(
-            "Specify 'k' for number of results to return and 'lambda_mult' for tuning"
-            " MMR relevance vs diversity."
+            "Specify 'k' for number of results to return and 'lambda_mult' for"
+            " tuning MMR relevance vs diversity."
         ),
     ),
 )
@@ -130,7 +133,8 @@ def invoke_chain(user_input: UserInput):
     )
 
     return result_chain.invoke(
-        user_input, config={"configurable": {"session_id": user_input["session_id"]}}
+        user_input,
+        config={"configurable": {"session_id": user_input["session_id"]}},
     )
 
 

@@ -36,7 +36,9 @@ def main() -> None:
         for i in range(3):
             session_id = uuid.uuid4().hex
             session = Session(
-                session_id=session_id, user_id=user_id, metadata={"session": i + 1}
+                session_id=session_id,
+                user_id=user_id,
+                metadata={"session": i + 1},
             )
             try:
                 result = client.memory.add_session(session)

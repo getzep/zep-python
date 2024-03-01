@@ -42,7 +42,8 @@ def read_chunk_from_file(file: str, chunk_size: int):
     chunks = naive_split_text(text, chunk_size)
 
     print(
-        f"Splitting text into {len(chunks)} chunks of max size {chunk_size} characters."
+        f"Splitting text into {len(chunks)} chunks of max size"
+        f" {chunk_size} characters."
     )
 
     return chunks

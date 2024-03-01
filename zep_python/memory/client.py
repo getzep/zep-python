@@ -4,7 +4,7 @@ from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
 
 import httpx
 
-from zep_python.exceptions import APIError, handle_response
+from zep_python.exceptions import handle_response
 from zep_python.memory.models import (
     ClassifySessionRequest,
     ClassifySessionResponse,
@@ -15,9 +15,7 @@ from zep_python.memory.models import (
     Question,
     SearchScope,
     Session,
-    Summary,
 )
-from zep_python.message.models import Message
 from zep_python.utils import SearchType
 
 
@@ -40,29 +38,6 @@ class MemoryClient:
     def __init__(self, aclient: httpx.AsyncClient, client: httpx.Client) -> None:
         self.aclient = aclient
         self.client = client
-
-    def _parse_get_memory_response(self, response_data: Any) -> Memory:
-        """Parse the response from the get_memory API call."""
-        messages: List[Message]
-        try:
-            messages = [
-                Message.model_validate(m) for m in response_data.get("messages", None)
-            ]
-        except (TypeError, ValueError) as e:
-            raise APIError(message="Unexpected response format from the API") from e
-
-        summary: Optional[Summary] = None
-        if response_data.get("summary", None) is not None:
-            summary = Summary.model_validate(response_data["summary"])
-
-        memory = Memory(
-            messages=messages,
-            # Add the 'summary' field if it is present in the response.
-            summary=summary,
-            # Add any other fields from the response that are relevant to the
-            # Memory class.
-        )
-        return memory
 
     def _gen_get_params(
         self, lastn: Optional[int] = None, memory_type: Optional[str] = None
@@ -632,7 +607,8 @@ class MemoryClient:
         session_id : str
             The ID of the session for which to retrieve memory.
         memory_type : Optional[str]
-            The type of memory to retrieve: message_window or perpetual.
+            The type of memory to retrieve: perpetual, summary_retriever, or
+                message_window. Defaults to perpetual.
         lastn : Optional[int], optional
             The number of most recent memory entries to retrieve. Defaults to None (all
             entries).
@@ -661,7 +637,7 @@ class MemoryClient:
 
         response_data = response.json()
 
-        return self._parse_get_memory_response(response_data)
+        return Memory.model_validate(response_data)
 
     # Memory APIs : Get Memory Asynchronously
     async def aget_memory(
@@ -678,7 +654,8 @@ class MemoryClient:
         session_id : str
             The ID of the session for which to retrieve memory.
         memory_type : Optional[str]
-            The type of memory to retrieve: message_window or perpetual.
+            The type of memory to retrieve: perpetual, summary_retriever, or
+                message_window. Defaults to perpetual.
         lastn : Optional[int], optional
             The number of most recent memory entries to retrieve. Defaults to None (all
             entries).
@@ -706,7 +683,7 @@ class MemoryClient:
 
         response_data = response.json()
 
-        return self._parse_get_memory_response(response_data)
+        return Memory.model_validate(response_data)
 
     # Memory APIs : Add Memory
     def add_memory(self, session_id: str, memory_messages: Memory) -> str:
