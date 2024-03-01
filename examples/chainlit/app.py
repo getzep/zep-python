@@ -6,6 +6,7 @@ from zep_python.message import Message
 from zep_python.memory import Memory
 import chainlit as cl
 from openai import AsyncOpenAI
+from chainlit.input_widget import Select
 
 load_dotenv(dotenv_path=find_dotenv())
 
@@ -24,13 +25,39 @@ async def on_chat_start():
     await cl.Message(
         content=f"starting chat using the {chat_profile} chat profile"
     ).send()
-    cl.user_session.set("id", uuid.uuid4())
+    settings = await cl.ChatSettings(
+        [
+            Select(
+                id="memory_type",
+                label="Memory Type",
+                values=["perpetual", "message_window", "summary_retriever"],
+                initial_index=0,
+            ),
+        ]
+    ).send()
 
+    cl.user_session.set("memory_type", settings["memory_type"])
+
+    cl.user_session.set("id", uuid.uuid4())
+    if chat_profile == "Memory + RAG":
+        collection_name = os.environ.get('ZEP_COLLECTION')
+        if not collection_name:
+            raise ValueError("ZEP_COLLECTION environment variable is not set")
+        try:
+            await zep.document.aget_collection(collection_name)
+        except Exception as e:
+            raise ValueError(f"Error accessing collection {collection_name}: {e}")
+
+
+
+@cl.on_settings_update
+async def update_settings(settings):
+    cl.user_session.set("memory_type", settings["memory_type"])
 
 @cl.step(name="ZepHistory", type="retrieval")
 async def get_history():
     session_id = cl.user_session.get("id")
-    memory = await zep.memory.aget_memory(session_id, "perpetual")
+    memory = await zep.memory.aget_memory(session_id, cl.user_session.get("memory_type"))
     summary = memory.summary
     message_history = []
     if summary:
