@@ -116,6 +116,9 @@ class Memory(BaseModel):
         The timestamp when the memory was created.
     token_count : Optional[int]
         The token count of the memory.
+    facts : Optional[List[str]]
+        Most recent list of facts derived from the session. Included only with
+        perpetual memory type.
 
     Methods
     -------
@@ -132,6 +135,7 @@ class Memory(BaseModel):
     uuid: Optional[str] = Field(default=None)
     created_at: Optional[str] = Field(default=None)
     token_count: Optional[int] = Field(default=None)
+    facts: Optional[List[str]] = Field(default=None)
 
     def to_dict(self) -> Dict[str, Any]:
         return self.model_dump(exclude_unset=True, exclude_none=True)
