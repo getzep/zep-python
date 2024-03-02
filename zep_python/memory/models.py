@@ -16,6 +16,7 @@ class SearchScope(str, Enum):
 class MemoryType(str, Enum):
     message_window = "message_window"
     perpetual = "perpetual"
+    summary_retriever = "summary_retriever"
 
 
 class Session(BaseModel):
@@ -41,6 +42,8 @@ class Session(BaseModel):
         The unique identifier of the session.
     metadata : Dict[str, Any]
         The metadata associated with the session.
+    facts : Optional[List[str]]
+        A list of facts derived from the session.
     """
 
     uuid: Optional[str] = None
@@ -51,6 +54,7 @@ class Session(BaseModel):
     session_id: str
     user_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
+    facts: Optional[List[str]] = Field(default=None)
 
 
 class Summary(BaseModel):
@@ -106,8 +110,6 @@ class Memory(BaseModel):
         A dictionary containing metadata associated with the memory.
     summary : Optional[Summary]
         A Summary object.
-    facts : Optional[List[str]]
-        A list of facts derived from the memory.
     uuid : Optional[str]
         A unique identifier for the memory.
     created_at : Optional[str]
@@ -127,7 +129,6 @@ class Memory(BaseModel):
     )
     metadata: Optional[Dict[str, Any]] = Field(default=None)
     summary: Optional[Summary] = Field(default=None)
-    facts: Optional[List[str]] = Field(default=None)
     uuid: Optional[str] = Field(default=None)
     created_at: Optional[str] = Field(default=None)
     token_count: Optional[int] = Field(default=None)
