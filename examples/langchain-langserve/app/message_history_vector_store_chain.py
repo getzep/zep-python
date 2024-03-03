@@ -1,6 +1,7 @@
 import os
 from typing import List
 
+from dotenv import load_dotenv
 from langchain.callbacks.tracers import ConsoleCallbackHandler
 from langchain.schema import format_document
 from langchain_core.documents import Document
@@ -21,12 +22,14 @@ from langchain_openai import ChatOpenAI
 from zep_python import ZepClient
 from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
 
+load_dotenv()
+
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
 ZEP_API_URL = os.environ.get(
     "ZEP_API_URL"
 )  # only required if you're using Zep Open Source
 
-ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION")
+ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION_NAME")
 if ZEP_COLLECTION_NAME is None:
     raise ValueError("ZEP_COLLECTION_NAME is required for ingestion. ")
 
@@ -35,6 +38,7 @@ if ZEP_API_KEY is None:
         "ZEP_API_KEY is required for Zep Cloud. "
         "Remove this check if using Zep Open Source."
     )
+
 
 zep = ZepClient(
     api_key=ZEP_API_KEY,
@@ -103,15 +107,22 @@ def _combine_documents(
     return document_separator.join(doc_strings)
 
 
-_search_query = RunnableLambda(
-    lambda x: zep.memory.synthesize_question(session_id=x["session_id"]),
-)
+async def _search_query(session_id: str) -> str:
+    question = zep.memory.synthesize_question(session_id=session_id)
+    if question == "":
+        return ""
+
+    documents = await retriever.ainvoke(input=question, session_id=session_id)
+
+    return _combine_documents(documents)
+
+
 _inputs = RunnableParallel(
     {
         "question": lambda x: x["question"],
         "session_id": lambda x: x["session_id"],
         "chat_history": lambda x: x["chat_history"],
-        "context": _search_query | retriever | _combine_documents,
+        "context": RunnableLambda(_search_query),
     },
 )
 
