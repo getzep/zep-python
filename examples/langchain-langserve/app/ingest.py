@@ -23,7 +23,7 @@ if ZEP_API_KEY is None:
         "Remove this check if using Zep Open Source."
     )
 
-ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION")
+ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION_NAME")
 if ZEP_COLLECTION_NAME is None:
     raise ValueError("ZEP_COLLECTION_NAME is required for ingestion. ")
 
