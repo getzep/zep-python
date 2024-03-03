@@ -39,7 +39,8 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
     api_key : str
         The Zep API key. Not required if using Zep Open Source.
     memory_type : str
-        The type of memory to use. Can be "message_window" or "perpetual".
+        The type of memory to use. Can be "perpetual", "summary_retrieval",
+        or "message_window". Defaults to "perpetual".
     """
 
     def __init__(
@@ -56,7 +57,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
             self._client = zep_client
 
         self.session_id = session_id
-        self.memory_type = memory_type or "message_window"
+        self.memory_type = memory_type or "perpetual"
 
     @property
     def messages(self) -> List[BaseMessage]:  # type: ignore
@@ -67,7 +68,10 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
             return []
 
         messages: List[BaseMessage] = []
-        # Extract summary, if present, and messages
+        # Extract facts and summary, if present, and messages
+        if zep_memory.facts:
+            messages.append(SystemMessage(content="\n".join(zep_memory.facts)))
+
         if zep_memory.summary:
             if len(zep_memory.summary.content) > 0:
                 messages.append(SystemMessage(content=zep_memory.summary.content))
