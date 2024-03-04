@@ -107,12 +107,10 @@ def _combine_documents(
     return document_separator.join(doc_strings)
 
 
-async def _search_query(session_id: str) -> str:
-    question = await zep.memory.asynthesize_question(session_id=session_id)
-    if question == "":
-        return ""
+async def _search_query(x: any) -> str:
+    synthesized_question = await zep.memory.asynthesize_question(session_id=x["session_id"])
 
-    documents = await retriever.ainvoke(input=question, session_id=session_id)
+    documents = await retriever.ainvoke(input=x["question"] if synthesized_question == "" else synthesized_question, session_id=x["session_id"])
 
     return _combine_documents(documents)
 
@@ -127,7 +125,7 @@ _inputs = RunnableParallel(
 )
 
 
-def invoke_chain(user_input: UserInput):
+async def invoke_chain(user_input: UserInput):
     result_chain = RunnableWithMessageHistory(
         RunnablePassthrough.assign(session_id=lambda x: user_input["session_id"])
         | _inputs
@@ -143,11 +141,12 @@ def invoke_chain(user_input: UserInput):
         history_messages_key="chat_history",
     )
 
-    return result_chain.invoke(
+    result = await result_chain.ainvoke(
         user_input,
         config={"configurable": {"session_id": user_input["session_id"]}},
     )
-
+    print("result", result)
+    return result
 
 chain = (
     RunnableLambda(invoke_chain)
