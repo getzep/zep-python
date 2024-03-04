@@ -145,7 +145,6 @@ async def invoke_chain(user_input: UserInput):
         user_input,
         config={"configurable": {"session_id": user_input["session_id"]}},
     )
-    print("result", result)
     return result
 
 chain = (
