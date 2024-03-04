@@ -108,9 +108,14 @@ def _combine_documents(
 
 
 async def _search_query(x: any) -> str:
-    synthesized_question = await zep.memory.asynthesize_question(session_id=x["session_id"])
+    synthesized_question = await zep.memory.asynthesize_question(
+        session_id=x["session_id"]
+    )
 
-    documents = await retriever.ainvoke(input=x["question"] if synthesized_question == "" else synthesized_question, session_id=x["session_id"])
+    documents = await retriever.ainvoke(
+        input=x["question"] if synthesized_question == "" else synthesized_question,
+        session_id=x["session_id"],
+    )
 
     return _combine_documents(documents)
 
@@ -146,6 +151,7 @@ async def invoke_chain(user_input: UserInput):
         config={"configurable": {"session_id": user_input["session_id"]}},
     )
     return result
+
 
 chain = (
     RunnableLambda(invoke_chain)
