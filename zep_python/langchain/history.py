@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from zep_python import API_URL, NotFoundError, ZepClient
 from zep_python.memory.models import Memory, Message
+from zep_python.message.models import get_zep_message_role_type
 
 try:
     from langchain_core.chat_history import BaseChatMessageHistory
@@ -160,7 +161,10 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
             raise ValueError("Message content cannot be a list")
 
         zep_message = Message(
-            content=message.content, role=message.type, metadata=metadata
+            content=message.content,
+            role=message.type,
+            role_type=get_zep_message_role_type(message.type),
+            metadata=metadata,
         )
         zep_memory = Memory(messages=[zep_message])
 
