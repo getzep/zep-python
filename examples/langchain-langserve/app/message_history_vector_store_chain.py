@@ -108,7 +108,7 @@ def _combine_documents(
 
 
 async def _search_query(session_id: str) -> str:
-    question = zep.memory.synthesize_question(session_id=session_id)
+    question = await zep.memory.asynthesize_question(session_id=session_id)
     if question == "":
         return ""
 
