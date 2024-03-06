@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import Any, List
 
 from dotenv import load_dotenv
 from langchain.callbacks.tracers import ConsoleCallbackHandler
@@ -107,7 +107,7 @@ def _combine_documents(
     return document_separator.join(doc_strings)
 
 
-async def _search_query(x: any) -> str:
+async def _search_query(x: Any) -> str:
     synthesized_question = await zep.memory.asynthesize_question(
         session_id=x["session_id"]
     )
