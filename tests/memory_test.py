@@ -27,14 +27,14 @@ mock_messages = {
         {
             "uuid": "msg-uuid",
             "role": "user",
-            "role_type": "UserRole",
+            "role_type": "user",
             "content": "Test message",
             "metadata": {"key": "value"},
         },
         {
             "uuid": "msg-uuid2",
             "role": "ai",
-            "role_type": "AssistantRole",
+            "role_type": "assistant",
             "content": "Test message2",
             "metadata": {"key2": "value2"},
         },
@@ -103,11 +103,11 @@ async def test_aget_memory_missing_values(httpx_mock: HTTPXMock):
 
     mock_response = {
         "messages": [
-            {"role": "user", "role_type": "UserRole", "content": "Test message"},
+            {"role": "user", "role_type": "user", "content": "Test message"},
             {
                 "uuid": "msg-uuid2",
                 "role": "ai",
-                "role_type": "AssistantRole",
+                "role_type": "assistant",
             },
         ],
     }
@@ -217,7 +217,7 @@ async def test_asearch_memory(httpx_mock: HTTPXMock):
             "message": {
                 "uuid": "msg-uuid",
                 "role": "user",
-                "role_type": "UserRole",
+                "role_type": "user",
                 "content": "Test message",
             },
             "score": 0.9,
@@ -251,7 +251,7 @@ async def test_asearch_memory_mmr(httpx_mock: HTTPXMock):
             "message": {
                 "uuid": "msg-uuid",
                 "role": "user",
-                "role_type": "UserRole",
+                "role_type": "user",
                 "content": "Test message",
             },
             "score": 0.9,
@@ -426,7 +426,7 @@ async def test_aget_session_message(httpx_mock: HTTPXMock):
     mock_message = {
         "uuid": message_id,
         "role": "user",
-        "role_type": "UserRole",
+        "role_type": "user",
         "content": "Test message",
         "metadata": {"key": "value"},
     }
@@ -478,7 +478,7 @@ def test_get_session_message(httpx_mock: HTTPXMock):
     mock_message = {
         "uuid": message_id,
         "role": "user",
-        "role_type": "UserRole",
+        "role_type": "user",
         "content": "Test message",
         "metadata": {"key": "value"},
     }
@@ -528,7 +528,7 @@ async def test_aupdate_message_metadata(httpx_mock: HTTPXMock):
     mock_message = {
         "uuid": message_id,
         "role": "user",
-        "role_type": "UserRole",
+        "role_type": "user",
         "content": "Test message",
         "metadata": {"metadata": {"foo": "bar"}},
     }
@@ -587,7 +587,7 @@ def test_update_message_metadata(httpx_mock: HTTPXMock):
     mock_message = {
         "uuid": message_id,
         "role": "user",
-        "role_type": "UserRole",
+        "role_type": "user",
         "content": "Test message",
         "metadata": {"metadata": {"foo": "bar"}},
     }

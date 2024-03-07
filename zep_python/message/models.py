@@ -6,11 +6,11 @@ from pydantic import BaseModel, Field, validator
 
 
 class RoleType(str, Enum):
-    USER_ROLE = "UserRole"
-    ASSISTANT_ROLE = "AssistantRole"
-    SYSTEM_ROLE = "SystemRole"
-    FUNCTION_ROLE = "FunctionRole"
-    TOOL_ROLE = "ToolRole"
+    USER_ROLE = "user"
+    ASSISTANT_ROLE = "assistant"
+    SYSTEM_ROLE = "system"
+    FUNCTION_ROLE = "function"
+    TOOL_ROLE = "tool"
 
 
 def get_zep_message_role_type(role):
@@ -41,7 +41,7 @@ class Message(BaseModel):
     role : str
         The role of the sender of the message (e.g., "user", "assistant").
     role_type: RoleType
-        The type of the role (e.g., "UserRole", "SystemRole").
+        The type of the role (e.g., "user", "system").
     content : str
         The content of the message.
     token_count : int, optional
