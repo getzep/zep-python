@@ -206,8 +206,8 @@ class ClassifySessionRequest(BaseModel):
     ----------
     session_id : str
         The unique identifier of the session.
-    name : str
-        The name of the classifier. e.g. "emotion" or "intent". This will be used to
+    label : str
+        The label of the classifier. e.g. "emotion" or "intent". This will be used to
         store the classification in session metadata if persist is True.
     classes : List[str]
         A list of classes to classify the session into.
@@ -218,7 +218,7 @@ class ClassifySessionRequest(BaseModel):
     """
 
     session_id: str
-    name: str
+    label: str
     classes: List[str]
     last_n: Optional[int] = None
     persist: Optional[bool] = True
@@ -230,11 +230,11 @@ class ClassifySessionResponse(BaseModel):
 
     Attributes
     ----------
-    name : str
-        The name of the class list. e.g. "emotion" or "intent".
+    label : str
+        The label of the class list. e.g. "emotion" or "intent".
     class_ : str
         The class the session was classified into.
     """
 
-    name: str
+    label: str
     class_: str = Field(alias="class")

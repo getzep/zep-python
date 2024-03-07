@@ -349,7 +349,7 @@ class MemoryClient:
 
         request = ClassifySessionRequest(
             session_id=session_id,
-            name=name,
+            label=name,
             classes=classes,
             last_n=last_n,
             persist=persist,
@@ -415,7 +415,7 @@ class MemoryClient:
 
         request = ClassifySessionRequest(
             session_id=session_id,
-            name=name,
+            label=name,
             classes=classes,
             last_n=last_n,
             persist=persist,
