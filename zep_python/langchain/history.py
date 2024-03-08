@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from zep_python import API_URL, NotFoundError, ZepClient
 from zep_python.memory.models import Memory, Message
+from zep_python.message.models import get_zep_message_role_type
 
 try:
     from langchain_core.chat_history import BaseChatMessageHistory
@@ -50,6 +51,8 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         api_url: Optional[str] = API_URL,
         api_key: Optional[str] = None,
         memory_type: Optional[str] = None,
+        ai_prefix: Optional[str] = None,
+        human_prefix: Optional[str] = None,
     ) -> None:
         if zep_client is None:
             self._client = ZepClient(api_url=api_url, api_key=api_key)
@@ -58,6 +61,9 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
 
         self.session_id = session_id
         self.memory_type = memory_type or "perpetual"
+
+        self.ai_prefix = ai_prefix or "ai"
+        self.human_prefix = human_prefix or "human"
 
     @property
     def messages(self) -> List[BaseMessage]:  # type: ignore
@@ -159,8 +165,17 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         if isinstance(message.content, list):
             raise ValueError("Message content cannot be a list")
 
+        if message.type == "ai":
+            message.name = self.ai_prefix
+        elif message.type == "human":
+            message.name = self.human_prefix
+
         zep_message = Message(
-            content=message.content, role=message.type, metadata=metadata
+            content=message.content,
+            # If name is not set, use type as role
+            role=message.name or message.type,
+            role_type=get_zep_message_role_type(message.type),
+            metadata=metadata,
         )
         zep_memory = Memory(messages=[zep_message])
 
