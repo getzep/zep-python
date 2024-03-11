@@ -68,7 +68,7 @@ async def load_previous_chat_history(session_id: str):
         session_id,
         Memory(
             messages=[
-                Message(role=msg["role"], content=msg["content"])
+                Message(role_type=msg["role_type"], content=msg["content"])
                 for msg in previous_chat_history
             ]
         ),
@@ -84,17 +84,17 @@ async def get_history(session_id: str):
 
     if facts:
         message_history.append(
-            {"role": "system", "content": "Facts about this user:\n" + "\n".join(facts)}
+            {"role_type": "system", "content": "Facts about this user:\n" + "\n".join(facts)}
         )
     if summary:
         message_history.append(
-            {"role": "system", "content": "Chat History:\n" + summary.content}
+            {"role_type": "system", "content": "Chat History:\n" + summary.content}
         )
 
     for message in memory.messages:
         message_history.append(
             {
-                "role": message.role,
+                "role_type": message.role_type,
                 "content": message.content,
             }
         )
@@ -185,10 +185,13 @@ async def classify_ready_for_purchase(session_id: str):
 
 @cl.step(name="OpenAI", type="llm")
 async def call_openai(messages):
+    openai_friendly_messages = [
+        {"role": msg["role_type"], "content": msg["content"]} for msg in messages
+    ]
     response = await openai_client.chat.completions.create(
         model=OPENAI_MODEL,
         temperature=0.1,
-        messages=messages,
+        messages=openai_friendly_messages,
     )
     return response.choices[0].message
 
@@ -202,7 +205,7 @@ async def on_message(message: cl.Message):
         session_id,
         Memory(
             messages=[
-                Message(role=USER_ROLE, content=message.content),
+                Message(role_type=USER_ROLE, content=message.content),
             ]
         ),
     )
@@ -224,12 +227,12 @@ async def on_message(message: cl.Message):
     print(intent)
 
     # Load the base prompt into
-    prompt = [{"role": "system", "content": base_system_prompt}]
+    prompt = [{"role_type": "system", "content": base_system_prompt}]
 
     match intent:
         case "buy_shoes" | "unknown":
             if "ready_for_purchase" in ready_to_purchase.class_:
-                prompt.append({"role": "system", "content": order_instructions})
+                prompt.append({"role_type": "system", "content": order_instructions})
                 msg = cl.Message(
                     author="System",
                     content=ready_to_purchase,
@@ -253,10 +256,10 @@ async def on_message(message: cl.Message):
                     await msg.send()
             else:
                 shoe_data = await get_shoe_data(search_query)
-                prompt.append({"role": "system", "content": sales_instructions})
+                prompt.append({"role_type": "system", "content": sales_instructions})
                 prompt.append(
                     {
-                        "role": "system",
+                        "role_type": "system",
                         "content": f"""Use the context below to answer the question:
                                     <context>
                                     {shoe_data}
@@ -264,7 +267,7 @@ async def on_message(message: cl.Message):
                     }
                 )
         case "return_shoes":
-            prompt.append({"role": "system", "content": return_instructions})
+            prompt.append({"role_type": "system", "content": return_instructions})
             msg = cl.Message(author="System", content="Identified Return Intent")
             await msg.send()
         case _:
@@ -273,7 +276,6 @@ async def on_message(message: cl.Message):
 
     prompt = prompt + chat_history
 
-    print(prompt)
     response_message = await call_openai(prompt)
     msg = cl.Message(content=(response_message.content))
     await msg.send()
@@ -282,7 +284,7 @@ async def on_message(message: cl.Message):
         session_id,
         Memory(
             messages=[
-                Message(role=ASSISTANT_ROLE, content=response_message.content),
+                Message(role_type=ASSISTANT_ROLE, content=response_message.content),
             ]
         ),
     )
@@ -337,10 +339,10 @@ async def main():
         Memory(
             messages=[
                 Message(
-                    role=ASSISTANT_ROLE, content=welcome_message + " " + name_prompt
+                    role_type=ASSISTANT_ROLE, content=welcome_message + " " + name_prompt
                 ),
-                Message(role=USER_ROLE, content=user_name),
-                Message(role=ASSISTANT_ROLE, content=name_response),
+                Message(role_type=USER_ROLE, content=user_name),
+                Message(role_type=ASSISTANT_ROLE, content=name_response),
             ]
         ),
     )
