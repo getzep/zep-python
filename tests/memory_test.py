@@ -1033,7 +1033,7 @@ def test_classify_session(httpx_mock: HTTPXMock):
     classes = ["class1", "class2", "class3"]
 
     expected_response = {
-        "label": name,
+        "name": name,
         "class": "class1",
     }
 
@@ -1046,7 +1046,7 @@ def test_classify_session(httpx_mock: HTTPXMock):
         response = client.memory.classify_session(session_id, name, classes)
 
         # Assert that the response is as expected
-        assert response.label == expected_response["label"]
+        assert response.name == expected_response["name"]
         assert response.class_ == expected_response["class"]
 
 
@@ -1057,7 +1057,7 @@ async def test_aclassify_session(httpx_mock: HTTPXMock):
     classes = ["class1", "class2", "class3"]
 
     expected_response = {
-        "label": name,
+        "name": name,
         "class": "class1",
     }
 
@@ -1070,5 +1070,5 @@ async def test_aclassify_session(httpx_mock: HTTPXMock):
         response = await client.memory.aclassify_session(session_id, name, classes)
 
         # Assert that the response is as expected
-        assert response.label == expected_response["label"]
+        assert response.name == expected_response["name"]
         assert response.class_ == expected_response["class"]
