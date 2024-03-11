@@ -84,7 +84,10 @@ async def get_history(session_id: str):
 
     if facts:
         message_history.append(
-            {"role_type": "system", "content": "Facts about this user:\n" + "\n".join(facts)}
+            {
+                "role_type": "system",
+                "content": "Facts about this user:\n" + "\n".join(facts),
+            }
         )
     if summary:
         message_history.append(
@@ -339,7 +342,8 @@ async def main():
         Memory(
             messages=[
                 Message(
-                    role_type=ASSISTANT_ROLE, content=welcome_message + " " + name_prompt
+                    role_type=ASSISTANT_ROLE,
+                    content=welcome_message + " " + name_prompt,
                 ),
                 Message(role_type=USER_ROLE, content=user_name),
                 Message(role_type=ASSISTANT_ROLE, content=name_response),
