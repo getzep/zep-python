@@ -222,6 +222,7 @@ class ClassifySessionRequest(BaseModel):
     classes: List[str]
     last_n: Optional[int] = None
     persist: Optional[bool] = True
+    instruction: Optional[str] = None
 
 
 class ClassifySessionResponse(BaseModel):

@@ -1,17 +1,16 @@
+import asyncio
 import os
 import uuid
 
-import asyncio
 import chainlit as cl
+from chat_history_shoe_purchase import history as previous_chat_history
 from dotenv import find_dotenv, load_dotenv
 from openai import AsyncOpenAI
 
 from zep_python import ZepClient
 from zep_python.memory import Memory, Session
-from zep_python.user import CreateUserRequest
 from zep_python.message import Message
-
-from chat_history_shoe_purchase import history as previous_chat_history
+from zep_python.user import CreateUserRequest
 
 load_dotenv(dotenv_path=find_dotenv())
 

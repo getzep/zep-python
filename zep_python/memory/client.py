@@ -304,6 +304,7 @@ class MemoryClient:
         classes: List[str],
         last_n: Optional[int] = None,
         persist: Optional[bool] = True,
+        instruction: Optional[str] = None,
     ) -> ClassifySessionResponse:
         """
         Classify the session with the specified ID. Asynchronous version.
@@ -323,6 +324,8 @@ class MemoryClient:
         persist : Optional[bool], optional
             Whether to persist the classification to session metadata.
             Defaults to True.
+        instruction : Optional[str], optional
+            Custom instruction to use for classification. Defaults to None.
 
         Returns
         -------
@@ -353,6 +356,7 @@ class MemoryClient:
             classes=classes,
             last_n=last_n,
             persist=persist,
+            instruction=instruction,
         )
 
         response = await self.aclient.post(
@@ -370,6 +374,7 @@ class MemoryClient:
         classes: List[str],
         last_n: Optional[int] = None,
         persist: Optional[bool] = True,
+        instruction: Optional[str] = None,
     ) -> ClassifySessionResponse:
         """
         Classify the session with the specified ID.
@@ -389,6 +394,8 @@ class MemoryClient:
         persist : Optional[bool], optional
             Whether to persist the classification to session metadata.
             Defaults to True.
+        instruction : Optional[str], optional
+            Custom instruction to use for classification. Defaults to None.
 
         Returns
         -------
@@ -419,6 +426,7 @@ class MemoryClient:
             classes=classes,
             last_n=last_n,
             persist=persist,
+            instruction=instruction,
         )
 
         response = self.client.post(
