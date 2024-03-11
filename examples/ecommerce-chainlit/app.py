@@ -22,6 +22,7 @@ OPENAI_MODEL = "gpt-4-0125-preview"
 
 ASSISTANT_ROLE = "assistant"
 USER_ROLE = "user"
+BOT_NAME = "Amazing Shoe Salesbot"
 
 zep = ZepClient(api_key=API_KEY, api_url=ZEP_API_URL)
 
@@ -208,7 +209,7 @@ async def on_message(message: cl.Message):
         session_id,
         Memory(
             messages=[
-                Message(role_type=USER_ROLE, content=message.content),
+                Message(role_type=USER_ROLE, content=message.content, role=cl.user_session.get("user_name")),
             ]
         ),
     )
@@ -280,14 +281,14 @@ async def on_message(message: cl.Message):
     prompt = prompt + chat_history
 
     response_message = await call_openai(prompt)
-    msg = cl.Message(content=(response_message.content))
+    msg = cl.Message(author=BOT_NAME, content=(response_message.content))
     await msg.send()
 
     await zep.memory.aadd_memory(
         session_id,
         Memory(
             messages=[
-                Message(role_type=ASSISTANT_ROLE, content=response_message.content),
+                Message(role_type=ASSISTANT_ROLE, content=response_message.content, role=BOT_NAME),
             ]
         ),
     )
@@ -302,7 +303,7 @@ async def main():
     cl.user_session.set("user_id", user_id)
     cl.user_session.set("session_id", session_id)
 
-    msg = cl.Message(author=ASSISTANT_ROLE, content=welcome_message)
+    msg = cl.Message(author=BOT_NAME, content=welcome_message)
     await msg.send()
 
     name_prompt = "What is your name?"
@@ -311,6 +312,7 @@ async def main():
     res = await cl.AskUserMessage(content=name_prompt).send()
     if res:
         user_name = res["output"]
+        cl.user_session.set("user_name", user_name)
         name_response = f"Hi {user_name}! How can I assist you today?"
         await cl.Message(
             content=name_response,
@@ -344,9 +346,10 @@ async def main():
                 Message(
                     role_type=ASSISTANT_ROLE,
                     content=welcome_message + " " + name_prompt,
+                    role=BOT_NAME,
                 ),
-                Message(role_type=USER_ROLE, content=user_name),
-                Message(role_type=ASSISTANT_ROLE, content=name_response),
+                Message(role_type=USER_ROLE, content=user_name, role=user_name),
+                Message(role_type=ASSISTANT_ROLE, content=name_response, role=BOT_NAME),
             ]
         ),
     )
