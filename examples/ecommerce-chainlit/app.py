@@ -280,7 +280,10 @@ async def on_message(message: cl.Message):
             print("Unknown intent")
             return
 
-    prompt = prompt + [{"role": message["role_type"], "content": message["content"]} for message in chat_history]
+    prompt = prompt + [
+        {"role": message["role_type"], "content": message["content"]}
+        for message in chat_history
+    ]
 
     response_message = await call_openai(prompt)
     msg = cl.Message(author=BOT_NAME, content=(response_message.content))
