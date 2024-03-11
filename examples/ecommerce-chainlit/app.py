@@ -209,7 +209,11 @@ async def on_message(message: cl.Message):
         session_id,
         Memory(
             messages=[
-                Message(role_type=USER_ROLE, content=message.content, role=cl.user_session.get("user_name")),
+                Message(
+                    role_type=USER_ROLE,
+                    content=message.content,
+                    role=cl.user_session.get("user_name"),
+                ),
             ]
         ),
     )
@@ -288,7 +292,11 @@ async def on_message(message: cl.Message):
         session_id,
         Memory(
             messages=[
-                Message(role_type=ASSISTANT_ROLE, content=response_message.content, role=BOT_NAME),
+                Message(
+                    role_type=ASSISTANT_ROLE,
+                    content=response_message.content,
+                    role=BOT_NAME,
+                ),
             ]
         ),
     )
