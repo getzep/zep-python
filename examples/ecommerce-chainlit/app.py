@@ -22,6 +22,7 @@ OPENAI_MODEL = "gpt-4-0125-preview"
 
 ASSISTANT_ROLE = "assistant"
 USER_ROLE = "user"
+BOT_NAME = "Amazing Shoe Salesbot"
 
 zep = ZepClient(api_key=API_KEY, api_url=ZEP_API_URL)
 
@@ -68,7 +69,7 @@ async def load_previous_chat_history(session_id: str):
         session_id,
         Memory(
             messages=[
-                Message(role=msg["role"], content=msg["content"])
+                Message(role_type=msg["role_type"], content=msg["content"])
                 for msg in previous_chat_history
             ]
         ),
@@ -84,17 +85,20 @@ async def get_history(session_id: str):
 
     if facts:
         message_history.append(
-            {"role": "system", "content": "Facts about this user:\n" + "\n".join(facts)}
+            {
+                "role_type": "system",
+                "content": "Facts about this user:\n" + "\n".join(facts),
+            }
         )
     if summary:
         message_history.append(
-            {"role": "system", "content": "Chat History:\n" + summary.content}
+            {"role_type": "system", "content": "Chat History:\n" + summary.content}
         )
 
     for message in memory.messages:
         message_history.append(
             {
-                "role": message.role,
+                "role_type": message.role_type,
                 "content": message.content,
             }
         )
@@ -185,6 +189,7 @@ async def classify_ready_for_purchase(session_id: str):
 
 @cl.step(name="OpenAI", type="llm")
 async def call_openai(messages):
+
     response = await openai_client.chat.completions.create(
         model=OPENAI_MODEL,
         temperature=0.1,
@@ -202,7 +207,11 @@ async def on_message(message: cl.Message):
         session_id,
         Memory(
             messages=[
-                Message(role=USER_ROLE, content=message.content),
+                Message(
+                    role_type=USER_ROLE,
+                    content=message.content,
+                    role=cl.user_session.get("user_name"),
+                ),
             ]
         ),
     )
@@ -271,18 +280,24 @@ async def on_message(message: cl.Message):
             print("Unknown intent")
             return
 
-    prompt = prompt + chat_history
+    prompt = prompt + [
+        {"role": message["role_type"], "content": message["content"]}
+        for message in chat_history
+    ]
 
-    print(prompt)
     response_message = await call_openai(prompt)
-    msg = cl.Message(content=(response_message.content))
+    msg = cl.Message(author=BOT_NAME, content=(response_message.content))
     await msg.send()
 
     await zep.memory.aadd_memory(
         session_id,
         Memory(
             messages=[
-                Message(role=ASSISTANT_ROLE, content=response_message.content),
+                Message(
+                    role_type=ASSISTANT_ROLE,
+                    content=response_message.content,
+                    role=BOT_NAME,
+                ),
             ]
         ),
     )
@@ -297,7 +312,7 @@ async def main():
     cl.user_session.set("user_id", user_id)
     cl.user_session.set("session_id", session_id)
 
-    msg = cl.Message(author=ASSISTANT_ROLE, content=welcome_message)
+    msg = cl.Message(author=BOT_NAME, content=welcome_message)
     await msg.send()
 
     name_prompt = "What is your name?"
@@ -306,6 +321,7 @@ async def main():
     res = await cl.AskUserMessage(content=name_prompt).send()
     if res:
         user_name = res["output"]
+        cl.user_session.set("user_name", user_name)
         name_response = f"Hi {user_name}! How can I assist you today?"
         await cl.Message(
             content=name_response,
@@ -337,10 +353,12 @@ async def main():
         Memory(
             messages=[
                 Message(
-                    role=ASSISTANT_ROLE, content=welcome_message + " " + name_prompt
+                    role_type=ASSISTANT_ROLE,
+                    content=welcome_message + " " + name_prompt,
+                    role=BOT_NAME,
                 ),
-                Message(role=USER_ROLE, content=user_name),
-                Message(role=ASSISTANT_ROLE, content=name_response),
+                Message(role_type=USER_ROLE, content=user_name, role=user_name),
+                Message(role_type=ASSISTANT_ROLE, content=name_response, role=BOT_NAME),
             ]
         ),
     )
