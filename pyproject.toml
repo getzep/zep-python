@@ -9,6 +9,7 @@ readme = "README.md"
 python = ">=3.9.0,<4"
 httpx = "^0.26.0"
 pydantic = ">=2.0.0"
+toml = "^0.10.2"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.3.1"
@@ -33,6 +34,7 @@ openai = "^1.9.0"
 langchain-openai = "^0.0.3"
 langchain-cli = { extras = ["serve"], version = "^0.0.21" }
 bs4 = "^0.0.2"
+types-toml = "^0.10.8.7"
 
 [build-system]
 requires = ["poetry-core"]

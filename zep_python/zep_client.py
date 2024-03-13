@@ -6,6 +6,7 @@ from typing import Dict, Optional, Type
 from urllib.parse import urljoin
 
 import httpx
+import toml
 from packaging.version import InvalidVersion, Version
 
 from zep_python.document.client import DocumentClient
@@ -19,6 +20,9 @@ API_BASE_PATH = "/api/v2"
 API_TIMEOUT = 10
 
 MINIMUM_SERVER_VERSION = "0.22.0"
+
+pyproject_config = toml.load("pyproject.toml")
+version = pyproject_config["tool"]["poetry"]["version"]
 
 
 class ZepClient:
@@ -78,6 +82,7 @@ class ZepClient:
 
         self.api_key = api_key
         headers: Dict[str, str] = {}
+        headers["X-Zep-Client-Version"] = f"zep-python-client/{version}"
         if api_key and api_key.startswith("z_"):
             headers["Authorization"] = f"Api-Key {api_key}"
         elif api_key is not None:
@@ -116,7 +121,7 @@ class ZepClient:
         url = concat_url(base_url, "/healthz")
 
         error_msg = """Failed to connect to Zep server. Please check that:
-         - the status of the service 
+         - the status of the service
          - your internet connection is working
          - the API URL is correct (not required for Zep Cloud)
          - No other process is using the same port (not required for Zep Cloud)
