@@ -181,7 +181,9 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
             role_type=get_zep_message_role_type(message.type),
             metadata=metadata,
         )
-        zep_memory = Memory(messages=[zep_message], summary_instruction=self.summary_instruction)
+        zep_memory = Memory(
+            messages=[zep_message], summary_instruction=self.summary_instruction
+        )
 
         self._client.memory.add_memory(self.session_id, zep_memory)
 
