@@ -42,6 +42,8 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
     memory_type : str
         The type of memory to use. Can be "perpetual", "summary_retrieval",
         or "message_window". Defaults to "perpetual".
+    summary_instruction : Optional[str]
+        Additional instruction for generating the summary.
     """
 
     def __init__(
@@ -53,6 +55,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         memory_type: Optional[str] = None,
         ai_prefix: Optional[str] = None,
         human_prefix: Optional[str] = None,
+        summary_instruction: Optional[str] = None,
     ) -> None:
         if zep_client is None:
             self._client = ZepClient(api_url=api_url, api_key=api_key)
@@ -64,6 +67,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
 
         self.ai_prefix = ai_prefix or "ai"
         self.human_prefix = human_prefix or "human"
+        self.summary_instruction = summary_instruction
 
     @property
     def messages(self) -> List[BaseMessage]:  # type: ignore
@@ -177,7 +181,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
             role_type=get_zep_message_role_type(message.type),
             metadata=metadata,
         )
-        zep_memory = Memory(messages=[zep_message])
+        zep_memory = Memory(messages=[zep_message], summary_instruction=self.summary_instruction)
 
         self._client.memory.add_memory(self.session_id, zep_memory)
 
