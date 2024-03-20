@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "zep-python"
-version = "2.0.0-rc.3"
+version = "2.0.0-rc.4"
 description = "Long-Term Memory for AI Assistants. This is the Python client for the Zep service."
 authors = ["Daniel Chalef <daniel.chalef@private.org>"]
 readme = "README.md"
