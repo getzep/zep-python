@@ -210,7 +210,7 @@ async def on_message(message: cl.Message):
                     role=cl.user_session.get("user_name"),
                 ),
             ],
-            summary_instruction="Omit user shoe size from the summary",
+            summary_instruction="Do not include shoe sizes.",
         ),
     )
 
