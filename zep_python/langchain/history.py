@@ -43,7 +43,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         The type of memory to use. Can be "perpetual", "summary_retrieval",
         or "message_window". Defaults to "perpetual".
     summary_instruction : Optional[str]
-        Additional instruction for generating the summary.
+        Additional instructions for generating dialog summaries.
     """
 
     def __init__(
