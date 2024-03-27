@@ -119,6 +119,8 @@ class Memory(BaseModel):
     facts : Optional[List[str]]
         Most recent list of facts derived from the session. Included only with
         perpetual memory type.
+    summary_instruction : Optional[str]
+        Additional instruction for generating the summary.
 
     Methods
     -------
@@ -136,6 +138,7 @@ class Memory(BaseModel):
     created_at: Optional[str] = Field(default=None)
     token_count: Optional[int] = Field(default=None)
     facts: Optional[List[str]] = Field(default=None)
+    summary_instruction: Optional[str] = Field(default=None)
 
     def to_dict(self) -> Dict[str, Any]:
         return self.model_dump(exclude_unset=True, exclude_none=True)

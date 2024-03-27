@@ -28,7 +28,6 @@ zep = ZepClient(api_key=API_KEY, api_url=ZEP_API_URL)
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
-
 welcome_message = """Welcome to the shoe store! I'm here to help you find the perfect pair of shoes."""
 
 base_system_prompt = """You are a friendly shoe sales assistant. You are responsible for both selling shoes and managing customer
@@ -189,7 +188,6 @@ async def classify_ready_for_purchase(session_id: str):
 
 @cl.step(name="OpenAI", type="llm")
 async def call_openai(messages):
-
     response = await openai_client.chat.completions.create(
         model=OPENAI_MODEL,
         temperature=0.1,
@@ -201,7 +199,6 @@ async def call_openai(messages):
 @cl.on_message
 async def on_message(message: cl.Message):
     session_id = cl.user_session.get("session_id")
-
     # Add the user's message to Zep's memory
     await zep.memory.aadd_memory(
         session_id,
@@ -212,7 +209,8 @@ async def on_message(message: cl.Message):
                     content=message.content,
                     role=cl.user_session.get("user_name"),
                 ),
-            ]
+            ],
+            summary_instruction="Do not include shoe sizes.",
         ),
     )
 
