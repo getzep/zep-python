@@ -22,9 +22,7 @@ if ZEP_API_KEY is None:
 
 ZEP_COLLECTION_NAME = "shoe_data"
 
-zep = ZepClient(
-    api_key=ZEP_API_KEY 
-)
+zep = ZepClient(api_key=ZEP_API_KEY)
 
 texts = [str(shoe) for shoe in shoes]
 
