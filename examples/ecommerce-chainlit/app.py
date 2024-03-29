@@ -24,7 +24,7 @@ ASSISTANT_ROLE = "assistant"
 USER_ROLE = "user"
 BOT_NAME = "Amazing Shoe Salesbot"
 
-zep = ZepClient(api_key=API_KEY, api_url=ZEP_API_URL)
+zep = ZepClient(api_key=API_KEY)
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
