@@ -604,9 +604,12 @@ class MemoryClient:
     def get_memory(
         self,
         session_id: str,
-        memory_type: Optional[str] = None,
-        lastn: Optional[int] = None,
-    ) -> Memory:
+def get_memory(
+    self,
+    session_id: str,
+    memory_type: str = 'perpetual',
+    lastn: Optional[int] = None,
+) -> Memory:
         """
         Retrieve memory for the specified session.
 
@@ -651,9 +654,12 @@ class MemoryClient:
     async def aget_memory(
         self,
         session_id: str,
-        memory_type: Optional[str] = None,
-        lastn: Optional[int] = None,
-    ) -> Memory:
+async def aget_memory(
+    self,
+    session_id: str,
+    memory_type: str = 'perpetual',
+    lastn: Optional[int] = None,
+) -> Memory:
         """
         Asynchronously retrieve memory for the specified session.
 
