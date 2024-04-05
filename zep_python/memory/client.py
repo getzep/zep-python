@@ -638,7 +638,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         url = f"/sessions/{session_id}/memory"
-        params = self._gen_get_params(lastn, memory_type)
+        params = self._gen_get_params(lastn, memory_type or "perpetual")
         response = self.client.get(url, params=params)
 
         handle_response(response, f"No memory found for session {session_id}")
@@ -684,7 +684,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         url = f"/sessions/{session_id}/memory"
-        params = self._gen_get_params(lastn, memory_type)
+        params = self._gen_get_params(lastn, memory_type or "perpetual")
         response = await self.aclient.get(url, params=params)
 
         handle_response(response, f"No memory found for session {session_id}")
