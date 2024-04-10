@@ -32,9 +32,9 @@ class SessionClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Session]:
+    ) -> typing.List[typing.List[Session]]:
         """
-        Get all sessions with optional limit and cursor for pagination.
+        get all sessions with optional limit and cursor for pagination
 
         Parameters:
             - limit: typing.Optional[int]. Limit the number of results returned
@@ -81,7 +81,7 @@ class SessionClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[Session]], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -163,6 +163,74 @@ class SessionClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def returns_all_sessions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[Session]:
+        """
+        Get all sessions with optional limit and cursor for pagination.
+
+        Parameters:
+            - limit: typing.Optional[int]. Limit the number of results returned
+
+            - cursor: typing.Optional[int]. Cursor for pagination
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.session.returns_all_sessions()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        "cursor": cursor,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def get(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
         get session by id
@@ -220,7 +288,6 @@ class SessionClient:
         session_id: str,
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        session_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -230,8 +297,6 @@ class SessionClient:
             - session_id: str. Session ID
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - session_id: typing.Optional[str].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
@@ -247,8 +312,6 @@ class SessionClient:
         _request: typing.Dict[str, typing.Any] = {}
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        if session_id is not OMIT:
-            _request["session_id"] = session_id
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"),
@@ -447,9 +510,9 @@ class AsyncSessionClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Session]:
+    ) -> typing.List[typing.List[Session]]:
         """
-        Get all sessions with optional limit and cursor for pagination.
+        get all sessions with optional limit and cursor for pagination
 
         Parameters:
             - limit: typing.Optional[int]. Limit the number of results returned
@@ -496,7 +559,7 @@ class AsyncSessionClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[Session]], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -578,6 +641,74 @@ class AsyncSessionClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    async def returns_all_sessions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[Session]:
+        """
+        Get all sessions with optional limit and cursor for pagination.
+
+        Parameters:
+            - limit: typing.Optional[int]. Limit the number of results returned
+
+            - cursor: typing.Optional[int]. Cursor for pagination
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.session.returns_all_sessions()
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        "cursor": cursor,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def get(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
         get session by id
@@ -635,7 +766,6 @@ class AsyncSessionClient:
         session_id: str,
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        session_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -645,8 +775,6 @@ class AsyncSessionClient:
             - session_id: str. Session ID
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - session_id: typing.Optional[str].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
@@ -662,8 +790,6 @@ class AsyncSessionClient:
         _request: typing.Dict[str, typing.Any] = {}
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        if session_id is not OMIT:
-            _request["session_id"] = session_id
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"),
