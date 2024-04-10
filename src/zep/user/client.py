@@ -25,21 +25,9 @@ class UserClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_all_users(
-        self,
-        *,
-        limit: typing.Optional[int] = None,
-        cursor: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[User]]:
+    def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        list all users
-
         Parameters:
-            - limit: typing.Optional[int]. Limit
-
-            - cursor: typing.Optional[int]. Cursor
-
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep.client import Zep
@@ -47,23 +35,13 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.list_all_users()
+        client.user.list()
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "user"),
             params=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        "limit": limit,
-                        "cursor": cursor,
-                        **(
-                            request_options.get("additional_query_parameters", {})
-                            if request_options is not None
-                            else {}
-                        ),
-                    }
-                )
+                request_options.get("additional_query_parameters") if request_options is not None else None
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -80,40 +58,16 @@ class UserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[User]], _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            return
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def add_a_user(
-        self,
-        *,
-        email: typing.Optional[str] = OMIT,
-        first_name: typing.Optional[str] = OMIT,
-        last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> User:
+    def create(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        add user by id
-
         Parameters:
-            - email: typing.Optional[str].
-
-            - first_name: typing.Optional[str].
-
-            - last_name: typing.Optional[str].
-
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep.client import Zep
@@ -121,29 +75,17 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.add_a_user()
+        client.user.create()
         """
-        _request: typing.Dict[str, typing.Any] = {}
-        if email is not OMIT:
-            _request["email"] = email
-        if first_name is not OMIT:
-            _request["first_name"] = first_name
-        if last_name is not OMIT:
-            _request["last_name"] = last_name
-        if metadata is not OMIT:
-            _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "user"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
+            json=jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))
+            if request_options is not None
+            else None,
             headers=jsonable_encoder(
                 remove_none_from_dict(
                     {
@@ -159,13 +101,7 @@ class UserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            return
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -489,19 +425,24 @@ class UserClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+
+class AsyncUserClient:
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
+
+    async def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         Parameters:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.client import AsyncZep
 
-        client = Zep(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        client.user.list()
+        await client.user.list()
         """
-        _response = self._client_wrapper.httpx_client.request(
+        _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "user"),
             params=jsonable_encoder(
@@ -529,19 +470,19 @@ class UserClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    async def create(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         Parameters:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.client import AsyncZep
 
-        client = Zep(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        client.user.create()
+        await client.user.create()
         """
-        _response = self._client_wrapper.httpx_client.request(
+        _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "user"),
             params=jsonable_encoder(
@@ -566,158 +507,6 @@ class UserClient:
         )
         if 200 <= _response.status_code < 300:
             return
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-
-class AsyncUserClient:
-    def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        self._client_wrapper = client_wrapper
-
-    async def list_all_users(
-        self,
-        *,
-        limit: typing.Optional[int] = None,
-        cursor: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[User]]:
-        """
-        list all users
-
-        Parameters:
-            - limit: typing.Optional[int]. Limit
-
-            - cursor: typing.Optional[int]. Cursor
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.user.list_all_users()
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users"),
-            params=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        "limit": limit,
-                        "cursor": cursor,
-                        **(
-                            request_options.get("additional_query_parameters", {})
-                            if request_options is not None
-                            else {}
-                        ),
-                    }
-                )
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[User]], _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def add_a_user(
-        self,
-        *,
-        email: typing.Optional[str] = OMIT,
-        first_name: typing.Optional[str] = OMIT,
-        last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> User:
-        """
-        add user by id
-
-        Parameters:
-            - email: typing.Optional[str].
-
-            - first_name: typing.Optional[str].
-
-            - last_name: typing.Optional[str].
-
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.user.add_a_user()
-        """
-        _request: typing.Dict[str, typing.Any] = {}
-        if email is not OMIT:
-            _request["email"] = email
-        if first_name is not OMIT:
-            _request["first_name"] = first_name
-        if last_name is not OMIT:
-            _request["last_name"] = last_name
-        if metadata is not OMIT:
-            _request["metadata"] = metadata
-        _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users"),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -1035,89 +824,6 @@ class AsyncUserClient:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
             )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
-        """
-        Parameters:
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.user.list()
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "user"),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def create(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
-        """
-        Parameters:
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.user.create()
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "user"),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))
-            if request_options is not None
-            else None,
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return
         try:
             _response_json = _response.json()
         except JSONDecodeError:
