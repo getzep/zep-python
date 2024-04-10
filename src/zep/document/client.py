@@ -573,8 +573,6 @@ class DocumentClient:
 
             - limit: typing.Optional[int]. Limit the number of returned documents
 
-            - collection_name: typing.Optional[str].
-
             - embedding: typing.Optional[typing.Sequence[float]].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
@@ -599,8 +597,6 @@ class DocumentClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {}
-        if collection_name is not OMIT:
-            _request["collection_name"] = collection_name
         if embedding is not OMIT:
             _request["embedding"] = embedding
         if metadata is not OMIT:
@@ -1217,8 +1213,6 @@ class AsyncDocumentClient:
 
             - limit: typing.Optional[int]. Limit the number of returned documents
 
-            - collection_name: typing.Optional[str].
-
             - embedding: typing.Optional[typing.Sequence[float]].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
@@ -1243,8 +1237,6 @@ class AsyncDocumentClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {}
-        if collection_name is not OMIT:
-            _request["collection_name"] = collection_name
         if embedding is not OMIT:
             _request["embedding"] = embedding
         if metadata is not OMIT:

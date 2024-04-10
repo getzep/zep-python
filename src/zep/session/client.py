@@ -98,7 +98,6 @@ class SessionClient:
         self,
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        session_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
@@ -107,8 +106,6 @@ class SessionClient:
 
         Parameters:
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - session_id: typing.Optional[str].
 
             - user_id: typing.Optional[str]. Must be a pointer to allow for null values
 
@@ -124,8 +121,6 @@ class SessionClient:
         _request: typing.Dict[str, typing.Any] = {}
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        if session_id is not OMIT:
-            _request["session_id"] = session_id
         if user_id is not OMIT:
             _request["user_id"] = user_id
         _response = self._client_wrapper.httpx_client.request(
@@ -518,7 +513,6 @@ class AsyncSessionClient:
         self,
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        session_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
@@ -527,8 +521,6 @@ class AsyncSessionClient:
 
         Parameters:
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - session_id: typing.Optional[str].
 
             - user_id: typing.Optional[str]. Must be a pointer to allow for null values
 
@@ -544,8 +536,6 @@ class AsyncSessionClient:
         _request: typing.Dict[str, typing.Any] = {}
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        if session_id is not OMIT:
-            _request["session_id"] = session_id
         if user_id is not OMIT:
             _request["user_id"] = user_id
         _response = await self._client_wrapper.httpx_client.request(
