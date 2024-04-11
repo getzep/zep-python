@@ -22,7 +22,7 @@ from .types import (
     User,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError, UnauthorizedError
-from . import collection, document, memory, messages, search, session, user
+from . import collection, document, memory, messages, session, user
 from .environment import ZepEnvironment
 from .memory import MemoryGetRequestMemoryType
 from .version import __version__
@@ -58,7 +58,6 @@ __all__ = [
     "document",
     "memory",
     "messages",
-    "search",
     "session",
     "user",
 ]

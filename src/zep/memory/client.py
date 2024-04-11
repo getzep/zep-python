@@ -14,7 +14,10 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.memory import Memory
+from ..types.memory_search_result import MemorySearchResult
 from ..types.question import Question
+from ..types.search_scope import SearchScope
+from ..types.search_type import SearchType
 from .types.memory_get_request_memory_type import MemoryGetRequestMemoryType
 
 # this is used as the default value for optional parameters
@@ -206,6 +209,119 @@ class MemoryClient:
         )
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def search(
+        self,
+        session_id: str,
+        *,
+        limit: typing.Optional[int] = None,
+        embedding: typing.Optional[typing.Sequence[float]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        min_score: typing.Optional[float] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        search_scope: typing.Optional[SearchScope] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
+        text: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[MemorySearchResult]:
+        """
+        search memory messages by session id and query
+
+        Parameters:
+            - session_id: str. Session ID
+
+            - limit: typing.Optional[int]. Limit the number of results returned
+
+            - embedding: typing.Optional[typing.Sequence[float]].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - min_score: typing.Optional[float].
+
+            - mmr_lambda: typing.Optional[float].
+
+            - search_scope: typing.Optional[SearchScope].
+
+            - search_type: typing.Optional[SearchType].
+
+            - text: typing.Optional[str].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.search(
+            session_id="sessionId",
+        )
+        """
+        _request: typing.Dict[str, typing.Any] = {}
+        if embedding is not OMIT:
+            _request["embedding"] = embedding
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        if min_score is not OMIT:
+            _request["min_score"] = min_score
+        if mmr_lambda is not OMIT:
+            _request["mmr_lambda"] = mmr_lambda
+        if search_scope is not OMIT:
+            _request["search_scope"] = search_scope
+        if search_type is not OMIT:
+            _request["search_type"] = search_type
+        if text is not OMIT:
+            _request["text"] = text
+        _response = self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/search"
+            ),
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(typing.List[MemorySearchResult], _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -476,6 +592,119 @@ class AsyncMemoryClient:
         )
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def search(
+        self,
+        session_id: str,
+        *,
+        limit: typing.Optional[int] = None,
+        embedding: typing.Optional[typing.Sequence[float]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        min_score: typing.Optional[float] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        search_scope: typing.Optional[SearchScope] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
+        text: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[MemorySearchResult]:
+        """
+        search memory messages by session id and query
+
+        Parameters:
+            - session_id: str. Session ID
+
+            - limit: typing.Optional[int]. Limit the number of results returned
+
+            - embedding: typing.Optional[typing.Sequence[float]].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - min_score: typing.Optional[float].
+
+            - mmr_lambda: typing.Optional[float].
+
+            - search_scope: typing.Optional[SearchScope].
+
+            - search_type: typing.Optional[SearchType].
+
+            - text: typing.Optional[str].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.search(
+            session_id="sessionId",
+        )
+        """
+        _request: typing.Dict[str, typing.Any] = {}
+        if embedding is not OMIT:
+            _request["embedding"] = embedding
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        if min_score is not OMIT:
+            _request["min_score"] = min_score
+        if mmr_lambda is not OMIT:
+            _request["mmr_lambda"] = mmr_lambda
+        if search_scope is not OMIT:
+            _request["search_scope"] = search_scope
+        if search_type is not OMIT:
+            _request["search_type"] = search_type
+        if text is not OMIT:
+            _request["text"] = text
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/search"
+            ),
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(typing.List[MemorySearchResult], _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:

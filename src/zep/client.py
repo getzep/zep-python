@@ -12,7 +12,6 @@ from .document.client import AsyncDocumentClient, DocumentClient
 from .environment import ZepEnvironment
 from .memory.client import AsyncMemoryClient, MemoryClient
 from .messages.client import AsyncMessagesClient, MessagesClient
-from .search.client import AsyncSearchClient, SearchClient
 from .session.client import AsyncSessionClient, SessionClient
 from .user.client import AsyncUserClient, UserClient
 
@@ -71,7 +70,6 @@ class Zep:
         self.session = SessionClient(client_wrapper=self._client_wrapper)
         self.memory = MemoryClient(client_wrapper=self._client_wrapper)
         self.messages = MessagesClient(client_wrapper=self._client_wrapper)
-        self.search = SearchClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
 
@@ -129,7 +127,6 @@ class AsyncZep:
         self.session = AsyncSessionClient(client_wrapper=self._client_wrapper)
         self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
         self.messages = AsyncMessagesClient(client_wrapper=self._client_wrapper)
-        self.search = AsyncSearchClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 
 
