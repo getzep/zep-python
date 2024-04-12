@@ -16,7 +16,7 @@ import uuid
 
 from dotenv import find_dotenv, load_dotenv
 
-from examples.chat_history.chat_history_shoe_purchase import history
+from chat_history_shoe_purchase import history
 
 from zep.client import Zep
 from zep.types import Memory, Message
