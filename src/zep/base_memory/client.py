@@ -18,13 +18,13 @@ from ..types.memory_search_result import MemorySearchResult
 from ..types.question import Question
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
-from .types.memory_get_request_memory_type import MemoryGetRequestMemoryType
+from .types.base_memory_get_request_memory_type import BaseMemoryGetRequestMemoryType
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class MemoryClient:
+class BaseMemoryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -32,7 +32,7 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        memory_type: typing.Optional[MemoryGetRequestMemoryType] = None,
+        memory_type: typing.Optional[BaseMemoryGetRequestMemoryType] = None,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -42,18 +42,18 @@ class MemoryClient:
         Parameters:
             - session_id: str. Session ID
 
-            - memory_type: typing.Optional[MemoryGetRequestMemoryType]. memoryType: perpetual or message_window
+            - memory_type: typing.Optional[BaseMemoryGetRequestMemoryType]. memoryType: perpetual or message_window
 
             - lastn: typing.Optional[int]. Last N messages. Overrides memory_window configuration
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.memory.get(
+        client.base_memory.get(
             session_id="sessionId",
         )
         """
@@ -117,12 +117,12 @@ class MemoryClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import Memory
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.memory.create(
+        client.base_memory.create(
             session_id="sessionId",
             request=Memory(),
         )
@@ -176,12 +176,12 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.memory.delete(
+        client.base_memory.delete(
             session_id="sessionId",
         )
         """
@@ -259,12 +259,12 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.memory.search(
+        client.base_memory.search(
             session_id="sessionId",
         )
         """
@@ -351,12 +351,12 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.memory.synthesize_question(
+        client.base_memory.synthesize_question(
             session_id="sessionId",
         )
         """
@@ -407,7 +407,7 @@ class MemoryClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncMemoryClient:
+class AsyncBaseMemoryClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -415,7 +415,7 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        memory_type: typing.Optional[MemoryGetRequestMemoryType] = None,
+        memory_type: typing.Optional[BaseMemoryGetRequestMemoryType] = None,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -425,18 +425,18 @@ class AsyncMemoryClient:
         Parameters:
             - session_id: str. Session ID
 
-            - memory_type: typing.Optional[MemoryGetRequestMemoryType]. memoryType: perpetual or message_window
+            - memory_type: typing.Optional[BaseMemoryGetRequestMemoryType]. memoryType: perpetual or message_window
 
             - lastn: typing.Optional[int]. Last N messages. Overrides memory_window configuration
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.memory.get(
+        await client.base_memory.get(
             session_id="sessionId",
         )
         """
@@ -500,12 +500,12 @@ class AsyncMemoryClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import Memory
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.memory.create(
+        await client.base_memory.create(
             session_id="sessionId",
             request=Memory(),
         )
@@ -559,12 +559,12 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.memory.delete(
+        await client.base_memory.delete(
             session_id="sessionId",
         )
         """
@@ -642,12 +642,12 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.memory.search(
+        await client.base_memory.search(
             session_id="sessionId",
         )
         """
@@ -734,12 +734,12 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.memory.synthesize_question(
+        await client.base_memory.synthesize_question(
             session_id="sessionId",
         )
         """

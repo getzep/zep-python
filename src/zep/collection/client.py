@@ -34,9 +34,9 @@ class CollectionClient:
         Parameters:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.collection.list()
@@ -88,9 +88,9 @@ class CollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.collection.get(
@@ -168,9 +168,9 @@ class CollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.collection.create(
@@ -246,9 +246,9 @@ class CollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.collection.delete(
@@ -315,9 +315,9 @@ class CollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.collection.update(
@@ -394,9 +394,9 @@ class CollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.collection.create_index(
@@ -470,9 +470,9 @@ class AsyncCollectionClient:
         Parameters:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.collection.list()
@@ -524,9 +524,9 @@ class AsyncCollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.collection.get(
@@ -604,9 +604,9 @@ class AsyncCollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.collection.create(
@@ -682,9 +682,9 @@ class AsyncCollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.collection.delete(
@@ -751,9 +751,9 @@ class AsyncCollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.collection.update(
@@ -830,9 +830,9 @@ class AsyncCollectionClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.collection.create_index(

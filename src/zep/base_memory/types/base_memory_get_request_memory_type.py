@@ -2,6 +2,6 @@
 
 import typing
 
-MemoryGetRequestMemoryType = typing.Union[
+BaseMemoryGetRequestMemoryType = typing.Union[
     typing.AnyStr, typing.Literal["perpetual", "summary_retriever", "message_window"]
 ]

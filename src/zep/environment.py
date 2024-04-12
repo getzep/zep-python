@@ -3,5 +3,5 @@
 import enum
 
 
-class ZepEnvironment(enum.Enum):
+class BaseClientEnvironment(enum.Enum):
     DEFAULT = "https://api.getzep.com/api/v2"

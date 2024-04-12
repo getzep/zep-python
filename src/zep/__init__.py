@@ -22,14 +22,16 @@ from .types import (
     User,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError, UnauthorizedError
-from . import collection, document, memory, messages, session, user
-from .environment import ZepEnvironment
-from .memory import MemoryGetRequestMemoryType
+from . import base_memory, collection, document, messages, session, user
+from .base_memory import BaseMemoryGetRequestMemoryType
+from .environment import BaseClientEnvironment
 from .version import __version__
 
 __all__ = [
     "ApiError",
     "BadRequestError",
+    "BaseClientEnvironment",
+    "BaseMemoryGetRequestMemoryType",
     "ClassifySessionResponse",
     "CreateDocumentRequest",
     "DocumentCollectionResponse",
@@ -38,7 +40,6 @@ __all__ = [
     "DocumentSearchResultPage",
     "InternalServerError",
     "Memory",
-    "MemoryGetRequestMemoryType",
     "MemorySearchResult",
     "Message",
     "ModelsRoleType",
@@ -52,11 +53,10 @@ __all__ = [
     "UnauthorizedError",
     "UpdateDocumentListRequest",
     "User",
-    "ZepEnvironment",
     "__version__",
+    "base_memory",
     "collection",
     "document",
-    "memory",
     "messages",
     "session",
     "user",

@@ -5,27 +5,27 @@ import typing
 
 import httpx
 
+from .base_memory.client import AsyncBaseMemoryClient, BaseMemoryClient
 from .collection.client import AsyncCollectionClient, CollectionClient
 from .core.api_error import ApiError
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .document.client import AsyncDocumentClient, DocumentClient
-from .environment import ZepEnvironment
-from .memory.client import AsyncMemoryClient, MemoryClient
+from .environment import BaseClientEnvironment
 from .messages.client import AsyncMessagesClient, MessagesClient
 from .session.client import AsyncSessionClient, SessionClient
 from .user.client import AsyncUserClient, UserClient
 
 
-class Zep:
+class BaseClient:
     """
     Use this class to access the different functions within the SDK. You can instantiate any number of clients with different configuration that will propogate to these functions.
 
     Parameters:
         - base_url: typing.Optional[str]. The base url to use for requests from the client.
 
-        - environment: ZepEnvironment. The environment to use for requests from the client. from .environment import ZepEnvironment
+        - environment: BaseClientEnvironment. The environment to use for requests from the client. from .environment import BaseClientEnvironment
 
-                                       Defaults to ZepEnvironment.DEFAULT
+                                              Defaults to BaseClientEnvironment.DEFAULT
 
         - api_key: typing.Optional[str].
 
@@ -35,9 +35,9 @@ class Zep:
 
         - httpx_client: typing.Optional[httpx.Client]. The httpx client to use for making requests, a preconfigured client is used by default, however this is useful should you want to pass in any custom httpx configuration.
     ---
-    from zep.client import Zep
+    from zep.base_client import BaseClient
 
-    client = Zep(
+    client = BaseClient(
         api_key="YOUR_API_KEY",
     )
     """
@@ -46,7 +46,7 @@ class Zep:
         self,
         *,
         base_url: typing.Optional[str] = None,
-        environment: ZepEnvironment = ZepEnvironment.DEFAULT,
+        environment: BaseClientEnvironment = BaseClientEnvironment.DEFAULT,
         api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = None,
@@ -68,21 +68,21 @@ class Zep:
         self.document = DocumentClient(client_wrapper=self._client_wrapper)
         self.collection = CollectionClient(client_wrapper=self._client_wrapper)
         self.session = SessionClient(client_wrapper=self._client_wrapper)
-        self.memory = MemoryClient(client_wrapper=self._client_wrapper)
+        self.base_memory = BaseMemoryClient(client_wrapper=self._client_wrapper)
         self.messages = MessagesClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
 
-class AsyncZep:
+class AsyncBaseClient:
     """
     Use this class to access the different functions within the SDK. You can instantiate any number of clients with different configuration that will propogate to these functions.
 
     Parameters:
         - base_url: typing.Optional[str]. The base url to use for requests from the client.
 
-        - environment: ZepEnvironment. The environment to use for requests from the client. from .environment import ZepEnvironment
+        - environment: BaseClientEnvironment. The environment to use for requests from the client. from .environment import BaseClientEnvironment
 
-                                       Defaults to ZepEnvironment.DEFAULT
+                                              Defaults to BaseClientEnvironment.DEFAULT
 
         - api_key: typing.Optional[str].
 
@@ -92,9 +92,9 @@ class AsyncZep:
 
         - httpx_client: typing.Optional[httpx.AsyncClient]. The httpx client to use for making requests, a preconfigured client is used by default, however this is useful should you want to pass in any custom httpx configuration.
     ---
-    from zep.client import AsyncZep
+    from zep.base_client import AsyncBaseClient
 
-    client = AsyncZep(
+    client = AsyncBaseClient(
         api_key="YOUR_API_KEY",
     )
     """
@@ -103,7 +103,7 @@ class AsyncZep:
         self,
         *,
         base_url: typing.Optional[str] = None,
-        environment: ZepEnvironment = ZepEnvironment.DEFAULT,
+        environment: BaseClientEnvironment = BaseClientEnvironment.DEFAULT,
         api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = None,
@@ -125,12 +125,12 @@ class AsyncZep:
         self.document = AsyncDocumentClient(client_wrapper=self._client_wrapper)
         self.collection = AsyncCollectionClient(client_wrapper=self._client_wrapper)
         self.session = AsyncSessionClient(client_wrapper=self._client_wrapper)
-        self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
+        self.base_memory = AsyncBaseMemoryClient(client_wrapper=self._client_wrapper)
         self.messages = AsyncMessagesClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 
 
-def _get_base_url(*, base_url: typing.Optional[str] = None, environment: ZepEnvironment) -> str:
+def _get_base_url(*, base_url: typing.Optional[str] = None, environment: BaseClientEnvironment) -> str:
     if base_url is not None:
         return base_url
     elif environment is not None:

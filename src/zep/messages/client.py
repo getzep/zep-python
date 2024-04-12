@@ -32,9 +32,9 @@ class MessagesClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.messages.list(
@@ -90,9 +90,9 @@ class MessagesClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.messages.get(
@@ -158,9 +158,9 @@ class MessagesClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import Message
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.messages.update(
@@ -228,9 +228,9 @@ class AsyncMessagesClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.messages.list(
@@ -286,9 +286,9 @@ class AsyncMessagesClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.messages.get(
@@ -354,9 +354,9 @@ class AsyncMessagesClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import Message
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.messages.update(
