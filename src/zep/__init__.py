@@ -25,6 +25,10 @@ from .errors import BadRequestError, InternalServerError, NotFoundError, Unautho
 from . import base_document, base_memory, base_messages, base_user
 from .base_memory import BaseMemoryGetRequestMemoryType
 from .environment import BaseClientEnvironment
+from .memory import AsyncMemoryClient, MemoryClient
+from .messages import AsyncMessagesClient, MessagesClient
+from .user import AsyncUserClient, UserClient
+from .document import AsyncDocumentClient, DocumentClient
 from .version import __version__
 
 __all__ = [
@@ -58,4 +62,16 @@ __all__ = [
     "base_memory",
     "base_messages",
     "base_user",
+    "AsyncMemoryClient",
+    "MemoryClient",
+    "AsyncMessagesClient",
+    "MessagesClient",
+    "AsyncUserClient",
+    "UserClient",
+    "AsyncDocumentClient",
+    "DocumentClient",
+    "memory",
+    "messages",
+    "user",
+    "document",
 ]
