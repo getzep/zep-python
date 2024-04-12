@@ -4,7 +4,7 @@ import typing
 import os
 import httpx
 from .environment import BaseClientEnvironment
-from memory.client import MemoryClient, AsyncMemoryClient
+from zep.memory.client import MemoryClient, AsyncMemoryClient
 from zep.document import DocumentClient, AsyncDocumentClient
 from zep.messages import MessagesClient, AsyncMessagesClient
 from zep.user import UserClient, AsyncUserClient
