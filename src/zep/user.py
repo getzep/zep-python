@@ -1,15 +1,15 @@
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from .base_memory.client import BaseMemoryClient, AsyncBaseMemoryClient
+from .base_user.client import BaseUserClient, AsyncBaseUserClient
 
 
-class MemoryClient(BaseMemoryClient):
+class UserClient(BaseUserClient):
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         super().__init__(
             client_wrapper=client_wrapper
         )
 
 
-class AsyncMemoryClient(AsyncBaseMemoryClient):
+class AsyncUserClient(AsyncBaseUserClient):
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         super().__init__(
             client_wrapper=client_wrapper

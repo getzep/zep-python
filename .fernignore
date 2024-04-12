@@ -1,3 +1,9 @@
 # Specify files that shouldn't be modified by Fern
 src/zep/client.py
 src/zep/memory.py
+src/zep/user.py
+src/zep/messages.py
+src/zep/document.py
+examples/chat_history/memory_async.py
+examples/chat_history/memory.py
+examples/chat_history/chat_history_shoe_purchase.py
