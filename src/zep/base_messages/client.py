@@ -19,11 +19,13 @@ from ..types.message import Message
 OMIT = typing.cast(typing.Any, ...)
 
 
-class MessagesClient:
+class BaseMessagesClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> typing.List[Message]:
+    def get_session_messages(
+        self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[Message]:
         """
         get messages by session id
 
@@ -37,7 +39,7 @@ class MessagesClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.messages.list(
+        client.base_messages.get_session_messages(
             session_id="sessionId",
         )
         """
@@ -77,7 +79,7 @@ class MessagesClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(
+    def get_session_message(
         self, session_id: str, message_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
@@ -95,7 +97,7 @@ class MessagesClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.messages.get(
+        client.base_messages.get_session_message(
             session_id="sessionId",
             message_id="messageId",
         )
@@ -137,7 +139,7 @@ class MessagesClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(
+    def update_message_metadata(
         self,
         session_id: str,
         message_id: str,
@@ -163,7 +165,7 @@ class MessagesClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.messages.update(
+        client.base_messages.update_message_metadata(
             session_id="sessionId",
             message_id="messageId",
             request=Message(),
@@ -213,11 +215,11 @@ class MessagesClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncMessagesClient:
+class AsyncBaseMessagesClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list(
+    async def get_session_messages(
         self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[Message]:
         """
@@ -233,7 +235,7 @@ class AsyncMessagesClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.messages.list(
+        await client.base_messages.get_session_messages(
             session_id="sessionId",
         )
         """
@@ -273,7 +275,7 @@ class AsyncMessagesClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(
+    async def get_session_message(
         self, session_id: str, message_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
@@ -291,7 +293,7 @@ class AsyncMessagesClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.messages.get(
+        await client.base_messages.get_session_message(
             session_id="sessionId",
             message_id="messageId",
         )
@@ -333,7 +335,7 @@ class AsyncMessagesClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(
+    async def update_message_metadata(
         self,
         session_id: str,
         message_id: str,
@@ -359,7 +361,7 @@ class AsyncMessagesClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.messages.update(
+        await client.base_messages.update_message_metadata(
             session_id="sessionId",
             message_id="messageId",
             request=Message(),

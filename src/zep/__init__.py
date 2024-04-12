@@ -22,7 +22,7 @@ from .types import (
     User,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError, UnauthorizedError
-from . import base_memory, collection, document, messages, session, user
+from . import base_document, base_memory, base_messages, base_user
 from .base_memory import BaseMemoryGetRequestMemoryType
 from .environment import BaseClientEnvironment
 from .version import __version__
@@ -54,10 +54,8 @@ __all__ = [
     "UpdateDocumentListRequest",
     "User",
     "__version__",
+    "base_document",
     "base_memory",
-    "collection",
-    "document",
-    "messages",
-    "session",
-    "user",
+    "base_messages",
+    "base_user",
 ]
