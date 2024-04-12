@@ -4,10 +4,10 @@ import typing
 import os
 import httpx
 from .environment import BaseClientEnvironment
-from . import MemoryClient, AsyncMemoryClient
-from . import DocumentClient, AsyncDocumentClient
-from . import MessagesClient, AsyncMessagesClient
-from . import UserClient, AsyncUserClient
+from external_clients.memory import MemoryClient, AsyncMemoryClient
+from external_clients.document import DocumentClient, AsyncDocumentClient
+from external_clients.messages import MessagesClient, AsyncMessagesClient
+from external_clients.user import UserClient, AsyncUserClient
 
 
 class Zep(BaseClient):

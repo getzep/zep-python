@@ -1,5 +1,5 @@
-from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from .base_messages.client import BaseMessagesClient, AsyncBaseMessagesClient
+from zep.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from zep.base_messages.client import BaseMessagesClient, AsyncBaseMessagesClient
 
 
 class MessagesClient(BaseMessagesClient):

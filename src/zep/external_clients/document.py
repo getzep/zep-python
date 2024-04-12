@@ -1,15 +1,15 @@
-from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from .base_user.client import BaseUserClient, AsyncBaseUserClient
+from zep.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from zep.base_document.client import BaseDocumentClient, AsyncBaseDocumentClient
 
 
-class UserClient(BaseUserClient):
+class DocumentClient(BaseDocumentClient):
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         super().__init__(
             client_wrapper=client_wrapper
         )
 
 
-class AsyncUserClient(AsyncBaseUserClient):
+class AsyncDocumentClient(AsyncBaseDocumentClient):
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         super().__init__(
             client_wrapper=client_wrapper
