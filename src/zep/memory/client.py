@@ -1,5 +1,5 @@
-from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from .base_memory.client import BaseMemoryClient, AsyncBaseMemoryClient
+from zep.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from zep.base_memory.client import BaseMemoryClient, AsyncBaseMemoryClient
 
 
 class MemoryClient(BaseMemoryClient):
