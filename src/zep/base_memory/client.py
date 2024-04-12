@@ -593,7 +593,7 @@ class BaseMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+    def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         delete memory messages by session id
 
@@ -634,7 +634,7 @@ class BaseMemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+            return
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -1454,7 +1454,7 @@ class AsyncBaseMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+    async def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         delete memory messages by session id
 
@@ -1495,7 +1495,7 @@ class AsyncBaseMemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+            return
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
