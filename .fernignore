@@ -4,6 +4,10 @@ src/zep/memory.py
 src/zep/user.py
 src/zep/messages.py
 src/zep/document.py
+src/zep/external_clients/memory.py
+src/zep/external_clients/user.py
+src/zep/external_clients/messages.py
+src/zep/external_clients/document.py
 examples/chat_history/memory_async.py
 examples/chat_history/memory.py
 examples/chat_history/chat_history_shoe_purchase.py
