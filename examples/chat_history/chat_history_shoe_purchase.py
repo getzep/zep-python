@@ -1,6 +1,6 @@
 history = [
     {
-        "role": "user",
+        "role": "James",
         "role_type": "user",
         "content": (
             "Hi there, I'm looking for a new pair of shoes. I'm not sure where"
@@ -8,7 +8,7 @@ history = [
         ),
     },
     {
-        "role": "assistant",
+        "role": "SalesBot",
         "role_type": "assistant",
         "content": (
             "Hello! I'd be happy to help you find the perfect pair of shoes. To"
@@ -17,12 +17,12 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "James",
         "role_type": "user",
         "content": "I like Nike and Adidas, but I'm open to other brands too.",
     },
     {
-        "role": "assistant",
+        "role": "SalesBot",
         "role_type": "assistant",
         "content": (
             "That's great! It's important to find the right shoe for your"
@@ -32,12 +32,12 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "James",
         "role_type": "user",
         "content": "I'll be using them for running.",
     },
     {
-        "role": "assistant",
+        "role": "SalesBot",
         "role_type": "assistant",
         "content": (
             "Fantastic! Now, could you please provide me with your shoe size"
@@ -46,12 +46,12 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "James",
         "role_type": "user",
         "content": ("I wear a men's size 10, and I'm not sure about the foot width."),
     },
     {
-        "role": "assistant",
+        "role": "SalesBot",
         "role_type": "assistant",
         "content": (
             "Thank you. Based on your size, I'll make sure to suggest shoes"
@@ -59,7 +59,7 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "James",
         "role_type": "user",
         "content": (
             "I have a bit of a pronation issue. Do I need to consider that"
@@ -67,7 +67,7 @@ history = [
         ),
     },
     {
-        "role": "assistant",
+        "role": "SalesBot",
         "role_type": "assistant",
         "content": (
             "Yes, pronation is essential when choosing running shoes. It refers"
@@ -78,12 +78,12 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "James",
         "role_type": "user",
         "content": "Great, I have a budget of around $120.",
     },
     {
-        "role": "assistant",
+        "role": "SalesBot",
         "role_type": "assistant",
         "content": (
             "Perfect! I'll make sure to find the best running shoes that fit"
@@ -92,7 +92,7 @@ history = [
         ),
     },
     {
-        "role": "assistant",
+        "role": "SalesBot",
         "role_type": "assistant",
         "content": (
             "I've found a few great options for you. The first one is the"
@@ -103,7 +103,7 @@ history = [
         "metadata": {"bar": "foo"},
     },
     {
-        "role": "user",
+        "role": "James",
         "role_type": "user",
         "content": (
             "I've heard good things about Brooks, but I was kind of hoping to"
@@ -111,7 +111,7 @@ history = [
         ),
     },
     {
-        "role": "assistant",
+        "role": "SalesBot",
         "role_type": "assistant",
         "content": (
             "I understand. In that case, I'd recommend the Adidas Ultraboost"
@@ -121,12 +121,12 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "James",
         "role_type": "user",
         "content": "They're nice looking. Yes, I think I'll go with those.",
     },
     {
-        "role": "assistant",
+        "role": "SalesBot",
         "role_type": "assistant",
         "content": (
             "Excellent choice! To complete the purchase, I'll need you to"
