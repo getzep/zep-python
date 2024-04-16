@@ -1,16 +1,17 @@
+
 [![Tests](https://github.com/getzep/zep-python/actions/workflows/test.yml/badge.svg)](https://github.com/getzep/zep-python/actions/workflows/test.yml) [![lint](https://github.com/getzep/zep-python/actions/workflows/lint.yml/badge.svg)](https://github.com/getzep/zep-python/actions/workflows/lint.yml) [![Release to PyPI](https://github.com/getzep/zep-python/actions/workflows/release.yml/badge.svg)](https://github.com/getzep/zep-python/actions/workflows/release.yml) ![GitHub](https://img.shields.io/github/license/getzep/zep-python?color=blue)
 
-
 <p align="center">
-  <a href="https://squidfunk.github.io/mkdocs-material/">
-    <img src="https://github.com/getzep/zep/blob/main/assets/zep-bot-square-200x200.png?raw=true" width="150" alt="Zep Logo">
+  <a href="https://www.getzep.com/">
+    <img src="https://raw.githubusercontent.com/getzep/zep/main/assets/zep-logo-icon-gradient-rgb.svg" width="150" alt="Zep Logo">
   </a>
 </p>
 
 <h1 align="center">
-Zep: Fast, scalable building blocks for LLM apps
+Zep: Long-Term Memory for ‍AI Assistants.
 </h1>
-<h2 align="center">Chat history memory, embedding, vector search, data enrichment, and more.</h2>
+<h2 align="center">Recall, understand, and extract data from chat histories. Power personalized AI experiences.</h2>
+<br />
 
 <p align="center">
 <a href="https://docs.getzep.com/deployment/quickstart/">Quick Start</a> | 
