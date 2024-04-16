@@ -22,16 +22,15 @@ from .types import (
     User,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError, UnauthorizedError
-from . import base_document, base_memory, base_messages, base_user
-from .base_memory import BaseMemoryGetRequestMemoryType
+from . import document, memory, messages, user
 from .environment import BaseClientEnvironment
+from .memory import MemoryGetRequestMemoryType
 from .version import __version__
 
 __all__ = [
     "ApiError",
     "BadRequestError",
     "BaseClientEnvironment",
-    "BaseMemoryGetRequestMemoryType",
     "ClassifySessionResponse",
     "CreateDocumentRequest",
     "DocumentCollectionResponse",
@@ -40,6 +39,7 @@ __all__ = [
     "DocumentSearchResultPage",
     "InternalServerError",
     "Memory",
+    "MemoryGetRequestMemoryType",
     "MemorySearchResult",
     "Message",
     "ModelsRoleType",
@@ -54,8 +54,8 @@ __all__ = [
     "UpdateDocumentListRequest",
     "User",
     "__version__",
-    "base_document",
-    "base_memory",
-    "base_messages",
-    "base_user",
+    "document",
+    "memory",
+    "messages",
+    "user",
 ]

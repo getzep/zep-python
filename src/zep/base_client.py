@@ -5,13 +5,13 @@ import typing
 
 import httpx
 
-from .base_document.client import AsyncBaseDocumentClient, BaseDocumentClient
-from .base_memory.client import AsyncBaseMemoryClient, BaseMemoryClient
-from .base_messages.client import AsyncBaseMessagesClient, BaseMessagesClient
-from .base_user.client import AsyncBaseUserClient, BaseUserClient
 from .core.api_error import ApiError
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from .document.client import AsyncDocumentClient, DocumentClient
 from .environment import BaseClientEnvironment
+from .memory.client import AsyncMemoryClient, MemoryClient
+from .messages.client import AsyncMessagesClient, MessagesClient
+from .user.client import AsyncUserClient, UserClient
 
 
 class BaseClient:
@@ -63,10 +63,10 @@ class BaseClient:
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.base_document = BaseDocumentClient(client_wrapper=self._client_wrapper)
-        self.base_memory = BaseMemoryClient(client_wrapper=self._client_wrapper)
-        self.base_messages = BaseMessagesClient(client_wrapper=self._client_wrapper)
-        self.base_user = BaseUserClient(client_wrapper=self._client_wrapper)
+        self.document = DocumentClient(client_wrapper=self._client_wrapper)
+        self.memory = MemoryClient(client_wrapper=self._client_wrapper)
+        self.messages = MessagesClient(client_wrapper=self._client_wrapper)
+        self.user = UserClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncBaseClient:
@@ -118,10 +118,10 @@ class AsyncBaseClient:
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.base_document = AsyncBaseDocumentClient(client_wrapper=self._client_wrapper)
-        self.base_memory = AsyncBaseMemoryClient(client_wrapper=self._client_wrapper)
-        self.base_messages = AsyncBaseMessagesClient(client_wrapper=self._client_wrapper)
-        self.base_user = AsyncBaseUserClient(client_wrapper=self._client_wrapper)
+        self.document = AsyncDocumentClient(client_wrapper=self._client_wrapper)
+        self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
+        self.messages = AsyncMessagesClient(client_wrapper=self._client_wrapper)
+        self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(*, base_url: typing.Optional[str] = None, environment: BaseClientEnvironment) -> str:

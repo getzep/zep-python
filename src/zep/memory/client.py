@@ -22,13 +22,13 @@ from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
 from ..types.session import Session
 from ..types.summary_list_response import SummaryListResponse
-from .types.base_memory_get_request_memory_type import BaseMemoryGetRequestMemoryType
+from .types.memory_get_request_memory_type import MemoryGetRequestMemoryType
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class BaseMemoryClient:
+class MemoryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -54,7 +54,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.list_sessions()
+        client.memory.list_sessions()
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
@@ -125,7 +125,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.add_session()
+        client.memory.add_session()
         """
         _request: typing.Dict[str, typing.Any] = {}
         if metadata is not OMIT:
@@ -196,7 +196,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.list_sessions_paginated()
+        client.memory.list_sessions_paginated()
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
@@ -256,7 +256,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.get_session(
+        client.memory.get_session(
             session_id="sessionId",
         )
         """
@@ -316,7 +316,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.update_session(
+        client.memory.update_session(
             session_id="sessionId",
         )
         """
@@ -399,7 +399,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.classify_session(
+        client.memory.classify_session(
             session_id="sessionId",
             classes=["classes"],
             name="name",
@@ -458,7 +458,7 @@ class BaseMemoryClient:
         self,
         session_id: str,
         *,
-        memory_type: typing.Optional[BaseMemoryGetRequestMemoryType] = None,
+        memory_type: typing.Optional[MemoryGetRequestMemoryType] = None,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -468,7 +468,7 @@ class BaseMemoryClient:
         Parameters:
             - session_id: str. Session ID
 
-            - memory_type: typing.Optional[BaseMemoryGetRequestMemoryType]. memoryType: perpetual or message_window
+            - memory_type: typing.Optional[MemoryGetRequestMemoryType]. memoryType: perpetual or message_window
 
             - lastn: typing.Optional[int]. Last N messages. Overrides memory_window configuration
 
@@ -479,7 +479,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.get(
+        client.memory.get(
             session_id="sessionId",
         )
         """
@@ -548,7 +548,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.create(
+        client.memory.create(
             session_id="sessionId",
             request=Memory(),
         )
@@ -607,7 +607,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.delete(
+        client.memory.delete(
             session_id="sessionId",
         )
         """
@@ -690,7 +690,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.search(
+        client.memory.search(
             session_id="sessionId",
         )
         """
@@ -776,7 +776,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.get_summaries(
+        client.memory.get_summaries(
             session_id="sessionId",
         )
         """
@@ -838,7 +838,7 @@ class BaseMemoryClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_memory.synthesize_question(
+        client.memory.synthesize_question(
             session_id="sessionId",
         )
         """
@@ -889,7 +889,7 @@ class BaseMemoryClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncBaseMemoryClient:
+class AsyncMemoryClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -915,7 +915,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.list_sessions()
+        await client.memory.list_sessions()
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
@@ -986,7 +986,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.add_session()
+        await client.memory.add_session()
         """
         _request: typing.Dict[str, typing.Any] = {}
         if metadata is not OMIT:
@@ -1057,7 +1057,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.list_sessions_paginated()
+        await client.memory.list_sessions_paginated()
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
@@ -1117,7 +1117,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.get_session(
+        await client.memory.get_session(
             session_id="sessionId",
         )
         """
@@ -1177,7 +1177,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.update_session(
+        await client.memory.update_session(
             session_id="sessionId",
         )
         """
@@ -1260,7 +1260,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.classify_session(
+        await client.memory.classify_session(
             session_id="sessionId",
             classes=["classes"],
             name="name",
@@ -1319,7 +1319,7 @@ class AsyncBaseMemoryClient:
         self,
         session_id: str,
         *,
-        memory_type: typing.Optional[BaseMemoryGetRequestMemoryType] = None,
+        memory_type: typing.Optional[MemoryGetRequestMemoryType] = None,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -1329,7 +1329,7 @@ class AsyncBaseMemoryClient:
         Parameters:
             - session_id: str. Session ID
 
-            - memory_type: typing.Optional[BaseMemoryGetRequestMemoryType]. memoryType: perpetual or message_window
+            - memory_type: typing.Optional[MemoryGetRequestMemoryType]. memoryType: perpetual or message_window
 
             - lastn: typing.Optional[int]. Last N messages. Overrides memory_window configuration
 
@@ -1340,7 +1340,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.get(
+        await client.memory.get(
             session_id="sessionId",
         )
         """
@@ -1409,7 +1409,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.create(
+        await client.memory.create(
             session_id="sessionId",
             request=Memory(),
         )
@@ -1468,7 +1468,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.delete(
+        await client.memory.delete(
             session_id="sessionId",
         )
         """
@@ -1551,7 +1551,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.search(
+        await client.memory.search(
             session_id="sessionId",
         )
         """
@@ -1637,7 +1637,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.get_summaries(
+        await client.memory.get_summaries(
             session_id="sessionId",
         )
         """
@@ -1699,7 +1699,7 @@ class AsyncBaseMemoryClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_memory.synthesize_question(
+        await client.memory.synthesize_question(
             session_id="sessionId",
         )
         """

@@ -26,7 +26,7 @@ from ..types.update_document_list_request import UpdateDocumentListRequest
 OMIT = typing.cast(typing.Any, ...)
 
 
-class BaseDocumentClient:
+class DocumentClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -56,7 +56,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.update_document(
+        client.document.update_document(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -133,7 +133,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.get_document(
+        client.document.get_document(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -193,7 +193,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.list_collections()
+        client.document.list_collections()
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
@@ -247,7 +247,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.get_collection(
+        client.document.get_collection(
             collection_name="collectionName",
         )
         """
@@ -327,7 +327,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.add_collection(
+        client.document.add_collection(
             collection_name="collectionName",
             embedding_dimensions=1,
             is_auto_embedded=True,
@@ -407,7 +407,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.delete_collection(
+        client.document.delete_collection(
             collection_name="collectionName",
         )
         """
@@ -476,7 +476,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.update_collection(
+        client.document.update_collection(
             collection_name="collectionName",
         )
         """
@@ -556,7 +556,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.add_documents(
+        client.document.add_documents(
             collection_name="collectionName",
             request=[CreateDocumentRequest()],
         )
@@ -629,7 +629,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.batch_delete_documents(
+        client.document.batch_delete_documents(
             collection_name="collectionName",
             request=["string"],
         )
@@ -706,7 +706,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.batch_get_documents(
+        client.document.batch_get_documents(
             collection_name="collectionName",
         )
         """
@@ -785,7 +785,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.batch_update_documents(
+        client.document.batch_update_documents(
             collection_name="collectionName",
             request=[
                 UpdateDocumentListRequest(
@@ -859,7 +859,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.delete_document(
+        client.document.delete_document(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -929,7 +929,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.create_collection_index(
+        client.document.create_collection_index(
             collection_name="collectionName",
         )
         """
@@ -1026,7 +1026,7 @@ class BaseDocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_document.search(
+        client.document.search(
             collection_name="collectionName",
         )
         """
@@ -1099,7 +1099,7 @@ class BaseDocumentClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncBaseDocumentClient:
+class AsyncDocumentClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -1129,7 +1129,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.update_document(
+        await client.document.update_document(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -1206,7 +1206,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.get_document(
+        await client.document.get_document(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -1266,7 +1266,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.list_collections()
+        await client.document.list_collections()
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
@@ -1320,7 +1320,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.get_collection(
+        await client.document.get_collection(
             collection_name="collectionName",
         )
         """
@@ -1400,7 +1400,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.add_collection(
+        await client.document.add_collection(
             collection_name="collectionName",
             embedding_dimensions=1,
             is_auto_embedded=True,
@@ -1480,7 +1480,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.delete_collection(
+        await client.document.delete_collection(
             collection_name="collectionName",
         )
         """
@@ -1549,7 +1549,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.update_collection(
+        await client.document.update_collection(
             collection_name="collectionName",
         )
         """
@@ -1629,7 +1629,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.add_documents(
+        await client.document.add_documents(
             collection_name="collectionName",
             request=[CreateDocumentRequest()],
         )
@@ -1702,7 +1702,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.batch_delete_documents(
+        await client.document.batch_delete_documents(
             collection_name="collectionName",
             request=["string"],
         )
@@ -1779,7 +1779,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.batch_get_documents(
+        await client.document.batch_get_documents(
             collection_name="collectionName",
         )
         """
@@ -1858,7 +1858,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.batch_update_documents(
+        await client.document.batch_update_documents(
             collection_name="collectionName",
             request=[
                 UpdateDocumentListRequest(
@@ -1932,7 +1932,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.delete_document(
+        await client.document.delete_document(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -2002,7 +2002,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.create_collection_index(
+        await client.document.create_collection_index(
             collection_name="collectionName",
         )
         """
@@ -2099,7 +2099,7 @@ class AsyncBaseDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_document.search(
+        await client.document.search(
             collection_name="collectionName",
         )
         """

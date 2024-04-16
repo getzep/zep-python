@@ -21,7 +21,7 @@ from ..types.user import User
 OMIT = typing.cast(typing.Any, ...)
 
 
-class BaseUserClient:
+class UserClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -47,7 +47,7 @@ class BaseUserClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_user.list()
+        client.user.list()
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
@@ -124,7 +124,7 @@ class BaseUserClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_user.add()
+        client.user.add()
         """
         _request: typing.Dict[str, typing.Any] = {}
         if email is not OMIT:
@@ -199,7 +199,7 @@ class BaseUserClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_user.list_ordered()
+        client.user.list_ordered()
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
@@ -259,7 +259,7 @@ class BaseUserClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_user.get(
+        client.user.get(
             user_id="userId",
         )
         """
@@ -311,7 +311,7 @@ class BaseUserClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_user.delete(
+        client.user.delete(
             user_id="userId",
         )
         """
@@ -383,7 +383,7 @@ class BaseUserClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_user.update(
+        client.user.update(
             user_id="userId",
         )
         """
@@ -456,7 +456,7 @@ class BaseUserClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.base_user.get_sessions(
+        client.user.get_sessions(
             user_id="userId",
         )
         """
@@ -495,7 +495,7 @@ class BaseUserClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncBaseUserClient:
+class AsyncUserClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -521,7 +521,7 @@ class AsyncBaseUserClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_user.list()
+        await client.user.list()
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
@@ -598,7 +598,7 @@ class AsyncBaseUserClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_user.add()
+        await client.user.add()
         """
         _request: typing.Dict[str, typing.Any] = {}
         if email is not OMIT:
@@ -673,7 +673,7 @@ class AsyncBaseUserClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_user.list_ordered()
+        await client.user.list_ordered()
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
@@ -733,7 +733,7 @@ class AsyncBaseUserClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_user.get(
+        await client.user.get(
             user_id="userId",
         )
         """
@@ -785,7 +785,7 @@ class AsyncBaseUserClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_user.delete(
+        await client.user.delete(
             user_id="userId",
         )
         """
@@ -857,7 +857,7 @@ class AsyncBaseUserClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_user.update(
+        await client.user.update(
             user_id="userId",
         )
         """
@@ -930,7 +930,7 @@ class AsyncBaseUserClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.base_user.get_sessions(
+        await client.user.get_sessions(
             user_id="userId",
         )
         """
