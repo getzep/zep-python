@@ -125,14 +125,4 @@ history = [
         "role_type": "user",
         "content": "They're nice looking. Yes, I think I'll go with those.",
     },
-    {
-        "role": "SalesBot",
-        "role_type": "assistant",
-        "content": (
-            "Excellent choice! To complete the purchase, I'll need you to"
-            " provide your credit card information in our secure payment form."
-            " This will allow us to process your order and ensure a smooth"
-            " delivery."
-        ),
-    },
 ]
