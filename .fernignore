@@ -1,9 +1,5 @@
 # Specify files that shouldn't be modified by Fern
 src/zep/client.py
-src/zep/memory.py
-src/zep/user.py
-src/zep/messages.py
-src/zep/document.py
 src/zep/external_clients/memory.py
 src/zep/external_clients/user.py
 src/zep/external_clients/messages.py
