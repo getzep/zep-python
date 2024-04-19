@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
 import urllib.parse
+from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
 
 import httpx
 
@@ -791,7 +791,9 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        response = self.client.delete(f"/sessions/{urllib.parse.quote_plus(session_id)}/memory")
+        response = self.client.delete(
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/memory"
+        )
         handle_response(response)
         return response.text
 
@@ -820,7 +822,9 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        response = await self.aclient.delete(f"/sessions/{urllib.parse.quote_plus(session_id)}/memory")
+        response = await self.aclient.delete(
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/memory"
+        )
         handle_response(response)
         return response.text
 
@@ -955,7 +959,8 @@ class MemoryClient:
         params = {"lastNMessages": last_n}
         print(f"/sessions/{urllib.parse.quote_plus(session_id)}/synthesize_question")
         response = self.client.get(
-            f"/sessions/{urllib.parse.quote_plus(session_id)}/synthesize_question", params=params
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/synthesize_question",
+            params=params,
         )
 
         handle_response(response)
@@ -990,7 +995,8 @@ class MemoryClient:
 
         params = {"lastNMessages": last_n}
         response = await self.aclient.get(
-            f"/sessions/{urllib.parse.quote_plus(session_id)}/synthesize_question", params=params
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/synthesize_question",
+            params=params,
         )
 
         handle_response(response)

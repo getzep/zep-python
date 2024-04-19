@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
 import urllib.parse
+from typing import Any, Dict, List, Optional
 
 import httpx
 
@@ -183,8 +183,9 @@ class MessageClient:
 
         if message_id is None or message_id.strip() == "":
             raise ValueError("Message ID cannot be empty.")
-
-        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages/{urllib.parse.quote_plus(message_id)}"
+        encoded_message_id = urllib.parse.quote_plus(message_id)
+        encoded_session_id = urllib.parse.quote_plus(session_id)
+        url = f"/sessions/{encoded_session_id}/messages/{encoded_message_id}"
 
         try:
             response = self.client.get(url=url)
@@ -220,7 +221,9 @@ class MessageClient:
         if message_id is None or message_id.strip() == "":
             raise ValueError("Message ID cannot be empty.")
 
-        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages/{urllib.parse.quote_plus(message_id)}"
+        encoded_message_id = urllib.parse.quote_plus(message_id)
+        encoded_session_id = urllib.parse.quote_plus(session_id)
+        url = f"/sessions/{encoded_session_id}/messages/{encoded_message_id}"
 
         try:
             response = await self.aclient.get(url=url)
@@ -260,7 +263,9 @@ class MessageClient:
         if message_id is None or message_id.strip() == "":
             raise ValueError("Message ID cannot be empty.")
 
-        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages/{urllib.parse.quote_plus(message_id)}"
+        encoded_message_id = urllib.parse.quote_plus(message_id)
+        encoded_session_id = urllib.parse.quote_plus(session_id)
+        url = f"/sessions/{encoded_session_id}/messages/{encoded_message_id}"
 
         try:
             response = self.client.patch(url=url, json=metadata)
@@ -302,7 +307,9 @@ class MessageClient:
         if message_id is None or message_id.strip() == "":
             raise ValueError("Message ID cannot be empty.")
 
-        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages/{urllib.parse.quote_plus(message_id)}"
+        encoded_message_id = urllib.parse.quote_plus(message_id)
+        encoded_session_id = urllib.parse.quote_plus(session_id)
+        url = f"/sessions/{encoded_session_id}/messages/{encoded_message_id}"
 
         try:
             response = await self.aclient.patch(url=url, json=metadata)
