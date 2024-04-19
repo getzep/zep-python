@@ -2,6 +2,7 @@ from typing import AsyncGenerator, Generator, List, Optional
 
 import httpx
 from httpx import AsyncClient, Client
+import urllib.parse
 
 from zep_python.exceptions import handle_response
 
@@ -124,7 +125,7 @@ class UserClient:
             If the user does not exist.
         """
         try:
-            response = self.client.get(f"/users/{user_id}")
+            response = self.client.get(f"/users/{urllib.parse.quote_plus(user_id)}")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -157,7 +158,7 @@ class UserClient:
         if user_id is None:
             raise ValueError("user_id must be provided")
         try:
-            response = await self.aclient.get(f"/users/{user_id}")
+            response = await self.aclient.get(f"/users/{urllib.parse.quote_plus(user_id)}")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -192,7 +193,7 @@ class UserClient:
 
         try:
             response = self.client.patch(
-                f"/users/{user.user_id}",
+                f"/users/{urllib.parse.quote_plus(user.user_id)}",
                 json=user.model_dump(exclude_none=True, exclude_unset=True),
             )
         except httpx.NetworkError as e:
@@ -228,7 +229,7 @@ class UserClient:
             raise ValueError("user_id must be provided")
         try:
             response = await self.aclient.patch(
-                f"/users/{user.user_id}",
+                f"/users/{urllib.parse.quote_plus(user.user_id)}",
                 json=user.model_dump(exclude_none=True, exclude_unset=True),
             )
         except httpx.NetworkError as e:
@@ -261,7 +262,7 @@ class UserClient:
             If the user does not exist.
         """
         try:
-            response = self.client.delete(f"/users/{user_id}")
+            response = self.client.delete(f"/users/{urllib.parse.quote_plus(user_id)}")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -290,7 +291,7 @@ class UserClient:
             If the user does not exist.
         """
         try:
-            response = await self.aclient.delete(f"/users/{user_id}")
+            response = await self.aclient.delete(f"/users/{urllib.parse.quote_plus(user_id)}")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -465,7 +466,7 @@ class UserClient:
             If the server returns an error.
         """
         try:
-            response = self.client.get(f"/users/{user_id}/sessions")
+            response = self.client.get(f"/users/{urllib.parse.quote_plus(user_id)}/sessions")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 
@@ -494,7 +495,7 @@ class UserClient:
             If the server returns an error.
         """
         try:
-            response = await self.aclient.get(f"/users/{user_id}/sessions")
+            response = await self.aclient.get(f"/users/{urllib.parse.quote_plus(user_id)}/sessions")
         except httpx.NetworkError as e:
             raise ConnectionError("Failed to connect to server") from e
 

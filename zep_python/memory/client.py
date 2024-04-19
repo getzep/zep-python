@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, AsyncGenerator, Dict, Generator, List, Optional
+import urllib.parse
 
 import httpx
 
@@ -82,7 +83,7 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        url = f"/sessions/{session_id}"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}"
 
         try:
             response = self.client.get(url)
@@ -124,7 +125,7 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        url = f"/sessions/{session_id}"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}"
 
         try:
             response = await self.aclient.get(url)
@@ -251,7 +252,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         response = self.client.patch(
-            f"/sessions/{session.session_id}",
+            f"/sessions/{urllib.parse.quote(session.session_id)}",
             json=session.model_dump(exclude_none=True, exclude_unset=True),
         )
 
@@ -289,7 +290,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         response = await self.aclient.patch(
-            f"/sessions/{session.session_id}",
+            f"/sessions/{urllib.parse.quote(session.session_id)}",
             json=session.model_dump(exclude_none=True, exclude_unset=True),
         )
 
@@ -360,7 +361,7 @@ class MemoryClient:
         )
 
         response = await self.aclient.post(
-            f"/sessions/{session_id}/classify",
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/classify",
             json=request.model_dump(exclude_none=True, exclude_unset=True),
         )
         handle_response(response)
@@ -430,7 +431,7 @@ class MemoryClient:
         )
 
         response = self.client.post(
-            f"/sessions/{session_id}/classify",
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/classify",
             json=request.model_dump(exclude_none=True, exclude_unset=True),
         )
         handle_response(response)
@@ -637,7 +638,7 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        url = f"/sessions/{session_id}/memory"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/memory"
         params = self._gen_get_params(lastn, memory_type or MemoryType.perpetual.value)
         response = self.client.get(url, params=params)
 
@@ -683,7 +684,7 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        url = f"/sessions/{session_id}/memory"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/memory"
         params = self._gen_get_params(lastn, memory_type or MemoryType.perpetual.value)
         response = await self.aclient.get(url, params=params)
 
@@ -721,7 +722,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         response = self.client.post(
-            f"/sessions/{session_id}/memory",
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/memory",
             json=memory_messages.model_dump(exclude_none=True, exclude_unset=True),
         )
 
@@ -757,7 +758,7 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         response = await self.aclient.post(
-            f"/sessions/{session_id}/memory",
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/memory",
             json=memory_messages.model_dump(exclude_none=True, exclude_unset=True),
         )
 
@@ -790,7 +791,7 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        response = self.client.delete(f"/sessions/{session_id}/memory")
+        response = self.client.delete(f"/sessions/{urllib.parse.quote_plus(session_id)}/memory")
         handle_response(response)
         return response.text
 
@@ -819,7 +820,7 @@ class MemoryClient:
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
 
-        response = await self.aclient.delete(f"/sessions/{session_id}/memory")
+        response = await self.aclient.delete(f"/sessions/{urllib.parse.quote_plus(session_id)}/memory")
         handle_response(response)
         return response.text
 
@@ -871,7 +872,7 @@ class MemoryClient:
 
         params = {"limit": limit} if limit is not None else {}
         response = self.client.post(
-            f"/sessions/{session_id}/search",
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/search",
             json=search_payload.model_dump(exclude_unset=True, exclude_none=True),
             params=params,
         )
@@ -918,7 +919,7 @@ class MemoryClient:
 
         params = {"limit": limit} if limit is not None else {}
         response = await self.aclient.post(
-            f"/sessions/{session_id}/search",
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/search",
             json=search_payload.model_dump(exclude_unset=True, exclude_none=True),
             params=params,
         )
@@ -952,8 +953,9 @@ class MemoryClient:
             raise ValueError("session_id must be provided")
 
         params = {"lastNMessages": last_n}
+        print(f"/sessions/{urllib.parse.quote_plus(session_id)}/synthesize_question")
         response = self.client.get(
-            f"/sessions/{session_id}/synthesize_question", params=params
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/synthesize_question", params=params
         )
 
         handle_response(response)
@@ -988,7 +990,7 @@ class MemoryClient:
 
         params = {"lastNMessages": last_n}
         response = await self.aclient.get(
-            f"/sessions/{session_id}/synthesize_question", params=params
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/synthesize_question", params=params
         )
 
         handle_response(response)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
+import urllib.parse
 
 import httpx
 
@@ -97,7 +98,7 @@ class MessageClient:
 
         params = self._validate_cursor_limit(limit, cursor)
 
-        url = f"/sessions/{session_id}/messages"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages"
 
         try:
             response = self.client.get(url=url, params=params)
@@ -147,7 +148,7 @@ class MessageClient:
 
         params = self._validate_cursor_limit(limit, cursor)
 
-        url = f"/sessions/{session_id}/messages"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages"
 
         try:
             response = await self.aclient.get(url=url, params=params)
@@ -183,7 +184,7 @@ class MessageClient:
         if message_id is None or message_id.strip() == "":
             raise ValueError("Message ID cannot be empty.")
 
-        url = f"/sessions/{session_id}/messages/{message_id}"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages/{urllib.parse.quote_plus(message_id)}"
 
         try:
             response = self.client.get(url=url)
@@ -219,7 +220,7 @@ class MessageClient:
         if message_id is None or message_id.strip() == "":
             raise ValueError("Message ID cannot be empty.")
 
-        url = f"/sessions/{session_id}/messages/{message_id}"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages/{urllib.parse.quote_plus(message_id)}"
 
         try:
             response = await self.aclient.get(url=url)
@@ -259,7 +260,7 @@ class MessageClient:
         if message_id is None or message_id.strip() == "":
             raise ValueError("Message ID cannot be empty.")
 
-        url = f"/sessions/{session_id}/messages/{message_id}"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages/{urllib.parse.quote_plus(message_id)}"
 
         try:
             response = self.client.patch(url=url, json=metadata)
@@ -301,7 +302,7 @@ class MessageClient:
         if message_id is None or message_id.strip() == "":
             raise ValueError("Message ID cannot be empty.")
 
-        url = f"/sessions/{session_id}/messages/{message_id}"
+        url = f"/sessions/{urllib.parse.quote_plus(session_id)}/messages/{urllib.parse.quote_plus(message_id)}"
 
         try:
             response = await self.aclient.patch(url=url, json=metadata)
