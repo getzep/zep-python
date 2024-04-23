@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import urllib.parse
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -105,7 +106,7 @@ class DocumentClient:
         )
 
         response = await self.aclient.post(
-            f"/collections/{name}",
+            f"/collections/{urllib.parse.quote_plus(name)}",
             json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
@@ -154,7 +155,7 @@ class DocumentClient:
         )
 
         response = self.client.post(
-            f"/collections/{name}",
+            f"/collections/{urllib.parse.quote_plus(name)}",
             json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
@@ -191,7 +192,7 @@ class DocumentClient:
         if name is None or name.strip() == "":
             raise ValueError("collection name must be provided")
         response = await self.aclient.get(
-            f"/collections/{name}",
+            f"/collections/{urllib.parse.quote_plus(name)}",
         )
 
         handle_response(response)
@@ -230,7 +231,7 @@ class DocumentClient:
         if name is None or name.strip() == "":
             raise ValueError("collection name must be provided")
         response = self.client.get(
-            f"/collections/{name}",
+            f"/collections/{urllib.parse.quote_plus(name)}",
         )
 
         handle_response(response)
@@ -281,7 +282,7 @@ class DocumentClient:
         )
 
         response = await self.aclient.patch(
-            f"/collections/{collection.name}",
+            f"/collections/{urllib.parse.quote_plus(collection.name)}",
             json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
@@ -329,7 +330,7 @@ class DocumentClient:
         )
 
         response = self.client.patch(
-            f"/collections/{collection.name}",
+            f"/collections/{urllib.parse.quote_plus(collection.name)}",
             json=collection.model_dump(exclude_none=True, exclude_unset=True),
         )
 
@@ -409,7 +410,7 @@ class DocumentClient:
             raise ValueError("collection name must be provided")
 
         response = await self.aclient.delete(
-            f"/collections/{collection_name}",
+            f"/collections/{urllib.parse.quote_plus(collection_name)}",
         )
 
         handle_response(response)
@@ -440,7 +441,7 @@ class DocumentClient:
             raise ValueError("collection name must be provided")
 
         response = self.client.delete(
-            f"/collections/{collection_name}",
+            f"/collections/{urllib.parse.quote_plus(collection_name)}",
         )
 
         handle_response(response)
