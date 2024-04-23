@@ -7,7 +7,7 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
 
 
-class User(pydantic_v1.BaseModel):
+class ModelsUser(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = None
     deleted_at: typing.Optional[str] = None
     email: typing.Optional[str] = None

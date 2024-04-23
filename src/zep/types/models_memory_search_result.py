@@ -5,18 +5,16 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
+from .models_message import ModelsMessage
+from .models_summary import ModelsSummary
 
 
-class DocumentSearchResult(pydantic_v1.BaseModel):
-    content: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    document_id: typing.Optional[str] = None
+class ModelsMemorySearchResult(pydantic_v1.BaseModel):
     embedding: typing.Optional[typing.List[float]] = None
-    is_embedded: typing.Optional[bool] = None
+    message: typing.Optional[ModelsMessage] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     score: typing.Optional[float] = None
-    updated_at: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    summary: typing.Optional[ModelsSummary] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -29,7 +27,5 @@ class DocumentSearchResult(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

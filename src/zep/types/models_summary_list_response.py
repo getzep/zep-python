@@ -5,10 +5,13 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
+from .models_summary import ModelsSummary
 
 
-class ApiError(pydantic_v1.BaseModel):
-    message: typing.Optional[str] = None
+class ModelsSummaryListResponse(pydantic_v1.BaseModel):
+    row_count: typing.Optional[int] = None
+    summaries: typing.Optional[typing.List[ModelsSummary]] = None
+    total_count: typing.Optional[int] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

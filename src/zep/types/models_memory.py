@@ -5,15 +5,15 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
-from .document_search_result import DocumentSearchResult
+from .models_message import ModelsMessage
+from .models_summary import ModelsSummary
 
 
-class DocumentSearchResultPage(pydantic_v1.BaseModel):
-    current_page: typing.Optional[int] = None
-    query_vector: typing.Optional[typing.List[float]] = None
-    result_count: typing.Optional[int] = None
-    results: typing.Optional[typing.List[DocumentSearchResult]] = None
-    total_pages: typing.Optional[int] = None
+class ModelsMemory(pydantic_v1.BaseModel):
+    facts: typing.Optional[typing.List[str]] = None
+    messages: typing.Optional[typing.List[ModelsMessage]] = None
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+    summary: typing.Optional[ModelsSummary] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

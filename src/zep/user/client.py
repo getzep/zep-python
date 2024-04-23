@@ -4,7 +4,7 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError as core_api_error_ApiError
+from ..core.api_error import ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import pydantic_v1
@@ -13,9 +13,9 @@ from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.session import Session
-from ..types.user import User
+from ..types.apihandlers_api_error import ApihandlersApiError
+from ..types.models_session import ModelsSession
+from ..types.models_user import ModelsUser
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -31,7 +31,7 @@ class UserClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[User]]:
+    ) -> typing.List[typing.List[ModelsUser]]:
         """
         list all users
 
@@ -80,18 +80,16 @@ class UserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[User]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[ModelsUser]], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def add(
         self,
@@ -102,7 +100,7 @@ class UserClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> User:
+    ) -> ModelsUser:
         """
         add user by id
 
@@ -164,18 +162,16 @@ class UserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ModelsUser, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def list_ordered(
         self,
@@ -183,7 +179,7 @@ class UserClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[User]:
+    ) -> typing.List[ModelsUser]:
         """
         List all users with pagination.
 
@@ -232,20 +228,18 @@ class UserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[User], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[ModelsUser], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
+    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ModelsUser:
         """
         get user by id
 
@@ -284,20 +278,18 @@ class UserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ModelsUser, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+    def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         delete user by id
 
@@ -336,18 +328,16 @@ class UserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+            return
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def update(
         self,
@@ -357,9 +347,8 @@ class UserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        uuid: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> User:
+    ) -> ModelsUser:
         """
         update user by id
 
@@ -373,8 +362,6 @@ class UserClient:
             - last_name: typing.Optional[str].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - uuid: typing.Optional[str].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
@@ -396,8 +383,6 @@ class UserClient:
             _request["last_name"] = last_name
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        if uuid is not OMIT:
-            _request["uuid"] = uuid
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
@@ -425,24 +410,22 @@ class UserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ModelsUser, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_sessions(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[Session]:
+    ) -> typing.List[ModelsSession]:
         """
         list all sessions for a user by user id
 
@@ -483,16 +466,14 @@ class UserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[ModelsSession], _response.json())  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
 
 class AsyncUserClient:
@@ -505,7 +486,7 @@ class AsyncUserClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[User]]:
+    ) -> typing.List[typing.List[ModelsUser]]:
         """
         list all users
 
@@ -554,18 +535,16 @@ class AsyncUserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[User]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[ModelsUser]], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def add(
         self,
@@ -576,7 +555,7 @@ class AsyncUserClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> User:
+    ) -> ModelsUser:
         """
         add user by id
 
@@ -638,18 +617,16 @@ class AsyncUserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ModelsUser, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def list_ordered(
         self,
@@ -657,7 +634,7 @@ class AsyncUserClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[User]:
+    ) -> typing.List[ModelsUser]:
         """
         List all users with pagination.
 
@@ -706,20 +683,18 @@ class AsyncUserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[User], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[ModelsUser], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
+    async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ModelsUser:
         """
         get user by id
 
@@ -758,20 +733,18 @@ class AsyncUserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ModelsUser, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+    async def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
         delete user by id
 
@@ -810,18 +783,16 @@ class AsyncUserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+            return
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update(
         self,
@@ -831,9 +802,8 @@ class AsyncUserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        uuid: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> User:
+    ) -> ModelsUser:
         """
         update user by id
 
@@ -847,8 +817,6 @@ class AsyncUserClient:
             - last_name: typing.Optional[str].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - uuid: typing.Optional[str].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
@@ -870,8 +838,6 @@ class AsyncUserClient:
             _request["last_name"] = last_name
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        if uuid is not OMIT:
-            _request["uuid"] = uuid
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
@@ -899,24 +865,22 @@ class AsyncUserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ModelsUser, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_sessions(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[Session]:
+    ) -> typing.List[ModelsSession]:
         """
         list all sessions for a user by user id
 
@@ -957,13 +921,11 @@ class AsyncUserClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[ModelsSession], _response.json())  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)

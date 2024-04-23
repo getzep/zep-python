@@ -7,22 +7,11 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
 
 
-class Session(pydantic_v1.BaseModel):
-    classifications: typing.Optional[typing.Dict[str, str]] = None
-    created_at: typing.Optional[str] = None
-    deleted_at: typing.Optional[str] = None
-    facts: typing.Optional[typing.List[str]] = None
-    id: typing.Optional[int] = None
+class ModelsCreateDocumentRequest(pydantic_v1.BaseModel):
+    content: typing.Optional[str] = None
+    document_id: typing.Optional[str] = None
+    embedding: typing.Optional[typing.List[float]] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    project_uuid: typing.Optional[str] = None
-    session_id: typing.Optional[str] = None
-    updated_at: typing.Optional[str] = None
-    user_id: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Must be a pointer to allow for null values
-    """
-
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -35,7 +24,5 @@ class Session(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

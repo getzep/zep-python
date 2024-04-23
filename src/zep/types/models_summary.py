@@ -5,16 +5,15 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
-from .message import Message
-from .summary import Summary
 
 
-class MemorySearchResult(pydantic_v1.BaseModel):
-    embedding: typing.Optional[typing.List[float]] = None
-    message: typing.Optional[Message] = None
+class ModelsSummary(pydantic_v1.BaseModel):
+    content: typing.Optional[str] = None
+    created_at: typing.Optional[str] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    score: typing.Optional[float] = None
-    summary: typing.Optional[Summary] = None
+    related_message_uuids: typing.Optional[typing.List[str]] = None
+    token_count: typing.Optional[int] = None
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -27,5 +26,7 @@ class MemorySearchResult(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
+        allow_population_by_field_name = True
+        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

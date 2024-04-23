@@ -5,14 +5,17 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
+from .models_role_type import ModelsRoleType
 
 
-class Summary(pydantic_v1.BaseModel):
+class ModelsMessage(pydantic_v1.BaseModel):
     content: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    related_message_uuids: typing.Optional[typing.List[str]] = None
+    role: typing.Optional[str] = None
+    role_type: typing.Optional[ModelsRoleType] = None
     token_count: typing.Optional[int] = None
+    updated_at: typing.Optional[str] = None
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:

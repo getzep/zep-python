@@ -5,12 +5,15 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
+from .models_document_search_result import ModelsDocumentSearchResult
 
 
-class UpdateDocumentListRequest(pydantic_v1.BaseModel):
-    document_id: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    uuid_: str = pydantic_v1.Field(alias="uuid")
+class ModelsDocumentSearchResultPage(pydantic_v1.BaseModel):
+    current_page: typing.Optional[int] = None
+    query_vector: typing.Optional[typing.List[float]] = None
+    result_count: typing.Optional[int] = None
+    results: typing.Optional[typing.List[ModelsDocumentSearchResult]] = None
+    total_pages: typing.Optional[int] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -23,7 +26,5 @@ class UpdateDocumentListRequest(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

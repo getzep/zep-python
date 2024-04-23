@@ -7,13 +7,14 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
 
 
-class DocumentResponse(pydantic_v1.BaseModel):
+class ModelsDocumentSearchResult(pydantic_v1.BaseModel):
     content: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
     document_id: typing.Optional[str] = None
     embedding: typing.Optional[typing.List[float]] = None
     is_embedded: typing.Optional[bool] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+    score: typing.Optional[float] = None
     updated_at: typing.Optional[str] = None
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 

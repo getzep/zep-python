@@ -7,26 +7,13 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
 
 
-class DocumentCollectionResponse(pydantic_v1.BaseModel):
+class ModelsDocumentResponse(pydantic_v1.BaseModel):
+    content: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    document_count: typing.Optional[int] = pydantic_v1.Field(default=None)
-    """
-    Number of documents in the collection
-    """
-
-    document_embedded_count: typing.Optional[int] = pydantic_v1.Field(default=None)
-    """
-    Number of documents with embeddings
-    """
-
-    embedding_dimensions: typing.Optional[int] = None
-    embedding_model_name: typing.Optional[str] = None
-    is_auto_embedded: typing.Optional[bool] = None
-    is_indexed: typing.Optional[bool] = None
-    is_normalized: typing.Optional[bool] = None
+    document_id: typing.Optional[str] = None
+    embedding: typing.Optional[typing.List[float]] = None
+    is_embedded: typing.Optional[bool] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    name: typing.Optional[str] = None
     updated_at: typing.Optional[str] = None
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
