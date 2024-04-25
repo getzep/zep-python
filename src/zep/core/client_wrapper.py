@@ -19,7 +19,7 @@ class BaseClientWrapper:
             "X-Fern-SDK-Name": "zep",
             "X-Fern-SDK-Version": "0.0.0",
         }
-        headers["Authorization"] = self.api_key
+        headers["Authorization"] = f"Api-Key {self.api_key}"
         return headers
 
     def get_base_url(self) -> str:

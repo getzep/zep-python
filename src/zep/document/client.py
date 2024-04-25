@@ -4,7 +4,7 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError
+from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import pydantic_v1
@@ -14,13 +14,13 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
-from ..types.apihandlers_api_error import ApihandlersApiError
-from ..types.models_create_document_request import ModelsCreateDocumentRequest
-from ..types.models_document_collection_response import ModelsDocumentCollectionResponse
-from ..types.models_document_response import ModelsDocumentResponse
-from ..types.models_document_search_result_page import ModelsDocumentSearchResultPage
-from ..types.models_search_type import ModelsSearchType
-from ..types.models_update_document_list_request import ModelsUpdateDocumentListRequest
+from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.create_document_request import CreateDocumentRequest
+from ..types.document_collection_response import DocumentCollectionResponse
+from ..types.document_response import DocumentResponse
+from ..types.document_search_result_page import DocumentSearchResultPage
+from ..types.search_type import SearchType
+from ..types.update_document_list_request import UpdateDocumentListRequest
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,150 +30,9 @@ class DocumentClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def update_document(
-        self,
-        collection_name: str,
-        document_uuid: str,
-        *,
-        document_id: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
-        """
-        Parameters:
-            - collection_name: str. Name of the Document Collection
-
-            - document_uuid: str. UUID of the Document to be updated
-
-            - document_id: typing.Optional[str].
-
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.base_client import BaseClient
-
-        client = BaseClient(
-            api_key="YOUR_API_KEY",
-        )
-        client.document.update_document(
-            collection_name="collectionName",
-            document_uuid="documentUUID",
-        )
-        """
-        _request: typing.Dict[str, typing.Any] = {}
-        if document_id is not OMIT:
-            _request["document_id"] = document_id
-        if metadata is not OMIT:
-            _request["metadata"] = metadata
-        _response = self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"api/v2/collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
-
-    def get_document(
-        self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ModelsDocumentResponse:
-        """
-        Returns specified Document from a DocumentCollection.
-
-        Parameters:
-            - collection_name: str. Name of the Document Collection
-
-            - document_uuid: str. UUID of the Document to be updated
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.base_client import BaseClient
-
-        client = BaseClient(
-            api_key="YOUR_API_KEY",
-        )
-        client.document.get_document(
-            collection_name="collectionName",
-            document_uuid="documentUUID",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"collection/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsDocumentResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
-
     def list_collections(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[ModelsDocumentCollectionResponse]]:
+    ) -> typing.List[typing.List[DocumentCollectionResponse]]:
         """
         Returns a list of all DocumentCollections.
 
@@ -208,20 +67,24 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ModelsDocumentCollectionResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentCollectionResponse]], _response.json())  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_collection(
         self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ModelsDocumentCollectionResponse:
+    ) -> DocumentCollectionResponse:
         """
         Returns a DocumentCollection if it exists.
 
@@ -261,22 +124,25 @@ class DocumentClient:
             retries=0,
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
-        print("Get collection _response", _response, f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}")
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsDocumentCollectionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(DocumentCollectionResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(typing.Any, _response))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def add_collection(
         self,
@@ -284,7 +150,6 @@ class DocumentClient:
         *,
         description: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        name: str,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
@@ -297,8 +162,6 @@ class DocumentClient:
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
 
-            - name: str.
-
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep.base_client import BaseClient
@@ -308,10 +171,9 @@ class DocumentClient:
         )
         client.document.add_collection(
             collection_name="collectionName",
-            name="name",
         )
         """
-        _request: typing.Dict[str, typing.Any] = {"name": name}
+        _request: typing.Dict[str, typing.Any] = {}
         if description is not OMIT:
             _request["description"] = description
         if metadata is not OMIT:
@@ -344,22 +206,25 @@ class DocumentClient:
             retries=0,
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
-        print("Add collection _response", _response, _request, jsonable_encoder(collection_name))
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete_collection(
         self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -406,18 +271,22 @@ class DocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def update_collection(
         self,
@@ -482,24 +351,28 @@ class DocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def creates_multiple_documents_in_a_document_collection(
         self,
         collection_name: str,
         *,
-        request: typing.Sequence[ModelsCreateDocumentRequest],
+        request: typing.Sequence[CreateDocumentRequest],
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[str]:
         """
@@ -508,11 +381,11 @@ class DocumentClient:
         Parameters:
             - collection_name: str. Name of the Document Collection
 
-            - request: typing.Sequence[ModelsCreateDocumentRequest].
+            - request: typing.Sequence[CreateDocumentRequest].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep import ModelsCreateDocumentRequest
+        from zep import CreateDocumentRequest
         from zep.base_client import BaseClient
 
         client = BaseClient(
@@ -520,7 +393,7 @@ class DocumentClient:
         )
         client.document.creates_multiple_documents_in_a_document_collection(
             collection_name="collectionName",
-            request=[ModelsCreateDocumentRequest()],
+            request=[CreateDocumentRequest()],
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -554,16 +427,20 @@ class DocumentClient:
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(typing.List[str], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def batch_delete_documents(
         self,
@@ -624,16 +501,20 @@ class DocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def batch_get_documents(
         self,
@@ -642,7 +523,7 @@ class DocumentClient:
         document_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[ModelsDocumentResponse]]:
+    ) -> typing.List[typing.List[DocumentResponse]]:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
@@ -699,24 +580,28 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ModelsDocumentResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentResponse]], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def batch_update_documents(
         self,
         collection_name: str,
         *,
-        request: typing.Sequence[ModelsUpdateDocumentListRequest],
+        request: typing.Sequence[UpdateDocumentListRequest],
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
@@ -725,11 +610,11 @@ class DocumentClient:
         Parameters:
             - collection_name: str. Name of the Document Collection
 
-            - request: typing.Sequence[ModelsUpdateDocumentListRequest].
+            - request: typing.Sequence[UpdateDocumentListRequest].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep import ModelsUpdateDocumentListRequest
+        from zep import UpdateDocumentListRequest
         from zep.base_client import BaseClient
 
         client = BaseClient(
@@ -738,7 +623,7 @@ class DocumentClient:
         client.document.batch_update_documents(
             collection_name="collectionName",
             request=[
-                ModelsUpdateDocumentListRequest(
+                UpdateDocumentListRequest(
                     uuid_="uuid",
                 )
             ],
@@ -776,16 +661,84 @@ class DocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def gets_a_document_from_a_document_collection_by_uuid(
+        self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> DocumentResponse:
+        """
+        Returns specified Document from a DocumentCollection.
+
+        Parameters:
+            - collection_name: str. Name of the Document Collection
+
+            - document_uuid: str. UUID of the Document to be updated
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import BaseClient
+
+        client = BaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        client.document.gets_a_document_from_a_document_collection_by_uuid(
+            collection_name="collectionName",
+            document_uuid="documentUUID",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(DocumentResponse, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 401:
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete_document(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -836,18 +789,107 @@ class DocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def updates_a_document_in_a_document_collection_by_uuid(
+        self,
+        collection_name: str,
+        document_uuid: str,
+        *,
+        document_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> None:
+        """
+        Parameters:
+            - collection_name: str. Name of the Document Collection
+
+            - document_uuid: str. UUID of the Document to be updated
+
+            - document_id: typing.Optional[str].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import BaseClient
+
+        client = BaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        client.document.updates_a_document_in_a_document_collection_by_uuid(
+            collection_name="collectionName",
+            document_uuid="documentUUID",
+        )
+        """
+        _request: typing.Dict[str, typing.Any] = {}
+        if document_id is not OMIT:
+            _request["document_id"] = document_id
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        _response = self._client_wrapper.httpx_client.request(
+            "PATCH",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 401:
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def search(
         self,
@@ -857,10 +899,10 @@ class DocumentClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        search_type: typing.Optional[ModelsSearchType] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
         text: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ModelsDocumentSearchResultPage:
+    ) -> DocumentSearchResultPage:
         """
         Searches Documents in a DocumentCollection based on provided search criteria.
 
@@ -875,7 +917,7 @@ class DocumentClient:
 
             - mmr_lambda: typing.Optional[float].
 
-            - search_type: typing.Optional[ModelsSearchType].
+            - search_type: typing.Optional[SearchType].
 
             - text: typing.Optional[str].
 
@@ -939,168 +981,31 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsDocumentSearchResultPage, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(DocumentSearchResultPage, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
 
 class AsyncDocumentClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def update_document(
-        self,
-        collection_name: str,
-        document_uuid: str,
-        *,
-        document_id: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
-        """
-        Parameters:
-            - collection_name: str. Name of the Document Collection
-
-            - document_uuid: str. UUID of the Document to be updated
-
-            - document_id: typing.Optional[str].
-
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.base_client import AsyncBaseClient
-
-        client = AsyncBaseClient(
-            api_key="YOUR_API_KEY",
-        )
-        await client.document.update_document(
-            collection_name="collectionName",
-            document_uuid="documentUUID",
-        )
-        """
-        _request: typing.Dict[str, typing.Any] = {}
-        if document_id is not OMIT:
-            _request["document_id"] = document_id
-        if metadata is not OMIT:
-            _request["metadata"] = metadata
-        _response = await self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"api/v2/collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def get_document(
-        self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ModelsDocumentResponse:
-        """
-        Returns specified Document from a DocumentCollection.
-
-        Parameters:
-            - collection_name: str. Name of the Document Collection
-
-            - document_uuid: str. UUID of the Document to be updated
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.base_client import AsyncBaseClient
-
-        client = AsyncBaseClient(
-            api_key="YOUR_API_KEY",
-        )
-        await client.document.get_document(
-            collection_name="collectionName",
-            document_uuid="documentUUID",
-        )
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"collection/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsDocumentResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
-
     async def list_collections(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[ModelsDocumentCollectionResponse]]:
+    ) -> typing.List[typing.List[DocumentCollectionResponse]]:
         """
         Returns a list of all DocumentCollections.
 
@@ -1135,20 +1040,24 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ModelsDocumentCollectionResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentCollectionResponse]], _response.json())  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_collection(
         self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ModelsDocumentCollectionResponse:
+    ) -> DocumentCollectionResponse:
         """
         Returns a DocumentCollection if it exists.
 
@@ -1189,20 +1098,24 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsDocumentCollectionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(DocumentCollectionResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def add_collection(
         self,
@@ -1210,7 +1123,6 @@ class AsyncDocumentClient:
         *,
         description: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        name: str,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
@@ -1223,8 +1135,6 @@ class AsyncDocumentClient:
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
 
-            - name: str.
-
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep.base_client import AsyncBaseClient
@@ -1234,10 +1144,9 @@ class AsyncDocumentClient:
         )
         await client.document.add_collection(
             collection_name="collectionName",
-            name="name",
         )
         """
-        _request: typing.Dict[str, typing.Any] = {"name": name}
+        _request: typing.Dict[str, typing.Any] = {}
         if description is not OMIT:
             _request["description"] = description
         if metadata is not OMIT:
@@ -1273,18 +1182,22 @@ class AsyncDocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete_collection(
         self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -1331,18 +1244,22 @@ class AsyncDocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update_collection(
         self,
@@ -1407,24 +1324,28 @@ class AsyncDocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def creates_multiple_documents_in_a_document_collection(
         self,
         collection_name: str,
         *,
-        request: typing.Sequence[ModelsCreateDocumentRequest],
+        request: typing.Sequence[CreateDocumentRequest],
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[str]:
         """
@@ -1433,11 +1354,11 @@ class AsyncDocumentClient:
         Parameters:
             - collection_name: str. Name of the Document Collection
 
-            - request: typing.Sequence[ModelsCreateDocumentRequest].
+            - request: typing.Sequence[CreateDocumentRequest].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep import ModelsCreateDocumentRequest
+        from zep import CreateDocumentRequest
         from zep.base_client import AsyncBaseClient
 
         client = AsyncBaseClient(
@@ -1445,7 +1366,7 @@ class AsyncDocumentClient:
         )
         await client.document.creates_multiple_documents_in_a_document_collection(
             collection_name="collectionName",
-            request=[ModelsCreateDocumentRequest()],
+            request=[CreateDocumentRequest()],
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1479,16 +1400,20 @@ class AsyncDocumentClient:
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(typing.List[str], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def batch_delete_documents(
         self,
@@ -1549,16 +1474,20 @@ class AsyncDocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def batch_get_documents(
         self,
@@ -1567,7 +1496,7 @@ class AsyncDocumentClient:
         document_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[ModelsDocumentResponse]]:
+    ) -> typing.List[typing.List[DocumentResponse]]:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
@@ -1624,24 +1553,28 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ModelsDocumentResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentResponse]], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def batch_update_documents(
         self,
         collection_name: str,
         *,
-        request: typing.Sequence[ModelsUpdateDocumentListRequest],
+        request: typing.Sequence[UpdateDocumentListRequest],
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
@@ -1650,11 +1583,11 @@ class AsyncDocumentClient:
         Parameters:
             - collection_name: str. Name of the Document Collection
 
-            - request: typing.Sequence[ModelsUpdateDocumentListRequest].
+            - request: typing.Sequence[UpdateDocumentListRequest].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep import ModelsUpdateDocumentListRequest
+        from zep import UpdateDocumentListRequest
         from zep.base_client import AsyncBaseClient
 
         client = AsyncBaseClient(
@@ -1663,7 +1596,7 @@ class AsyncDocumentClient:
         await client.document.batch_update_documents(
             collection_name="collectionName",
             request=[
-                ModelsUpdateDocumentListRequest(
+                UpdateDocumentListRequest(
                     uuid_="uuid",
                 )
             ],
@@ -1701,16 +1634,84 @@ class AsyncDocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def gets_a_document_from_a_document_collection_by_uuid(
+        self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> DocumentResponse:
+        """
+        Returns specified Document from a DocumentCollection.
+
+        Parameters:
+            - collection_name: str. Name of the Document Collection
+
+            - document_uuid: str. UUID of the Document to be updated
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import AsyncBaseClient
+
+        client = AsyncBaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        await client.document.gets_a_document_from_a_document_collection_by_uuid(
+            collection_name="collectionName",
+            document_uuid="documentUUID",
+        )
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(DocumentResponse, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 401:
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete_document(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -1761,18 +1762,107 @@ class AsyncDocumentClient:
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def updates_a_document_in_a_document_collection_by_uuid(
+        self,
+        collection_name: str,
+        document_uuid: str,
+        *,
+        document_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> None:
+        """
+        Parameters:
+            - collection_name: str. Name of the Document Collection
+
+            - document_uuid: str. UUID of the Document to be updated
+
+            - document_id: typing.Optional[str].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import AsyncBaseClient
+
+        client = AsyncBaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        await client.document.updates_a_document_in_a_document_collection_by_uuid(
+            collection_name="collectionName",
+            document_uuid="documentUUID",
+        )
+        """
+        _request: typing.Dict[str, typing.Any] = {}
+        if document_id is not OMIT:
+            _request["document_id"] = document_id
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        _response = await self._client_wrapper.httpx_client.request(
+            "PATCH",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 401:
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def search(
         self,
@@ -1782,10 +1872,10 @@ class AsyncDocumentClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        search_type: typing.Optional[ModelsSearchType] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
         text: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ModelsDocumentSearchResultPage:
+    ) -> DocumentSearchResultPage:
         """
         Searches Documents in a DocumentCollection based on provided search criteria.
 
@@ -1800,7 +1890,7 @@ class AsyncDocumentClient:
 
             - mmr_lambda: typing.Optional[float].
 
-            - search_type: typing.Optional[ModelsSearchType].
+            - search_type: typing.Optional[SearchType].
 
             - text: typing.Optional[str].
 
@@ -1864,15 +1954,19 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsDocumentSearchResultPage, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(DocumentSearchResultPage, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
-            raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
