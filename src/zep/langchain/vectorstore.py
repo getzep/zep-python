@@ -5,7 +5,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 from zep.types import Memory, Message, DocumentCollectionResponse, DocumentResponse
 from zep.errors import NotFoundError
 from zep.langchain.helpers import get_zep_message_role_type
-from zep.client import Zep
+from zep.client import Zep, AsyncZep
 from zep.environment import BaseClientEnvironment
 
 try:
@@ -34,11 +34,9 @@ class ZepVectorStore(VectorStore):
         description (Optional[str]): The description of the collection.
         metadata (Optional[Dict[str, Any]]): The metadata to associate with the
             collection.
-        zep_client (Optional[ZepClient]): The Zep client to use.
-        api_url (str): The URL of the Zep API. Defaults to "https://api.getzep.com".
+        api_url (Optional[str]): The URL of the Zep API. Defaults to "https://api.getzep.com".
             Not required if passing in a ZepClient.
-        api_key (Optional[str]): The API key for the Zep API.
-            Not required if passing in a ZepClient.
+        api_key (str): The API key for the Zep API.
     """
 
     def __init__(
@@ -46,7 +44,7 @@ class ZepVectorStore(VectorStore):
         collection_name: str,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        zep_client: Optional[Zep] = None,
+
         api_url: Optional[str] = BaseClientEnvironment.DEFAULT,
         api_key: Optional[str] = None,
     ) -> None:
@@ -55,10 +53,8 @@ class ZepVectorStore(VectorStore):
             raise ValueError(
                 "collection_name must be specified when using ZepVectorStore."
             )
-        if zep_client is None:
-            self._client = Zep(api_key=api_key)
-        else:
-            self._client = zep_client
+        self._client = Zep(api_key=api_key, base_url=api_url)
+        self._async_client = AsyncZep(api_key=api_key, base_url=api_url)
 
         self.collection_name = collection_name
         self.c_description = description
@@ -142,14 +138,8 @@ class ZepVectorStore(VectorStore):
         document_ids: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> List[str]:
-        """Run more texts through the embeddings and add to the vectorstore."""
-        if not self._collection:
-            raise ValueError(
-                "collection should be an instance of a Zep DocumentCollection"
-            )
-
         documents = self._generate_documents_to_add(texts, metadatas, document_ids)
-        uuids = await self._collection.aadd_documents(documents)
+        uuids = await self._async_client.document.add_documents(collection_name=self.collection_name, request=documents)
 
         return uuids
 
@@ -251,13 +241,12 @@ class ZepVectorStore(VectorStore):
             List of Tuples of (doc, similarity_score)
         """
 
-        if not self._collection:
-            raise ValueError(
-                "collection should be an instance of a Zep DocumentCollection"
-            )
-
-        results = self._collection.search(
-            query, limit=k, metadata=metadata_filter, **kwargs
+        results = self._client.document.search(
+            collection_name=self.collection_name,
+            text=query,
+            limit=k,
+            metadata=metadata_filter,
+            **kwargs
         )
 
         return [
@@ -268,7 +257,7 @@ class ZepVectorStore(VectorStore):
                 ),
                 doc.score or 0.0,
             )
-            for doc in results
+            for doc in results.results
         ]
 
     async def asimilarity_search_with_relevance_scores(
@@ -285,8 +274,12 @@ class ZepVectorStore(VectorStore):
                 "collection should be an instance of a Zep DocumentCollection"
             )
 
-        results = await self._collection.asearch(
-            query, limit=k, metadata=metadata_filter, **kwargs
+        results = await self._async_client.document.search(
+            collection_name=self.collection_name,
+            text=query,
+            limit=k,
+            metadata=metadata_filter,
+            **kwargs
         )
 
         return [
@@ -297,7 +290,7 @@ class ZepVectorStore(VectorStore):
                 ),
                 doc.score or 0.0,
             )
-            for doc in results
+            for doc in results.results
         ]
 
     async def asimilarity_search(
@@ -346,21 +339,17 @@ class ZepVectorStore(VectorStore):
         to reranking based on `k`. `fetch_k` is ignored.
         """
 
-        if not self._collection:
-            raise ValueError(
-                "collection should be an instance of a Zep DocumentCollection"
-            )
-
-        results = self._collection.search(
-            query,
+        results = self._client.document.search(
+            collection_name=self.collection_name,
+            text=query,
             limit=k,
-            metadata=metadata_filter,
             search_type="mmr",
+            metadata=metadata_filter,
             mmr_lambda=lambda_mult,
         )
 
         return [
-            Document(page_content=d.content, metadata=d.metadata or {}) for d in results
+            Document(page_content=d.content, metadata=d.metadata or {}) for d in results.results
         ]
 
     async def amax_marginal_relevance_search(
@@ -399,17 +388,18 @@ class ZepVectorStore(VectorStore):
             raise ValueError(
                 "collection should be an instance of a Zep DocumentCollection"
             )
-
-        results = await self._collection.asearch(
-            query,
+        results = await self._async_client.document.search(
+            collection_name=self.collection_name,
+            text=query,
             limit=k,
-            metadata=metadata_filter,
             search_type="mmr",
+            metadata=metadata_filter,
             mmr_lambda=lambda_mult,
+            **kwargs
         )
 
         return [
-            Document(page_content=d.content, metadata=d.metadata or {}) for d in results
+            Document(page_content=d.content, metadata=d.metadata or {}) for d in results.results
         ]
 
     @classmethod
@@ -420,7 +410,6 @@ class ZepVectorStore(VectorStore):
         metadatas: Optional[List[dict]] = None,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        zep_client: Optional[Zep] = None,
         api_url: Optional[str] = BaseClientEnvironment.DEFAULT,
         api_key: Optional[str] = None,
         **kwargs: Any,
@@ -452,7 +441,6 @@ class ZepVectorStore(VectorStore):
             collection_name,
             description=description,
             metadata=metadata,
-            zep_client=zep_client,
             api_url=api_url,
             api_key=api_key,
         )
@@ -468,7 +456,6 @@ class ZepVectorStore(VectorStore):
         metadatas: Optional[List[dict]] = None,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        zep_client: Optional[Zep] = None,
         api_url: Optional[str] = BaseClientEnvironment.DEFAULT,
         api_key: Optional[str] = None,
         **kwargs: Any,
@@ -487,7 +474,8 @@ class ZepVectorStore(VectorStore):
             description (Optional[str]): The description of the collection.
             metadata (Optional[Dict[str, Any]]): The metadata to associate with the
                 collection.
-            zep_client (Optional[ZepClient]): The Zep client to use.
+            zep_client (Optional[Zep]): The Zep client to use.
+            zep_async_client (Optional[AsyncZep]): The Zep async client to use.
             api_url (Optional[str]): The URL of the Zep API. Defaults to
                 "https://api.getzep.com". Not required if passing in a ZepClient.
             api_key (Optional[str]): The API key for the Zep API. Not required if
@@ -501,7 +489,6 @@ class ZepVectorStore(VectorStore):
             collection_name,
             description=description,
             metadata=metadata,
-            zep_client=zep_client,
             api_url=api_url,
             api_key=api_key,
         )
