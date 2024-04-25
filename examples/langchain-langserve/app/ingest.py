@@ -48,7 +48,8 @@ print(f"Adding {len(all_splits)} documents to {ZEP_COLLECTION_NAME}...")
 vectorstore = ZepVectorStore.from_documents(
     documents=all_splits,
     collection_name=ZEP_COLLECTION_NAME,
-    zep_client=zep,
+    api_key=ZEP_API_KEY,
+    api_url=f"{ZEP_API_URL}/api/v2",
 )
 
 print(f"Added {len(all_splits)} documents to {ZEP_COLLECTION_NAME}...")

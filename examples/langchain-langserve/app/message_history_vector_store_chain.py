@@ -19,7 +19,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.runnables.utils import ConfigurableFieldSingleOption
 from langchain_openai import ChatOpenAI
 
-from zep.client import Zep
+from zep.client import AsyncZep
 from zep.langchain import ZepChatMessageHistory, ZepVectorStore
 
 load_dotenv()
@@ -40,15 +40,16 @@ if ZEP_API_KEY is None:
     )
 
 
-zep = Zep(
+zep = AsyncZep(
     api_key=ZEP_API_KEY,
-    base_url=ZEP_API_URL,  # only required if you're using Zep Open Source
+    base_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # Initialize ZepVectorStore
 vectorstore = ZepVectorStore(
     collection_name=ZEP_COLLECTION_NAME,
-    zep_client=zep,
+    api_key=ZEP_API_KEY,
+    api_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # Zep offers native, hardware-accelerated MMR. Enabling this will improve
@@ -108,9 +109,11 @@ def _combine_documents(
 
 
 async def _search_query(x: Any) -> str:
-    synthesized_question = await zep.memory.asynthesize_question(
+    sq_result = await zep.memory.synthesize_question(
         session_id=x["session_id"]
     )
+
+    synthesized_question = sq_result.question
 
     documents = await retriever.ainvoke(
         input=x["question"] if synthesized_question == "" else synthesized_question,
@@ -139,7 +142,8 @@ async def invoke_chain(user_input: UserInput):
         | StrOutputParser(),
         lambda session_id: ZepChatMessageHistory(
             session_id=session_id,
-            zep_client=zep,
+            api_url=f"{ZEP_API_URL}/api/v2",
+            api_key=ZEP_API_KEY,
             memory_type="perpetual",
         ),
         input_messages_key="question",

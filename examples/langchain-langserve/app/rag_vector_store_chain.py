@@ -36,12 +36,14 @@ if ZEP_API_KEY is None:
 
 zep = Zep(
     api_key=ZEP_API_KEY,
+    base_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # Initialize ZepVectorStore
 vectorstore = ZepVectorStore(
     collection_name=ZEP_COLLECTION_NAME,
-    zep_client=zep,
+    api_key=ZEP_API_KEY,
+    api_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # Zep offers native, hardware-accelerated MMR. Enabling this will improve

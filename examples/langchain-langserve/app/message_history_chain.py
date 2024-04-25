@@ -20,6 +20,9 @@ load_dotenv(
 )  # load environment variables from .env file, if present
 
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+ZEP_API_URL = os.environ.get(
+    "ZEP_API_URL"
+)  # only required if you're using Zep Open Source
 
 if ZEP_API_KEY is None:
     raise ValueError(
@@ -28,6 +31,7 @@ if ZEP_API_KEY is None:
     )
 zep = Zep(
     api_key=ZEP_API_KEY,
+    base_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # RAG answer synthesis prompt
