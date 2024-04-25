@@ -10,7 +10,6 @@ from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .document.client import AsyncDocumentClient, DocumentClient
 from .environment import BaseClientEnvironment
 from .memory.client import AsyncMemoryClient, MemoryClient
-from .session.client import AsyncSessionClient, SessionClient
 from .user.client import AsyncUserClient, UserClient
 
 
@@ -65,7 +64,6 @@ class BaseClient:
         )
         self.document = DocumentClient(client_wrapper=self._client_wrapper)
         self.memory = MemoryClient(client_wrapper=self._client_wrapper)
-        self.session = SessionClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
 
@@ -120,7 +118,6 @@ class AsyncBaseClient:
         )
         self.document = AsyncDocumentClient(client_wrapper=self._client_wrapper)
         self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
-        self.session = AsyncSessionClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 
 
