@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "zep-chainlit"
+version = "0.1.0"
+description = ""
+authors = ["paulpaliychuk <pavlo.paliychuk.ca@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+chainlit = "^1.0.301"
+zep-python = {path = "../.."}
+openai = "^1.13.3"
+langchain-community = "^0.0.25"
+langchain = "^0.1.11"
+bs4 = "^0.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

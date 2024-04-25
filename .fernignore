@@ -8,4 +8,5 @@ examples/chat_history/memory_async.py
 examples/chat_history/memory.py
 examples/chat_history/chat_history_shoe_purchase.py
 examples/**
+examples/
 src/zep/langchain/**
