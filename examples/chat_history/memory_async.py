@@ -33,6 +33,7 @@ API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Ope
 async def main() -> None:
     client = AsyncZep(
         api_key=API_KEY,
+        base_url=f"{API_URL}/api/v2",
     )
 
     # Create a user
@@ -68,7 +69,7 @@ async def main() -> None:
         print(f"{m['role']}: {m['content']}")
         message = Message(**m)
         memory = Memory(messages=[message])
-        await client.memory.create(session_id=session_id, request=memory)
+        await client.memory.add(session_id=session_id, request=memory)
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.

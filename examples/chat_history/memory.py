@@ -19,7 +19,7 @@ from dotenv import find_dotenv, load_dotenv
 from chat_history_shoe_purchase import history
 
 from zep.client import Zep
-from zep.types import ModelsMemory, ModelsMessage
+from zep.types import Memory, Message
 
 load_dotenv(
     dotenv_path=find_dotenv()
@@ -32,6 +32,7 @@ API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Ope
 def main() -> None:
     client = Zep(
         api_key=API_KEY,
+        base_url=f"{API_URL}/api/v2",
     )
 
     # Create a user
@@ -65,9 +66,9 @@ def main() -> None:
     print(f"\n---Add Memory for Session: {session_id}")
     for m in history:
         print(f"{m['role']}: {m['content']}")
-        message = ModelsMessage(**m)
-        memory = ModelsMemory(messages=[message])
-        client.memory.create(session_id=session_id, request=memory)
+        message = Message(**m)
+        memory = Memory(messages=[message])
+        client.memory.add(session_id=session_id, request=memory)
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.
