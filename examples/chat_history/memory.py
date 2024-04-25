@@ -14,6 +14,7 @@ This script demonstrates the following functionality:
 import os
 import time
 import uuid
+from typing import Optional
 
 from dotenv import find_dotenv, load_dotenv
 
@@ -24,6 +25,7 @@ from zep_python import (
     ZepClient,
 )
 from zep_python.memory import Memory, MemorySearchPayload, Session
+from zep_python.memory.models import ZepDataClass, ExtractDataRequest, ZepText, ZepNumber, ZepFloat
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
 
@@ -146,6 +148,35 @@ def delete_session(client, session_id):
         print(f"Memory not found for Session {session_id}")
 
 
+class ShoeBrand(ZepText):
+    name: str = "ShoeBrand"
+    description: str = "The shoe brand the person purchased. Return only the brand name"
+
+
+class ShoeSize(ZepNumber):
+    name: str = "ShoeSize"
+    description: str = "The shoe size the person purchased. Return only the shoe size"
+    ## TODO: validate_call
+
+
+class ShoePrice(ZepFloat):
+    name: str = "ShoePrice"
+    description: str = "The shoe price the person purchased."
+
+
+def extract_data(client, session_id, zep_data_classes):
+    extract_data_request = ExtractDataRequest(last_n_messages=100, session_id=session_id,
+                                              zep_data_classes=zep_data_classes)
+
+    extracted_data = client.memory.extract_data(session_id, extract_data_request)
+    for zep_data_class in zep_data_classes:
+        key = zep_data_class.name
+        if key in extracted_data:
+            zep_data_class.value = extracted_data[key]
+
+    return zep_data_classes
+
+
 def main() -> None:
     client = ZepClient(api_key=API_KEY, api_url=API_URL)
 
@@ -175,50 +206,63 @@ def main() -> None:
     print(f"\n---Get Memory for Session: {session_id}")
     get_memory_from_session(client, session_id)
 
-    # Synthesize a question from most recent messages.
-    # Useful for RAG apps. This is faster than using an LLM chain.
-    print("\n---Synthesize a question from most recent messages")
-    question = client.memory.synthesize_question(session_id, last_n=3)
-    print(f"Question: {question}")
+    print("-------------------------------------------")
 
-    # Classify the session.
-    # Useful for semantic routing, filtering, and many other use cases.
-    print("\n---Classify the session")
-    classes = [
-        "low spender <$50",
-        "medium spender >=$50, <$100",
-        "high spender >=$100",
-        "unknown",
+    zep_data_classes = [
+        ShoeBrand(),
+        ShoeSize(),
+        ShoePrice()
     ]
-    classification = client.memory.classify_session(
-        session_id, "spender_category", classes
-    )
-    print(f"Classification: {classification}")
 
-    # Search Memory for session
-    query = "What are Jane's favorite show brands?"
-    print(f"\n---Searching over summaries for: '{query}'")
-    search_payload = MemorySearchPayload(
-        text=query,
-        search_scope="summary",
-    )
-    search_memory(client, session_id, search_payload)
+    # Extract data from session
+    print(f"\n---Extract Data for Session: {session_id}")
+    extracted_data = extract_data(client, session_id, zep_data_classes)
+    print(f"Extracted Data: {extracted_data}")
 
-    print("\n---Searching over summaries with MMR Reranking")
-    search_payload = MemorySearchPayload(
-        text=query,
-        search_scope="summary",
-        search_type="mmr",
-    )
-    search_memory(client, session_id, search_payload)
+    # # Synthesize a question from most recent messages.
+    # # Useful for RAG apps. This is faster than using an LLM chain.
+    # print("\n---Synthesize a question from most recent messages")
+    # question = client.memory.synthesize_question(session_id, last_n=3)
+    # print(f"Question: {question}")
 
-    print("\n---Searching over messages using a metadata filter")
-    search_payload = MemorySearchPayload(
-        text=query,
-        search_scope="messages",
-        metadata={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}},
-    )
-    search_memory(client, session_id, search_payload)
+    # # Classify the session.
+    # # Useful for semantic routing, filtering, and many other use cases.
+    # print("\n---Classify the session")
+    # classes = [
+    #     "low spender <$50",
+    #     "medium spender >=$50, <$100",
+    #     "high spender >=$100",
+    #     "unknown",
+    # ]
+    # classification = client.memory.classify_session(
+    #     session_id, "spender_category", classes
+    # )
+    # print(f"Classification: {classification}")
+    #
+    # # Search Memory for session
+    # query = "What are Jane's favorite show brands?"
+    # print(f"\n---Searching over summaries for: '{query}'")
+    # search_payload = MemorySearchPayload(
+    #     text=query,
+    #     search_scope="summary",
+    # )
+    # search_memory(client, session_id, search_payload)
+    #
+    # print("\n---Searching over summaries with MMR Reranking")
+    # search_payload = MemorySearchPayload(
+    #     text=query,
+    #     search_scope="summary",
+    #     search_type="mmr",
+    # )
+    # search_memory(client, session_id, search_payload)
+    #
+    # print("\n---Searching over messages using a metadata filter")
+    # search_payload = MemorySearchPayload(
+    #     text=query,
+    #     search_scope="messages",
+    #     metadata={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}},
+    # )
+    # search_memory(client, session_id, search_payload)
 
     # Delete Memory for session
     # Uncomment to run

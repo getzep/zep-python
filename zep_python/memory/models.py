@@ -201,6 +201,35 @@ class Question(BaseModel):
     question: str
 
 
+class ZepDataClass(BaseModel):
+    description: Optional[str] = None
+    name: Optional[str] = None
+    type: Optional[str] = None
+    value: Optional[str] = None
+
+
+class ZepText(ZepDataClass):
+    type: str = "ZepText"
+
+
+class ZepDate(ZepDataClass):
+    type: str = "ZepDate"
+
+
+class ZepNumber(ZepDataClass):
+    type: str = "ZepNumber"
+
+
+class ZepFloat(ZepDataClass):
+    type: str = "ZepFloat"
+
+
+class ExtractDataRequest(BaseModel):
+    last_n_messages: Optional[int] = None
+    session_id: Optional[str] = None
+    zep_data_classes: List[ZepDataClass]
+
+
 class ClassifySessionRequest(BaseModel):
     """
     Represents a request to classify a session.

@@ -15,7 +15,7 @@ from zep_python.memory.models import (
     MemoryType,
     Question,
     SearchScope,
-    Session,
+    Session, ExtractDataRequest,
 )
 from zep_python.utils import SearchType
 
@@ -41,7 +41,7 @@ class MemoryClient:
         self.client = client
 
     def _gen_get_params(
-        self, lastn: Optional[int] = None, memory_type: Optional[str] = None
+            self, lastn: Optional[int] = None, memory_type: Optional[str] = None
     ) -> Dict[str, Any]:
         params: dict[str, Any] = {}
         if lastn is not None:
@@ -299,13 +299,13 @@ class MemoryClient:
         return Session.model_validate(response.json())
 
     async def aclassify_session(
-        self,
-        session_id: str,
-        name: str,
-        classes: List[str],
-        last_n: Optional[int] = None,
-        persist: Optional[bool] = True,
-        instruction: Optional[str] = None,
+            self,
+            session_id: str,
+            name: str,
+            classes: List[str],
+            last_n: Optional[int] = None,
+            persist: Optional[bool] = True,
+            instruction: Optional[str] = None,
     ) -> ClassifySessionResponse:
         """
         Classify the session with the specified ID. Asynchronous version.
@@ -369,13 +369,13 @@ class MemoryClient:
         return ClassifySessionResponse(**response.json())
 
     def classify_session(
-        self,
-        session_id: str,
-        name: str,
-        classes: List[str],
-        last_n: Optional[int] = None,
-        persist: Optional[bool] = True,
-        instruction: Optional[str] = None,
+            self,
+            session_id: str,
+            name: str,
+            classes: List[str],
+            last_n: Optional[int] = None,
+            persist: Optional[bool] = True,
+            instruction: Optional[str] = None,
     ) -> ClassifySessionResponse:
         """
         Classify the session with the specified ID.
@@ -438,9 +438,29 @@ class MemoryClient:
 
         return ClassifySessionResponse(**response.json())
 
+    def extract_data(
+            self,
+            session_id: str,
+            extract_data_request: ExtractDataRequest
+    ) -> Dict[str, str]:
+        """
+        Extract data from the specified session.
+        """
+        if session_id is None or session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        response = self.client.post(
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/extract_data",
+            json=extract_data_request.dict(exclude_none=True),
+        )
+
+        handle_response(response, f"Failed to extract data from session {session_id}")
+
+        return response.json()
+
     # Memory APIs : Get a List of Sessions
     def list_sessions(
-        self, limit: Optional[int] = None, cursor: Optional[int] = None
+            self, limit: Optional[int] = None, cursor: Optional[int] = None
     ) -> List[Session]:
         """
         Retrieve a list of paginated sessions.
@@ -484,7 +504,7 @@ class MemoryClient:
 
     # Memory APIs : Get a List of Sessions Asynchronously
     async def alist_sessions(
-        self, limit: Optional[int] = None, cursor: Optional[int] = None
+            self, limit: Optional[int] = None, cursor: Optional[int] = None
     ) -> List[Session]:
         """
         Asynchronously retrieve a list of paginated sessions.
@@ -525,7 +545,7 @@ class MemoryClient:
         return [Session.model_validate(session) for session in response_data]
 
     def list_all_sessions(
-        self, chunk_size: int = 100
+            self, chunk_size: int = 100
     ) -> Generator[List[Session], None, None]:
         """
         Retrieve all sessions, handling pagination automatically.
@@ -565,7 +585,7 @@ class MemoryClient:
             cursor += chunk_size
 
     async def alist_all_sessions(
-        self, chunk_size: int = 100
+            self, chunk_size: int = 100
     ) -> AsyncGenerator[List[Session], None]:
         """
         Asynchronously retrieve all sessions, handling pagination automatically.
@@ -603,10 +623,10 @@ class MemoryClient:
 
     # Memory APIs : Get Memory
     def get_memory(
-        self,
-        session_id: str,
-        memory_type: Optional[str] = None,
-        lastn: Optional[int] = None,
+            self,
+            session_id: str,
+            memory_type: Optional[str] = None,
+            lastn: Optional[int] = None,
     ) -> Memory:
         """
         Retrieve memory for the specified session.
@@ -650,10 +670,10 @@ class MemoryClient:
 
     # Memory APIs : Get Memory Asynchronously
     async def aget_memory(
-        self,
-        session_id: str,
-        memory_type: Optional[str] = None,
-        lastn: Optional[int] = None,
+            self,
+            session_id: str,
+            memory_type: Optional[str] = None,
+            lastn: Optional[int] = None,
     ) -> Memory:
         """
         Asynchronously retrieve memory for the specified session.
@@ -840,10 +860,10 @@ class MemoryClient:
 
     # Memory APIs : Search Memory
     def search_memory(
-        self,
-        session_id: str,
-        search_payload: MemorySearchPayload,
-        limit: Optional[int] = None,
+            self,
+            session_id: str,
+            search_payload: MemorySearchPayload,
+            limit: Optional[int] = None,
     ) -> List[MemorySearchResult]:
         """
         Search memory for the specified session.
@@ -887,10 +907,10 @@ class MemoryClient:
 
     # Memory APIs : Search Memory Asynchronously
     async def asearch_memory(
-        self,
-        session_id: str,
-        search_payload: MemorySearchPayload,
-        limit: Optional[int] = None,
+            self,
+            session_id: str,
+            search_payload: MemorySearchPayload,
+            limit: Optional[int] = None,
     ) -> List[MemorySearchResult]:
         """
         Asynchronously search memory for the specified session.
