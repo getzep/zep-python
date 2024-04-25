@@ -368,7 +368,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def creates_multiple_documents_in_a_document_collection(
+    def add_documents(
         self,
         collection_name: str,
         *,
@@ -391,7 +391,7 @@ class DocumentClient:
         client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.document.creates_multiple_documents_in_a_document_collection(
+        client.document.add_documents(
             collection_name="collectionName",
             request=[CreateDocumentRequest()],
         )
@@ -1341,7 +1341,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def creates_multiple_documents_in_a_document_collection(
+    async def add_documents(
         self,
         collection_name: str,
         *,
@@ -1364,7 +1364,7 @@ class AsyncDocumentClient:
         client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.document.creates_multiple_documents_in_a_document_collection(
+        await client.document.add_documents(
             collection_name="collectionName",
             request=[CreateDocumentRequest()],
         )
