@@ -19,7 +19,7 @@ from dotenv import find_dotenv, load_dotenv
 from chat_history_shoe_purchase import history
 
 from zep.client import Zep
-from zep.types import Memory, Message
+from zep.types import ModelsMemory, ModelsMessage
 
 load_dotenv(
     dotenv_path=find_dotenv()
@@ -65,8 +65,8 @@ def main() -> None:
     print(f"\n---Add Memory for Session: {session_id}")
     for m in history:
         print(f"{m['role']}: {m['content']}")
-        message = Message(**m)
-        memory = Memory(messages=[message])
+        message = ModelsMessage(**m)
+        memory = ModelsMemory(messages=[message])
         client.memory.create(session_id=session_id, request=memory)
 
     # Synthesize a question from most recent messages.

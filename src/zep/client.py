@@ -6,7 +6,6 @@ import httpx
 from .environment import BaseClientEnvironment
 from .external_clients.memory import MemoryClient, AsyncMemoryClient
 from .external_clients.document import DocumentClient, AsyncDocumentClient
-from .external_clients.messages import MessagesClient, AsyncMessagesClient
 from .external_clients.user import UserClient, AsyncUserClient
 
 
@@ -31,7 +30,6 @@ class Zep(BaseClient):
         )
         self.memory = MemoryClient(client_wrapper=self._client_wrapper)
         self.document = DocumentClient(client_wrapper=self._client_wrapper)
-        self.messages = MessagesClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
 
@@ -56,5 +54,4 @@ class AsyncZep(AsyncBaseClient):
         )
         self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
         self.document = AsyncDocumentClient(client_wrapper=self._client_wrapper)
-        self.messages = AsyncMessagesClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)

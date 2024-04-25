@@ -412,6 +412,7 @@ class MemoryClient:
             session_id="sessionId",
         )
         """
+        print("memory url", f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/memory")
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
@@ -444,6 +445,15 @@ class MemoryClient:
             retries=0,
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
+        print("memory response", _response)
+        print("headers", jsonable_encoder(
+            remove_none_from_dict(
+                {
+                    **self._client_wrapper.get_headers(),
+                    **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                }
+            )
+        ))
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(ModelsMemory, _response.json())  # type: ignore
         if _response.status_code == 404:

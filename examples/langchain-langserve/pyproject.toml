@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "langserve-sample"
+version = "0.1.0"
+description = ""
+authors = ["Paul Paliychuk <paul@getzep.com>"]
+readme = "README.md"
+packages = [
+    { include = "app" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+uvicorn = "^0.23.2"
+langserve = {extras = ["server"], version = ">=0.0.30"}
+pydantic = ">2, <3"
+python-dotenv = "^1.0.1"
+zep = {path = "../.."}
+bs4 = "^0.0.2"
+
+
+[tool.poetry.group.dev.dependencies]
+langchain = "^0.1.3"
+openai = "^1.9.0"
+langchain-openai = "^0.0.3"
+langchain-cli = { extras = ["serve"], version = "^0.0.21" }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

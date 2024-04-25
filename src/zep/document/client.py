@@ -261,6 +261,7 @@ class DocumentClient:
             retries=0,
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
+        print("Get collection _response", _response, f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}")
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(ModelsDocumentCollectionResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
@@ -268,7 +269,7 @@ class DocumentClient:
         if _response.status_code == 401:
             raise UnauthorizedError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(typing.Any, _response))  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(pydantic_v1.parse_obj_as(ApihandlersApiError, _response.json()))  # type: ignore
         try:
@@ -343,6 +344,7 @@ class DocumentClient:
             retries=0,
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
+        print("Add collection _response", _response, _request, jsonable_encoder(collection_name))
         if 200 <= _response.status_code < 300:
             return
         if _response.status_code == 400:
