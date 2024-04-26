@@ -16,7 +16,7 @@ from zep_python.user.client import UserClient
 
 API_URL = "https://api.getzep.com"
 API_BASE_PATH = "/api/v2"
-API_TIMEOUT = 10
+API_TIMEOUT = 100
 
 MINIMUM_SERVER_VERSION = "0.22.0"
 

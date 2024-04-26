@@ -9,6 +9,7 @@ from openai import AsyncOpenAI
 
 from zep_python import ZepClient
 from zep_python.memory import Memory, Session
+from zep_python.memory.models import ZepText, ExtractDataRequest
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
 
@@ -62,6 +63,8 @@ You may not offer discounts towards a return or exchange.
 order_instructions = """To complete an order, you must get the user's full name, email address, and shipping address. 
 You must also ask the user to add their credit card information in our secure payment form. This will allow us to process the order and ensure a smooth transaction."""
 
+schedule_instructions = """To schedule an appointment, you must ask the user for their full name, email address, and phone number."""
+
 
 async def load_previous_chat_history(session_id: str):
     await zep.memory.aadd_memory(
@@ -111,7 +114,12 @@ async def display_actions():
             cl.Action(
                 name="Print Facts",
                 value="print_facts",
-            )
+            ),
+            cl.Action(
+                name="Print Extracted Data",
+                value="print_extracted_data",
+            ),
+
         ],
     ).send()
 
@@ -122,8 +130,22 @@ async def print_facts():
     memory = await zep.memory.aget_memory(session_id, "perpetual")
     facts = memory.facts
 
+    print("facts are", facts)
+
     if facts:
         msg = cl.Message(author="System", content="\n".join(facts))
+        await msg.send()
+
+
+@cl.action_callback("Print Extracted Data")
+async def print_extracted_data():
+    session_id = cl.user_session.get("session_id")
+
+    extracted_data = await extract_appointment_data(session_id)
+
+    if extracted_data:
+        extracted_data_dict = {model.name: model.value for model in extracted_data}
+        msg = cl.Message(author="System", content="\n".join(f"{k}: {v}" for k, v in extracted_data_dict.items()))
         await msg.send()
 
 
@@ -146,18 +168,57 @@ async def classify_intent(session_id: str) -> str:
     classes = [
         "the user wants to buy shoes (buy_shoes)",
         "the user wants to return shoes (return_shoes)",
+        "the user wants to schedule an appointment (schedule_appointment)",
         "the user intent is unknown (unknown)",
     ]
+    print("Classifying intent")
     classification = await zep.memory.aclassify_session(
         session_id, "intent", classes, last_n=2, persist=False
     )
+    print("Classification is", classification.class_)
     if "buy_shoes" in classification.class_:
         return "buy_shoes"
     if "return_shoes" in classification.class_:
         return "return_shoes"
     if "order_query" in classification.class_:
         return "order_query"
+    if "schedule_appointment" in classification.class_:
+        return "schedule_appointment"
     return "unknown"
+
+
+class CustomerName(ZepText):
+    name: str = "FullName"
+    description: str = "The full name of the customer. Only return their name."
+
+
+class CustomerEmailAddress(ZepText):
+    name: str = "Email"
+    description: str = "The email address of the customer. Only return their email address."
+
+class CustomerPhoneNumber(ZepText):
+    name: str = "Phone"
+    description: str = "The phone number of the customer. Only return their phone number."
+
+
+zep_data_classes = [
+    # CustomerName(),
+    # CustomerEmailAddress(),
+    CustomerPhoneNumber()
+]
+
+
+@cl.step(name="Extract Data", type="tool")
+async def extract_appointment_data(session_id):
+    extract_request = ExtractDataRequest(last_n_messages=100, session_id=session_id, zep_data_classes=zep_data_classes)
+
+    extracted_data = zep.memory.extract_data(session_id, extract_request)
+    for zep_data_class in zep_data_classes:
+        key = zep_data_class.name
+        if key in extracted_data:
+            zep_data_class.value = extracted_data[key]
+
+    return zep_data_classes
 
 
 @cl.step(name="Classify Budget", type="tool")
@@ -220,15 +281,17 @@ async def on_message(message: cl.Message):
         budget_class,
         ready_to_purchase,
         intent,
+        appointment_data
     ) = await asyncio.gather(
         synthesize_question(session_id),
         get_history(session_id),
         classify_budget(session_id),
         classify_ready_for_purchase(session_id),
         classify_intent(session_id),
+        extract_appointment_data(session_id)
     )
 
-    print(intent)
+    print("appointment data is", appointment_data)
 
     # Load the base prompt into
     prompt = [{"role": "system", "content": base_system_prompt}]
@@ -274,6 +337,13 @@ async def on_message(message: cl.Message):
             prompt.append({"role": "system", "content": return_instructions})
             msg = cl.Message(author="System", content="Identified Return Intent")
             await msg.send()
+        case "schedule_appointment":
+            prompt.append(
+                {"role": "system", "content": schedule_instructions}
+            )
+            msg = cl.Message(author="System", content="Identified Schedule Appointment Intent")
+            print("prompt is", prompt)
+            await msg.send()
         case _:
             print("Unknown intent")
             return
@@ -284,7 +354,7 @@ async def on_message(message: cl.Message):
     ]
 
     response_message = await call_openai(prompt)
-    msg = cl.Message(author=BOT_NAME, content=(response_message.content))
+    msg = cl.Message(author=BOT_NAME, content=response_message.content)
     await msg.send()
 
     await zep.memory.aadd_memory(

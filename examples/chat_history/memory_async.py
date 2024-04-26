@@ -25,6 +25,7 @@ from zep_python import (
     ZepClient,
 )
 from zep_python.memory import Memory, MemorySearchPayload, Session
+from zep_python.memory.models import ExtractDataRequest
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
 
@@ -102,6 +103,19 @@ async def add_memory_to_session(client, session_id):
             f"API error occurred while adding memory to session {session_id}."
             f" Got error: {e}"
         )
+
+
+async def extract_data(client, session_id, zep_data_classes):
+    extract_data_request = ExtractDataRequest(last_n_messages=100, session_id=session_id,
+                                              zep_data_classes=zep_data_classes)
+
+    extracted_data = await client.memory.aextract_data(session_id, extract_data_request)
+    for zep_data_class in zep_data_classes:
+        key = zep_data_class.name
+        if key in extracted_data:
+            zep_data_class.value = extracted_data[key]
+
+    return zep_data_classes
 
 
 async def get_memory_from_session(client, session_id):

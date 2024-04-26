@@ -44,14 +44,6 @@ LANGCHAIN_API_KEY=<your-langchain-api-key>
 LANGCHAIN_PROJECT=<your-langchain-project-name># If not specified, defaults to "default"
 ```
 
-## Data Ingestion
-
-The `ingest.py` script creates Document Collections and populates them with content from a web article. To use this script, simply run the following command:
-
-```bash
-python app/ingest.py
-```
-
 ## Starting the Server
 
 To start the server, navigate to the application directory and run the following command:

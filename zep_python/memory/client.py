@@ -298,6 +298,26 @@ class MemoryClient:
 
         return Session.model_validate(response.json())
 
+    async def aextract_data(
+            self,
+            session_id: str,
+            extract_data_request: ExtractDataRequest
+    ) -> Dict[str, str]:
+        """
+        Extract data from the specified session.
+        """
+        if session_id is None or session_id.strip() == "":
+            raise ValueError("session_id must be provided")
+
+        response = self.client.post(
+            f"/sessions/{urllib.parse.quote_plus(session_id)}/extract_data",
+            json=extract_data_request.dict(exclude_none=True),
+        )
+
+        handle_response(response, f"Failed to extract data from session {session_id}")
+
+        return response.json()
+
     async def aclassify_session(
             self,
             session_id: str,
@@ -448,6 +468,8 @@ class MemoryClient:
         """
         if session_id is None or session_id.strip() == "":
             raise ValueError("session_id must be provided")
+
+        print("extract_data_request", extract_data_request.dict(exclude_none=True))
 
         response = self.client.post(
             f"/sessions/{urllib.parse.quote_plus(session_id)}/extract_data",

@@ -20,6 +20,10 @@ if ZEP_API_KEY is None:
         "Remove this check if using Zep Open Source."
     )
 
+# print envs
+print(f"ZEP_API_URL: {ZEP_API_URL}")
+print(f"ZEP_API_KEY: {ZEP_API_KEY}")
+
 ZEP_COLLECTION_NAME = "shoe_data"
 
 zep = ZepClient(
