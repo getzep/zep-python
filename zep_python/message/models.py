@@ -11,6 +11,7 @@ class RoleType(str, Enum):
     SYSTEM_ROLE = "system"
     FUNCTION_ROLE = "function"
     TOOL_ROLE = "tool"
+    NO_ROLE = "norole"
 
 
 def get_zep_message_role_type(role):
@@ -24,8 +25,10 @@ def get_zep_message_role_type(role):
         return RoleType.FUNCTION_ROLE
     elif role == "tool":
         return RoleType.TOOL_ROLE
+    elif role == "norole":
+        return RoleType.NO_ROLE
     else:
-        return RoleType.SYSTEM_ROLE
+        return RoleType.NO_ROLE
 
 
 class Message(BaseModel):
