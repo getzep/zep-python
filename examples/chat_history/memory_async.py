@@ -116,7 +116,7 @@ async def get_memory_from_session(client, session_id):
             memory = await client.memory.aget_memory(
                 session_id, memory_type="perpetual", lastn=3
             )
-            time.sleep(5)
+            await asyncio.sleep(5)
 
         print(f"Fact Table: {memory.facts}")
         if memory.summary:
