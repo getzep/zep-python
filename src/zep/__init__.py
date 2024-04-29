@@ -23,7 +23,7 @@ from .types import (
     User,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError, UnauthorizedError
-from . import document, memory, session, user
+from . import document, memory, user
 from .environment import BaseClientEnvironment
 from .memory import MemoryGetRequestMemoryType
 from .version import __version__
@@ -58,6 +58,5 @@ __all__ = [
     "__version__",
     "document",
     "memory",
-    "session",
     "user",
 ]
