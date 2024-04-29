@@ -9,7 +9,7 @@ from openai import AsyncOpenAI
 
 from zep_python import ZepClient
 from zep_python.memory import Memory, Session
-from zep_python.memory.models import ZepText, ExtractDataRequest
+from zep_python.memory.models import ZepText, ExtractDataRequest, ZepPhoneNumber, ZepDate
 from zep_python.message import Message
 from zep_python.user import CreateUserRequest
 
@@ -63,7 +63,7 @@ You may not offer discounts towards a return or exchange.
 order_instructions = """To complete an order, you must get the user's full name, email address, and shipping address. 
 You must also ask the user to add their credit card information in our secure payment form. This will allow us to process the order and ensure a smooth transaction."""
 
-schedule_instructions = """To schedule an appointment, you must ask the user for their full name, email address, and phone number."""
+schedule_instructions = """To schedule an appointment, you must ask the user for their full name, phone number, and desired date"""
 
 
 async def load_previous_chat_history(session_id: str):
@@ -196,15 +196,27 @@ class CustomerEmailAddress(ZepText):
     name: str = "Email"
     description: str = "The email address of the customer. Only return their email address."
 
-class CustomerPhoneNumber(ZepText):
+
+class CustomerPhoneNumber(ZepPhoneNumber):
     name: str = "Phone"
-    description: str = "The phone number of the customer. Only return their phone number."
+    description: str = "The phone number of the customer. If there is no phone number return 000-000-0000. Only return their phone number."
+
+
+class CustomerAppointmentDate(ZepDate):
+    name: str = "AppointmentDate"
+    description: str = "The datetime. the customer wants to schedule an appointment. Appointments are only in the future. Only return the datetime."
+
+
+class CustomerAppointmentReason(ZepText):
+    name: str = "AppointmentReason"
+    description: str = "The reason the customer wants to schedule an appointment. Only return the reason. e.g. 'shoe fitting', 'shoe repair', 'shoe return', 'shoe exchange', 'shoe consultation', 'shoe purchase', 'shoe cleaning', 'shoe customization', 'shoe donation', 'shoe donation pickup'. If unknown return 'unknown'."
 
 
 zep_data_classes = [
-    # CustomerName(),
-    # CustomerEmailAddress(),
-    CustomerPhoneNumber()
+    CustomerName(),
+    CustomerPhoneNumber(),
+    CustomerAppointmentDate(),
+    CustomerAppointmentReason()
 ]
 
 
@@ -340,6 +352,17 @@ async def on_message(message: cl.Message):
         case "schedule_appointment":
             prompt.append(
                 {"role": "system", "content": schedule_instructions}
+            )
+            prompt.append(
+                {"role": "system",
+                 "content": f"""
+                            The user wants to schedule an appointment. The extracted data is:
+                            - Full Name: {appointment_data[0].value}
+                            - Phone Number: {appointment_data[1].value}
+                            - Appointment Date: {appointment_data[2].value}
+                            - Appointment Reason: {appointment_data[3].value}
+                            """
+                 }
             )
             msg = cl.Message(author="System", content="Identified Schedule Appointment Intent")
             print("prompt is", prompt)

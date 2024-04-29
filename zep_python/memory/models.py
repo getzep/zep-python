@@ -224,6 +224,10 @@ class ZepFloat(ZepDataClass):
     type: str = "ZepFloat"
 
 
+class ZepPhoneNumber(ZepDataClass):
+    type: str = "ZepPhoneNumber"
+
+
 class ExtractDataRequest(BaseModel):
     last_n_messages: Optional[int] = None
     session_id: Optional[str] = None
