@@ -42,9 +42,9 @@ class UserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.user.list()
@@ -119,9 +119,9 @@ class UserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.user.add()
@@ -194,9 +194,9 @@ class UserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.user.list_ordered()
@@ -254,9 +254,9 @@ class UserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.user.get(
@@ -306,9 +306,9 @@ class UserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.user.delete(
@@ -375,9 +375,9 @@ class UserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.user.update(
@@ -446,9 +446,9 @@ class UserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.user.get_sessions(
@@ -511,9 +511,9 @@ class AsyncUserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.user.list()
@@ -588,9 +588,9 @@ class AsyncUserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.user.add()
@@ -663,9 +663,9 @@ class AsyncUserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.user.list_ordered()
@@ -723,9 +723,9 @@ class AsyncUserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.user.get(
@@ -775,9 +775,9 @@ class AsyncUserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.user.delete(
@@ -844,9 +844,9 @@ class AsyncUserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.user.update(
@@ -915,9 +915,9 @@ class AsyncUserClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.user.get_sessions(

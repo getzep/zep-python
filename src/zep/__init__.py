@@ -24,14 +24,13 @@ from .types import (
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError, UnauthorizedError
 from . import document, memory, user
-from .environment import BaseClientEnvironment
+from .environment import ZepEnvironment
 from .memory import MemoryGetRequestMemoryType
 from .version import __version__
 
 __all__ = [
     "ApiError",
     "BadRequestError",
-    "BaseClientEnvironment",
     "ClassifySessionResponse",
     "CreateDocumentRequest",
     "DocumentCollectionResponse",
@@ -55,6 +54,7 @@ __all__ = [
     "UnauthorizedError",
     "UpdateDocumentListRequest",
     "User",
+    "ZepEnvironment",
     "__version__",
     "document",
     "memory",

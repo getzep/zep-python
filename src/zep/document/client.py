@@ -39,9 +39,9 @@ class DocumentClient:
         Parameters:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.list_collections()
@@ -93,9 +93,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.get_collection(
@@ -164,9 +164,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.add_collection(
@@ -237,9 +237,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.delete_collection(
@@ -306,9 +306,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.update_collection(
@@ -386,9 +386,9 @@ class DocumentClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import CreateDocumentRequest
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.add_documents(
@@ -459,9 +459,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.batch_delete_documents(
@@ -536,9 +536,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.batch_get_documents(
@@ -615,9 +615,9 @@ class DocumentClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import UpdateDocumentListRequest
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.batch_update_documents(
@@ -689,9 +689,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.gets_a_document_from_a_document_collection_by_uuid(
@@ -753,9 +753,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.delete_document(
@@ -827,9 +827,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.updates_a_document_in_a_document_collection_by_uuid(
@@ -923,9 +923,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import BaseClient
+        from zep.client import Zep
 
-        client = BaseClient(
+        client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.document.search(
@@ -1012,9 +1012,9 @@ class AsyncDocumentClient:
         Parameters:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.list_collections()
@@ -1066,9 +1066,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.get_collection(
@@ -1137,9 +1137,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.add_collection(
@@ -1210,9 +1210,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.delete_collection(
@@ -1279,9 +1279,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.update_collection(
@@ -1359,9 +1359,9 @@ class AsyncDocumentClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import CreateDocumentRequest
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.add_documents(
@@ -1432,9 +1432,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.batch_delete_documents(
@@ -1509,9 +1509,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.batch_get_documents(
@@ -1588,9 +1588,9 @@ class AsyncDocumentClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import UpdateDocumentListRequest
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.batch_update_documents(
@@ -1662,9 +1662,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.gets_a_document_from_a_document_collection_by_uuid(
@@ -1726,9 +1726,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.delete_document(
@@ -1800,9 +1800,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.updates_a_document_in_a_document_collection_by_uuid(
@@ -1896,9 +1896,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.base_client import AsyncBaseClient
+        from zep.client import AsyncZep
 
-        client = AsyncBaseClient(
+        client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
         await client.document.search(
