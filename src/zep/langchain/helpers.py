@@ -1,7 +1,7 @@
-from zep.types.models_role_type import ModelsRoleType
+from zep.types.role_type import RoleType
 
 
-def get_zep_message_role_type(role) -> ModelsRoleType:
+def get_zep_message_role_type(role) -> RoleType:
     if role == "human":
         return "user"
     elif role == "ai":
