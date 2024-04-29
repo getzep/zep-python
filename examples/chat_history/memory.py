@@ -196,7 +196,7 @@ def main() -> None:
     print(f"Classification: {classification}")
 
     # Search Memory for session
-    query = "What are Jane's favorite show brands?"
+    query = "What are Jane's favorite shoe brands?"
     print(f"\n---Searching over summaries for: '{query}'")
     search_payload = MemorySearchPayload(
         text=query,
