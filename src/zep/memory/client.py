@@ -982,7 +982,7 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summaries"
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summary"
             ),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
@@ -2042,7 +2042,7 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summaries"
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summary"
             ),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
