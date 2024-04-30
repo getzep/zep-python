@@ -12,6 +12,7 @@ This script demonstrates the following functionality:
 """
 
 import os
+import time
 import uuid
 
 from dotenv import find_dotenv, load_dotenv
@@ -32,7 +33,6 @@ API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Ope
 def main() -> None:
     client = Zep(
         api_key=API_KEY,
-        base_url=f"{API_URL}/api/v2",
     )
 
     # Create a user
@@ -116,10 +116,16 @@ def main() -> None:
     )
     print("messages_result: ", messages_result)
 
+    time.sleep(1)
+
+    summaries = client.memory.get_summaries(session_id)
+
+    print("\n---Get Summaries", summaries)
+
     # Delete Memory for session
     # Uncomment to run
     print(f"\n5---deleteMemory for Session: {session_id}")
-    client.memory.delete(session_id)
+    # client.memory.delete(session_id)
 
 
 if __name__ == "__main__":
