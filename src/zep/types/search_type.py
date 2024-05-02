@@ -2,4 +2,4 @@
 
 import typing
 
-SearchType = typing.Union[typing.AnyStr, typing.Literal["similarity", "mmr"]]
+SearchType = typing.Union[typing.Literal["similarity", "mmr"], typing.Any]

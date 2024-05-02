@@ -37,9 +37,18 @@ class DocumentClient:
         """
         Returns a list of all DocumentCollections.
 
-        Parameters:
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[typing.List[DocumentCollectionResponse]]
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -48,8 +57,8 @@ class DocumentClient:
         client.document.list_collections()
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "collections"),
+            method="GET",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "collections"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -89,11 +98,21 @@ class DocumentClient:
         """
         Returns a DocumentCollection if it exists.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DocumentCollectionResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -104,8 +123,8 @@ class DocumentClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}"
             ),
             params=jsonable_encoder(
@@ -156,15 +175,25 @@ class DocumentClient:
         """
         If a collection with the same name already exists, an error will be returned.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - description: typing.Optional[str].
+        description : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -180,8 +209,8 @@ class DocumentClient:
         if metadata is not OMIT:
             _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}"
             ),
             params=jsonable_encoder(
@@ -233,11 +262,21 @@ class DocumentClient:
         """
         If a collection with the same name already exists, it will be overwritten.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -248,8 +287,8 @@ class DocumentClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "DELETE",
-            urllib.parse.urljoin(
+            method="DELETE",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}"
             ),
             params=jsonable_encoder(
@@ -300,15 +339,25 @@ class DocumentClient:
         """
         Updates a DocumentCollection
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - description: typing.Optional[str].
+        description : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -324,8 +373,8 @@ class DocumentClient:
         if metadata is not OMIT:
             _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
+            method="PATCH",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}"
             ),
             params=jsonable_encoder(
@@ -381,13 +430,23 @@ class DocumentClient:
         """
         Creates Documents in a specified DocumentCollection and returns their UUIDs.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request: typing.Sequence[CreateDocumentRequest].
+        request : typing.Sequence[CreateDocumentRequest]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[str]
+            OK
+
+        Examples
+        --------
         from zep import CreateDocumentRequest
         from zep.client import Zep
 
@@ -400,8 +459,8 @@ class DocumentClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}/documents"
             ),
             params=jsonable_encoder(
@@ -455,13 +514,23 @@ class DocumentClient:
         """
         Deletes specified Documents from a DocumentCollection.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request: typing.Sequence[str].
+        request : typing.Sequence[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -473,8 +542,8 @@ class DocumentClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/batchDelete",
             ),
@@ -530,15 +599,25 @@ class DocumentClient:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - document_ids: typing.Optional[typing.Sequence[str]].
+        document_ids : typing.Optional[typing.Sequence[str]]
 
-            - uuids: typing.Optional[typing.Sequence[str]].
+        uuids : typing.Optional[typing.Sequence[str]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[DocumentResponse]
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -554,8 +633,8 @@ class DocumentClient:
         if uuids is not OMIT:
             _request["uuids"] = uuids
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/batchGet",
             ),
@@ -610,13 +689,23 @@ class DocumentClient:
         """
         Updates Documents in a specified DocumentCollection.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request: typing.Sequence[UpdateDocumentListRequest].
+        request : typing.Sequence[UpdateDocumentListRequest]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep import UpdateDocumentListRequest
         from zep.client import Zep
 
@@ -633,8 +722,8 @@ class DocumentClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
+            method="PATCH",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/batchUpdate",
             ),
@@ -685,13 +774,24 @@ class DocumentClient:
         """
         Returns specified Document from a DocumentCollection.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - document_uuid: str. UUID of the Document to be updated
+        document_uuid : str
+            UUID of the Document to be updated
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DocumentResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -703,8 +803,8 @@ class DocumentClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
             ),
@@ -749,13 +849,24 @@ class DocumentClient:
         """
         Delete specified Document from a DocumentCollection.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - document_uuid: str. UUID of the Document to be deleted
+        document_uuid : str
+            UUID of the Document to be deleted
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -767,8 +878,8 @@ class DocumentClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "DELETE",
-            urllib.parse.urljoin(
+            method="DELETE",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
             ),
@@ -821,17 +932,28 @@ class DocumentClient:
         """
         Updates a Document in a DocumentCollection by UUID
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - document_uuid: str. UUID of the Document to be updated
+        document_uuid : str
+            UUID of the Document to be updated
 
-            - document_id: typing.Optional[str].
+        document_id : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -848,8 +970,8 @@ class DocumentClient:
         if metadata is not OMIT:
             _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
+            method="PATCH",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
             ),
@@ -911,23 +1033,35 @@ class DocumentClient:
         """
         Searches Documents in a DocumentCollection based on provided search criteria.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - limit: typing.Optional[int]. Limit the number of returned documents
+        limit : typing.Optional[int]
+            Limit the number of returned documents
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - min_score: typing.Optional[float]. TODO: implement for documents
+        min_score : typing.Optional[float]
+            TODO: implement for documents
 
-            - mmr_lambda: typing.Optional[float].
+        mmr_lambda : typing.Optional[float]
 
-            - search_type: typing.Optional[SearchType].
+        search_type : typing.Optional[SearchType]
 
-            - text: typing.Optional[str].
+        text : typing.Optional[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DocumentSearchResultPage
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -949,8 +1083,8 @@ class DocumentClient:
         if text is not OMIT:
             _request["text"] = text
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}/search"
             ),
             params=jsonable_encoder(
@@ -1014,9 +1148,18 @@ class AsyncDocumentClient:
         """
         Returns a list of all DocumentCollections.
 
-        Parameters:
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[typing.List[DocumentCollectionResponse]]
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1025,8 +1168,8 @@ class AsyncDocumentClient:
         await client.document.list_collections()
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "collections"),
+            method="GET",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "collections"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -1066,11 +1209,21 @@ class AsyncDocumentClient:
         """
         Returns a DocumentCollection if it exists.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DocumentCollectionResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1081,8 +1234,8 @@ class AsyncDocumentClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}"
             ),
             params=jsonable_encoder(
@@ -1133,15 +1286,25 @@ class AsyncDocumentClient:
         """
         If a collection with the same name already exists, an error will be returned.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - description: typing.Optional[str].
+        description : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1157,8 +1320,8 @@ class AsyncDocumentClient:
         if metadata is not OMIT:
             _request["metadata"] = metadata
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}"
             ),
             params=jsonable_encoder(
@@ -1210,11 +1373,21 @@ class AsyncDocumentClient:
         """
         If a collection with the same name already exists, it will be overwritten.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1225,8 +1398,8 @@ class AsyncDocumentClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "DELETE",
-            urllib.parse.urljoin(
+            method="DELETE",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}"
             ),
             params=jsonable_encoder(
@@ -1277,15 +1450,25 @@ class AsyncDocumentClient:
         """
         Updates a DocumentCollection
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - description: typing.Optional[str].
+        description : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1301,8 +1484,8 @@ class AsyncDocumentClient:
         if metadata is not OMIT:
             _request["metadata"] = metadata
         _response = await self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
+            method="PATCH",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}"
             ),
             params=jsonable_encoder(
@@ -1358,13 +1541,23 @@ class AsyncDocumentClient:
         """
         Creates Documents in a specified DocumentCollection and returns their UUIDs.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request: typing.Sequence[CreateDocumentRequest].
+        request : typing.Sequence[CreateDocumentRequest]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[str]
+            OK
+
+        Examples
+        --------
         from zep import CreateDocumentRequest
         from zep.client import AsyncZep
 
@@ -1377,8 +1570,8 @@ class AsyncDocumentClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}/documents"
             ),
             params=jsonable_encoder(
@@ -1432,13 +1625,23 @@ class AsyncDocumentClient:
         """
         Deletes specified Documents from a DocumentCollection.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request: typing.Sequence[str].
+        request : typing.Sequence[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1450,8 +1653,8 @@ class AsyncDocumentClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/batchDelete",
             ),
@@ -1507,15 +1710,25 @@ class AsyncDocumentClient:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - document_ids: typing.Optional[typing.Sequence[str]].
+        document_ids : typing.Optional[typing.Sequence[str]]
 
-            - uuids: typing.Optional[typing.Sequence[str]].
+        uuids : typing.Optional[typing.Sequence[str]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[DocumentResponse]
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1531,8 +1744,8 @@ class AsyncDocumentClient:
         if uuids is not OMIT:
             _request["uuids"] = uuids
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/batchGet",
             ),
@@ -1587,13 +1800,23 @@ class AsyncDocumentClient:
         """
         Updates Documents in a specified DocumentCollection.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - request: typing.Sequence[UpdateDocumentListRequest].
+        request : typing.Sequence[UpdateDocumentListRequest]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep import UpdateDocumentListRequest
         from zep.client import AsyncZep
 
@@ -1610,8 +1833,8 @@ class AsyncDocumentClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
+            method="PATCH",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/batchUpdate",
             ),
@@ -1662,13 +1885,24 @@ class AsyncDocumentClient:
         """
         Returns specified Document from a DocumentCollection.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - document_uuid: str. UUID of the Document to be updated
+        document_uuid : str
+            UUID of the Document to be updated
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DocumentResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1680,8 +1914,8 @@ class AsyncDocumentClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
             ),
@@ -1726,13 +1960,24 @@ class AsyncDocumentClient:
         """
         Delete specified Document from a DocumentCollection.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - document_uuid: str. UUID of the Document to be deleted
+        document_uuid : str
+            UUID of the Document to be deleted
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1744,8 +1989,8 @@ class AsyncDocumentClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "DELETE",
-            urllib.parse.urljoin(
+            method="DELETE",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
             ),
@@ -1798,17 +2043,28 @@ class AsyncDocumentClient:
         """
         Updates a Document in a DocumentCollection by UUID
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - document_uuid: str. UUID of the Document to be updated
+        document_uuid : str
+            UUID of the Document to be updated
 
-            - document_id: typing.Optional[str].
+        document_id : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1825,8 +2081,8 @@ class AsyncDocumentClient:
         if metadata is not OMIT:
             _request["metadata"] = metadata
         _response = await self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
+            method="PATCH",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
             ),
@@ -1888,23 +2144,35 @@ class AsyncDocumentClient:
         """
         Searches Documents in a DocumentCollection based on provided search criteria.
 
-        Parameters:
-            - collection_name: str. Name of the Document Collection
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
 
-            - limit: typing.Optional[int]. Limit the number of returned documents
+        limit : typing.Optional[int]
+            Limit the number of returned documents
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - min_score: typing.Optional[float]. TODO: implement for documents
+        min_score : typing.Optional[float]
+            TODO: implement for documents
 
-            - mmr_lambda: typing.Optional[float].
+        mmr_lambda : typing.Optional[float]
 
-            - search_type: typing.Optional[SearchType].
+        search_type : typing.Optional[SearchType]
 
-            - text: typing.Optional[str].
+        text : typing.Optional[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DocumentSearchResultPage
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1926,8 +2194,8 @@ class AsyncDocumentClient:
         if text is not OMIT:
             _request["text"] = text
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"collections/{jsonable_encoder(collection_name)}/search"
             ),
             params=jsonable_encoder(

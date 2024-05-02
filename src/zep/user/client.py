@@ -40,19 +40,28 @@ class UserClient:
         """
         add user by id
 
-        Parameters:
-            - email: typing.Optional[str].
+        Parameters
+        ----------
+        email : typing.Optional[str]
 
-            - first_name: typing.Optional[str].
+        first_name : typing.Optional[str]
 
-            - last_name: typing.Optional[str].
+        last_name : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - user_id: typing.Optional[str].
+        user_id : typing.Optional[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            Created
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -72,8 +81,8 @@ class UserClient:
         if user_id is not OMIT:
             _request["user_id"] = user_id
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users"),
+            method="POST",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -121,13 +130,24 @@ class UserClient:
         """
         List all users with pagination.
 
-        Parameters:
-            - page_number: typing.Optional[int]. Page number for pagination, starting from 1
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1
 
-            - page_size: typing.Optional[int]. Number of users to retrieve per page
+        page_size : typing.Optional[int]
+            Number of users to retrieve per page
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserListResponse
+            Successfully retrieved list of users
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -136,8 +156,8 @@ class UserClient:
         client.user.list_ordered()
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users-ordered"),
+            method="GET",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users-ordered"),
             params=jsonable_encoder(
                 remove_none_from_dict(
                     {
@@ -183,11 +203,21 @@ class UserClient:
         """
         get user by id
 
-        Parameters:
-            - user_id: str. User ID
+        Parameters
+        ----------
+        user_id : str
+            User ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -198,8 +228,8 @@ class UserClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
+            method="GET",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -235,11 +265,21 @@ class UserClient:
         """
         delete user by id
 
-        Parameters:
-            - user_id: str. User ID
+        Parameters
+        ----------
+        user_id : str
+            User ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -250,8 +290,8 @@ class UserClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "DELETE",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
+            method="DELETE",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -296,19 +336,29 @@ class UserClient:
         """
         update user by id
 
-        Parameters:
-            - user_id: str. User ID
+        Parameters
+        ----------
+        user_id : str
+            User ID
 
-            - email: typing.Optional[str].
+        email : typing.Optional[str]
 
-            - first_name: typing.Optional[str].
+        first_name : typing.Optional[str]
 
-            - last_name: typing.Optional[str].
+        last_name : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -328,8 +378,8 @@ class UserClient:
         if metadata is not OMIT:
             _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
+            method="PATCH",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -375,11 +425,21 @@ class UserClient:
         """
         list all sessions for a user by user id
 
-        Parameters:
-            - user_id: str. User ID
+        Parameters
+        ----------
+        user_id : str
+            User ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Session]
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -390,8 +450,8 @@ class UserClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}/sessions"
             ),
             params=jsonable_encoder(
@@ -441,19 +501,28 @@ class AsyncUserClient:
         """
         add user by id
 
-        Parameters:
-            - email: typing.Optional[str].
+        Parameters
+        ----------
+        email : typing.Optional[str]
 
-            - first_name: typing.Optional[str].
+        first_name : typing.Optional[str]
 
-            - last_name: typing.Optional[str].
+        last_name : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - user_id: typing.Optional[str].
+        user_id : typing.Optional[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            Created
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -473,8 +542,8 @@ class AsyncUserClient:
         if user_id is not OMIT:
             _request["user_id"] = user_id
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users"),
+            method="POST",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -522,13 +591,24 @@ class AsyncUserClient:
         """
         List all users with pagination.
 
-        Parameters:
-            - page_number: typing.Optional[int]. Page number for pagination, starting from 1
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1
 
-            - page_size: typing.Optional[int]. Number of users to retrieve per page
+        page_size : typing.Optional[int]
+            Number of users to retrieve per page
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserListResponse
+            Successfully retrieved list of users
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -537,8 +617,8 @@ class AsyncUserClient:
         await client.user.list_ordered()
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users-ordered"),
+            method="GET",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "users-ordered"),
             params=jsonable_encoder(
                 remove_none_from_dict(
                     {
@@ -584,11 +664,21 @@ class AsyncUserClient:
         """
         get user by id
 
-        Parameters:
-            - user_id: str. User ID
+        Parameters
+        ----------
+        user_id : str
+            User ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -599,8 +689,8 @@ class AsyncUserClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
+            method="GET",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -636,11 +726,21 @@ class AsyncUserClient:
         """
         delete user by id
 
-        Parameters:
-            - user_id: str. User ID
+        Parameters
+        ----------
+        user_id : str
+            User ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -651,8 +751,8 @@ class AsyncUserClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "DELETE",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
+            method="DELETE",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -697,19 +797,29 @@ class AsyncUserClient:
         """
         update user by id
 
-        Parameters:
-            - user_id: str. User ID
+        Parameters
+        ----------
+        user_id : str
+            User ID
 
-            - email: typing.Optional[str].
+        email : typing.Optional[str]
 
-            - first_name: typing.Optional[str].
+        first_name : typing.Optional[str]
 
-            - last_name: typing.Optional[str].
+        last_name : typing.Optional[str]
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -729,8 +839,8 @@ class AsyncUserClient:
         if metadata is not OMIT:
             _request["metadata"] = metadata
         _response = await self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
+            method="PATCH",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -776,11 +886,21 @@ class AsyncUserClient:
         """
         list all sessions for a user by user id
 
-        Parameters:
-            - user_id: str. User ID
+        Parameters
+        ----------
+        user_id : str
+            User ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Session]
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -791,8 +911,8 @@ class AsyncUserClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"users/{jsonable_encoder(user_id)}/sessions"
             ),
             params=jsonable_encoder(

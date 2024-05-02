@@ -39,23 +39,33 @@ class MemoryClient:
     def add_session(
         self,
         *,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         session_id: str,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
         add session by id
 
-        Parameters:
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        Parameters
+        ----------
+        session_id : str
 
-            - session_id: str.
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - user_id: typing.Optional[str]. Must be a pointer to allow for null values
+        user_id : typing.Optional[str]
+            Must be a pointer to allow for null values
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Session
+            Created
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -71,8 +81,8 @@ class MemoryClient:
         if user_id is not OMIT:
             _request["user_id"] = user_id
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions"),
+            method="POST",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -122,17 +132,30 @@ class MemoryClient:
         """
         Get all sessions with optional page number, page size, order by field and order direction for pagination.
 
-        Parameters:
-            - page_number: typing.Optional[int]. Page number for pagination, starting from 1
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1
 
-            - page_size: typing.Optional[int]. Number of sessions to retrieve per page
+        page_size : typing.Optional[int]
+            Number of sessions to retrieve per page
 
-            - order_by: typing.Optional[str]. Field to order the results by: created_at, updated_at, user_id, session_id
+        order_by : typing.Optional[str]
+            Field to order the results by: created_at, updated_at, user_id, session_id
 
-            - asc: typing.Optional[bool]. Order direction: true for ascending, false for descending
+        asc : typing.Optional[bool]
+            Order direction: true for ascending, false for descending
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Session]
+            List of sessions
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -141,8 +164,8 @@ class MemoryClient:
         client.memory.list_sessions()
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
+            method="GET",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
             params=jsonable_encoder(
                 remove_none_from_dict(
                     {
@@ -190,11 +213,21 @@ class MemoryClient:
         """
         get session by id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Session
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -205,8 +238,10 @@ class MemoryClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"),
+            method="GET",
+            url=urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"
+            ),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -248,13 +283,24 @@ class MemoryClient:
         """
         add session by id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - metadata: typing.Dict[str, typing.Any]. The metadata to update
+        metadata : typing.Dict[str, typing.Any]
+            The metadata to update
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Session
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -266,8 +312,10 @@ class MemoryClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"),
+            method="PATCH",
+            url=urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"
+            ),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -312,30 +360,40 @@ class MemoryClient:
         session_id: str,
         *,
         classes: typing.Sequence[str],
+        name: str,
         instruction: typing.Optional[str] = OMIT,
         last_n: typing.Optional[int] = OMIT,
-        name: str,
         persist: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ClassifySessionResponse:
         """
         classify a session by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - classes: typing.Sequence[str].
+        classes : typing.Sequence[str]
 
-            - instruction: typing.Optional[str].
+        name : str
 
-            - last_n: typing.Optional[int].
+        instruction : typing.Optional[str]
 
-            - name: str.
+        last_n : typing.Optional[int]
 
-            - persist: typing.Optional[bool].
+        persist : typing.Optional[bool]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ClassifySessionResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -355,8 +413,8 @@ class MemoryClient:
         if persist is not OMIT:
             _request["persist"] = persist
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/classify"
             ),
             params=jsonable_encoder(
@@ -400,22 +458,32 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        last_n_messages: typing.Optional[int] = OMIT,
         zep_data_classes: typing.Sequence[ModelsZepDataClass],
+        last_n_messages: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Dict[str, str]:
         """
         extract data from a session by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - last_n_messages: typing.Optional[int].
+        zep_data_classes : typing.Sequence[ModelsZepDataClass]
 
-            - zep_data_classes: typing.Sequence[ModelsZepDataClass].
+        last_n_messages : typing.Optional[int]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.Dict[str, str]
+            OK
+
+        Examples
+        --------
         from zep import ModelsZepDataClass
         from zep.client import Zep
 
@@ -431,8 +499,8 @@ class MemoryClient:
         if last_n_messages is not OMIT:
             _request["last_n_messages"] = last_n_messages
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/extract"
             ),
             params=jsonable_encoder(
@@ -483,15 +551,27 @@ class MemoryClient:
         """
         get memory by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - memory_type: typing.Optional[MemoryGetRequestMemoryType]. memoryType: perpetual or message_window
+        memory_type : typing.Optional[MemoryGetRequestMemoryType]
+            memoryType: perpetual or message_window
 
-            - lastn: typing.Optional[int]. Last N messages. Overrides memory_window configuration
+        lastn : typing.Optional[int]
+            Last N messages. Overrides memory_window configuration
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Memory
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -502,8 +582,8 @@ class MemoryClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/memory"
             ),
             params=jsonable_encoder(
@@ -558,15 +638,25 @@ class MemoryClient:
         """
         add memory messages by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - messages: typing.Sequence[Message].
+        messages : typing.Sequence[Message]
 
-            - summary_instruction: typing.Optional[str].
+        summary_instruction : typing.Optional[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep import Message
         from zep.client import Zep
 
@@ -582,8 +672,8 @@ class MemoryClient:
         if summary_instruction is not OMIT:
             _request["summary_instruction"] = summary_instruction
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/memory"
             ),
             params=jsonable_encoder(
@@ -625,11 +715,21 @@ class MemoryClient:
         """
         delete memory messages by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -640,8 +740,8 @@ class MemoryClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "DELETE",
-            urllib.parse.urljoin(
+            method="DELETE",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/memory"
             ),
             params=jsonable_encoder(
@@ -686,15 +786,27 @@ class MemoryClient:
         """
         get messages by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - limit: typing.Optional[int]. Limit the number of results returned
+        limit : typing.Optional[int]
+            Limit the number of results returned
 
-            - cursor: typing.Optional[int]. Cursor for pagination
+        cursor : typing.Optional[int]
+            Cursor for pagination
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        MessageListResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -705,8 +817,8 @@ class MemoryClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/messages"
             ),
             params=jsonable_encoder(
@@ -756,13 +868,24 @@ class MemoryClient:
         """
         get message by session id and message id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - message_uuid: str. Message UUID
+        message_uuid : str
+            Message UUID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Message
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -774,8 +897,8 @@ class MemoryClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"sessions/{jsonable_encoder(session_id)}/messages/{jsonable_encoder(message_uuid)}",
             ),
@@ -821,15 +944,26 @@ class MemoryClient:
         """
         update message metadata by session id and message id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - message_uuid: str. Message UUID
+        message_uuid : str
+            Message UUID
 
-            - metadata: typing.Dict[str, typing.Any].
+        metadata : typing.Dict[str, typing.Any]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Message
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -842,8 +976,8 @@ class MemoryClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
+            method="PATCH",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"sessions/{jsonable_encoder(session_id)}/messages/{jsonable_encoder(message_uuid)}",
             ),
@@ -900,25 +1034,37 @@ class MemoryClient:
         """
         search memory messages by session id and query
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - limit: typing.Optional[int]. Limit the number of results returned
+        limit : typing.Optional[int]
+            Limit the number of results returned
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]]. Metadata Filter
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata Filter
 
-            - min_score: typing.Optional[float].
+        min_score : typing.Optional[float]
 
-            - mmr_lambda: typing.Optional[float].
+        mmr_lambda : typing.Optional[float]
 
-            - search_scope: typing.Optional[SearchScope].
+        search_scope : typing.Optional[SearchScope]
 
-            - search_type: typing.Optional[SearchType].
+        search_type : typing.Optional[SearchType]
 
-            - text: typing.Optional[str].
+        text : typing.Optional[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[MemorySearchResult]
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -942,8 +1088,8 @@ class MemoryClient:
         if text is not OMIT:
             _request["text"] = text
         _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/search"
             ),
             params=jsonable_encoder(
@@ -998,11 +1144,21 @@ class MemoryClient:
         """
         Get session summaries by ID
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SummaryListResponse
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -1013,8 +1169,8 @@ class MemoryClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summary"
             ),
             params=jsonable_encoder(
@@ -1058,13 +1214,24 @@ class MemoryClient:
         """
         synthesize a question by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - last_n_messages: typing.Optional[int]. Last N messages
+        last_n_messages : typing.Optional[int]
+            Last N messages
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Question
+            OK
+
+        Examples
+        --------
         from zep.client import Zep
 
         client = Zep(
@@ -1075,8 +1242,8 @@ class MemoryClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"sessions/{jsonable_encoder(session_id)}/synthesize_question",
             ),
@@ -1128,23 +1295,33 @@ class AsyncMemoryClient:
     async def add_session(
         self,
         *,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         session_id: str,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
         add session by id
 
-        Parameters:
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        Parameters
+        ----------
+        session_id : str
 
-            - session_id: str.
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            - user_id: typing.Optional[str]. Must be a pointer to allow for null values
+        user_id : typing.Optional[str]
+            Must be a pointer to allow for null values
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Session
+            Created
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1160,8 +1337,8 @@ class AsyncMemoryClient:
         if user_id is not OMIT:
             _request["user_id"] = user_id
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions"),
+            method="POST",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -1211,17 +1388,30 @@ class AsyncMemoryClient:
         """
         Get all sessions with optional page number, page size, order by field and order direction for pagination.
 
-        Parameters:
-            - page_number: typing.Optional[int]. Page number for pagination, starting from 1
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1
 
-            - page_size: typing.Optional[int]. Number of sessions to retrieve per page
+        page_size : typing.Optional[int]
+            Number of sessions to retrieve per page
 
-            - order_by: typing.Optional[str]. Field to order the results by: created_at, updated_at, user_id, session_id
+        order_by : typing.Optional[str]
+            Field to order the results by: created_at, updated_at, user_id, session_id
 
-            - asc: typing.Optional[bool]. Order direction: true for ascending, false for descending
+        asc : typing.Optional[bool]
+            Order direction: true for ascending, false for descending
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Session]
+            List of sessions
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1230,8 +1420,8 @@ class AsyncMemoryClient:
         await client.memory.list_sessions()
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
+            method="GET",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
             params=jsonable_encoder(
                 remove_none_from_dict(
                     {
@@ -1279,11 +1469,21 @@ class AsyncMemoryClient:
         """
         get session by id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Session
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1294,8 +1494,10 @@ class AsyncMemoryClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"),
+            method="GET",
+            url=urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"
+            ),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -1337,13 +1539,24 @@ class AsyncMemoryClient:
         """
         add session by id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - metadata: typing.Dict[str, typing.Any]. The metadata to update
+        metadata : typing.Dict[str, typing.Any]
+            The metadata to update
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Session
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1355,8 +1568,10 @@ class AsyncMemoryClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"),
+            method="PATCH",
+            url=urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"
+            ),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
@@ -1401,30 +1616,40 @@ class AsyncMemoryClient:
         session_id: str,
         *,
         classes: typing.Sequence[str],
+        name: str,
         instruction: typing.Optional[str] = OMIT,
         last_n: typing.Optional[int] = OMIT,
-        name: str,
         persist: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ClassifySessionResponse:
         """
         classify a session by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - classes: typing.Sequence[str].
+        classes : typing.Sequence[str]
 
-            - instruction: typing.Optional[str].
+        name : str
 
-            - last_n: typing.Optional[int].
+        instruction : typing.Optional[str]
 
-            - name: str.
+        last_n : typing.Optional[int]
 
-            - persist: typing.Optional[bool].
+        persist : typing.Optional[bool]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ClassifySessionResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1444,8 +1669,8 @@ class AsyncMemoryClient:
         if persist is not OMIT:
             _request["persist"] = persist
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/classify"
             ),
             params=jsonable_encoder(
@@ -1489,22 +1714,32 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        last_n_messages: typing.Optional[int] = OMIT,
         zep_data_classes: typing.Sequence[ModelsZepDataClass],
+        last_n_messages: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Dict[str, str]:
         """
         extract data from a session by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - last_n_messages: typing.Optional[int].
+        zep_data_classes : typing.Sequence[ModelsZepDataClass]
 
-            - zep_data_classes: typing.Sequence[ModelsZepDataClass].
+        last_n_messages : typing.Optional[int]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.Dict[str, str]
+            OK
+
+        Examples
+        --------
         from zep import ModelsZepDataClass
         from zep.client import AsyncZep
 
@@ -1520,8 +1755,8 @@ class AsyncMemoryClient:
         if last_n_messages is not OMIT:
             _request["last_n_messages"] = last_n_messages
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/extract"
             ),
             params=jsonable_encoder(
@@ -1572,15 +1807,27 @@ class AsyncMemoryClient:
         """
         get memory by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - memory_type: typing.Optional[MemoryGetRequestMemoryType]. memoryType: perpetual or message_window
+        memory_type : typing.Optional[MemoryGetRequestMemoryType]
+            memoryType: perpetual or message_window
 
-            - lastn: typing.Optional[int]. Last N messages. Overrides memory_window configuration
+        lastn : typing.Optional[int]
+            Last N messages. Overrides memory_window configuration
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Memory
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1591,8 +1838,8 @@ class AsyncMemoryClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/memory"
             ),
             params=jsonable_encoder(
@@ -1647,15 +1894,25 @@ class AsyncMemoryClient:
         """
         add memory messages by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - messages: typing.Sequence[Message].
+        messages : typing.Sequence[Message]
 
-            - summary_instruction: typing.Optional[str].
+        summary_instruction : typing.Optional[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep import Message
         from zep.client import AsyncZep
 
@@ -1671,8 +1928,8 @@ class AsyncMemoryClient:
         if summary_instruction is not OMIT:
             _request["summary_instruction"] = summary_instruction
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/memory"
             ),
             params=jsonable_encoder(
@@ -1716,11 +1973,21 @@ class AsyncMemoryClient:
         """
         delete memory messages by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1731,8 +1998,8 @@ class AsyncMemoryClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "DELETE",
-            urllib.parse.urljoin(
+            method="DELETE",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/memory"
             ),
             params=jsonable_encoder(
@@ -1777,15 +2044,27 @@ class AsyncMemoryClient:
         """
         get messages by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - limit: typing.Optional[int]. Limit the number of results returned
+        limit : typing.Optional[int]
+            Limit the number of results returned
 
-            - cursor: typing.Optional[int]. Cursor for pagination
+        cursor : typing.Optional[int]
+            Cursor for pagination
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        MessageListResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1796,8 +2075,8 @@ class AsyncMemoryClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/messages"
             ),
             params=jsonable_encoder(
@@ -1847,13 +2126,24 @@ class AsyncMemoryClient:
         """
         get message by session id and message id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - message_uuid: str. Message UUID
+        message_uuid : str
+            Message UUID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Message
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1865,8 +2155,8 @@ class AsyncMemoryClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"sessions/{jsonable_encoder(session_id)}/messages/{jsonable_encoder(message_uuid)}",
             ),
@@ -1912,15 +2202,26 @@ class AsyncMemoryClient:
         """
         update message metadata by session id and message id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - message_uuid: str. Message UUID
+        message_uuid : str
+            Message UUID
 
-            - metadata: typing.Dict[str, typing.Any].
+        metadata : typing.Dict[str, typing.Any]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Message
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1933,8 +2234,8 @@ class AsyncMemoryClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
+            method="PATCH",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"sessions/{jsonable_encoder(session_id)}/messages/{jsonable_encoder(message_uuid)}",
             ),
@@ -1991,25 +2292,37 @@ class AsyncMemoryClient:
         """
         search memory messages by session id and query
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - limit: typing.Optional[int]. Limit the number of results returned
+        limit : typing.Optional[int]
+            Limit the number of results returned
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]]. Metadata Filter
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata Filter
 
-            - min_score: typing.Optional[float].
+        min_score : typing.Optional[float]
 
-            - mmr_lambda: typing.Optional[float].
+        mmr_lambda : typing.Optional[float]
 
-            - search_scope: typing.Optional[SearchScope].
+        search_scope : typing.Optional[SearchScope]
 
-            - search_type: typing.Optional[SearchType].
+        search_type : typing.Optional[SearchType]
 
-            - text: typing.Optional[str].
+        text : typing.Optional[str]
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[MemorySearchResult]
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -2033,8 +2346,8 @@ class AsyncMemoryClient:
         if text is not OMIT:
             _request["text"] = text
         _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
+            method="POST",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/search"
             ),
             params=jsonable_encoder(
@@ -2089,11 +2402,21 @@ class AsyncMemoryClient:
         """
         Get session summaries by ID
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SummaryListResponse
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -2104,8 +2427,8 @@ class AsyncMemoryClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summary"
             ),
             params=jsonable_encoder(
@@ -2149,13 +2472,24 @@ class AsyncMemoryClient:
         """
         synthesize a question by session id
 
-        Parameters:
-            - session_id: str. Session ID
+        Parameters
+        ----------
+        session_id : str
+            Session ID
 
-            - last_n_messages: typing.Optional[int]. Last N messages
+        last_n_messages : typing.Optional[int]
+            Last N messages
 
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Question
+            OK
+
+        Examples
+        --------
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -2166,8 +2500,8 @@ class AsyncMemoryClient:
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
+            method="GET",
+            url=urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
                 f"sessions/{jsonable_encoder(session_id)}/synthesize_question",
             ),

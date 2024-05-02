@@ -3,5 +3,5 @@
 import typing
 
 MemoryGetRequestMemoryType = typing.Union[
-    typing.AnyStr, typing.Literal["perpetual", "summary_retriever", "message_window"]
+    typing.Literal["perpetual", "summary_retriever", "message_window"], typing.Any
 ]
