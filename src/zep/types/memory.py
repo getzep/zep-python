@@ -14,7 +14,6 @@ class Memory(pydantic_v1.BaseModel):
     messages: typing.Optional[typing.List[Message]] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     summary: typing.Optional[Summary] = None
-    summary_instruction: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

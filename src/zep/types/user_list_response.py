@@ -5,18 +5,13 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
-from .role_type import RoleType
+from .user import User
 
 
-class Message(pydantic_v1.BaseModel):
-    content: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    role: typing.Optional[str] = None
-    role_type: typing.Optional[RoleType] = None
-    token_count: typing.Optional[int] = None
-    updated_at: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+class UserListResponse(pydantic_v1.BaseModel):
+    row_count: typing.Optional[int] = None
+    total_count: typing.Optional[int] = None
+    users: typing.Optional[typing.List[User]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -29,7 +24,5 @@ class Message(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}
