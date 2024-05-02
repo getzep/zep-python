@@ -5,7 +5,7 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
-from .role_type import RoleType
+from .models_role_type import ModelsRoleType
 
 
 class Message(pydantic_v1.BaseModel):
@@ -13,7 +13,7 @@ class Message(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     role: typing.Optional[str] = None
-    role_type: typing.Optional[RoleType] = None
+    role_type: typing.Optional[ModelsRoleType] = None
     token_count: typing.Optional[int] = None
     updated_at: typing.Optional[str] = None
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)

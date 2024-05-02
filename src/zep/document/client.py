@@ -30,6 +30,155 @@ class DocumentClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
+    def update_document(
+        self,
+        collection_name: str,
+        document_uuid: str,
+        *,
+        document_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> str:
+        """
+        Parameters:
+            - collection_name: str. Name of the Document Collection
+
+            - document_uuid: str. UUID of the Document to be updated
+
+            - document_id: typing.Optional[str].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import BaseClient
+
+        client = BaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        client.document.update_document(
+            collection_name="collectionName",
+            document_uuid="documentUUID",
+        )
+        """
+        _request: typing.Dict[str, typing.Any] = {}
+        if document_id is not OMIT:
+            _request["document_id"] = document_id
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        _response = self._client_wrapper.httpx_client.request(
+            "PATCH",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v2/collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 401:
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_document(
+        self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> DocumentResponse:
+        """
+        Returns specified Document from a DocumentCollection.
+
+        Parameters:
+            - collection_name: str. Name of the Document Collection
+
+            - document_uuid: str. UUID of the Document to be updated
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import BaseClient
+
+        client = BaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        client.document.get_document(
+            collection_name="collectionName",
+            document_uuid="documentUUID",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"collection/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(DocumentResponse, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 401:
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def list_collections(
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[typing.List[DocumentCollectionResponse]]:
@@ -39,9 +188,9 @@ class DocumentClient:
         Parameters:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.list_collections()
@@ -93,9 +242,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.get_collection(
@@ -149,9 +298,12 @@ class DocumentClient:
         collection_name: str,
         *,
         description: typing.Optional[str] = OMIT,
+        embedding_dimensions: int,
+        is_auto_embedded: bool,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        name: str,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
         If a collection with the same name already exists, an error will be returned.
 
@@ -160,20 +312,33 @@ class DocumentClient:
 
             - description: typing.Optional[str].
 
+            - embedding_dimensions: int.
+
+            - is_auto_embedded: bool. these needs to be pointers so that we can distinguish between false and unset when validating
+
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - name: str.
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.add_collection(
             collection_name="collectionName",
+            embedding_dimensions=1,
+            is_auto_embedded=True,
+            name="name",
         )
         """
-        _request: typing.Dict[str, typing.Any] = {}
+        _request: typing.Dict[str, typing.Any] = {
+            "embedding_dimensions": embedding_dimensions,
+            "is_auto_embedded": is_auto_embedded,
+            "name": name,
+        }
         if description is not OMIT:
             _request["description"] = description
         if metadata is not OMIT:
@@ -207,7 +372,7 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -228,7 +393,7 @@ class DocumentClient:
 
     def delete_collection(
         self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+    ) -> str:
         """
         If a collection with the same name already exists, it will be overwritten.
 
@@ -237,9 +402,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.delete_collection(
@@ -269,7 +434,7 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -295,10 +460,8 @@ class DocumentClient:
         description: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
-        Updates a DocumentCollection
-
         Parameters:
             - collection_name: str. Name of the Document Collection
 
@@ -308,9 +471,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.update_collection(
@@ -351,7 +514,7 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -388,9 +551,9 @@ class DocumentClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import CreateDocumentRequest
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.add_documents(
@@ -450,7 +613,7 @@ class DocumentClient:
         *,
         request: typing.Sequence[str],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
         Deletes specified Documents from a DocumentCollection.
 
@@ -461,9 +624,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.batch_delete_documents(
@@ -501,7 +664,7 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -525,7 +688,7 @@ class DocumentClient:
         document_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[DocumentResponse]:
+    ) -> typing.List[typing.List[DocumentResponse]]:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
@@ -538,9 +701,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.batch_get_documents(
@@ -582,7 +745,7 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[DocumentResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentResponse]], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -605,7 +768,7 @@ class DocumentClient:
         *,
         request: typing.Sequence[UpdateDocumentListRequest],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
         Updates Documents in a specified DocumentCollection.
 
@@ -617,9 +780,9 @@ class DocumentClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import UpdateDocumentListRequest
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.batch_update_documents(
@@ -661,71 +824,7 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def gets_a_document_from_a_document_collection_by_uuid(
-        self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> DocumentResponse:
-        """
-        Returns specified Document from a DocumentCollection.
-
-        Parameters:
-            - collection_name: str. Name of the Document Collection
-
-            - document_uuid: str. UUID of the Document to be updated
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.document.gets_a_document_from_a_document_collection_by_uuid(
-            collection_name="collectionName",
-            document_uuid="documentUUID",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(DocumentResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -744,7 +843,7 @@ class DocumentClient:
 
     def delete_document(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+    ) -> str:
         """
         Delete specified Document from a DocumentCollection.
 
@@ -755,9 +854,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.delete_document(
@@ -789,7 +888,7 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -808,59 +907,53 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def updates_a_document(
+    def create_collection_index(
         self,
         collection_name: str,
-        document_uuid: str,
         *,
-        document_id: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        force: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
-        Updates a Document in a DocumentCollection by UUID
+        Creates an index for the specified DocumentCollection to improve query performance.
 
         Parameters:
             - collection_name: str. Name of the Document Collection
 
-            - document_uuid: str. UUID of the Document to be updated
-
-            - document_id: typing.Optional[str].
-
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+            - force: typing.Optional[bool]. Force index creation, even if there are too few documents to index
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.document.updates_a_document(
+        client.document.create_collection_index(
             collection_name="collectionName",
-            document_uuid="documentUUID",
         )
         """
-        _request: typing.Dict[str, typing.Any] = {}
-        if document_id is not OMIT:
-            _request["document_id"] = document_id
-        if metadata is not OMIT:
-            _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
-            "PATCH",
+            "POST",
             urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
-                f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+                f"collections/{jsonable_encoder(collection_name)}/index/create",
             ),
             params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+                remove_none_from_dict(
+                    {
+                        "force": force,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
             ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
+            json=jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))
+            if request_options is not None
+            else None,
             headers=jsonable_encoder(
                 remove_none_from_dict(
                     {
@@ -876,15 +969,13 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
             raise UnauthorizedError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
             )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -900,6 +991,8 @@ class DocumentClient:
         collection_name: str,
         *,
         limit: typing.Optional[int] = None,
+        collection_name: typing.Optional[str] = OMIT,
+        embedding: typing.Optional[typing.Sequence[float]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
@@ -915,6 +1008,10 @@ class DocumentClient:
 
             - limit: typing.Optional[int]. Limit the number of returned documents
 
+            - collection_name: typing.Optional[str].
+
+            - embedding: typing.Optional[typing.Sequence[float]].
+
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
 
             - min_score: typing.Optional[float]. TODO: implement for documents
@@ -927,9 +1024,9 @@ class DocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.document.search(
@@ -937,6 +1034,10 @@ class DocumentClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {}
+        if collection_name is not OMIT:
+            _request["collection_name"] = collection_name
+        if embedding is not OMIT:
+            _request["embedding"] = embedding
         if metadata is not OMIT:
             _request["metadata"] = metadata
         if min_score is not OMIT:
@@ -1007,6 +1108,155 @@ class AsyncDocumentClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
+    async def update_document(
+        self,
+        collection_name: str,
+        document_uuid: str,
+        *,
+        document_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> str:
+        """
+        Parameters:
+            - collection_name: str. Name of the Document Collection
+
+            - document_uuid: str. UUID of the Document to be updated
+
+            - document_id: typing.Optional[str].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import AsyncBaseClient
+
+        client = AsyncBaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        await client.document.update_document(
+            collection_name="collectionName",
+            document_uuid="documentUUID",
+        )
+        """
+        _request: typing.Dict[str, typing.Any] = {}
+        if document_id is not OMIT:
+            _request["document_id"] = document_id
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        _response = await self._client_wrapper.httpx_client.request(
+            "PATCH",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v2/collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 401:
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_document(
+        self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> DocumentResponse:
+        """
+        Returns specified Document from a DocumentCollection.
+
+        Parameters:
+            - collection_name: str. Name of the Document Collection
+
+            - document_uuid: str. UUID of the Document to be updated
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import AsyncBaseClient
+
+        client = AsyncBaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        await client.document.get_document(
+            collection_name="collectionName",
+            document_uuid="documentUUID",
+        )
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"collection/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(DocumentResponse, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 401:
+            raise UnauthorizedError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def list_collections(
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[typing.List[DocumentCollectionResponse]]:
@@ -1016,9 +1266,9 @@ class AsyncDocumentClient:
         Parameters:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.list_collections()
@@ -1070,9 +1320,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.get_collection(
@@ -1126,9 +1376,12 @@ class AsyncDocumentClient:
         collection_name: str,
         *,
         description: typing.Optional[str] = OMIT,
+        embedding_dimensions: int,
+        is_auto_embedded: bool,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        name: str,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
         If a collection with the same name already exists, an error will be returned.
 
@@ -1137,20 +1390,33 @@ class AsyncDocumentClient:
 
             - description: typing.Optional[str].
 
+            - embedding_dimensions: int.
+
+            - is_auto_embedded: bool. these needs to be pointers so that we can distinguish between false and unset when validating
+
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - name: str.
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.add_collection(
             collection_name="collectionName",
+            embedding_dimensions=1,
+            is_auto_embedded=True,
+            name="name",
         )
         """
-        _request: typing.Dict[str, typing.Any] = {}
+        _request: typing.Dict[str, typing.Any] = {
+            "embedding_dimensions": embedding_dimensions,
+            "is_auto_embedded": is_auto_embedded,
+            "name": name,
+        }
         if description is not OMIT:
             _request["description"] = description
         if metadata is not OMIT:
@@ -1184,7 +1450,7 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1205,7 +1471,7 @@ class AsyncDocumentClient:
 
     async def delete_collection(
         self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+    ) -> str:
         """
         If a collection with the same name already exists, it will be overwritten.
 
@@ -1214,9 +1480,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.delete_collection(
@@ -1246,7 +1512,7 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1272,10 +1538,8 @@ class AsyncDocumentClient:
         description: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
-        Updates a DocumentCollection
-
         Parameters:
             - collection_name: str. Name of the Document Collection
 
@@ -1285,9 +1549,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.update_collection(
@@ -1328,7 +1592,7 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1365,9 +1629,9 @@ class AsyncDocumentClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import CreateDocumentRequest
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.add_documents(
@@ -1427,7 +1691,7 @@ class AsyncDocumentClient:
         *,
         request: typing.Sequence[str],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
         Deletes specified Documents from a DocumentCollection.
 
@@ -1438,9 +1702,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.batch_delete_documents(
@@ -1478,7 +1742,7 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1502,7 +1766,7 @@ class AsyncDocumentClient:
         document_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[DocumentResponse]:
+    ) -> typing.List[typing.List[DocumentResponse]]:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
@@ -1515,9 +1779,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.batch_get_documents(
@@ -1559,7 +1823,7 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[DocumentResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentResponse]], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1582,7 +1846,7 @@ class AsyncDocumentClient:
         *,
         request: typing.Sequence[UpdateDocumentListRequest],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
         Updates Documents in a specified DocumentCollection.
 
@@ -1594,9 +1858,9 @@ class AsyncDocumentClient:
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
         from zep import UpdateDocumentListRequest
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.batch_update_documents(
@@ -1638,71 +1902,7 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def gets_a_document_from_a_document_collection_by_uuid(
-        self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> DocumentResponse:
-        """
-        Returns specified Document from a DocumentCollection.
-
-        Parameters:
-            - collection_name: str. Name of the Document Collection
-
-            - document_uuid: str. UUID of the Document to be updated
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.document.gets_a_document_from_a_document_collection_by_uuid(
-            collection_name="collectionName",
-            document_uuid="documentUUID",
-        )
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(DocumentResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1721,7 +1921,7 @@ class AsyncDocumentClient:
 
     async def delete_document(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> None:
+    ) -> str:
         """
         Delete specified Document from a DocumentCollection.
 
@@ -1732,9 +1932,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.delete_document(
@@ -1766,7 +1966,7 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1785,59 +1985,53 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def updates_a_document(
+    async def create_collection_index(
         self,
         collection_name: str,
-        document_uuid: str,
         *,
-        document_id: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        force: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> None:
+    ) -> str:
         """
-        Updates a Document in a DocumentCollection by UUID
+        Creates an index for the specified DocumentCollection to improve query performance.
 
         Parameters:
             - collection_name: str. Name of the Document Collection
 
-            - document_uuid: str. UUID of the Document to be updated
-
-            - document_id: typing.Optional[str].
-
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+            - force: typing.Optional[bool]. Force index creation, even if there are too few documents to index
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.document.updates_a_document(
+        await client.document.create_collection_index(
             collection_name="collectionName",
-            document_uuid="documentUUID",
         )
         """
-        _request: typing.Dict[str, typing.Any] = {}
-        if document_id is not OMIT:
-            _request["document_id"] = document_id
-        if metadata is not OMIT:
-            _request["metadata"] = metadata
         _response = await self._client_wrapper.httpx_client.request(
-            "PATCH",
+            "POST",
             urllib.parse.urljoin(
                 f"{self._client_wrapper.get_base_url()}/",
-                f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
+                f"collections/{jsonable_encoder(collection_name)}/index/create",
             ),
             params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+                remove_none_from_dict(
+                    {
+                        "force": force,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
             ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
+            json=jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))
+            if request_options is not None
+            else None,
             headers=jsonable_encoder(
                 remove_none_from_dict(
                     {
@@ -1853,15 +2047,13 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
             raise UnauthorizedError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
             )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -1877,6 +2069,8 @@ class AsyncDocumentClient:
         collection_name: str,
         *,
         limit: typing.Optional[int] = None,
+        collection_name: typing.Optional[str] = OMIT,
+        embedding: typing.Optional[typing.Sequence[float]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
@@ -1892,6 +2086,10 @@ class AsyncDocumentClient:
 
             - limit: typing.Optional[int]. Limit the number of returned documents
 
+            - collection_name: typing.Optional[str].
+
+            - embedding: typing.Optional[typing.Sequence[float]].
+
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
 
             - min_score: typing.Optional[float]. TODO: implement for documents
@@ -1904,9 +2102,9 @@ class AsyncDocumentClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.document.search(
@@ -1914,6 +2112,10 @@ class AsyncDocumentClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {}
+        if collection_name is not OMIT:
+            _request["collection_name"] = collection_name
+        if embedding is not OMIT:
+            _request["embedding"] = embedding
         if metadata is not OMIT:
             _request["metadata"] = metadata
         if min_score is not OMIT:

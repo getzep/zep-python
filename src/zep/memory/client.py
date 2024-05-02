@@ -17,8 +17,6 @@ from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.classify_session_response import ClassifySessionResponse
 from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
-from ..types.message import Message
-from ..types.models_zep_data_class import ModelsZepDataClass
 from ..types.question import Question
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
@@ -34,11 +32,79 @@ class MemoryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
+    def list_sessions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[Session]:
+        """
+        Get all sessions with optional limit and cursor for pagination.
+
+        Parameters:
+            - limit: typing.Optional[int]. Limit the number of results returned
+
+            - cursor: typing.Optional[int]. Cursor for pagination
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import BaseClient
+
+        client = BaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.list_sessions()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions"),
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        "cursor": cursor,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def add_session(
         self,
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        session_id: str,
+        session_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
@@ -48,24 +114,24 @@ class MemoryClient:
         Parameters:
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
 
-            - session_id: str.
+            - session_id: typing.Optional[str].
 
             - user_id: typing.Optional[str]. Must be a pointer to allow for null values
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.memory.add_session(
-            session_id="session_id",
-        )
+        client.memory.add_session()
         """
-        _request: typing.Dict[str, typing.Any] = {"session_id": session_id}
+        _request: typing.Dict[str, typing.Any] = {}
         if metadata is not OMIT:
             _request["metadata"] = metadata
+        if session_id is not OMIT:
+            _request["session_id"] = session_id
         if user_id is not OMIT:
             _request["user_id"] = user_id
         _response = self._client_wrapper.httpx_client.request(
@@ -108,82 +174,6 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def list_sessions(
-        self,
-        *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Session]:
-        """
-        Get all sessions with optional page number, page size, order by field and order direction for pagination.
-
-        Parameters:
-            - page_number: typing.Optional[int]. Page number for pagination, starting from 1
-
-            - page_size: typing.Optional[int]. Number of sessions to retrieve per page
-
-            - order_by: typing.Optional[str]. Field to order the results by: created_at, updated_at, user_id, session_id
-
-            - asc: typing.Optional[bool]. Order direction: true for ascending, false for descending
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.memory.list_sessions()
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
-            params=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        "page_number": page_number,
-                        "page_size": page_size,
-                        "order_by": order_by,
-                        "asc": asc,
-                        **(
-                            request_options.get("additional_query_parameters", {})
-                            if request_options is not None
-                            else {}
-                        ),
-                    }
-                )
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
     def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
         get session by id
@@ -193,9 +183,9 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.memory.get_session(
@@ -240,7 +230,8 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        metadata: typing.Dict[str, typing.Any],
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        session_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -249,30 +240,36 @@ class MemoryClient:
         Parameters:
             - session_id: str. Session ID
 
-            - metadata: typing.Dict[str, typing.Any]. The metadata to update
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - session_id: typing.Optional[str].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.memory.update_session(
             session_id="sessionId",
-            metadata={},
         )
         """
+        _request: typing.Dict[str, typing.Any] = {}
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        if session_id is not OMIT:
+            _request["session_id"] = session_id
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
-            json=jsonable_encoder({"metadata": metadata})
+            json=jsonable_encoder(_request)
             if request_options is None or request_options.get("additional_body_parameters") is None
             else {
-                **jsonable_encoder({"metadata": metadata}),
+                **jsonable_encoder(_request),
                 **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
             },
             headers=jsonable_encoder(
@@ -334,9 +331,9 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.memory.classify_session(
@@ -394,82 +391,6 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def extract_session_data(
-        self,
-        session_id: str,
-        *,
-        last_n_messages: typing.Optional[int] = OMIT,
-        zep_data_classes: typing.Sequence[ModelsZepDataClass],
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Dict[str, str]:
-        """
-        extract data from a session by session id
-
-        Parameters:
-            - session_id: str. Session ID
-
-            - last_n_messages: typing.Optional[int].
-
-            - zep_data_classes: typing.Sequence[ModelsZepDataClass].
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep import ModelsZepDataClass
-        from zep.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.memory.extract_session_data(
-            session_id="sessionId",
-            zep_data_classes=[ModelsZepDataClass()],
-        )
-        """
-        _request: typing.Dict[str, typing.Any] = {"zep_data_classes": zep_data_classes}
-        if last_n_messages is not OMIT:
-            _request["last_n_messages"] = last_n_messages
-        _response = self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/extract"
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.Dict[str, str], _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
     def get(
         self,
         session_id: str,
@@ -490,9 +411,9 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.memory.get(
@@ -545,13 +466,8 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def add(
-        self,
-        session_id: str,
-        *,
-        messages: typing.Sequence[Message],
-        summary_instruction: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
+    def create(
+        self, session_id: str, *, request: Memory, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         add memory messages by session id
@@ -559,26 +475,21 @@ class MemoryClient:
         Parameters:
             - session_id: str. Session ID
 
-            - messages: typing.Sequence[Message].
-
-            - summary_instruction: typing.Optional[str].
+            - request: Memory.
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep import Message
-        from zep.client import Zep
+        from zep import Memory
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
-        client.memory.add(
+        client.memory.create(
             session_id="sessionId",
-            messages=[Message()],
+            request=Memory(),
         )
         """
-        _request: typing.Dict[str, typing.Any] = {"messages": messages}
-        if summary_instruction is not OMIT:
-            _request["summary_instruction"] = summary_instruction
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(
@@ -587,10 +498,10 @@ class MemoryClient:
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
-            json=jsonable_encoder(_request)
+            json=jsonable_encoder(request)
             if request_options is None or request_options.get("additional_body_parameters") is None
             else {
-                **jsonable_encoder(_request),
+                **jsonable_encoder(request),
                 **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
             },
             headers=jsonable_encoder(
@@ -619,7 +530,7 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
         """
         delete memory messages by session id
 
@@ -628,9 +539,9 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.memory.delete(
@@ -660,216 +571,7 @@ class MemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def get_session_messages(
-        self,
-        session_id: str,
-        *,
-        limit: typing.Optional[int] = None,
-        cursor: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Message]:
-        """
-        get messages by session id
-
-        Parameters:
-            - session_id: str. Session ID
-
-            - limit: typing.Optional[int]. Limit the number of results returned
-
-            - cursor: typing.Optional[int]. Cursor for pagination
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.memory.get_session_messages(
-            session_id="sessionId",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/messages"
-            ),
-            params=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        "limit": limit,
-                        "cursor": cursor,
-                        **(
-                            request_options.get("additional_query_parameters", {})
-                            if request_options is not None
-                            else {}
-                        ),
-                    }
-                )
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Message], _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def get_session_message(
-        self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> Message:
-        """
-        get message by session id and message id
-
-        Parameters:
-            - session_id: str. Session ID
-
-            - message_uuid: str. Message UUID
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.memory.get_session_message(
-            session_id="sessionId",
-            message_uuid="messageUUID",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"sessions/{jsonable_encoder(session_id)}/messages/{jsonable_encoder(message_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Message, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def update_message_metadata(
-        self,
-        session_id: str,
-        message_uuid: str,
-        *,
-        metadata: typing.Dict[str, typing.Any],
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> Message:
-        """
-        update message metadata by session id and message id
-
-        Parameters:
-            - session_id: str. Session ID
-
-            - message_uuid: str. Message UUID
-
-            - metadata: typing.Dict[str, typing.Any].
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.memory.update_message_metadata(
-            session_id="sessionId",
-            message_uuid="messageUUID",
-            metadata={},
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"sessions/{jsonable_encoder(session_id)}/messages/{jsonable_encoder(message_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder({"metadata": metadata})
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder({"metadata": metadata}),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Message, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -887,6 +589,7 @@ class MemoryClient:
         session_id: str,
         *,
         limit: typing.Optional[int] = None,
+        embedding: typing.Optional[typing.Sequence[float]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
@@ -903,7 +606,9 @@ class MemoryClient:
 
             - limit: typing.Optional[int]. Limit the number of results returned
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]]. Metadata Filter
+            - embedding: typing.Optional[typing.Sequence[float]].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
 
             - min_score: typing.Optional[float].
 
@@ -917,9 +622,9 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.memory.search(
@@ -927,6 +632,8 @@ class MemoryClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {}
+        if embedding is not OMIT:
+            _request["embedding"] = embedding
         if metadata is not OMIT:
             _request["metadata"] = metadata
         if min_score is not OMIT:
@@ -1001,9 +708,9 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.memory.get_summaries(
@@ -1013,7 +720,7 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summary"
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summaries"
             ),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
@@ -1063,9 +770,9 @@ class MemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import Zep
+        from zep.base_client import BaseClient
 
-        client = Zep(
+        client = BaseClient(
             api_key="YOUR_API_KEY",
         )
         client.memory.synthesize_question(
@@ -1118,16 +825,124 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def list_sessions_paginated(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+        """
+        Parameters:
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import BaseClient
+
+        client = BaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.list_sessions_paginated()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
 
 class AsyncMemoryClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
+    async def list_sessions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[Session]:
+        """
+        Get all sessions with optional limit and cursor for pagination.
+
+        Parameters:
+            - limit: typing.Optional[int]. Limit the number of results returned
+
+            - cursor: typing.Optional[int]. Cursor for pagination
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import AsyncBaseClient
+
+        client = AsyncBaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.list_sessions()
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions"),
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        "cursor": cursor,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def add_session(
         self,
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        session_id: str,
+        session_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
@@ -1137,24 +952,24 @@ class AsyncMemoryClient:
         Parameters:
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
 
-            - session_id: str.
+            - session_id: typing.Optional[str].
 
             - user_id: typing.Optional[str]. Must be a pointer to allow for null values
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.memory.add_session(
-            session_id="session_id",
-        )
+        await client.memory.add_session()
         """
-        _request: typing.Dict[str, typing.Any] = {"session_id": session_id}
+        _request: typing.Dict[str, typing.Any] = {}
         if metadata is not OMIT:
             _request["metadata"] = metadata
+        if session_id is not OMIT:
+            _request["session_id"] = session_id
         if user_id is not OMIT:
             _request["user_id"] = user_id
         _response = await self._client_wrapper.httpx_client.request(
@@ -1197,82 +1012,6 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def list_sessions(
-        self,
-        *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Session]:
-        """
-        Get all sessions with optional page number, page size, order by field and order direction for pagination.
-
-        Parameters:
-            - page_number: typing.Optional[int]. Page number for pagination, starting from 1
-
-            - page_size: typing.Optional[int]. Number of sessions to retrieve per page
-
-            - order_by: typing.Optional[str]. Field to order the results by: created_at, updated_at, user_id, session_id
-
-            - asc: typing.Optional[bool]. Order direction: true for ascending, false for descending
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.memory.list_sessions()
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
-            params=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        "page_number": page_number,
-                        "page_size": page_size,
-                        "order_by": order_by,
-                        "asc": asc,
-                        **(
-                            request_options.get("additional_query_parameters", {})
-                            if request_options is not None
-                            else {}
-                        ),
-                    }
-                )
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
     async def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
         get session by id
@@ -1282,9 +1021,9 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.memory.get_session(
@@ -1329,7 +1068,8 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        metadata: typing.Dict[str, typing.Any],
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        session_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -1338,30 +1078,36 @@ class AsyncMemoryClient:
         Parameters:
             - session_id: str. Session ID
 
-            - metadata: typing.Dict[str, typing.Any]. The metadata to update
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - session_id: typing.Optional[str].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.memory.update_session(
             session_id="sessionId",
-            metadata={},
         )
         """
+        _request: typing.Dict[str, typing.Any] = {}
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        if session_id is not OMIT:
+            _request["session_id"] = session_id
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}"),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
-            json=jsonable_encoder({"metadata": metadata})
+            json=jsonable_encoder(_request)
             if request_options is None or request_options.get("additional_body_parameters") is None
             else {
-                **jsonable_encoder({"metadata": metadata}),
+                **jsonable_encoder(_request),
                 **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
             },
             headers=jsonable_encoder(
@@ -1423,9 +1169,9 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.memory.classify_session(
@@ -1483,82 +1229,6 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def extract_session_data(
-        self,
-        session_id: str,
-        *,
-        last_n_messages: typing.Optional[int] = OMIT,
-        zep_data_classes: typing.Sequence[ModelsZepDataClass],
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Dict[str, str]:
-        """
-        extract data from a session by session id
-
-        Parameters:
-            - session_id: str. Session ID
-
-            - last_n_messages: typing.Optional[int].
-
-            - zep_data_classes: typing.Sequence[ModelsZepDataClass].
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep import ModelsZepDataClass
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.memory.extract_session_data(
-            session_id="sessionId",
-            zep_data_classes=[ModelsZepDataClass()],
-        )
-        """
-        _request: typing.Dict[str, typing.Any] = {"zep_data_classes": zep_data_classes}
-        if last_n_messages is not OMIT:
-            _request["last_n_messages"] = last_n_messages
-        _response = await self._client_wrapper.httpx_client.request(
-            "POST",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/extract"
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.Dict[str, str], _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
     async def get(
         self,
         session_id: str,
@@ -1579,9 +1249,9 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.memory.get(
@@ -1634,13 +1304,8 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def add(
-        self,
-        session_id: str,
-        *,
-        messages: typing.Sequence[Message],
-        summary_instruction: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
+    async def create(
+        self, session_id: str, *, request: Memory, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         add memory messages by session id
@@ -1648,26 +1313,21 @@ class AsyncMemoryClient:
         Parameters:
             - session_id: str. Session ID
 
-            - messages: typing.Sequence[Message].
-
-            - summary_instruction: typing.Optional[str].
+            - request: Memory.
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep import Message
-        from zep.client import AsyncZep
+        from zep import Memory
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
-        await client.memory.add(
+        await client.memory.create(
             session_id="sessionId",
-            messages=[Message()],
+            request=Memory(),
         )
         """
-        _request: typing.Dict[str, typing.Any] = {"messages": messages}
-        if summary_instruction is not OMIT:
-            _request["summary_instruction"] = summary_instruction
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(
@@ -1676,10 +1336,10 @@ class AsyncMemoryClient:
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
-            json=jsonable_encoder(_request)
+            json=jsonable_encoder(request)
             if request_options is None or request_options.get("additional_body_parameters") is None
             else {
-                **jsonable_encoder(_request),
+                **jsonable_encoder(request),
                 **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
             },
             headers=jsonable_encoder(
@@ -1708,7 +1368,7 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    async def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
         """
         delete memory messages by session id
 
@@ -1717,9 +1377,9 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.memory.delete(
@@ -1749,216 +1409,7 @@ class AsyncMemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def get_session_messages(
-        self,
-        session_id: str,
-        *,
-        limit: typing.Optional[int] = None,
-        cursor: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Message]:
-        """
-        get messages by session id
-
-        Parameters:
-            - session_id: str. Session ID
-
-            - limit: typing.Optional[int]. Limit the number of results returned
-
-            - cursor: typing.Optional[int]. Cursor for pagination
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.memory.get_session_messages(
-            session_id="sessionId",
-        )
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/messages"
-            ),
-            params=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        "limit": limit,
-                        "cursor": cursor,
-                        **(
-                            request_options.get("additional_query_parameters", {})
-                            if request_options is not None
-                            else {}
-                        ),
-                    }
-                )
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Message], _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def get_session_message(
-        self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> Message:
-        """
-        get message by session id and message id
-
-        Parameters:
-            - session_id: str. Session ID
-
-            - message_uuid: str. Message UUID
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.memory.get_session_message(
-            session_id="sessionId",
-            message_uuid="messageUUID",
-        )
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"sessions/{jsonable_encoder(session_id)}/messages/{jsonable_encoder(message_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Message, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def update_message_metadata(
-        self,
-        session_id: str,
-        message_uuid: str,
-        *,
-        metadata: typing.Dict[str, typing.Any],
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> Message:
-        """
-        update message metadata by session id and message id
-
-        Parameters:
-            - session_id: str. Session ID
-
-            - message_uuid: str. Message UUID
-
-            - metadata: typing.Dict[str, typing.Any].
-
-            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
-        ---
-        from zep.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.memory.update_message_metadata(
-            session_id="sessionId",
-            message_uuid="messageUUID",
-            metadata={},
-        )
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "PATCH",
-            urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/",
-                f"sessions/{jsonable_encoder(session_id)}/messages/{jsonable_encoder(message_uuid)}",
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder({"metadata": metadata})
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder({"metadata": metadata}),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Message, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -1976,6 +1427,7 @@ class AsyncMemoryClient:
         session_id: str,
         *,
         limit: typing.Optional[int] = None,
+        embedding: typing.Optional[typing.Sequence[float]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
@@ -1992,7 +1444,9 @@ class AsyncMemoryClient:
 
             - limit: typing.Optional[int]. Limit the number of results returned
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]]. Metadata Filter
+            - embedding: typing.Optional[typing.Sequence[float]].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
 
             - min_score: typing.Optional[float].
 
@@ -2006,9 +1460,9 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.memory.search(
@@ -2016,6 +1470,8 @@ class AsyncMemoryClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {}
+        if embedding is not OMIT:
+            _request["embedding"] = embedding
         if metadata is not OMIT:
             _request["metadata"] = metadata
         if min_score is not OMIT:
@@ -2090,9 +1546,9 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.memory.get_summaries(
@@ -2102,7 +1558,7 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summary"
+                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/summaries"
             ),
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
@@ -2152,9 +1608,9 @@ class AsyncMemoryClient:
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep.client import AsyncZep
+        from zep.base_client import AsyncBaseClient
 
-        client = AsyncZep(
+        client = AsyncBaseClient(
             api_key="YOUR_API_KEY",
         )
         await client.memory.synthesize_question(
@@ -2201,6 +1657,46 @@ class AsyncMemoryClient:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
             )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def list_sessions_paginated(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+        """
+        Parameters:
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
+        ---
+        from zep.base_client import AsyncBaseClient
+
+        client = AsyncBaseClient(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.list_sessions_paginated()
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions-ordered"),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return
         try:
             _response_json = _response.json()
         except JSONDecodeError:

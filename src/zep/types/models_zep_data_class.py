@@ -10,6 +10,7 @@ from ..core.pydantic_utilities import pydantic_v1
 class ModelsZepDataClass(pydantic_v1.BaseModel):
     description: typing.Optional[str] = None
     name: typing.Optional[str] = None
+    regex: typing.Optional[str] = None
     type: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:
