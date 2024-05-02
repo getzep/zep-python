@@ -66,9 +66,7 @@ def main() -> None:
     print(f"\n---Add Memory for Session: {session_id}")
     for m in history:
         print(f"{m['role']}: {m['content']}")
-        message = Message(**m)
-        memory = Memory(messages=[message])
-        client.memory.add(session_id=session_id, request=memory)
+        client.memory.add(session_id=session_id, messages=[Message(**m)])
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.

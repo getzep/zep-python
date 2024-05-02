@@ -64,12 +64,10 @@ You must also ask the user to add their credit card information in our secure pa
 async def load_previous_chat_history(session_id: str):
     await zep.memory.add(
         session_id=session_id,
-        request=Memory(
-            messages=[
-                Message(role_type=msg["role_type"], content=msg["content"])
-                for msg in previous_chat_history
-            ]
-        ),
+        messages=[
+            Message(role_type=msg["role_type"], content=msg["content"])
+            for msg in previous_chat_history
+        ],
     )
 
 
@@ -199,16 +197,14 @@ async def on_message(message: cl.Message):
     # Add the user's message to Zep's memory
     await zep.memory.add(
         session_id=session_id,
-        request=Memory(
-            messages=[
-                Message(
-                    role_type=USER_ROLE,
-                    content=message.content,
-                    role=cl.user_session.get("user_name"),
-                ),
-            ],
-            summary_instruction="Do not include shoe sizes.",
-        ),
+        messages=[
+            Message(
+                role_type=USER_ROLE,
+                content=message.content,
+                role=cl.user_session.get("user_name"),
+            ),
+        ],
+        summary_instruction="Do not include shoe sizes.",
     )
 
     (
@@ -284,15 +280,13 @@ async def on_message(message: cl.Message):
 
     await zep.memory.add(
         session_id=session_id,
-        request=Memory(
-            messages=[
-                Message(
-                    role_type=ASSISTANT_ROLE,
-                    content=response_message.content,
-                    role=BOT_NAME,
-                ),
-            ]
-        ),
+        messages=[
+            Message(
+                role_type=ASSISTANT_ROLE,
+                content=response_message.content,
+                role=BOT_NAME,
+            ),
+        ]
     )
 
     await display_actions()
@@ -339,15 +333,13 @@ async def main():
 
     await zep.memory.add(
         session_id=session_id,
-        request=Memory(
-            messages=[
-                Message(
-                    role_type=ASSISTANT_ROLE,
-                    content=welcome_message + " " + name_prompt,
-                    role=BOT_NAME,
-                ),
-                Message(role_type=USER_ROLE, content=user_name, role=user_name),
-                Message(role_type=ASSISTANT_ROLE, content=name_response, role=BOT_NAME),
-            ]
-        ),
+        messages=[
+            Message(
+                role_type=ASSISTANT_ROLE,
+                content=welcome_message + " " + name_prompt,
+                role=BOT_NAME,
+            ),
+            Message(role_type=USER_ROLE, content=user_name, role=user_name),
+            Message(role_type=ASSISTANT_ROLE, content=name_response, role=BOT_NAME),
+        ]
     )

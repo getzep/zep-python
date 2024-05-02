@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Union
 from zep.client import Zep
-from zep.environment import BaseClientEnvironment
+from zep.environment import ZepEnvironment
 from zep.types import Memory, Message
 from zep.errors import NotFoundError
 from zep.langchain.helpers import get_zep_message_role_type
@@ -50,7 +50,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         self,
         session_id: str,
         zep_client: Optional[Zep] = None,
-        api_url: Optional[str] = BaseClientEnvironment.DEFAULT,
+        api_url: Optional[str] = ZepEnvironment.DEFAULT,
         api_key: Optional[str] = None,
         memory_type: Optional[str] = None,
         ai_prefix: Optional[str] = None,

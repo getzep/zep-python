@@ -6,7 +6,7 @@ from zep.types import Memory, Message, DocumentCollectionResponse, DocumentRespo
 from zep.errors import NotFoundError
 from zep.langchain.helpers import get_zep_message_role_type
 from zep.client import Zep, AsyncZep
-from zep.environment import BaseClientEnvironment
+from zep.environment import ZepEnvironment
 
 try:
     from langchain_core.documents import Document
@@ -45,7 +45,7 @@ class ZepVectorStore(VectorStore):
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
 
-        api_url: Optional[str] = BaseClientEnvironment.DEFAULT,
+        api_url: Optional[str] = ZepEnvironment.DEFAULT,
         api_key: Optional[str] = None,
     ) -> None:
         super().__init__()
@@ -410,7 +410,7 @@ class ZepVectorStore(VectorStore):
         metadatas: Optional[List[dict]] = None,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        api_url: Optional[str] = BaseClientEnvironment.DEFAULT,
+        api_url: Optional[str] = ZepEnvironment.DEFAULT,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> ZepVectorStore:
@@ -456,7 +456,7 @@ class ZepVectorStore(VectorStore):
         metadatas: Optional[List[dict]] = None,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        api_url: Optional[str] = BaseClientEnvironment.DEFAULT,
+        api_url: Optional[str] = ZepEnvironment.DEFAULT,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> ZepVectorStore:

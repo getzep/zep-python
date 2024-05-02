@@ -33,8 +33,8 @@ async def main() -> None:
             print(f"Failed to create user {i+1}: {e}")
 
     # Update the first user
-    user_list = await client.user.list()
-    user_id = user_list[0].user_id
+    user_list = await client.user.list_ordered(page_size=1, page_number=1)
+    user_id = user_list.users[0].user_id
     try:
         updated_user = await client.user.update(
             user_id=user_id,
@@ -58,26 +58,13 @@ async def main() -> None:
         print(f"Failed to create session {i+1}: {e}")
 
     # Delete the second user
-    user_list = await client.user.list(1, 1)
-    user_id = user_list[0].user_id
+    user_list = await client.user.list_ordered(page_size=1, page_number=1)
+    user_id = user_list.users[0].user_id
     try:
         await client.user.delete(user_id=user_id)
         print(f"Deleted user: {user_id}")
     except ApiError as e:
         print(f"Failed to delete user: {e}")
-
-    # List all users
-    try:
-        users_generator = client.user.list_ordered()
-        print("All users:")
-        async for users in users_generator:
-            if users is None:
-                break
-            for user in users:
-                print(user.user_id)
-    except ApiError as e:
-        print(f"Failed to list users: {e}")
-
 
 
 if __name__ == "__main__":

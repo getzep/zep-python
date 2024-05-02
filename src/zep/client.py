@@ -3,7 +3,7 @@ from .base_client import \
 import typing
 import os
 import httpx
-from .environment import BaseClientEnvironment
+from .environment import ZepEnvironment
 from .external_clients.memory import MemoryClient, AsyncMemoryClient
 from .external_clients.document import DocumentClient, AsyncDocumentClient
 from .external_clients.user import UserClient, AsyncUserClient
@@ -14,7 +14,7 @@ class Zep(BaseClient):
             self,
             *,
             base_url: typing.Optional[str] = None,
-            environment: BaseClientEnvironment = BaseClientEnvironment.DEFAULT,
+            environment: ZepEnvironment = ZepEnvironment.DEFAULT,
             api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
             timeout: typing.Optional[float] = None,
             follow_redirects: typing.Optional[bool] = None,
@@ -38,7 +38,7 @@ class AsyncZep(AsyncBaseClient):
             self,
             *,
             base_url: typing.Optional[str] = None,
-            environment: BaseClientEnvironment = BaseClientEnvironment.DEFAULT,
+            environment: ZepEnvironment = ZepEnvironment.DEFAULT,
             api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
             timeout: typing.Optional[float] = None,
             follow_redirects: typing.Optional[bool] = None,
