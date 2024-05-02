@@ -545,18 +545,27 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def add(self, session_id: str, *, request: Memory, request_options: typing.Optional[RequestOptions] = None) -> None:
+    def add(
+        self,
+        session_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        summary_instruction: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> None:
         """
         add memory messages by session id
 
         Parameters:
             - session_id: str. Session ID
 
-            - request: Memory.
+            - messages: typing.Sequence[Message].
+
+            - summary_instruction: typing.Optional[str].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep import Memory
+        from zep import Message
         from zep.client import Zep
 
         client = Zep(
@@ -564,9 +573,12 @@ class MemoryClient:
         )
         client.memory.add(
             session_id="sessionId",
-            request=Memory(),
+            messages=[Message()],
         )
         """
+        _request: typing.Dict[str, typing.Any] = {"messages": messages}
+        if summary_instruction is not OMIT:
+            _request["summary_instruction"] = summary_instruction
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(
@@ -575,10 +587,10 @@ class MemoryClient:
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
-            json=jsonable_encoder(request)
+            json=jsonable_encoder(_request)
             if request_options is None or request_options.get("additional_body_parameters") is None
             else {
-                **jsonable_encoder(request),
+                **jsonable_encoder(_request),
                 **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
             },
             headers=jsonable_encoder(
@@ -662,13 +674,22 @@ class MemoryClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_session_messages(
-        self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        session_id: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Message]:
         """
         get messages by session id
 
         Parameters:
             - session_id: str. Session ID
+
+            - limit: typing.Optional[int]. Limit the number of results returned
+
+            - cursor: typing.Optional[int]. Cursor for pagination
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
@@ -687,7 +708,17 @@ class MemoryClient:
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/messages"
             ),
             params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        "cursor": cursor,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(
@@ -1604,7 +1635,12 @@ class AsyncMemoryClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def add(
-        self, session_id: str, *, request: Memory, request_options: typing.Optional[RequestOptions] = None
+        self,
+        session_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        summary_instruction: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
         add memory messages by session id
@@ -1612,11 +1648,13 @@ class AsyncMemoryClient:
         Parameters:
             - session_id: str. Session ID
 
-            - request: Memory.
+            - messages: typing.Sequence[Message].
+
+            - summary_instruction: typing.Optional[str].
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
-        from zep import Memory
+        from zep import Message
         from zep.client import AsyncZep
 
         client = AsyncZep(
@@ -1624,9 +1662,12 @@ class AsyncMemoryClient:
         )
         await client.memory.add(
             session_id="sessionId",
-            request=Memory(),
+            messages=[Message()],
         )
         """
+        _request: typing.Dict[str, typing.Any] = {"messages": messages}
+        if summary_instruction is not OMIT:
+            _request["summary_instruction"] = summary_instruction
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(
@@ -1635,10 +1676,10 @@ class AsyncMemoryClient:
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
-            json=jsonable_encoder(request)
+            json=jsonable_encoder(_request)
             if request_options is None or request_options.get("additional_body_parameters") is None
             else {
-                **jsonable_encoder(request),
+                **jsonable_encoder(_request),
                 **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
             },
             headers=jsonable_encoder(
@@ -1722,13 +1763,22 @@ class AsyncMemoryClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_session_messages(
-        self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        session_id: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Message]:
         """
         get messages by session id
 
         Parameters:
             - session_id: str. Session ID
+
+            - limit: typing.Optional[int]. Limit the number of results returned
+
+            - cursor: typing.Optional[int]. Cursor for pagination
 
             - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         ---
@@ -1747,7 +1797,17 @@ class AsyncMemoryClient:
                 f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/messages"
             ),
             params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        "cursor": cursor,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
             ),
             headers=jsonable_encoder(
                 remove_none_from_dict(

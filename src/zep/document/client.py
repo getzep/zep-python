@@ -297,6 +297,8 @@ class DocumentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
+        Updates a DocumentCollection
+
         Parameters:
             - collection_name: str. Name of the Document Collection
 
@@ -523,7 +525,7 @@ class DocumentClient:
         document_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[DocumentResponse]]:
+    ) -> typing.List[DocumentResponse]:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
@@ -580,7 +582,7 @@ class DocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[DocumentResponse], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -806,7 +808,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def updates_a_document_in_a_document_collection_by_uuid(
+    def updates_a_document(
         self,
         collection_name: str,
         document_uuid: str,
@@ -816,6 +818,8 @@ class DocumentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
+        Updates a Document in a DocumentCollection by UUID
+
         Parameters:
             - collection_name: str. Name of the Document Collection
 
@@ -832,7 +836,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.updates_a_document_in_a_document_collection_by_uuid(
+        client.document.updates_a_document(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -1270,6 +1274,8 @@ class AsyncDocumentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
+        Updates a DocumentCollection
+
         Parameters:
             - collection_name: str. Name of the Document Collection
 
@@ -1496,7 +1502,7 @@ class AsyncDocumentClient:
         document_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[DocumentResponse]]:
+    ) -> typing.List[DocumentResponse]:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
@@ -1553,7 +1559,7 @@ class AsyncDocumentClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[DocumentResponse], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1779,7 +1785,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def updates_a_document_in_a_document_collection_by_uuid(
+    async def updates_a_document(
         self,
         collection_name: str,
         document_uuid: str,
@@ -1789,6 +1795,8 @@ class AsyncDocumentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
+        Updates a Document in a DocumentCollection by UUID
+
         Parameters:
             - collection_name: str. Name of the Document Collection
 
@@ -1805,7 +1813,7 @@ class AsyncDocumentClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.updates_a_document_in_a_document_collection_by_uuid(
+        await client.document.updates_a_document(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
