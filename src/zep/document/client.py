@@ -1031,7 +1031,7 @@ class DocumentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> DocumentSearchResultPage:
         """
-        Searches Documents in a DocumentCollection based on provided search criteria.
+        Searches over documents in a collection based on provided search criteria. One of text or metadata must be provided. Returns an empty list if no documents are found.
 
         Parameters
         ----------
@@ -1042,15 +1042,18 @@ class DocumentClient:
             Limit the number of returned documents
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Document metadata to filter on.
 
         min_score : typing.Optional[float]
-            TODO: implement for documents
 
         mmr_lambda : typing.Optional[float]
+            The lambda parameter for the MMR Reranking Algorithm.
 
         search_type : typing.Optional[SearchType]
+            The type of search to perform. Defaults to "similarity". Must be one of "similarity" or "mmr".
 
         text : typing.Optional[str]
+            The search text.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2142,7 +2145,7 @@ class AsyncDocumentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> DocumentSearchResultPage:
         """
-        Searches Documents in a DocumentCollection based on provided search criteria.
+        Searches over documents in a collection based on provided search criteria. One of text or metadata must be provided. Returns an empty list if no documents are found.
 
         Parameters
         ----------
@@ -2153,15 +2156,18 @@ class AsyncDocumentClient:
             Limit the number of returned documents
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Document metadata to filter on.
 
         min_score : typing.Optional[float]
-            TODO: implement for documents
 
         mmr_lambda : typing.Optional[float]
+            The lambda parameter for the MMR Reranking Algorithm.
 
         search_type : typing.Optional[SearchType]
+            The type of search to perform. Defaults to "similarity". Must be one of "similarity" or "mmr".
 
         text : typing.Optional[str]
+            The search text.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

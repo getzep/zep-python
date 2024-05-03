@@ -38,19 +38,24 @@ class UserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        add user by id
+        Add a user.
 
         Parameters
         ----------
         email : typing.Optional[str]
+            The email address of the user.
 
         first_name : typing.Optional[str]
+            The first name of the user.
 
         last_name : typing.Optional[str]
+            The last name of the user.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            The metadata associated with the user.
 
         user_id : typing.Optional[str]
+            The unique identifier of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -58,7 +63,7 @@ class UserClient:
         Returns
         -------
         User
-            Created
+            The user that was added.
 
         Examples
         --------
@@ -201,12 +206,12 @@ class UserClient:
 
     def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
-        get user by id
+        Get a user.
 
         Parameters
         ----------
         user_id : str
-            User ID
+            The user_id of the user to get.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -214,7 +219,7 @@ class UserClient:
         Returns
         -------
         User
-            OK
+            The user that was retrieved.
 
         Examples
         --------
@@ -334,7 +339,7 @@ class UserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        update user by id
+        Update a user.
 
         Parameters
         ----------
@@ -342,12 +347,16 @@ class UserClient:
             User ID
 
         email : typing.Optional[str]
+            The email address of the user.
 
         first_name : typing.Optional[str]
+            The first name of the user.
 
         last_name : typing.Optional[str]
+            The last name of the user.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            The metadata to update
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -355,7 +364,7 @@ class UserClient:
         Returns
         -------
         User
-            OK
+            The user that was updated.
 
         Examples
         --------
@@ -499,19 +508,24 @@ class AsyncUserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        add user by id
+        Add a user.
 
         Parameters
         ----------
         email : typing.Optional[str]
+            The email address of the user.
 
         first_name : typing.Optional[str]
+            The first name of the user.
 
         last_name : typing.Optional[str]
+            The last name of the user.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            The metadata associated with the user.
 
         user_id : typing.Optional[str]
+            The unique identifier of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -519,7 +533,7 @@ class AsyncUserClient:
         Returns
         -------
         User
-            Created
+            The user that was added.
 
         Examples
         --------
@@ -662,12 +676,12 @@ class AsyncUserClient:
 
     async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
-        get user by id
+        Get a user.
 
         Parameters
         ----------
         user_id : str
-            User ID
+            The user_id of the user to get.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -675,7 +689,7 @@ class AsyncUserClient:
         Returns
         -------
         User
-            OK
+            The user that was retrieved.
 
         Examples
         --------
@@ -795,7 +809,7 @@ class AsyncUserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        update user by id
+        Update a user.
 
         Parameters
         ----------
@@ -803,12 +817,16 @@ class AsyncUserClient:
             User ID
 
         email : typing.Optional[str]
+            The email address of the user.
 
         first_name : typing.Optional[str]
+            The first name of the user.
 
         last_name : typing.Optional[str]
+            The last name of the user.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            The metadata to update
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -816,7 +834,7 @@ class AsyncUserClient:
         Returns
         -------
         User
-            OK
+            The user that was updated.
 
         Examples
         --------

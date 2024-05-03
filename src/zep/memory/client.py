@@ -50,11 +50,13 @@ class MemoryClient:
         Parameters
         ----------
         session_id : str
+            The unique identifier of the session.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            The metadata associated with the session.
 
         user_id : typing.Optional[str]
-            Must be a pointer to allow for null values
+            The unique identifier of the user associated with the session
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -62,7 +64,7 @@ class MemoryClient:
         Returns
         -------
         Session
-            Created
+            The added session.
 
         Examples
         --------
@@ -224,7 +226,7 @@ class MemoryClient:
         Returns
         -------
         Session
-            OK
+            The session with the specified ID.
 
         Examples
         --------
@@ -297,7 +299,7 @@ class MemoryClient:
         Returns
         -------
         Session
-            OK
+            The updated session.
 
         Examples
         --------
@@ -375,14 +377,19 @@ class MemoryClient:
             Session ID
 
         classes : typing.Sequence[str]
+            The classes to use for classification.
 
         name : str
+            The name of the classifier. Will be used to store the classification in session metadata if persist is True.
 
         instruction : typing.Optional[str]
+            Custom instruction to use for classification.
 
         last_n : typing.Optional[int]
+            The number of session messages to consider for classification. Defaults to 4.
 
         persist : typing.Optional[bool]
+            Whether to persist the classification to session metadata. Defaults to True.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -390,7 +397,7 @@ class MemoryClient:
         Returns
         -------
         ClassifySessionResponse
-            OK
+            A response object containing the name and classification result.
 
         Examples
         --------
@@ -554,13 +561,13 @@ class MemoryClient:
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session for which to retrieve memory.
 
         memory_type : typing.Optional[MemoryGetRequestMemoryType]
-            memoryType: perpetual or message_window
+            The type of memory to retrieve: perpetual, summary_retriever, or message_window. Defaults to perpetual.
 
         lastn : typing.Optional[int]
-            Last N messages. Overrides memory_window configuration
+            The number of most recent memory entries to retrieve.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -641,11 +648,13 @@ class MemoryClient:
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session to which memory should be added.
 
         messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
 
         summary_instruction : typing.Optional[str]
+            Additional instruction for generating the summary.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -718,7 +727,7 @@ class MemoryClient:
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session for which memory should be deleted.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -784,7 +793,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
-        get messages by session id
+        Lists messages for a session, specified by limit and cursor.
 
         Parameters
         ----------
@@ -866,15 +875,15 @@ class MemoryClient:
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
-        get message by session id and message id
+        Gets a specific message from a session
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session.
 
         message_uuid : str
-            Message UUID
+            The UUID of the message.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -882,7 +891,7 @@ class MemoryClient:
         Returns
         -------
         Message
-            OK
+            The message.
 
         Examples
         --------
@@ -942,15 +951,15 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Message:
         """
-        update message metadata by session id and message id
+        Updates the metadata of a message.
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session.
 
         message_uuid : str
-            Message UUID
+            The UUID of the message.
 
         metadata : typing.Dict[str, typing.Any]
 
@@ -960,7 +969,7 @@ class MemoryClient:
         Returns
         -------
         Message
-            OK
+            The updated message.
 
         Examples
         --------
@@ -1032,15 +1041,15 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[MemorySearchResult]:
         """
-        search memory messages by session id and query
+        Search memory for the specified session.
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session for which memory should be searched.
 
         limit : typing.Optional[int]
-            Limit the number of results returned
+            The maximum number of search results to return. Defaults to None (no limit).
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Metadata Filter
@@ -1061,7 +1070,7 @@ class MemoryClient:
         Returns
         -------
         typing.List[MemorySearchResult]
-            OK
+            A list of SearchResult objects representing the search results.
 
         Examples
         --------
@@ -1212,15 +1221,15 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Question:
         """
-        synthesize a question by session id
+        Synthesize a question from the last N messages in the chat history.
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session.
 
         last_n_messages : typing.Optional[int]
-            Last N messages
+            The number of messages to use for question synthesis.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1228,7 +1237,7 @@ class MemoryClient:
         Returns
         -------
         Question
-            OK
+            The synthesized question.
 
         Examples
         --------
@@ -1306,11 +1315,13 @@ class AsyncMemoryClient:
         Parameters
         ----------
         session_id : str
+            The unique identifier of the session.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            The metadata associated with the session.
 
         user_id : typing.Optional[str]
-            Must be a pointer to allow for null values
+            The unique identifier of the user associated with the session
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1318,7 +1329,7 @@ class AsyncMemoryClient:
         Returns
         -------
         Session
-            Created
+            The added session.
 
         Examples
         --------
@@ -1480,7 +1491,7 @@ class AsyncMemoryClient:
         Returns
         -------
         Session
-            OK
+            The session with the specified ID.
 
         Examples
         --------
@@ -1553,7 +1564,7 @@ class AsyncMemoryClient:
         Returns
         -------
         Session
-            OK
+            The updated session.
 
         Examples
         --------
@@ -1631,14 +1642,19 @@ class AsyncMemoryClient:
             Session ID
 
         classes : typing.Sequence[str]
+            The classes to use for classification.
 
         name : str
+            The name of the classifier. Will be used to store the classification in session metadata if persist is True.
 
         instruction : typing.Optional[str]
+            Custom instruction to use for classification.
 
         last_n : typing.Optional[int]
+            The number of session messages to consider for classification. Defaults to 4.
 
         persist : typing.Optional[bool]
+            Whether to persist the classification to session metadata. Defaults to True.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1646,7 +1662,7 @@ class AsyncMemoryClient:
         Returns
         -------
         ClassifySessionResponse
-            OK
+            A response object containing the name and classification result.
 
         Examples
         --------
@@ -1810,13 +1826,13 @@ class AsyncMemoryClient:
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session for which to retrieve memory.
 
         memory_type : typing.Optional[MemoryGetRequestMemoryType]
-            memoryType: perpetual or message_window
+            The type of memory to retrieve: perpetual, summary_retriever, or message_window. Defaults to perpetual.
 
         lastn : typing.Optional[int]
-            Last N messages. Overrides memory_window configuration
+            The number of most recent memory entries to retrieve.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1897,11 +1913,13 @@ class AsyncMemoryClient:
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session to which memory should be added.
 
         messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
 
         summary_instruction : typing.Optional[str]
+            Additional instruction for generating the summary.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1976,7 +1994,7 @@ class AsyncMemoryClient:
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session for which memory should be deleted.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2042,7 +2060,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
-        get messages by session id
+        Lists messages for a session, specified by limit and cursor.
 
         Parameters
         ----------
@@ -2124,15 +2142,15 @@ class AsyncMemoryClient:
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
-        get message by session id and message id
+        Gets a specific message from a session
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session.
 
         message_uuid : str
-            Message UUID
+            The UUID of the message.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2140,7 +2158,7 @@ class AsyncMemoryClient:
         Returns
         -------
         Message
-            OK
+            The message.
 
         Examples
         --------
@@ -2200,15 +2218,15 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Message:
         """
-        update message metadata by session id and message id
+        Updates the metadata of a message.
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session.
 
         message_uuid : str
-            Message UUID
+            The UUID of the message.
 
         metadata : typing.Dict[str, typing.Any]
 
@@ -2218,7 +2236,7 @@ class AsyncMemoryClient:
         Returns
         -------
         Message
-            OK
+            The updated message.
 
         Examples
         --------
@@ -2290,15 +2308,15 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[MemorySearchResult]:
         """
-        search memory messages by session id and query
+        Search memory for the specified session.
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session for which memory should be searched.
 
         limit : typing.Optional[int]
-            Limit the number of results returned
+            The maximum number of search results to return. Defaults to None (no limit).
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Metadata Filter
@@ -2319,7 +2337,7 @@ class AsyncMemoryClient:
         Returns
         -------
         typing.List[MemorySearchResult]
-            OK
+            A list of SearchResult objects representing the search results.
 
         Examples
         --------
@@ -2470,15 +2488,15 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Question:
         """
-        synthesize a question by session id
+        Synthesize a question from the last N messages in the chat history.
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The ID of the session.
 
         last_n_messages : typing.Optional[int]
-            Last N messages
+            The number of messages to use for question synthesis.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2486,7 +2504,7 @@ class AsyncMemoryClient:
         Returns
         -------
         Question
-            OK
+            The synthesized question.
 
         Examples
         --------
