@@ -9,14 +9,45 @@ from .role_type import RoleType
 
 
 class Message(pydantic_v1.BaseModel):
-    content: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    role: typing.Optional[str] = None
-    role_type: typing.Optional[RoleType] = None
-    token_count: typing.Optional[int] = None
-    updated_at: typing.Optional[str] = None
+    content: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    The content of the message.
+    """
+
+    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    The timestamp of when the message was created.
+    """
+
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
+    """
+    The metadata associated with the message.
+    """
+
+    role: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    The role of the sender of the message (e.g., "user", "assistant").
+    """
+
+    role_type: typing.Optional[RoleType] = pydantic_v1.Field(default=None)
+    """
+    The type of the role (e.g., "user", "system").
+    """
+
+    token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+    """
+    The number of tokens in the message.
+    """
+
+    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    The timestamp of when the message was last updated.
+    """
+
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    """
+    The unique identifier of the message.
+    """
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

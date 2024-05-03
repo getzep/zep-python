@@ -45,7 +45,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        add session by id
+        Create New Session
 
         Parameters
         ----------
@@ -283,7 +283,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        add session by id
+        Update Session Metadata
 
         Parameters
         ----------
@@ -643,7 +643,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        add memory messages by session id
+        Add memory to the specified session.
 
         Parameters
         ----------
@@ -962,6 +962,7 @@ class MemoryClient:
             The UUID of the message.
 
         metadata : typing.Dict[str, typing.Any]
+            The metadata to update
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1310,7 +1311,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        add session by id
+        Create New Session
 
         Parameters
         ----------
@@ -1548,7 +1549,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        add session by id
+        Update Session Metadata
 
         Parameters
         ----------
@@ -1908,7 +1909,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        add memory messages by session id
+        Add memory to the specified session.
 
         Parameters
         ----------
@@ -2229,6 +2230,7 @@ class AsyncMemoryClient:
             The UUID of the message.
 
         metadata : typing.Dict[str, typing.Any]
+            The metadata to update
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
