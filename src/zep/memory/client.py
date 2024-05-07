@@ -556,7 +556,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
-        get memory by session id
+        Returns a memory (latest summary, list of messages and facts for models.MemoryTypePerpetual) for a given session
 
         Parameters
         ----------
@@ -1822,7 +1822,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
-        get memory by session id
+        Returns a memory (latest summary, list of messages and facts for models.MemoryTypePerpetual) for a given session
 
         Parameters
         ----------
