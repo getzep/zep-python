@@ -3,3 +3,5 @@ src/zep/client.py
 src/zep/external_clients/
 examples/
 src/zep/langchain/
+pyproject.toml
+poetry.lock
