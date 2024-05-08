@@ -12,11 +12,10 @@ load_dotenv(
 )  # load environment variables from .env file, if present
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
-API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
 
 
 async def main() -> None:
-    client = AsyncZep(api_key=API_KEY, base_url=f"{API_URL}/api/v2")
+    client = AsyncZep(api_key=API_KEY)
     # Create multiple users
     for i in range(3):
         user_id = f"user{i}" + uuid.uuid4().hex
