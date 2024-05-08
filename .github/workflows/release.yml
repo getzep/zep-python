@@ -15,7 +15,7 @@ jobs:
       contents: write
     environment:
       name: release
-      url: https://pypi.org/p/zep-python
+      url: https://pypi.org/p/zep-cloud
     steps:
       - uses: actions/checkout@v3
       - name: Install poetry

@@ -11,22 +11,23 @@ from langchain_core.runnables import (
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 
-from zep_python import ZepClient
-from zep_python.langchain import ZepChatMessageHistory
+from zep_cloud.client import Zep
+from zep_cloud.langchain import ZepChatMessageHistory
+from dotenv import find_dotenv, load_dotenv
 
-ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
-ZEP_API_URL = os.environ.get(
-    "ZEP_API_URL"
-)  # only required if you're using Zep Open Source
+load_dotenv(
+    dotenv_path=find_dotenv()
+)  # load environment variables from .env file, if present
+
+ZEP_API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+
 if ZEP_API_KEY is None:
     raise ValueError(
         "ZEP_API_KEY is required for Zep Cloud. "
         "Remove this check if using Zep Open Source."
     )
-
-zep = ZepClient(
+zep = Zep(
     api_key=ZEP_API_KEY,
-    api_url=ZEP_API_URL,  # only required if you're using Zep Open Source
 )
 
 # RAG answer synthesis prompt

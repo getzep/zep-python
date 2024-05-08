@@ -12,15 +12,17 @@ packages = [
 python = "^3.11"
 uvicorn = "^0.23.2"
 langserve = {extras = ["server"], version = ">=0.0.30"}
-pydantic = ">2, <3"
+pydantic = ">1.9, <3"
 python-dotenv = "^1.0.1"
-zep-python = {path = "../.."}
+zep-cloud = {path = "../.."}
 bs4 = "^0.0.2"
-langchain-openai = "^0.0.8"
 
 
 [tool.poetry.group.dev.dependencies]
-langchain-cli = ">=0.0.15"
+langchain = "^0.1.3"
+openai = "^1.9.0"
+langchain-openai = "^0.0.3"
+langchain-cli = { extras = ["serve"], version = "^0.0.21" }
 
 [build-system]
 requires = ["poetry-core"]

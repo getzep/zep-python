@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 chainlit = "^1.0.301"
-zep-python = {path = "../.."}
+zep-cloud = {path = "../.."}
 openai = "^1.13.3"
 langchain-community = "^0.0.25"
 langchain = "^0.1.11"

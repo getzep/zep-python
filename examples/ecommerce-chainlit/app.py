@@ -7,15 +7,12 @@ from chat_history_shoe_purchase import history as previous_chat_history
 from dotenv import find_dotenv, load_dotenv
 from openai import AsyncOpenAI
 
-from zep_python import ZepClient
-from zep_python.memory import Memory, Session
-from zep_python.message import Message
-from zep_python.user import CreateUserRequest
+from zep_cloud.client import AsyncZep
+from zep_cloud.types import Message
 
 load_dotenv(dotenv_path=find_dotenv())
 
 API_KEY = os.environ.get("ZEP_API_KEY")
-ZEP_API_URL = os.environ.get("ZEP_API_URL")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 OPENAI_MODEL = "gpt-4-0125-preview"
@@ -24,7 +21,7 @@ ASSISTANT_ROLE = "assistant"
 USER_ROLE = "user"
 BOT_NAME = "Amazing Shoe Salesbot"
 
-zep = ZepClient(api_key=API_KEY, api_url=ZEP_API_URL)
+zep = AsyncZep(api_key=API_KEY)
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
@@ -64,20 +61,18 @@ You must also ask the user to add their credit card information in our secure pa
 
 
 async def load_previous_chat_history(session_id: str):
-    await zep.memory.aadd_memory(
-        session_id,
-        Memory(
-            messages=[
-                Message(role_type=msg["role_type"], content=msg["content"])
-                for msg in previous_chat_history
-            ]
-        ),
+    await zep.memory.add(
+        session_id=session_id,
+        messages=[
+            Message(role_type=msg["role_type"], content=msg["content"])
+            for msg in previous_chat_history
+        ],
     )
 
 
 @cl.step(name="Zep Chat History Retrieval", type="retrieval", language="python")
 async def get_history(session_id: str):
-    memory = await zep.memory.aget_memory(session_id, "perpetual")
+    memory = await zep.memory.get(session_id=session_id, memory_type="perpetual")
     facts = memory.facts
     summary = memory.summary
     message_history = []
@@ -119,7 +114,7 @@ async def display_actions():
 @cl.action_callback("Print Facts")
 async def print_facts():
     session_id = cl.user_session.get("session_id")
-    memory = await zep.memory.aget_memory(session_id, "perpetual")
+    memory = await zep.memory.get(session_id=session_id, memory_type="perpetual")
     facts = memory.facts
 
     if facts:
@@ -130,15 +125,14 @@ async def print_facts():
 @cl.step(name="Zep Collection Retrieval", type="retrieval", language="python")
 async def get_shoe_data(question: str):
     collection_name = "shoe_data"
-    collection = await zep.document.aget_collection(collection_name)
-    result = await collection.asearch(text=question, limit=3, search_type="mmr")
-    return "\n".join([r.content for r in result])
+    result = await zep.document.search(collection_name=collection_name, text=question, limit=3, search_type="mmr")
+    return "\n".join([r.content for r in result.results])
 
 
 @cl.step(name="Synthesize Retrieval Question", type="retrieval")
 async def synthesize_question(session_id: str):
-    question = await zep.memory.asynthesize_question(session_id, last_n=4)
-    return question
+    sq_result = await zep.memory.synthesize_question(session_id=session_id, last_n_messages=4)
+    return sq_result.question
 
 
 @cl.step(name="Classify Intent", type="tool")
@@ -148,8 +142,8 @@ async def classify_intent(session_id: str) -> str:
         "the user wants to return shoes (return_shoes)",
         "the user intent is unknown (unknown)",
     ]
-    classification = await zep.memory.aclassify_session(
-        session_id, "intent", classes, last_n=2, persist=False
+    classification = await zep.memory.classify_session(
+        session_id=session_id, name="intent", classes=classes, last_n=2, persist=False
     )
     if "buy_shoes" in classification.class_:
         return "buy_shoes"
@@ -168,8 +162,8 @@ async def classify_budget(session_id: str):
         "the user's budget is greater than $200",
         "the user has not mentioned their budget for shoes (unknown)",
     ]
-    classification = await zep.memory.aclassify_session(
-        session_id, "spender_category", classes, persist=False
+    classification = await zep.memory.classify_session(
+        session_id=session_id, name="spender_category", classes=classes, persist=False
     )
     return classification
 
@@ -180,8 +174,8 @@ async def classify_ready_for_purchase(session_id: str):
         "the user has agreed to buy a specific shoe (ready_for_purchase)",
         "the user has not yet agreed to buy a specific shoe (not_ready)",
     ]
-    classification = await zep.memory.aclassify_session(
-        session_id, "ready_for_purchase", classes, persist=False
+    classification = await zep.memory.classify_session(
+        session_id=session_id, name="ready_for_purchase", classes=classes, persist=False
     )
     return classification
 
@@ -200,18 +194,16 @@ async def call_openai(messages):
 async def on_message(message: cl.Message):
     session_id = cl.user_session.get("session_id")
     # Add the user's message to Zep's memory
-    await zep.memory.aadd_memory(
-        session_id,
-        Memory(
-            messages=[
-                Message(
-                    role_type=USER_ROLE,
-                    content=message.content,
-                    role=cl.user_session.get("user_name"),
-                ),
-            ],
-            summary_instruction="Do not include shoe sizes.",
-        ),
+    await zep.memory.add(
+        session_id=session_id,
+        messages=[
+            Message(
+                role_type=USER_ROLE,
+                content=message.content,
+                role=cl.user_session.get("user_name"),
+            ),
+        ],
+        summary_instruction="Do not include shoe sizes.",
     )
 
     (
@@ -245,11 +237,9 @@ async def on_message(message: cl.Message):
                     ],
                 )
                 await msg.send()
-                await zep.memory.aupdate_session(
-                    Session(
-                        session_id=session_id,
-                        metadata={"purchase_state": "ready_for_purchase"},
-                    ),
+                await zep.memory.update_session(
+                    session_id=session_id,
+                    metadata={"purchase_state": "ready_for_purchase"},
                 )
 
                 if "unknown" not in budget_class.class_:
@@ -287,17 +277,15 @@ async def on_message(message: cl.Message):
     msg = cl.Message(author=BOT_NAME, content=(response_message.content))
     await msg.send()
 
-    await zep.memory.aadd_memory(
-        session_id,
-        Memory(
-            messages=[
-                Message(
-                    role_type=ASSISTANT_ROLE,
-                    content=response_message.content,
-                    role=BOT_NAME,
-                ),
-            ]
-        ),
+    await zep.memory.add(
+        session_id=session_id,
+        messages=[
+            Message(
+                role_type=ASSISTANT_ROLE,
+                content=response_message.content,
+                role=BOT_NAME,
+            ),
+        ]
     )
 
     await display_actions()
@@ -328,35 +316,29 @@ async def main():
     if not user_name:
         return
 
-    await zep.user.aadd(
-        CreateUserRequest(
-            user_id=user_id,
-            first_name=user_name,
-            last_name="Chalef",
-            email="daniel.chalef@getzep.com",
-        )
+    await zep.user.add(
+        user_id=user_id,
+        first_name=user_name,
+        last_name="Chalef",
+        email="daniel.chalef@getzep.com",
     )
 
-    await zep.memory.aadd_session(
-        Session(
-            user_id=user_id,
-            session_id=session_id,
-        )
+    await zep.memory.add_session(
+        user_id=user_id,
+        session_id=session_id,
     )
 
     await load_previous_chat_history(session_id)
 
-    await zep.memory.aadd_memory(
-        session_id,
-        Memory(
-            messages=[
-                Message(
-                    role_type=ASSISTANT_ROLE,
-                    content=welcome_message + " " + name_prompt,
-                    role=BOT_NAME,
-                ),
-                Message(role_type=USER_ROLE, content=user_name, role=user_name),
-                Message(role_type=ASSISTANT_ROLE, content=name_response, role=BOT_NAME),
-            ]
-        ),
+    await zep.memory.add(
+        session_id=session_id,
+        messages=[
+            Message(
+                role_type=ASSISTANT_ROLE,
+                content=welcome_message + " " + name_prompt,
+                role=BOT_NAME,
+            ),
+            Message(role_type=USER_ROLE, content=user_name, role=user_name),
+            Message(role_type=ASSISTANT_ROLE, content=name_response, role=BOT_NAME),
+        ]
     )

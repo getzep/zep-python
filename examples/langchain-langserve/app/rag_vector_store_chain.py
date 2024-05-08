@@ -16,12 +16,8 @@ from langchain_core.runnables import (
 from langchain_core.runnables.utils import ConfigurableFieldSingleOption
 from langchain_openai import ChatOpenAI
 
-from zep_python import ZepClient
-from zep_python.langchain import ZepVectorStore
-
-ZEP_API_URL = os.environ.get(
-    "ZEP_API_URL"
-)  # only required if you're using Zep Open Source
+from zep_cloud.client import Zep
+from zep_cloud.langchain import ZepVectorStore
 
 ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION_NAME")
 if ZEP_COLLECTION_NAME is None:
@@ -34,15 +30,14 @@ if ZEP_API_KEY is None:
         "Remove this check if using Zep Open Source."
     )
 
-zep = ZepClient(
+zep = Zep(
     api_key=ZEP_API_KEY,
-    api_url=ZEP_API_URL,  # only required if you're using Zep Open Source
 )
 
 # Initialize ZepVectorStore
 vectorstore = ZepVectorStore(
     collection_name=ZEP_COLLECTION_NAME,
-    zep_client=zep,
+    api_key=ZEP_API_KEY,
 )
 
 # Zep offers native, hardware-accelerated MMR. Enabling this will improve
