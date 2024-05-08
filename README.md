@@ -18,7 +18,7 @@ pip install --upgrade zep_cloud
 # Usage
 
 ```python
-from zep.client import Zep
+from zep_cloud.client import Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
@@ -30,7 +30,7 @@ client = Zep(
 # Async Client
 
 ```python
-from zep.client import AsyncZep
+from zep_cloud.client import AsyncZep
 
 client = AsyncZep(
     api_key="YOUR_API_KEY",

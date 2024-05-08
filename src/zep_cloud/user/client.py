@@ -67,7 +67,7 @@ class UserClient:
 
         Examples
         --------
-        from zep.client import Zep
+        from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -153,7 +153,7 @@ class UserClient:
 
         Examples
         --------
-        from zep.client import Zep
+        from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -223,7 +223,7 @@ class UserClient:
 
         Examples
         --------
-        from zep.client import Zep
+        from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -285,7 +285,7 @@ class UserClient:
 
         Examples
         --------
-        from zep.client import Zep
+        from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -368,7 +368,7 @@ class UserClient:
 
         Examples
         --------
-        from zep.client import Zep
+        from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -449,7 +449,7 @@ class UserClient:
 
         Examples
         --------
-        from zep.client import Zep
+        from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -537,7 +537,7 @@ class AsyncUserClient:
 
         Examples
         --------
-        from zep.client import AsyncZep
+        from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -623,7 +623,7 @@ class AsyncUserClient:
 
         Examples
         --------
-        from zep.client import AsyncZep
+        from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -693,7 +693,7 @@ class AsyncUserClient:
 
         Examples
         --------
-        from zep.client import AsyncZep
+        from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -755,7 +755,7 @@ class AsyncUserClient:
 
         Examples
         --------
-        from zep.client import AsyncZep
+        from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -838,7 +838,7 @@ class AsyncUserClient:
 
         Examples
         --------
-        from zep.client import AsyncZep
+        from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -919,7 +919,7 @@ class AsyncUserClient:
 
         Examples
         --------
-        from zep.client import AsyncZep
+        from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
