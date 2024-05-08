@@ -3,7 +3,7 @@ import os
 import uuid
 
 import chainlit as cl
-from chat_history_shoe_purchase import history as previous_chat_history
+from message_history import history as previous_chat_history
 from dotenv import find_dotenv, load_dotenv
 from openai import AsyncOpenAI
 

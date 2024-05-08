@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any, Dict, Iterable, List, Optional, Tuple
-from zep.types import Memory, Message, DocumentCollectionResponse, DocumentResponse
+from zep.types import Memory, Message, DocumentCollectionResponse, DocumentResponse, CreateDocumentRequest
 from zep.errors import NotFoundError
 from zep.langchain.helpers import get_zep_message_role_type
 from zep.client import Zep, AsyncZep
@@ -45,7 +45,7 @@ class ZepVectorStore(VectorStore):
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
 
-        api_url: Optional[str] = ZepEnvironment.DEFAULT,
+        api_url: Optional[str] = str(ZepEnvironment.DEFAULT),
         api_key: Optional[str] = None,
     ) -> None:
         super().__init__()
@@ -79,15 +79,16 @@ class ZepVectorStore(VectorStore):
 
         return collection
 
-    def _create_collection(self) -> DocumentResponse:
+    def _create_collection(self) -> DocumentCollectionResponse:
         """
         Create a new collection in the Zep backend.
         """
-        collection = self._client.document.add_collection(
+        self._client.document.add_collection(
             collection_name=self.collection_name,
             description=self.c_description,
             metadata=self.c_metadata,
         )
+        collection = self._client.document.get_collection(collection_name=self.collection_name)
         return collection
 
     def _generate_documents_to_add(
@@ -95,11 +96,11 @@ class ZepVectorStore(VectorStore):
         texts: Iterable[str],
         metadatas: Optional[List[Dict[Any, Any]]] = None,  # langchain spelling
         document_ids: Optional[List[str]] = None,
-    ) -> List[DocumentResponse]:
-        documents: List[DocumentResponse] = []
+    ) -> List[CreateDocumentRequest]:
+        documents: List[CreateDocumentRequest] = []
         for i, d in enumerate(texts):
             documents.append(
-                DocumentResponse(
+                CreateDocumentRequest(
                     content=d,
                     metadata=metadatas[i] if metadatas else None,
                     document_id=document_ids[i] if document_ids else None,
@@ -249,10 +250,13 @@ class ZepVectorStore(VectorStore):
             **kwargs
         )
 
+        if not results.results:
+            return []
+
         return [
             (
                 Document(
-                    page_content=doc.content,
+                    page_content=str(doc.content),
                     metadata=doc.metadata or {},
                 ),
                 doc.score or 0.0,
@@ -282,10 +286,13 @@ class ZepVectorStore(VectorStore):
             **kwargs
         )
 
+        if not results.results:
+            return []
+
         return [
             (
                 Document(
-                    page_content=doc.content,
+                    page_content=str(doc.content),
                     metadata=doc.metadata or {},
                 ),
                 doc.score or 0.0,
@@ -348,8 +355,11 @@ class ZepVectorStore(VectorStore):
             mmr_lambda=lambda_mult,
         )
 
+        if not results.results:
+            return []
+
         return [
-            Document(page_content=d.content, metadata=d.metadata or {}) for d in results.results
+            Document(page_content=str(d.content), metadata=d.metadata or {}) for d in results.results
         ]
 
     async def amax_marginal_relevance_search(
@@ -398,8 +408,11 @@ class ZepVectorStore(VectorStore):
             **kwargs
         )
 
+        if not results.results:
+            return []
+
         return [
-            Document(page_content=d.content, metadata=d.metadata or {}) for d in results.results
+            Document(page_content=str(d.content), metadata=d.metadata or {}) for d in results.results
         ]
 
     @classmethod
@@ -410,7 +423,7 @@ class ZepVectorStore(VectorStore):
         metadatas: Optional[List[dict]] = None,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        api_url: Optional[str] = ZepEnvironment.DEFAULT,
+        api_url: Optional[str] = str(ZepEnvironment.DEFAULT),
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> ZepVectorStore:
@@ -456,7 +469,7 @@ class ZepVectorStore(VectorStore):
         metadatas: Optional[List[dict]] = None,
         description: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        api_url: Optional[str] = ZepEnvironment.DEFAULT,
+        api_url: Optional[str] = str(ZepEnvironment.DEFAULT),
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> ZepVectorStore:
@@ -538,4 +551,4 @@ class ZepVectorStore(VectorStore):
             raise ValueError("No collection name provided.")
 
         for u in ids:
-            self._collection.delete_document(u)
+            self._client.document.delete_document(collection_name=self.collection_name, document_uuid=u)
