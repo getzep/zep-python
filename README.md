@@ -10,7 +10,7 @@ The Zep Python Library provides convenient access to the Zep API from applicatio
 # Installation
 
 ```sh
-pip install --upgrade zep-cloud
+pip install --upgrade zep_cloud
 ```
 <!-- End Installation  -->
 
