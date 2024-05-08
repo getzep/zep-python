@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "zep"
+name = "zep-cloud"
 version = "1.0.0"
 description = ""
 readme = "README.md"

@@ -1,4 +1,4 @@
 
 from importlib import metadata
 
-__version__ = metadata.version("zep")
+__version__ = metadata.version("zep-cloud")
