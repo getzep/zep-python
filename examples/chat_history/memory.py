@@ -97,7 +97,7 @@ def main() -> None:
     print("\n---End of Memory")
 
     # Search Memory for session
-    query = "What are Jane's favorite show brands?"
+    query = "What are Jane's favorite shoe brands?"
     print(f"\n---Searching over summaries for: '{query}'")
     summary_result = client.memory.search(session_id, text=query, search_scope="summary")
     print("summaryResult: ", summary_result)

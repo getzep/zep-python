@@ -13,7 +13,6 @@ from zep_cloud.types import Message
 load_dotenv(dotenv_path=find_dotenv())
 
 API_KEY = os.environ.get("ZEP_API_KEY")
-ZEP_API_URL = os.environ.get("ZEP_API_URL")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 OPENAI_MODEL = "gpt-4-0125-preview"
@@ -22,7 +21,7 @@ ASSISTANT_ROLE = "assistant"
 USER_ROLE = "user"
 BOT_NAME = "Amazing Shoe Salesbot"
 
-zep = AsyncZep(api_key=API_KEY, base_url=f"{ZEP_API_URL}/api/v2")
+zep = AsyncZep(api_key=API_KEY)
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 

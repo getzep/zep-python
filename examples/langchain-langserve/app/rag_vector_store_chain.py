@@ -19,10 +19,6 @@ from langchain_openai import ChatOpenAI
 from zep_cloud.client import Zep
 from zep_cloud.langchain import ZepVectorStore
 
-ZEP_API_URL = os.environ.get(
-    "ZEP_API_URL"
-)  # only required if you're using Zep Open Source
-
 ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION_NAME")
 if ZEP_COLLECTION_NAME is None:
     raise ValueError("ZEP_COLLECTION_NAME is required for ingestion. ")
@@ -36,14 +32,12 @@ if ZEP_API_KEY is None:
 
 zep = Zep(
     api_key=ZEP_API_KEY,
-    base_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # Initialize ZepVectorStore
 vectorstore = ZepVectorStore(
     collection_name=ZEP_COLLECTION_NAME,
     api_key=ZEP_API_KEY,
-    api_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # Zep offers native, hardware-accelerated MMR. Enabling this will improve

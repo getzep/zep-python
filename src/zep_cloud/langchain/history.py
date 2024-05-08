@@ -50,7 +50,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         self,
         session_id: str,
         zep_client: Optional[Zep] = None,
-        api_url: Optional[str] = ZepEnvironment.DEFAULT,
+        api_url: Optional[str] = str(ZepEnvironment.DEFAULT),
         api_key: Optional[str] = None,
         memory_type: Optional[str] = None,
         ai_prefix: Optional[str] = None,
@@ -82,7 +82,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         if zep_memory.facts:
             messages.append(SystemMessage(content="\n".join(zep_memory.facts)))
 
-        if zep_memory.summary:
+        if zep_memory.summary and zep_memory.summary.content:
             if len(zep_memory.summary.content) > 0:
                 messages.append(SystemMessage(content=zep_memory.summary.content))
 
@@ -181,11 +181,8 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
             role_type=get_zep_message_role_type(message.type),
             metadata=metadata,
         )
-        zep_memory = Memory(
-            messages=[zep_message], summary_instruction=self.summary_instruction
-        )
 
-        self._client.memory.add(session_id=self.session_id, request=zep_memory)
+        self._client.memory.add(session_id=self.session_id, messages=[zep_message], summary_instruction=self.summary_instruction)
 
     def clear(self) -> None:
         """Clear session memory from Zep. Note that Zep is long-term storage for memory
