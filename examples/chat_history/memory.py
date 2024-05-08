@@ -1,5 +1,5 @@
 """
-Example of using the Zep Python SDK asynchronously.
+Example of using the Zep Python SDK synchronously.
 
 This script demonstrates the following functionality:
 - Creating a user.
@@ -11,33 +11,34 @@ This script demonstrates the following functionality:
 - optionally deleting the session.
 """
 
-import asyncio
 import os
+import time
 import uuid
 
 from dotenv import find_dotenv, load_dotenv
 
 from chat_history_shoe_purchase import history
 
-from zep.client import AsyncZep
-from zep.types import Message
+from zep.client import Zep
+from zep.types import Memory, Message
 
 load_dotenv(
     dotenv_path=find_dotenv()
 )  # load environment variables from .env file, if present
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+API_URL = os.environ.get("ZEP_API_URL")  # only required if you're using Zep Open Source
 
 
-async def main() -> None:
-    client = AsyncZep(
+def main() -> None:
+    client = Zep(
         api_key=API_KEY,
     )
 
     # Create a user
     user_id = uuid.uuid4().hex  # unique user id. can be any alphanum string
 
-    await client.user.add(
+    client.user.add(
         user_id=user_id,
         email="user@example.com",
         first_name="Jane",
@@ -50,27 +51,29 @@ async def main() -> None:
     # Create session associated with the above user
     print(f"\n---Creating session: {session_id}")
 
-    await client.memory.add_session(session_id=session_id, user_id=user_id, metadata={"foo": "bar"})
+    client.memory.add_session(session_id=session_id, user_id=user_id, metadata={"foo": "bar"})
 
     # Update session metadata
     print(f"\n---Updating session: {session_id}")
-    await client.memory.update_session(session_id=session_id, metadata={"bar": "foo"})
+    client.memory.update_session(session_id=session_id, metadata={"bar": "foo"})
 
     # Get session
     print(f"\n---Getting session: {session_id}")
-    session = await client.memory.get_session(session_id)
+    session = client.memory.get_session(session_id)
     print(f"Session details: {session}")
 
     # Add Memory for session
     print(f"\n---Add Memory for Session: {session_id}")
     for m in history:
         print(f"{m['role']}: {m['content']}")
-        await client.memory.add(session_id=session_id, messages=[Message(**m)])
+        message = Message(**m)
+        memory = Memory(messages=[message])
+        client.memory.add(session_id=session_id, request=memory)
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.
     print("\n---Synthesize a question from most recent messages")
-    question = await client.memory.synthesize_question(session_id, last_n_messages=3)
+    question = client.memory.synthesize_question(session_id, last_n_messages=3)
     print(f"Question: {question}")
 
     # Classify the session.
@@ -82,30 +85,30 @@ async def main() -> None:
         "high spender >=$100",
         "unknown",
     ]
-    classification = await client.memory.classify_session(
+    classification = client.memory.classify_session(
         session_id, name="spender_category", classes=classes, persist=True
     )
     print(f"Classification: {classification}")
 
     # Get Memory for session
     print(f"\n---Get Perpetual Memory for Session: {session_id}")
-    memory = await client.memory.get(session_id, memory_type="perpetual")
+    memory = client.memory.get(session_id, memory_type="perpetual")
     print(f"Memory: {memory}")
     print("\n---End of Memory")
 
     # Search Memory for session
     query = "What are Jane's favorite show brands?"
     print(f"\n---Searching over summaries for: '{query}'")
-    summary_result = await client.memory.search(session_id, text=query, search_scope="summary")
+    summary_result = client.memory.search(session_id, text=query, search_scope="summary")
     print("summaryResult: ", summary_result)
 
     print("\n---Searching over summaries with MMR Reranking")
-    summary_mmr_result = await client.memory.search(session_id, text=query, search_scope="summary", search_type="mmr")
+    summary_mmr_result = client.memory.search(session_id, text=query, search_scope="summary", search_type="mmr")
     print("summary_mmr_result: ", summary_mmr_result)
 
     print("\n---Searching over messages using a metadata filter")
 
-    messages_result = await client.memory.search(
+    messages_result = client.memory.search(
         session_id,
         text=query,
         search_scope="messages",
@@ -113,11 +116,17 @@ async def main() -> None:
     )
     print("messages_result: ", messages_result)
 
+    time.sleep(1)
+
+    summaries = client.memory.get_summaries(session_id)
+
+    print("\n---Get Summaries", summaries)
+
     # Delete Memory for session
     # Uncomment to run
     print(f"\n5---deleteMemory for Session: {session_id}")
-    await client.memory.delete(session_id)
+    # client.memory.delete(session_id)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
