@@ -19,8 +19,8 @@ from dotenv import find_dotenv, load_dotenv
 
 from chat_history_shoe_purchase import history
 
-from zep.client import Zep
-from zep.types import Memory, Message
+from zep_cloud.client import Zep
+from zep_cloud.types import Memory, Message
 
 load_dotenv(
     dotenv_path=find_dotenv()

@@ -14,7 +14,7 @@ uvicorn = "^0.23.2"
 langserve = {extras = ["server"], version = ">=0.0.30"}
 pydantic = ">1.9, <3"
 python-dotenv = "^1.0.1"
-zep = {path = "../.."}
+zep-cloud = {path = "../.."}
 bs4 = "^0.0.2"
 
 

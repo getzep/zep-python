@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import logging
 from typing import Any, Dict, List, Optional, Union
-from zep.client import Zep
-from zep.environment import ZepEnvironment
-from zep.types import Memory, Message
-from zep.errors import NotFoundError
-from zep.langchain.helpers import get_zep_message_role_type
+from zep_cloud.client import Zep
+from zep_cloud.environment import ZepEnvironment
+from zep_cloud.types import Memory, Message
+from zep_cloud.errors import NotFoundError
+from zep_cloud.langchain.helpers import get_zep_message_role_type
 try:
     from langchain_core.chat_history import BaseChatMessageHistory
     from langchain_core.messages import (

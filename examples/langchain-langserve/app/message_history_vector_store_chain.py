@@ -19,8 +19,8 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.runnables.utils import ConfigurableFieldSingleOption
 from langchain_openai import ChatOpenAI
 
-from zep.client import AsyncZep
-from zep.langchain import ZepChatMessageHistory, ZepVectorStore
+from zep_cloud.client import AsyncZep
+from zep_cloud.langchain import ZepChatMessageHistory, ZepVectorStore
 
 load_dotenv()
 

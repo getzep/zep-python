@@ -5,8 +5,8 @@ from dotenv import find_dotenv, load_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import WebBaseLoader
 
-from zep.client import Zep
-from zep.langchain import ZepVectorStore
+from zep_cloud.client import Zep
+from zep_cloud.langchain import ZepVectorStore
 
 load_dotenv(dotenv_path=find_dotenv())
 

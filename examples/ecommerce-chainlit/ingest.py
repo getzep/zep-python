@@ -4,8 +4,8 @@ import os
 from dotenv import find_dotenv, load_dotenv
 from shoe_data import shoes
 
-from zep.client import Zep
-from zep.langchain import ZepVectorStore
+from zep_cloud.client import Zep
+from zep_cloud.langchain import ZepVectorStore
 
 load_dotenv(dotenv_path=find_dotenv())
 

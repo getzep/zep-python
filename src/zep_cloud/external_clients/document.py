@@ -1,5 +1,5 @@
-from zep.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from zep.document.client import DocumentClient as BaseDocumentClient, AsyncDocumentClient as AsyncBaseDocumentClient
+from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from zep_cloud.document.client import DocumentClient as BaseDocumentClient, AsyncDocumentClient as AsyncBaseDocumentClient
 
 
 class DocumentClient(BaseDocumentClient):

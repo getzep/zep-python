@@ -16,8 +16,8 @@ from langchain_core.runnables import (
 from langchain_core.runnables.utils import ConfigurableFieldSingleOption
 from langchain_openai import ChatOpenAI
 
-from zep.client import Zep
-from zep.langchain import ZepVectorStore
+from zep_cloud.client import Zep
+from zep_cloud.langchain import ZepVectorStore
 
 ZEP_API_URL = os.environ.get(
     "ZEP_API_URL"
