@@ -1,8 +1,8 @@
 # Specify files that shouldn't be modified by Fern
-src/zep/client.py
-src/zep/external_clients/
+src/zep_cloud/client.py
+src/zep_cloud/external_clients/
 examples/
-src/zep/langchain/
+src/zep_cloud/langchain/
 pyproject.toml
 poetry.lock
 README.md
