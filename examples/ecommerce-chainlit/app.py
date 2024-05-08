@@ -3,7 +3,7 @@ import os
 import uuid
 
 import chainlit as cl
-from message_history import history as previous_chat_history
+from chat_history_shoe_purchase import history as previous_chat_history
 from dotenv import find_dotenv, load_dotenv
 from openai import AsyncOpenAI
 
@@ -13,7 +13,6 @@ from zep.types import Memory, Session, Message
 load_dotenv(dotenv_path=find_dotenv())
 
 API_KEY = os.environ.get("ZEP_API_KEY")
-ZEP_API_URL = os.environ.get("ZEP_API_URL")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 OPENAI_MODEL = "gpt-4-0125-preview"
@@ -22,7 +21,7 @@ ASSISTANT_ROLE = "assistant"
 USER_ROLE = "user"
 BOT_NAME = "Amazing Shoe Salesbot"
 
-zep = AsyncZep(api_key=API_KEY, base_url=f"{ZEP_API_URL}/api/v2")
+zep = AsyncZep(api_key=API_KEY)
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 

@@ -25,9 +25,6 @@ from zep.langchain import ZepChatMessageHistory, ZepVectorStore
 load_dotenv()
 
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
-ZEP_API_URL = os.environ.get(
-    "ZEP_API_URL"
-)  # only required if you're using Zep Open Source
 
 ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION_NAME")
 if ZEP_COLLECTION_NAME is None:
@@ -42,14 +39,12 @@ if ZEP_API_KEY is None:
 
 zep = AsyncZep(
     api_key=ZEP_API_KEY,
-    base_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # Initialize ZepVectorStore
 vectorstore = ZepVectorStore(
     collection_name=ZEP_COLLECTION_NAME,
     api_key=ZEP_API_KEY,
-    api_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # Zep offers native, hardware-accelerated MMR. Enabling this will improve
@@ -142,7 +137,6 @@ async def invoke_chain(user_input: UserInput):
         | StrOutputParser(),
         lambda session_id: ZepChatMessageHistory(
             session_id=session_id,
-            api_url=f"{ZEP_API_URL}/api/v2",
             api_key=ZEP_API_KEY,
             memory_type="perpetual",
         ),

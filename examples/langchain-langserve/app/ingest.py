@@ -12,10 +12,6 @@ load_dotenv(dotenv_path=find_dotenv())
 
 SOURCE = "https://en.wikipedia.org/wiki/Leonard_Bernstein"  # noqa: E501
 
-ZEP_API_URL = os.environ.get(
-    "ZEP_API_URL"
-)  # only required if you're using Zep Open Source
-
 ZEP_API_KEY = os.environ.get("ZEP_API_KEY")  # Required for Zep Cloud
 if ZEP_API_KEY is None:
     raise ValueError(
@@ -29,7 +25,6 @@ if ZEP_COLLECTION_NAME is None:
 
 zep = Zep(
     api_key=ZEP_API_KEY,
-    base_url=f"{ZEP_API_URL}/api/v2",
 )
 
 # Load
@@ -49,7 +44,6 @@ vectorstore = ZepVectorStore.from_documents(
     documents=all_splits,
     collection_name=ZEP_COLLECTION_NAME,
     api_key=ZEP_API_KEY,
-    api_url=f"{ZEP_API_URL}/api/v2",
 )
 
 print(f"Added {len(all_splits)} documents to {ZEP_COLLECTION_NAME}...")
