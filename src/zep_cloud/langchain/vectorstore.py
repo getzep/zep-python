@@ -422,7 +422,7 @@ class ZepVectorStore(VectorStore):
             metadatas: Optional[List[dict]] = None,
             description: Optional[str] = None,
             metadata: Optional[Dict[str, Any]] = None,
-            api_url: Optional[str] = str(ZepEnvironment.DEFAULT),
+            api_url: Optional[str] = None,
             api_key: Optional[str] = None,
             **kwargs: Any,
     ) -> ZepVectorStore:
