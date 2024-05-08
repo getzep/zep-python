@@ -19,8 +19,8 @@ from dotenv import find_dotenv, load_dotenv
 
 from chat_history_shoe_purchase import history
 
-from zep.client import AsyncZep
-from zep.types import Message
+from zep_cloud.client import AsyncZep
+from zep_cloud.types import Message
 
 load_dotenv(
     dotenv_path=find_dotenv()

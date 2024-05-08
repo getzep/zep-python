@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "zep-cloud"
-version = "0.0.1-rc.1"
+version = "1.0.0"
 description = ""
 readme = "README.md"
 authors = []
 packages = [
-    { include = "zep", from = "src"}
+    { include = "zep_cloud", from = "src"}
 ]
 
 [tool.poetry.dependencies]

@@ -5,3 +5,4 @@ examples/
 src/zep/langchain/
 pyproject.toml
 poetry.lock
+README.md

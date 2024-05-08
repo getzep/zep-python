@@ -1,4 +1,4 @@
-from zep.types.role_type import RoleType
+from zep_cloud.types.role_type import RoleType
 
 
 def get_zep_message_role_type(role) -> RoleType:

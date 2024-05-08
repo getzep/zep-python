@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import logging
 from typing import Any, Dict, Iterable, List, Optional, Tuple
-from zep.types import Memory, Message, DocumentCollectionResponse, DocumentResponse, CreateDocumentRequest
-from zep.errors import NotFoundError
-from zep.langchain.helpers import get_zep_message_role_type
-from zep.client import Zep, AsyncZep
-from zep.environment import ZepEnvironment
+from zep_cloud.types import DocumentCollectionResponse, CreateDocumentRequest
+from zep_cloud.errors import NotFoundError
+from zep_cloud.client import Zep, AsyncZep
+from zep_cloud.environment import ZepEnvironment
 
 try:
     from langchain_core.documents import Document
