@@ -24,6 +24,7 @@ from ..types.question import Question
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
 from ..types.session import Session
+from ..types.session_list_response import SessionListResponse
 from ..types.success_response import SuccessResponse
 from ..types.summary_list_response import SummaryListResponse
 from .types.memory_get_request_memory_type import MemoryGetRequestMemoryType
@@ -130,7 +131,7 @@ class MemoryClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Session]:
+    ) -> SessionListResponse:
         """
         Get all sessions with optional page number, page size, order by field and order direction for pagination.
 
@@ -153,7 +154,7 @@ class MemoryClient:
 
         Returns
         -------
-        typing.List[Session]
+        SessionListResponse
             List of sessions
 
         Examples
@@ -198,7 +199,7 @@ class MemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(SessionListResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -1396,7 +1397,7 @@ class AsyncMemoryClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Session]:
+    ) -> SessionListResponse:
         """
         Get all sessions with optional page number, page size, order by field and order direction for pagination.
 
@@ -1419,7 +1420,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        typing.List[Session]
+        SessionListResponse
             List of sessions
 
         Examples
@@ -1464,7 +1465,7 @@ class AsyncMemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(SessionListResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
