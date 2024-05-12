@@ -13,7 +13,6 @@ This script demonstrates the following functionality:
 
 import asyncio
 import os
-import time
 import uuid
 
 from dotenv import find_dotenv, load_dotenv
@@ -69,7 +68,7 @@ async def main() -> None:
         await client.memory.add(session_id=session_id, messages=[Message(**m)])
 
     #  Wait for the messages to be processed
-    time.sleep(5)
+    await asyncio.sleep(5)
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.
