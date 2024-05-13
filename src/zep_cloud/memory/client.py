@@ -640,6 +640,7 @@ class MemoryClient:
         session_id: str,
         *,
         messages: typing.Sequence[Message],
+        fact_instruction: typing.Optional[str] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
@@ -653,6 +654,9 @@ class MemoryClient:
 
         messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
+
+        fact_instruction : typing.Optional[str]
+            Additional instruction for generating the facts.
 
         summary_instruction : typing.Optional[str]
             Additional instruction for generating the summary.
@@ -679,6 +683,8 @@ class MemoryClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {"messages": messages}
+        if fact_instruction is not OMIT:
+            _request["fact_instruction"] = fact_instruction
         if summary_instruction is not OMIT:
             _request["summary_instruction"] = summary_instruction
         _response = self._client_wrapper.httpx_client.request(
@@ -1906,6 +1912,7 @@ class AsyncMemoryClient:
         session_id: str,
         *,
         messages: typing.Sequence[Message],
+        fact_instruction: typing.Optional[str] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
@@ -1919,6 +1926,9 @@ class AsyncMemoryClient:
 
         messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
+
+        fact_instruction : typing.Optional[str]
+            Additional instruction for generating the facts.
 
         summary_instruction : typing.Optional[str]
             Additional instruction for generating the summary.
@@ -1945,6 +1955,8 @@ class AsyncMemoryClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {"messages": messages}
+        if fact_instruction is not OMIT:
+            _request["fact_instruction"] = fact_instruction
         if summary_instruction is not OMIT:
             _request["summary_instruction"] = summary_instruction
         _response = await self._client_wrapper.httpx_client.request(
