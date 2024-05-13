@@ -6,3 +6,4 @@ src/zep_cloud/langchain/
 pyproject.toml
 poetry.lock
 README.md
+.github
