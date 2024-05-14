@@ -116,9 +116,13 @@ async def main() -> None:
     )
     print("messages_result: ", messages_result)
 
+    # End session - this will trigger summarization and other background tasks on the completed session
+    print(f"\n5---end_session for Session: {session_id}")
+    await client.memory.end_session(session_id)
+
     # Delete Memory for session
     # Uncomment to run
-    print(f"\n5---deleteMemory for Session: {session_id}")
+    print(f"\n6---deleteMemory for Session: {session_id}")
     # await client.memory.delete(session_id)
 
 
