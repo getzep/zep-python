@@ -11,6 +11,7 @@ class Session(pydantic_v1.BaseModel):
     classifications: typing.Optional[typing.Dict[str, str]] = None
     created_at: typing.Optional[str] = None
     deleted_at: typing.Optional[str] = None
+    ended_at: typing.Optional[str] = None
     facts: typing.Optional[typing.List[str]] = None
     id: typing.Optional[int] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
