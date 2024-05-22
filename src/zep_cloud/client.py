@@ -20,6 +20,9 @@ class Zep(BaseClient):
             follow_redirects: typing.Optional[bool] = None,
             httpx_client: typing.Optional[httpx.Client] = None
     ):
+        env_api_url = os.getenv("ZEP_API_URL")
+        if env_api_url:
+            base_url = f"{env_api_url}/api/v2"
         super().__init__(
             base_url=base_url,
             environment=environment,
@@ -44,6 +47,9 @@ class AsyncZep(AsyncBaseClient):
             follow_redirects: typing.Optional[bool] = None,
             httpx_client: typing.Optional[httpx.AsyncClient] = None
     ):
+        env_api_url = os.getenv("ZEP_API_URL")
+        if env_api_url:
+            base_url = f"{env_api_url}/api/v2"
         super().__init__(
             base_url=base_url,
             environment=environment,
