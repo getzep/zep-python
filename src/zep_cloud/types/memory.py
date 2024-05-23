@@ -25,6 +25,11 @@ class Memory(pydantic_v1.BaseModel):
     A dictionary containing metadata associated with the memory.
     """
 
+    relevant_summaries: typing.Optional[typing.List[Summary]] = pydantic_v1.Field(default=None)
+    """
+    Summary list result from Summary Retriever Memory Type.
+    """
+
     summary: typing.Optional[Summary] = pydantic_v1.Field(default=None)
     """
     A Summary object.
