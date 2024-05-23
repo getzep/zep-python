@@ -2,7 +2,7 @@
 
 import typing
 
-ModelsZepDataType = typing.Union[
+ZepDataType = typing.Union[
     typing.Literal[
         "ZepText",
         "ZepZipCode",

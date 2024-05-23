@@ -12,7 +12,6 @@ from .types import (
     MemorySearchResult,
     Message,
     MessageListResponse,
-    ModelsZepDataType,
     Question,
     RoleType,
     SearchScope,
@@ -26,6 +25,7 @@ from .types import (
     User,
     UserListResponse,
     ZepDataClass,
+    ZepDataType,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
 from . import document, memory, user
@@ -49,7 +49,6 @@ __all__ = [
     "MemorySearchResult",
     "Message",
     "MessageListResponse",
-    "ModelsZepDataType",
     "NotFoundError",
     "Question",
     "RoleType",
@@ -65,6 +64,7 @@ __all__ = [
     "User",
     "UserListResponse",
     "ZepDataClass",
+    "ZepDataType",
     "ZepEnvironment",
     "__version__",
     "document",

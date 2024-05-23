@@ -11,7 +11,6 @@ from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .message import Message
 from .message_list_response import MessageListResponse
-from .models_zep_data_type import ModelsZepDataType
 from .question import Question
 from .role_type import RoleType
 from .search_scope import SearchScope
@@ -25,6 +24,7 @@ from .update_document_list_request import UpdateDocumentListRequest
 from .user import User
 from .user_list_response import UserListResponse
 from .zep_data_class import ZepDataClass
+from .zep_data_type import ZepDataType
 
 __all__ = [
     "ApiError",
@@ -38,7 +38,6 @@ __all__ = [
     "MemorySearchResult",
     "Message",
     "MessageListResponse",
-    "ModelsZepDataType",
     "Question",
     "RoleType",
     "SearchScope",
@@ -52,4 +51,5 @@ __all__ = [
     "User",
     "UserListResponse",
     "ZepDataClass",
+    "ZepDataType",
 ]
