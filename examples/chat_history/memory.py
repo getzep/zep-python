@@ -31,12 +31,14 @@ API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
 
 async def main() -> None:
     client = AsyncZep(
-        api_key=API_KEY,
+        api_key="z_1dWlkIjoiMTk1OWFiYTktNWE0MS00MTQ1LTliNjktZmM1NTczYTBiMDA4In0.mvagk2eN3uOYDP0ZTUvnvS-mSdlnt5Ov8xv1eiLJPQSJp6nk3gkiUM3U_XIHch3QD4-Aog7XnQcPu1RzOaTLUQ",
+        base_url="https://api.getzep.com/api/v2"
     )
 
     # Create a user
     user_id = uuid.uuid4().hex  # unique user id. can be any alphanum string
 
+    print(f"\n---Creating user: {user_id}")
     await client.user.add(
         user_id=user_id,
         email="user@example.com",
