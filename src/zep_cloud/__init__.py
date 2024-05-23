@@ -12,6 +12,7 @@ from .types import (
     MemorySearchResult,
     Message,
     MessageListResponse,
+    ModelsZepDataType,
     Question,
     RoleType,
     SearchScope,
@@ -27,7 +28,7 @@ from .types import (
     ZepDataClass,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
-from . import document, memory, session, user
+from . import document, memory, user
 from .environment import ZepEnvironment
 from .memory import MemoryGetRequestMemoryType
 from .version import __version__
@@ -48,6 +49,7 @@ __all__ = [
     "MemorySearchResult",
     "Message",
     "MessageListResponse",
+    "ModelsZepDataType",
     "NotFoundError",
     "Question",
     "RoleType",
@@ -67,6 +69,5 @@ __all__ = [
     "__version__",
     "document",
     "memory",
-    "session",
     "user",
 ]

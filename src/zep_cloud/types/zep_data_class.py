@@ -5,13 +5,14 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
+from .models_zep_data_type import ModelsZepDataType
 
 
 class ZepDataClass(pydantic_v1.BaseModel):
     description: typing.Optional[str] = None
     name: typing.Optional[str] = None
     regex: typing.Optional[str] = None
-    type: typing.Optional[str] = None
+    type: typing.Optional[ModelsZepDataType] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

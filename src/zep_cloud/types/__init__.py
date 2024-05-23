@@ -11,6 +11,7 @@ from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .message import Message
 from .message_list_response import MessageListResponse
+from .models_zep_data_type import ModelsZepDataType
 from .question import Question
 from .role_type import RoleType
 from .search_scope import SearchScope
@@ -37,6 +38,7 @@ __all__ = [
     "MemorySearchResult",
     "Message",
     "MessageListResponse",
+    "ModelsZepDataType",
     "Question",
     "RoleType",
     "SearchScope",
