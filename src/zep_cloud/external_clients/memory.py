@@ -1,5 +1,6 @@
-from typing import Optional, Type, Any, Dict, Sequence
+from typing import Optional, Type, Any, Dict, Sequence, List
 from pydantic import BaseModel
+from ..core.pydantic_utilities import pydantic_v1
 
 from zep_cloud import ZepDataClass
 from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
@@ -13,35 +14,37 @@ class MemoryClient(BaseMemoryClient):
         )
 
 
+def data_classes_from_pydantic_model(
+        model: Type[BaseModel],
+) -> List[ZepDataClass]:
+    zep_data_classes = [
+        value.default for name, value in model.__fields__.items()
+        if isinstance(value.default, ZepDataClass)
+    ]
+
+    return zep_data_classes
+
+
 class AsyncMemoryClient(AsyncBaseMemoryClient):
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         super().__init__(
             client_wrapper=client_wrapper
         )
 
-    async def extract_data_for_model(
+    async def extract_session_data_from_model(
+            self,
             session_id: str,
             model: Type[BaseModel],
-            client: Any,
-            additional_data: Optional[Dict[str, Any]] = None,
-            last_n_messages: Optional[int] = None,
-            request_options: Optional[Dict[str, Any]] = None,
-    ) -> BaseModel:
-        zep_data_classes: Sequence[ZepDataClass] = [
-            value.default for name, value in model.__fields__.items()
-            if isinstance(value.default, ZepDataClass)
-        ]
+            last_n_messages: Optional[int] = None):
 
-        extracted_data: Dict[str, str] = await client.memory.extract_session_data(
-            session_id=session_id,
-            zep_data_classes=zep_data_classes,
-            last_n_messages=last_n_messages,
-            request_options=request_options,
+        data_classes = data_classes_from_pydantic_model(
+            model=model,
         )
 
-        model_data: Dict[str, Any] = additional_data if additional_data else {}
-        for field in model.__fields__.values():
-            if isinstance(field.default, ZepDataClass):
-                model_data[field.name] = extracted_data.get(field.default.name)
+        print(f"data_classes: {data_classes}")
 
-        return model(**model_data)
+        extracted_data = await self.extract_session_data(session_id, last_n_messages=last_n_messages, zep_data_classes=data_classes)
+
+        model.update_with_extracted_data(data=extracted_data)
+
+        return model

@@ -14,10 +14,14 @@ This script demonstrates the following functionality:
 import asyncio
 import os
 import uuid
+from typing import Optional, Dict, Any
+
+from pydantic import BaseModel
 
 from dotenv import find_dotenv, load_dotenv
 
 from chat_history_shoe_purchase import history
+from zep_cloud import ZepDataClass
 
 from zep_cloud.client import AsyncZep
 from zep_cloud.types import Message
@@ -27,12 +31,14 @@ load_dotenv(
 )  # load environment variables from .env file, if present
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+BASE_URL = os.environ.get("ZEP_API_URL")
+
+print(f"API_KEY:", API_KEY, BASE_URL)
 
 
 async def main() -> None:
     client = AsyncZep(
-        api_key="z_1dWlkIjoiMTk1OWFiYTktNWE0MS00MTQ1LTliNjktZmM1NTczYTBiMDA4In0.mvagk2eN3uOYDP0ZTUvnvS-mSdlnt5Ov8xv1eiLJPQSJp6nk3gkiUM3U_XIHch3QD4-Aog7XnQcPu1RzOaTLUQ",
-        base_url="https://api.getzep.com/api/v2"
+        api_key=API_KEY,
     )
 
     # Create a user
@@ -118,14 +124,37 @@ async def main() -> None:
     )
     print("messages_result: ", messages_result)
 
-    # End session - this will trigger summarization and other background tasks on the completed session
-    print(f"\n5---end_session for Session: {session_id}")
-    await client.memory.end_session(session_id)
+    # session_id = "8a292353329445a79b9d98852f099069"
 
-    # Delete Memory for session
-    # Uncomment to run
-    print(f"\n6---deleteMemory for Session: {session_id}")
+    additional_data = {"patient_name": "John Doe", "notes": "Patient is sensitive to medication."}
+    woof = await client.memory.extract_session_data_from_model(session_id, AppointmentModel, last_n_messages=100)
+    print("woof")
+
+    # moo = await client.memory.extract_session_data(session_id, last_n_messages=100, zep_data_classes=data_classes)
+
+    # # End session - this will trigger summarization and other background tasks on the completed session
+    # print(f"\n5---end_session for Session: {session_id}")
+    # await client.memory.end_session(session_id)
+    #
+    # # Delete Memory for session
+    # # Uncomment to run
+    # print(f"\n6---deleteMemory for Session: {session_id}")
     # await client.memory.delete(session_id)
+
+
+class AppointmentModel(BaseModel):
+    shoe_size: Optional[ZepDataClass] = ZepDataClass(
+        type="ZepNumber", description="The user's shoe size", name="shoe_size"
+    )
+
+    def update_with_extracted_data(self, data: Dict[str, Any]):
+        for field, value in data.items():
+            if hasattr(self, field):
+                setattr(self, field, value)
+    # budget: Optional[ZepDataClass] = ZepDataClass(
+    #     type="ZepFloat", description="What is the purchasers budget?", name="budget"
+    # )
+
 
 
 if __name__ == "__main__":
