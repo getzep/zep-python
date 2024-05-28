@@ -24,6 +24,7 @@ from chat_history_shoe_purchase import history
 from zep_cloud import ZepDataClass
 
 from zep_cloud.client import AsyncZep
+from zep_cloud.external_clients.memory import BaseDataExtractor
 from zep_cloud.types import Message
 
 load_dotenv(
@@ -132,7 +133,7 @@ async def main() -> None:
     print("hihihihi")
 
 
-class AppointmentModel(BaseModel):
+class AppointmentModel(BaseDataExtractor):
     shoe_size: Optional[ZepDataClass] = ZepDataClass(
         type="ZepNumber", description="The user's shoe size", name="shoe_size"
     )
@@ -140,11 +141,9 @@ class AppointmentModel(BaseModel):
         type="ZepFloat", description="What is the purchasers budget?", name="budget"
     )
 
-    def update_with_extracted_data(self, data: Dict[str, Any]):
-        for field, value in data.items():
-            if hasattr(self, field):
-                setattr(self, field, value)
-
+    name: Optional[ZepDataClass] = ZepDataClass(
+        type="ZepText", description="The user's name", name="name"
+    )
 
 
 if __name__ == "__main__":

@@ -25,6 +25,13 @@ def data_classes_from_pydantic_model(
     return zep_data_classes
 
 
+class BaseDataExtractor(BaseModel):
+    def update_with_extracted_data(self, data: Dict[str, Any]):
+        for field, value in data.items():
+            if hasattr(self, field):
+                setattr(self, field, value)
+
+
 class AsyncMemoryClient(AsyncBaseMemoryClient):
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         super().__init__(
@@ -36,11 +43,11 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
             session_id: str,
             model: Type[BaseModel],
             last_n_messages: Optional[int] = None) -> Dict[str, Any]:
-
         data_classes = data_classes_from_pydantic_model(
             model=model,
         )
-        extracted_data = await self.extract_session_data(session_id, last_n_messages=last_n_messages, zep_data_classes=data_classes)
+        extracted_data = await self.extract_session_data(session_id, last_n_messages=last_n_messages,
+                                                         zep_data_classes=data_classes)
 
         model_instance = model()
         model_instance.update_with_extracted_data(data=extracted_data)
