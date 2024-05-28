@@ -25,7 +25,7 @@ def data_classes_from_pydantic_model(
     return zep_data_classes
 
 
-class BaseDataExtractor(BaseModel):
+class BaseDataExtractorModel(BaseModel):
     def update_with_extracted_data(self, data: Dict[str, Any]):
         for field, value in data.items():
             if hasattr(self, field):
@@ -41,8 +41,28 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
     async def extract_session_data_from_model(
             self,
             session_id: str,
-            model: Type[BaseModel],
+            model: Type[BaseDataExtractorModel],
             last_n_messages: Optional[int] = None) -> Dict[str, Any]:
+        """
+           Extracts session data from a specified model.
+
+           This method uses the provided Pydantic model to extract data from the session. It then updates the model instance
+           with the extracted data and returns it as a dictionary.
+
+           Parameters
+           ----------
+           session_id : str
+               The ID of the session from which to extract data.
+           model : Type[BaseDataExtractorModel]
+               The base model class to use for data extraction.
+           last_n_messages : Optional[int]
+               The number of most recent session messages to consider for data extraction. If not provided, all messages are considered.
+
+           Returns
+           -------
+           Dict[str, Any]
+               A dictionary representation of the updated model instance with the extracted data.
+           """
         data_classes = data_classes_from_pydantic_model(
             model=model,
         )
