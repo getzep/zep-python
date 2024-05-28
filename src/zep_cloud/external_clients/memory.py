@@ -35,16 +35,14 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
             self,
             session_id: str,
             model: Type[BaseModel],
-            last_n_messages: Optional[int] = None):
+            last_n_messages: Optional[int] = None) -> Dict[str, Any]:
 
         data_classes = data_classes_from_pydantic_model(
             model=model,
         )
-
-        print(f"data_classes: {data_classes}")
-
         extracted_data = await self.extract_session_data(session_id, last_n_messages=last_n_messages, zep_data_classes=data_classes)
 
-        model.update_with_extracted_data(data=extracted_data)
+        model_instance = model()
+        model_instance.update_with_extracted_data(data=extracted_data)
 
-        return model
+        return model_instance.dict()
