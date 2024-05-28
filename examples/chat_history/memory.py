@@ -128,7 +128,7 @@ async def main() -> None:
 
     # Extract session data from model
     print("\n---Extracting session data from model")
-    extracted_data = await client.memory.extract_session_data_from_model(session_id, ShoeInfoModel, last_n_messages=100)
+    extracted_data = await client.memory.extract_session_data_from_model(session_id, ShoeInfoModel(), last_n_messages=100)
     print("Extracted data: ", extracted_data.get_data())
 
 

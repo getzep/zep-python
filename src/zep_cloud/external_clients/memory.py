@@ -18,12 +18,6 @@ class BaseDataExtractorModel(BaseModel):
     def get_data(self) -> Dict[str, Any]:
         return self.data
 
-    # def update_data(self, data: Dict[str, Any]):
-    #     for field, value in data.items():
-    #         if hasattr(self, field):
-    #             setattr(self, field, value)
-
-
 
 def data_classes_from_pydantic_model(
         model: Type[BaseDataExtractorModel],
@@ -61,38 +55,36 @@ class MemoryClient(BaseMemoryClient):
     def extract_session_data_from_model(
             self,
             session_id: str,
-            model: Type[BaseDataExtractorModel],
-            last_n_messages: Optional[int] = None) -> Dict[str, Any]:
+            model_instance: BaseDataExtractorModel,
+            last_n_messages: Optional[int] = None) -> BaseDataExtractorModel:
         """
-           Extracts session data from a specified model.
+        Extracts session data from a specified model instance.
 
-           This method uses the provided Pydantic model to extract data from the session. It then updates the model instance
-           with the extracted data and returns it as a dictionary.
+        This method uses the provided Pydantic model instance to extract data from the session. It then updates the model instance
+        with the extracted data and returns it.
 
-           Parameters
-           ----------
-           session_id : str
-               The ID of the session from which to extract data.
-           model : Type[BaseDataExtractorModel]
-               The base model class to use for data extraction.
-           last_n_messages : Optional[int]
-               The number of most recent session messages to consider for data extraction. If not provided, all messages are considered.
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session from which to extract data.
+        model_instance : BaseDataExtractorModel
+            The model instance to use for data extraction.
+        last_n_messages : Optional[int]
+            The number of most recent session messages to consider for data extraction. If not provided, all messages are considered.
 
-           Returns
-           -------
-           Dict[str, Any]
-               A dictionary representation of the updated model instance with the extracted data.
-           """
+        Returns
+        -------
+        BaseDataExtractorModel
+            The updated model instance with the extracted data.
+        """
         data_classes = data_classes_from_pydantic_model(
-            model=model,
+            model=type(model_instance),
         )
-        extracted_data = self.extract_session_data(session_id, last_n_messages=last_n_messages,
-                                                   zep_data_classes=data_classes)
+        extracted_data = self.extract_session_data(session_id, last_n_messages=last_n_messages, zep_data_classes=data_classes)
 
-        model_instance = model()
         model_instance.update_data(extracted_data)
 
-        return model_instance.dict()
+        return model_instance
 
 
 class AsyncMemoryClient(AsyncBaseMemoryClient):
@@ -104,35 +96,34 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
     async def extract_session_data_from_model(
             self,
             session_id: str,
-            model: Type[BaseDataExtractorModel],
+            model_instance: BaseDataExtractorModel,
             last_n_messages: Optional[int] = None) -> BaseDataExtractorModel:
         """
-           Extracts session data from a specified model.
+        Extracts session data from a specified model instance.
 
-           This method uses the provided Pydantic model to extract data from the session. It then updates the model instance
-           with the extracted data and returns it as a dictionary.
+        This method uses the provided Pydantic model instance to extract data from the session. It then updates the model instance
+        with the extracted data and returns it.
 
-           Parameters
-           ----------
-           session_id : str
-               The ID of the session from which to extract data.
-           model : Type[BaseDataExtractorModel]
-               The base model class to use for data extraction.
-           last_n_messages : Optional[int]
-               The number of most recent session messages to consider for data extraction. If not provided, all messages are considered.
+        Parameters
+        ----------
+        session_id : str
+            The ID of the session from which to extract data.
+        model_instance : BaseDataExtractorModel
+            The model instance to use for data extraction.
+        last_n_messages : Optional[int]
+            The number of most recent session messages to consider for data extraction. If not provided, all messages are considered.
 
-           Returns
-           -------
-           Dict[str, Any]
-               A dictionary representation of the updated model instance with the extracted data.
-           """
+        Returns
+        -------
+        BaseDataExtractorModel
+            The updated model instance with the extracted data.
+        """
         data_classes = data_classes_from_pydantic_model(
-            model=model,
+            model=type(model_instance),
         )
         extracted_data = await self.extract_session_data(session_id, last_n_messages=last_n_messages,
                                                          zep_data_classes=data_classes)
 
-        model_instance = model()
         model_instance.update_data(extracted_data)
 
         return model_instance
