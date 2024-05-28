@@ -1,6 +1,5 @@
 from typing import Optional, Type, Any, Dict, Sequence, List
 from pydantic import BaseModel
-from ..core.pydantic_utilities import pydantic_v1
 
 from zep_cloud import ZepDataClass
 from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
@@ -12,6 +11,33 @@ class BaseDataExtractorModel(BaseModel):
         for field, value in data.items():
             if hasattr(self, field):
                 setattr(self, field, value)
+
+
+def data_classes_from_pydantic_model(
+        model: Type[BaseDataExtractorModel],
+) -> List[ZepDataClass]:
+    """
+    Extracts ZepDataClass instances from a Pydantic model.
+
+    This function iterates over the fields of the provided Pydantic model and collects all default values
+    that are instances of ZepDataClass.
+
+    Parameters
+    ----------
+    model : Type[BaseDataExtractorModel]
+        The Pydantic model from which to extract ZepDataClass instances.
+
+    Returns
+    -------
+    List[ZepDataClass]
+        A list of ZepDataClass instances found in the model's default values.
+    """
+    zep_data_classes = [
+        value.default for name, value in model.__fields__.items()
+        if isinstance(value.default, ZepDataClass)
+    ]
+
+    return zep_data_classes
 
 
 class MemoryClient(BaseMemoryClient):
@@ -55,33 +81,6 @@ class MemoryClient(BaseMemoryClient):
         model_instance.update_with_extracted_data(data=extracted_data)
 
         return model_instance.dict()
-
-
-def data_classes_from_pydantic_model(
-        model: Type[BaseDataExtractorModel],
-) -> List[ZepDataClass]:
-    """
-    Extracts ZepDataClass instances from a Pydantic model.
-
-    This function iterates over the fields of the provided Pydantic model and collects all default values
-    that are instances of ZepDataClass.
-
-    Parameters
-    ----------
-    model : Type[BaseDataExtractorModel]
-        The Pydantic model from which to extract ZepDataClass instances.
-
-    Returns
-    -------
-    List[ZepDataClass]
-        A list of ZepDataClass instances found in the model's default values.
-    """
-    zep_data_classes = [
-        value.default for name, value in model.__fields__.items()
-        if isinstance(value.default, ZepDataClass)
-    ]
-
-    return zep_data_classes
 
 
 class AsyncMemoryClient(AsyncBaseMemoryClient):
