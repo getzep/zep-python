@@ -7,10 +7,22 @@ from zep_cloud.memory.client import MemoryClient as BaseMemoryClient, AsyncMemor
 
 
 class BaseDataExtractorModel(BaseModel):
-    def update_with_extracted_data(self, data: Dict[str, Any]):
-        for field, value in data.items():
-            if hasattr(self, field):
-                setattr(self, field, value)
+    def __init__(self, /, **data: Any):
+        super().__init__(**data)
+        self.data = {}
+
+    def update_data(self, new_data: Dict[str, Any]):
+        for key, value in new_data.items():
+            self.data[key] = value
+
+    def get_data(self) -> Dict[str, Any]:
+        return self.data
+
+    # def update_data(self, data: Dict[str, Any]):
+    #     for field, value in data.items():
+    #         if hasattr(self, field):
+    #             setattr(self, field, value)
+
 
 
 def data_classes_from_pydantic_model(
@@ -78,7 +90,7 @@ class MemoryClient(BaseMemoryClient):
                                                    zep_data_classes=data_classes)
 
         model_instance = model()
-        model_instance.update_with_extracted_data(data=extracted_data)
+        model_instance.update_data(extracted_data)
 
         return model_instance.dict()
 
@@ -93,7 +105,7 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
             self,
             session_id: str,
             model: Type[BaseDataExtractorModel],
-            last_n_messages: Optional[int] = None) -> Dict[str, Any]:
+            last_n_messages: Optional[int] = None) -> BaseDataExtractorModel:
         """
            Extracts session data from a specified model.
 
@@ -121,6 +133,6 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
                                                          zep_data_classes=data_classes)
 
         model_instance = model()
-        model_instance.update_with_extracted_data(data=extracted_data)
+        model_instance.update_data(extracted_data)
 
-        return model_instance.dict()
+        return model_instance

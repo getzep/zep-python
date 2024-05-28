@@ -14,6 +14,7 @@ This script demonstrates the following functionality:
 import asyncio
 import os
 import uuid
+from dataclasses import Field
 from typing import Optional, Dict, Any
 
 from pydantic import BaseModel
@@ -128,10 +129,11 @@ async def main() -> None:
     # Extract session data from model
     print("\n---Extracting session data from model")
     extracted_data = await client.memory.extract_session_data_from_model(session_id, ShoeInfoModel, last_n_messages=100)
-    print("Extracted data: ", extracted_data)
+    print("Extracted data: ", extracted_data.get_data())
 
 
 class ShoeInfoModel(BaseDataExtractorModel):
+    data: Dict[str, Any] = {}
     shoe_size: Optional[ZepDataClass] = ZepDataClass(
         type="ZepNumber", description="The user's shoe size", name="shoe_size"
     )
