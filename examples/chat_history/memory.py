@@ -33,10 +33,8 @@ load_dotenv(
 )  # load environment variables from .env file, if present
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
+# TODO: remove me
 BASE_URL = os.environ.get("ZEP_API_URL")
-
-print(f"API_KEY:", API_KEY, BASE_URL)
-
 
 async def main() -> None:
     client = AsyncZep(
@@ -82,9 +80,9 @@ async def main() -> None:
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.
-    # print("\n---Synthesize a question from most recent messages")
-    # question = await client.memory.synthesize_question(session_id, last_n_messages=3)
-    # print(f"Question: {question}")
+    print("\n---Synthesize a question from most recent messages")
+    question = await client.memory.synthesize_question(session_id, last_n_messages=3)
+    print(f"Question: {question}")
 
     # Classify the session.
     # Useful for semantic routing, filtering, and many other use cases.

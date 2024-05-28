@@ -10,10 +10,6 @@ from zep_cloud.memory.client import MemoryClient as BaseMemoryClient, AsyncMemor
 class BaseDataExtractorModel(BaseModel):
     data: Dict[str, Any] = {}
 
-    def __init__(self, /, **data: Any):
-        super().__init__(**data)
-        self.data = {}
-
     def update_data(self, new_data: Dict[str, Any]):
         for key, value in new_data.items():
             self.data[key] = value
