@@ -1,3 +1,4 @@
+from dataclasses import Field
 from typing import Optional, Type, Any, Dict, Sequence, List
 from pydantic import BaseModel
 
@@ -7,6 +8,8 @@ from zep_cloud.memory.client import MemoryClient as BaseMemoryClient, AsyncMemor
 
 
 class BaseDataExtractorModel(BaseModel):
+    data: Dict[str, Any] = {}
+
     def __init__(self, /, **data: Any):
         super().__init__(**data)
         self.data = {}

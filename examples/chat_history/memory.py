@@ -133,7 +133,6 @@ async def main() -> None:
 
 
 class ShoeInfoModel(BaseDataExtractorModel):
-    data: Dict[str, Any] = {}
     shoe_size: Optional[ZepDataClass] = ZepDataClass(
         type="ZepNumber", description="The user's shoe size", name="shoe_size"
     )
