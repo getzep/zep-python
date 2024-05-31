@@ -2,17 +2,4 @@
 
 import typing
 
-ZepDataType = typing.Union[
-    typing.Literal[
-        "ZepText",
-        "ZepZipCode",
-        "ZepDate",
-        "ZepDateTime",
-        "ZepEmail",
-        "ZepPhoneNumber",
-        "ZepFloat",
-        "ZepNumber",
-        "ZepRegex",
-    ],
-    typing.Any,
-]
+ZepDataType = typing.Any
