@@ -17,12 +17,12 @@ from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.classify_session_request import ClassifySessionRequest
 from ..types.classify_session_response import ClassifySessionResponse
+from ..types.end_session_response import EndSessionResponse
 from ..types.end_sessions_response import EndSessionsResponse
 from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
-from ..types.models_end_session_response import ModelsEndSessionResponse
 from ..types.question import Question
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
@@ -533,7 +533,7 @@ class MemoryClient:
         classify: typing.Optional[ClassifySessionRequest] = OMIT,
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ModelsEndSessionResponse:
+    ) -> EndSessionResponse:
         """
         End a session by ID
 
@@ -551,7 +551,7 @@ class MemoryClient:
 
         Returns
         -------
-        ModelsEndSessionResponse
+        EndSessionResponse
             OK
 
         Examples
@@ -599,7 +599,7 @@ class MemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsEndSessionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EndSessionResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
@@ -1868,7 +1868,7 @@ class AsyncMemoryClient:
         classify: typing.Optional[ClassifySessionRequest] = OMIT,
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ModelsEndSessionResponse:
+    ) -> EndSessionResponse:
         """
         End a session by ID
 
@@ -1886,7 +1886,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        ModelsEndSessionResponse
+        EndSessionResponse
             OK
 
         Examples
@@ -1934,7 +1934,7 @@ class AsyncMemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsEndSessionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EndSessionResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:

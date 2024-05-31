@@ -9,7 +9,7 @@ from .classify_session_response import ClassifySessionResponse
 from .session import Session
 
 
-class ModelsEndSessionResponse(pydantic_v1.BaseModel):
+class EndSessionResponse(pydantic_v1.BaseModel):
     classification: typing.Optional[ClassifySessionResponse] = None
     session: typing.Optional[Session] = None
 

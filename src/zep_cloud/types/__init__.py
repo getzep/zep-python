@@ -8,12 +8,12 @@ from .document_collection_response import DocumentCollectionResponse
 from .document_response import DocumentResponse
 from .document_search_result import DocumentSearchResult
 from .document_search_result_page import DocumentSearchResultPage
+from .end_session_response import EndSessionResponse
 from .end_sessions_response import EndSessionsResponse
 from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .message import Message
 from .message_list_response import MessageListResponse
-from .models_end_session_response import ModelsEndSessionResponse
 from .question import Question
 from .role_type import RoleType
 from .search_scope import SearchScope
@@ -36,12 +36,12 @@ __all__ = [
     "DocumentResponse",
     "DocumentSearchResult",
     "DocumentSearchResultPage",
+    "EndSessionResponse",
     "EndSessionsResponse",
     "Memory",
     "MemorySearchResult",
     "Message",
     "MessageListResponse",
-    "ModelsEndSessionResponse",
     "Question",
     "RoleType",
     "SearchScope",
