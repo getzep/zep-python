@@ -9,12 +9,12 @@ from .types import (
     DocumentResponse,
     DocumentSearchResult,
     DocumentSearchResultPage,
+    EndSessionsResponse,
     Memory,
     MemorySearchResult,
     Message,
     MessageListResponse,
     ModelsEndSessionResponse,
-    ModelsEndSessionsResponse,
     Question,
     RoleType,
     SearchScope,
@@ -29,7 +29,7 @@ from .types import (
     UserListResponse,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
-from . import document, memory, session, user
+from . import document, memory, user
 from .environment import ZepEnvironment
 from .memory import MemoryGetRequestMemoryType
 from .version import __version__
@@ -45,6 +45,7 @@ __all__ = [
     "DocumentResponse",
     "DocumentSearchResult",
     "DocumentSearchResultPage",
+    "EndSessionsResponse",
     "InternalServerError",
     "Memory",
     "MemoryGetRequestMemoryType",
@@ -52,7 +53,6 @@ __all__ = [
     "Message",
     "MessageListResponse",
     "ModelsEndSessionResponse",
-    "ModelsEndSessionsResponse",
     "NotFoundError",
     "Question",
     "RoleType",
@@ -71,6 +71,5 @@ __all__ = [
     "__version__",
     "document",
     "memory",
-    "session",
     "user",
 ]

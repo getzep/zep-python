@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import pydantic_v1
 from .session import Session
 
 
-class ModelsEndSessionsResponse(pydantic_v1.BaseModel):
+class EndSessionsResponse(pydantic_v1.BaseModel):
     sessions: typing.Optional[typing.List[Session]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
