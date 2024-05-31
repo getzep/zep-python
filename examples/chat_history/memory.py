@@ -14,27 +14,22 @@ This script demonstrates the following functionality:
 import asyncio
 import os
 import uuid
-# from dataclasses import Field
-from typing import Optional, Dict, Any
-
-from pydantic import BaseModel, Field
 
 from dotenv import find_dotenv, load_dotenv
 
 from chat_history_shoe_purchase import history
-from zep_cloud import ZepDataClass
 
 from zep_cloud.client import AsyncZep
-from zep_cloud.external_clients.memory import BaseDataExtractorModel, ZepNumber, ZepFloat
 from zep_cloud.types import Message
+from pydantic import BaseModel, Field, WithJsonSchema
+from typing_extensions import Annotated
+from typing import Optional
 
 load_dotenv(
     dotenv_path=find_dotenv()
 )  # load environment variables from .env file, if present
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
-# TODO: remove me
-BASE_URL = os.environ.get("ZEP_API_URL")
 
 
 async def main() -> None:
@@ -43,20 +38,19 @@ async def main() -> None:
     )
 
     # Create a user
-    user_id = uuid.uuid4().hex  # unique user id. can be any alphanum string
-
-    print(f"\n---Creating user: {user_id}")
-    await client.user.add(
-        user_id=user_id,
-        email="user@example.com",
-        first_name="Jane",
-        last_name="Smith",
-        metadata={"vip": "true"},
-    )
-
-    session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
-
-    # Create session associated with the above user
+    # user_id = uuid.uuid4().hex  # unique user id. can be any alphanum string
+    #
+    # await client.user.add(
+    #     user_id=user_id,
+    #     email="user@example.com",
+    #     first_name="Jane",
+    #     last_name="Smith",
+    #     metadata={"vip": "true"},
+    # )
+    #
+    # session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
+    #
+    # # Create session associated with the above user
     # print(f"\n---Creating session: {session_id}")
     #
     # await client.memory.add_session(session_id=session_id, user_id=user_id, metadata={"foo": "bar"})
@@ -124,25 +118,47 @@ async def main() -> None:
     #     metadata={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}}
     # )
     # print("messages_result: ", messages_result)
+    #
+    # # End session - this will trigger summarization and other background tasks on the completed session
+    # print(f"\n5---end_session for Session: {session_id}")
+    # await client.memory.end_session(session_id)
+    #
+    # # Delete Memory for session
+    # # Uncomment to run
+    # print(f"\n6---deleteMemory for Session: {session_id}")
+    # # await client.memory.delete(session_id)
 
     session_id = "a2eb841bc24245fdb0901b0a87a865cd"
-    # Extract session data from model
-    print("\n---Extracting session data from model")
-    # shoeInfo = ShoeInfoModel(shoe_size=ZepNumber(name="shoe_size", description="10"))
-    print(ShoeInfoModel.model_json_schema())
-    extracted_data = await client.memory.extract_session_data_from_model(session_id, ShoeInfoModel,
-                                                                         last_n_messages=100)
-    # print("Extracted data: ", extracted_data.json())
-    # print("Extracted schema: ", extracted_data.schema_json())
 
 
+class ZepBaseText(BaseModel):
+    description: Optional[str] = None
+    type: ZepDataType = "ZepText"
 
-class ShoeInfoModel(BaseModel):
-    shoe_size: Optional[ZepFloat] = Field(..., description="Extract the users shoe size")
 
-    # shoe_size: Optional[ZepNumber] = Field(None, description="Extract the users shoe size")
-    # shoe_size: Optional[ZepNumber] = ZepNumber(name="shoe_size",description="Size of the users shoe")
-    # shoe_budget: Optional[ZepNumber] = Field(None, description="Budget for the users shoe")
+ZepText = Annotated[
+    str | None,
+    Field(default=None, zeptype="ZepText"),
+    WithJsonSchema(ZepBaseText.model_json_schema(), mode='serialization'),
+]
+
+
+class ZepModel(BaseModel):
+    _client: Optional[AsyncZep] = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self._client = data.get('_client')
+
+    @property
+    def client(self):
+        return self._client
+
+    async def extract(self):
+        model_schema = self.schema_json()
+        # result = await self._client.memory.extract_session_data("a2eb841bc24245fdb0901b0a87a865cd", last_n_messages=100, model_schema=model_schema)
+        print("Extracting", )
+
 
 
 if __name__ == "__main__":
