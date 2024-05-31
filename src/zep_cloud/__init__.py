@@ -2,6 +2,7 @@
 
 from .types import (
     ApiError,
+    ClassifySessionRequest,
     ClassifySessionResponse,
     CreateDocumentRequest,
     DocumentCollectionResponse,
@@ -12,6 +13,8 @@ from .types import (
     MemorySearchResult,
     Message,
     MessageListResponse,
+    ModelsEndSessionResponse,
+    ModelsEndSessionsResponse,
     Question,
     RoleType,
     SearchScope,
@@ -36,6 +39,7 @@ from .version import __version__
 __all__ = [
     "ApiError",
     "BadRequestError",
+    "ClassifySessionRequest",
     "ClassifySessionResponse",
     "ConflictError",
     "CreateDocumentRequest",
@@ -49,6 +53,8 @@ __all__ = [
     "MemorySearchResult",
     "Message",
     "MessageListResponse",
+    "ModelsEndSessionResponse",
+    "ModelsEndSessionsResponse",
     "NotFoundError",
     "Question",
     "RoleType",
