@@ -26,8 +26,6 @@ from .summary_list_response import SummaryListResponse
 from .update_document_list_request import UpdateDocumentListRequest
 from .user import User
 from .user_list_response import UserListResponse
-from .zep_data_class import ZepDataClass
-from .zep_data_type import ZepDataType
 
 __all__ = [
     "ApiError",
@@ -56,6 +54,4 @@ __all__ = [
     "UpdateDocumentListRequest",
     "User",
     "UserListResponse",
-    "ZepDataClass",
-    "ZepDataType",
 ]

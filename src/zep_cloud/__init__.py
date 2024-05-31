@@ -27,11 +27,9 @@ from .types import (
     UpdateDocumentListRequest,
     User,
     UserListResponse,
-    ZepDataClass,
-    ZepDataType,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
-from . import document, memory, user
+from . import document, memory, session, user
 from .environment import ZepEnvironment
 from .memory import MemoryGetRequestMemoryType
 from .version import __version__
@@ -69,11 +67,10 @@ __all__ = [
     "UpdateDocumentListRequest",
     "User",
     "UserListResponse",
-    "ZepDataClass",
-    "ZepDataType",
     "ZepEnvironment",
     "__version__",
     "document",
     "memory",
+    "session",
     "user",
 ]
