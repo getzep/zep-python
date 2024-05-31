@@ -13,6 +13,7 @@ python = ">=3.8.1,<4.0"
 httpx = ">=0.21.2"
 pydantic = ">= 1.9.2"
 typing_extensions = ">= 4.0.0"
+jupyter = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 mypy = "1.9.0"
