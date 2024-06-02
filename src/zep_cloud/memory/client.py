@@ -530,7 +530,6 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        session_id: str,
         classify: typing.Optional[ClassifySessionRequest] = OMIT,
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1954,7 +1953,7 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        session_id: str,
+
         classify: typing.Optional[ClassifySessionRequest] = OMIT,
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
