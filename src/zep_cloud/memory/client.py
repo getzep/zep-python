@@ -11,15 +11,18 @@ from ..core.pydantic_utilities import pydantic_v1
 from ..core.remove_none_from_dict import remove_none_from_dict
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
+from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.classify_session_request import ClassifySessionRequest
 from ..types.classify_session_response import ClassifySessionResponse
+from ..types.end_session_response import EndSessionResponse
+from ..types.end_sessions_response import EndSessionsResponse
 from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
-from ..types.models_zep_data_class import ModelsZepDataClass
 from ..types.question import Question
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
@@ -212,6 +215,86 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def end_sessions(
+        self,
+        *,
+        session_ids: typing.Sequence[str],
+        instruction: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EndSessionsResponse:
+        """
+        End multiple sessions by their IDs
+
+        Parameters
+        ----------
+        session_ids : typing.Sequence[str]
+
+        instruction : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EndSessionsResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.end_sessions(
+            session_ids=["session_ids"],
+        )
+        """
+        _request: typing.Dict[str, typing.Any] = {"session_ids": session_ids}
+        if instruction is not OMIT:
+            _request["instruction"] = instruction
+        _response = self._client_wrapper.httpx_client.request(
+            method="POST",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions/end"),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(EndSessionsResponse, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
         get session by id
@@ -348,6 +431,8 @@ class MemoryClient:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 409:
+            raise ConflictError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -362,11 +447,7 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        classes: typing.Sequence[str],
-        name: str,
-        instruction: typing.Optional[str] = OMIT,
-        last_n: typing.Optional[int] = OMIT,
-        persist: typing.Optional[bool] = OMIT,
+        request: ClassifySessionRequest,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ClassifySessionResponse:
         """
@@ -377,20 +458,7 @@ class MemoryClient:
         session_id : str
             Session ID
 
-        classes : typing.Sequence[str]
-            The classes to use for classification.
-
-        name : str
-            The name of the classifier. Will be used to store the classification in session metadata if persist is True.
-
-        instruction : typing.Optional[str]
-            Custom instruction to use for classification.
-
-        last_n : typing.Optional[int]
-            The number of session messages to consider for classification. Defaults to 4.
-
-        persist : typing.Optional[bool]
-            Whether to persist the classification to session metadata. Defaults to True.
+        request : ClassifySessionRequest
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -402,6 +470,7 @@ class MemoryClient:
 
         Examples
         --------
+        from zep_cloud import ClassifySessionRequest
         from zep_cloud.client import Zep
 
         client = Zep(
@@ -409,17 +478,12 @@ class MemoryClient:
         )
         client.memory.classify_session(
             session_id="sessionId",
-            classes=["classes"],
-            name="name",
+            request=ClassifySessionRequest(
+                classes=["classes"],
+                name="name",
+            ),
         )
         """
-        _request: typing.Dict[str, typing.Any] = {"classes": classes, "name": name}
-        if instruction is not OMIT:
-            _request["instruction"] = instruction
-        if last_n is not OMIT:
-            _request["last_n"] = last_n
-        if persist is not OMIT:
-            _request["persist"] = persist
         _response = self._client_wrapper.httpx_client.request(
             method="POST",
             url=urllib.parse.urljoin(
@@ -428,10 +492,10 @@ class MemoryClient:
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
-            json=jsonable_encoder(_request)
+            json=jsonable_encoder(request)
             if request_options is None or request_options.get("additional_body_parameters") is None
             else {
-                **jsonable_encoder(_request),
+                **jsonable_encoder(request),
                 **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
             },
             headers=jsonable_encoder(
@@ -466,9 +530,10 @@ class MemoryClient:
         self,
         session_id: str,
         *,
+        classify: typing.Optional[ClassifySessionRequest] = OMIT,
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Session:
+    ) -> EndSessionResponse:
         """
         End a session by ID
 
@@ -477,6 +542,8 @@ class MemoryClient:
         session_id : str
             Session ID
 
+        classify : typing.Optional[ClassifySessionRequest]
+
         instruction : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
@@ -484,7 +551,7 @@ class MemoryClient:
 
         Returns
         -------
-        Session
+        EndSessionResponse
             OK
 
         Examples
@@ -499,6 +566,8 @@ class MemoryClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {}
+        if classify is not OMIT:
+            _request["classify"] = classify
         if instruction is not OMIT:
             _request["instruction"] = instruction
         _response = self._client_wrapper.httpx_client.request(
@@ -530,93 +599,9 @@ class MemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Session, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def extract_session_data(
-        self,
-        session_id: str,
-        *,
-        zep_data_classes: typing.Sequence[ModelsZepDataClass],
-        last_n_messages: typing.Optional[int] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Dict[str, str]:
-        """
-        extract data from a session by session id
-
-        Parameters
-        ----------
-        session_id : str
-            Session ID
-
-        zep_data_classes : typing.Sequence[ModelsZepDataClass]
-
-        last_n_messages : typing.Optional[int]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.Dict[str, str]
-            OK
-
-        Examples
-        --------
-        from zep_cloud import ModelsZepDataClass
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.memory.extract_session_data(
-            session_id="sessionId",
-            zep_data_classes=[ModelsZepDataClass()],
-        )
-        """
-        _request: typing.Dict[str, typing.Any] = {"zep_data_classes": zep_data_classes}
-        if last_n_messages is not OMIT:
-            _request["last_n_messages"] = last_n_messages
-        _response = self._client_wrapper.httpx_client.request(
-            method="POST",
-            url=urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/extract"
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.Dict[str, str], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EndSessionResponse, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -1565,6 +1550,86 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    async def end_sessions(
+        self,
+        *,
+        session_ids: typing.Sequence[str],
+        instruction: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EndSessionsResponse:
+        """
+        End multiple sessions by their IDs
+
+        Parameters
+        ----------
+        session_ids : typing.Sequence[str]
+
+        instruction : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EndSessionsResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.end_sessions(
+            session_ids=["session_ids"],
+        )
+        """
+        _request: typing.Dict[str, typing.Any] = {"session_ids": session_ids}
+        if instruction is not OMIT:
+            _request["instruction"] = instruction
+        _response = await self._client_wrapper.httpx_client.request(
+            method="POST",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions/end"),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(EndSessionsResponse, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
         get session by id
@@ -1701,6 +1766,8 @@ class AsyncMemoryClient:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 409:
+            raise ConflictError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -1715,11 +1782,7 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        classes: typing.Sequence[str],
-        name: str,
-        instruction: typing.Optional[str] = OMIT,
-        last_n: typing.Optional[int] = OMIT,
-        persist: typing.Optional[bool] = OMIT,
+        request: ClassifySessionRequest,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ClassifySessionResponse:
         """
@@ -1730,20 +1793,7 @@ class AsyncMemoryClient:
         session_id : str
             Session ID
 
-        classes : typing.Sequence[str]
-            The classes to use for classification.
-
-        name : str
-            The name of the classifier. Will be used to store the classification in session metadata if persist is True.
-
-        instruction : typing.Optional[str]
-            Custom instruction to use for classification.
-
-        last_n : typing.Optional[int]
-            The number of session messages to consider for classification. Defaults to 4.
-
-        persist : typing.Optional[bool]
-            Whether to persist the classification to session metadata. Defaults to True.
+        request : ClassifySessionRequest
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1755,6 +1805,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
+        from zep_cloud import ClassifySessionRequest
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -1762,17 +1813,12 @@ class AsyncMemoryClient:
         )
         await client.memory.classify_session(
             session_id="sessionId",
-            classes=["classes"],
-            name="name",
+            request=ClassifySessionRequest(
+                classes=["classes"],
+                name="name",
+            ),
         )
         """
-        _request: typing.Dict[str, typing.Any] = {"classes": classes, "name": name}
-        if instruction is not OMIT:
-            _request["instruction"] = instruction
-        if last_n is not OMIT:
-            _request["last_n"] = last_n
-        if persist is not OMIT:
-            _request["persist"] = persist
         _response = await self._client_wrapper.httpx_client.request(
             method="POST",
             url=urllib.parse.urljoin(
@@ -1781,10 +1827,10 @@ class AsyncMemoryClient:
             params=jsonable_encoder(
                 request_options.get("additional_query_parameters") if request_options is not None else None
             ),
-            json=jsonable_encoder(_request)
+            json=jsonable_encoder(request)
             if request_options is None or request_options.get("additional_body_parameters") is None
             else {
-                **jsonable_encoder(_request),
+                **jsonable_encoder(request),
                 **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
             },
             headers=jsonable_encoder(
@@ -1819,9 +1865,10 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
+        classify: typing.Optional[ClassifySessionRequest] = OMIT,
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Session:
+    ) -> EndSessionResponse:
         """
         End a session by ID
 
@@ -1830,6 +1877,8 @@ class AsyncMemoryClient:
         session_id : str
             Session ID
 
+        classify : typing.Optional[ClassifySessionRequest]
+
         instruction : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
@@ -1837,7 +1886,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        Session
+        EndSessionResponse
             OK
 
         Examples
@@ -1852,6 +1901,8 @@ class AsyncMemoryClient:
         )
         """
         _request: typing.Dict[str, typing.Any] = {}
+        if classify is not OMIT:
+            _request["classify"] = classify
         if instruction is not OMIT:
             _request["instruction"] = instruction
         _response = await self._client_wrapper.httpx_client.request(
@@ -1883,93 +1934,9 @@ class AsyncMemoryClient:
             max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Session, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def extract_session_data(
-        self,
-        session_id: str,
-        *,
-        zep_data_classes: typing.Sequence[ModelsZepDataClass],
-        last_n_messages: typing.Optional[int] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.Dict[str, str]:
-        """
-        extract data from a session by session id
-
-        Parameters
-        ----------
-        session_id : str
-            Session ID
-
-        zep_data_classes : typing.Sequence[ModelsZepDataClass]
-
-        last_n_messages : typing.Optional[int]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.Dict[str, str]
-            OK
-
-        Examples
-        --------
-        from zep_cloud import ModelsZepDataClass
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-        await client.memory.extract_session_data(
-            session_id="sessionId",
-            zep_data_classes=[ModelsZepDataClass()],
-        )
-        """
-        _request: typing.Dict[str, typing.Any] = {"zep_data_classes": zep_data_classes}
-        if last_n_messages is not OMIT:
-            _request["last_n_messages"] = last_n_messages
-        _response = await self._client_wrapper.httpx_client.request(
-            method="POST",
-            url=urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"sessions/{jsonable_encoder(session_id)}/extract"
-            ),
-            params=jsonable_encoder(
-                request_options.get("additional_query_parameters") if request_options is not None else None
-            ),
-            json=jsonable_encoder(_request)
-            if request_options is None or request_options.get("additional_body_parameters") is None
-            else {
-                **jsonable_encoder(_request),
-                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
-            },
-            headers=jsonable_encoder(
-                remove_none_from_dict(
-                    {
-                        **self._client_wrapper.get_headers(),
-                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                    }
-                )
-            ),
-            timeout=request_options.get("timeout_in_seconds")
-            if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self._client_wrapper.get_timeout(),
-            retries=0,
-            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.Dict[str, str], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EndSessionResponse, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
