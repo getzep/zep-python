@@ -23,12 +23,12 @@ from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
-from ..types.models_session_search_query import ModelsSessionSearchQuery
 from ..types.question import Question
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
 from ..types.session import Session
 from ..types.session_list_response import SessionListResponse
+from ..types.session_search_query import SessionSearchQuery
 from ..types.session_search_response import SessionSearchResponse
 from ..types.success_response import SuccessResponse
 from ..types.summary_list_response import SummaryListResponse
@@ -301,7 +301,7 @@ class MemoryClient:
         self,
         *,
         limit: typing.Optional[int] = None,
-        query: typing.Optional[ModelsSessionSearchQuery] = OMIT,
+        query: typing.Optional[SessionSearchQuery] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionSearchResponse:
         """
@@ -312,7 +312,7 @@ class MemoryClient:
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
 
-        query : typing.Optional[ModelsSessionSearchQuery]
+        query : typing.Optional[SessionSearchQuery]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1720,7 +1720,7 @@ class AsyncMemoryClient:
         self,
         *,
         limit: typing.Optional[int] = None,
-        query: typing.Optional[ModelsSessionSearchQuery] = OMIT,
+        query: typing.Optional[SessionSearchQuery] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionSearchResponse:
         """
@@ -1731,7 +1731,7 @@ class AsyncMemoryClient:
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
 
-        query : typing.Optional[ModelsSessionSearchQuery]
+        query : typing.Optional[SessionSearchQuery]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
