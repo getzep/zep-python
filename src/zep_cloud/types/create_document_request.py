@@ -8,8 +8,9 @@ from ..core.pydantic_utilities import pydantic_v1
 
 
 class CreateDocumentRequest(pydantic_v1.BaseModel):
-    content: str
+    content: typing.Optional[str] = None
     document_id: typing.Optional[str] = None
+    embedding: typing.Optional[typing.List[float]] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
