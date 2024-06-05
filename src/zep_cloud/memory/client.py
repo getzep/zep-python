@@ -23,11 +23,13 @@ from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
+from ..types.models_session_search_query import ModelsSessionSearchQuery
 from ..types.question import Question
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
 from ..types.session import Session
 from ..types.session_list_response import SessionListResponse
+from ..types.session_search_response import SessionSearchResponse
 from ..types.success_response import SuccessResponse
 from ..types.summary_list_response import SummaryListResponse
 from .types.memory_get_request_memory_type import MemoryGetRequestMemoryType
@@ -285,6 +287,90 @@ class MemoryClient:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def search_multiple_sessions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        query: typing.Optional[ModelsSessionSearchQuery] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SessionSearchResponse:
+        """
+        Search sessions for the specified query.
+
+        Parameters
+        ----------
+        limit : typing.Optional[int]
+            The maximum number of search results to return. Defaults to None (no limit).
+
+        query : typing.Optional[ModelsSessionSearchQuery]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SessionSearchResponse
+            A SessionSearchResponse object representing the search results.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.search_multiple_sessions()
+        """
+        _request: typing.Dict[str, typing.Any] = {}
+        if query is not OMIT:
+            _request["query"] = query
+        _response = self._client_wrapper.httpx_client.request(
+            method="POST",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions/search"),
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(SessionSearchResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -1620,6 +1706,90 @@ class AsyncMemoryClient:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def search_multiple_sessions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        query: typing.Optional[ModelsSessionSearchQuery] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SessionSearchResponse:
+        """
+        Search sessions for the specified query.
+
+        Parameters
+        ----------
+        limit : typing.Optional[int]
+            The maximum number of search results to return. Defaults to None (no limit).
+
+        query : typing.Optional[ModelsSessionSearchQuery]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SessionSearchResponse
+            A SessionSearchResponse object representing the search results.
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.search_multiple_sessions()
+        """
+        _request: typing.Dict[str, typing.Any] = {}
+        if query is not OMIT:
+            _request["query"] = query
+        _response = await self._client_wrapper.httpx_client.request(
+            method="POST",
+            url=urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "sessions/search"),
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "limit": limit,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else self._client_wrapper.get_timeout(),
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(SessionSearchResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

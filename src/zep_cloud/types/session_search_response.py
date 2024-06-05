@@ -5,12 +5,11 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
+from .models_session_search_result import ModelsSessionSearchResult
 
 
-class CreateDocumentRequest(pydantic_v1.BaseModel):
-    content: str
-    document_id: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+class SessionSearchResponse(pydantic_v1.BaseModel):
+    results: typing.Optional[typing.List[ModelsSessionSearchResult]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

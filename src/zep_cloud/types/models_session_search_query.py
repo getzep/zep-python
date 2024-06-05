@@ -5,12 +5,27 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import pydantic_v1
+from .search_scope import SearchScope
+from .search_type import SearchType
 
 
-class CreateDocumentRequest(pydantic_v1.BaseModel):
-    content: str
-    document_id: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+class ModelsSessionSearchQuery(pydantic_v1.BaseModel):
+    min_score: typing.Optional[float] = None
+    mmr_lambda: typing.Optional[float] = None
+    record_filter: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
+    """
+    filter on the metadata
+    """
+
+    search_scope: typing.Optional[SearchScope] = None
+    search_type: typing.Optional[SearchType] = None
+    session_ids: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    """
+    the session ids to search
+    """
+
+    text: typing.Optional[str] = None
+    user_id: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
