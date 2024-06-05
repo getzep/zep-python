@@ -20,7 +20,7 @@ from dotenv import find_dotenv, load_dotenv
 from chat_history_shoe_purchase import history
 
 from zep_cloud.client import AsyncZep
-from zep_cloud.types import Message, SessionSearchQuery
+from zep_cloud.types import Message
 
 load_dotenv(
     dotenv_path=find_dotenv()
@@ -115,9 +115,6 @@ async def main() -> None:
         metadata={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}}
     )
     print("messages_result: ", messages_result)
-
-    user_search_results = await client.memory.search_multiple_sessions(query=SessionSearchQuery(user_id=user_id))
-    print("user_search_results: ", user_search_results)
 
     # End session - this will trigger summarization and other background tasks on the completed session
     print(f"\n5---end_session for Session: {session_id}")
