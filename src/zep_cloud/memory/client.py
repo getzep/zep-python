@@ -26,6 +26,7 @@ from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
 from ..types.session import Session
 from ..types.session_list_response import SessionListResponse
+from ..types.session_search_response import SessionSearchResponse
 from ..types.success_response import SuccessResponse
 from ..types.summary_list_response import SummaryListResponse
 from .types.memory_get_request_memory_type import MemoryGetRequestMemoryType
@@ -211,6 +212,92 @@ class MemoryClient:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def search_multiple_sessions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        min_score: typing.Optional[float] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search_scope: typing.Optional[SearchScope] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
+        session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        text: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SessionSearchResponse:
+        """
+        Search sessions for the specified query.
+
+        Parameters
+        ----------
+        limit : typing.Optional[int]
+            The maximum number of search results to return. Defaults to None (no limit).
+
+        min_score : typing.Optional[float]
+
+        mmr_lambda : typing.Optional[float]
+
+        record_filter : typing.Optional[typing.Dict[str, typing.Any]]
+            filter on the metadata
+
+        search_scope : typing.Optional[SearchScope]
+
+        search_type : typing.Optional[SearchType]
+
+        session_ids : typing.Optional[typing.Sequence[str]]
+            the session ids to search
+
+        text : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SessionSearchResponse
+            A SessionSearchResponse object representing the search results.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.search_multiple_sessions()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "sessions/search",
+            method="POST",
+            params={"limit": limit},
+            json={
+                "min_score": min_score,
+                "mmr_lambda": mmr_lambda,
+                "record_filter": record_filter,
+                "search_scope": search_scope,
+                "search_type": search_type,
+                "session_ids": session_ids,
+                "text": text,
+                "user_id": user_id,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(SessionSearchResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -1188,6 +1275,92 @@ class AsyncMemoryClient:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def search_multiple_sessions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        min_score: typing.Optional[float] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search_scope: typing.Optional[SearchScope] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
+        session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        text: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SessionSearchResponse:
+        """
+        Search sessions for the specified query.
+
+        Parameters
+        ----------
+        limit : typing.Optional[int]
+            The maximum number of search results to return. Defaults to None (no limit).
+
+        min_score : typing.Optional[float]
+
+        mmr_lambda : typing.Optional[float]
+
+        record_filter : typing.Optional[typing.Dict[str, typing.Any]]
+            filter on the metadata
+
+        search_scope : typing.Optional[SearchScope]
+
+        search_type : typing.Optional[SearchType]
+
+        session_ids : typing.Optional[typing.Sequence[str]]
+            the session ids to search
+
+        text : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SessionSearchResponse
+            A SessionSearchResponse object representing the search results.
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.search_multiple_sessions()
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "sessions/search",
+            method="POST",
+            params={"limit": limit},
+            json={
+                "min_score": min_score,
+                "mmr_lambda": mmr_lambda,
+                "record_filter": record_filter,
+                "search_scope": search_scope,
+                "search_type": search_type,
+                "session_ids": session_ids,
+                "text": text,
+                "user_id": user_id,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(SessionSearchResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

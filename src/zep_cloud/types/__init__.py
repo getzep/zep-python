@@ -20,6 +20,8 @@ from .search_scope import SearchScope
 from .search_type import SearchType
 from .session import Session
 from .session_list_response import SessionListResponse
+from .session_search_response import SessionSearchResponse
+from .session_search_result import SessionSearchResult
 from .success_response import SuccessResponse
 from .summary import Summary
 from .summary_list_response import SummaryListResponse
@@ -48,6 +50,8 @@ __all__ = [
     "SearchType",
     "Session",
     "SessionListResponse",
+    "SessionSearchResponse",
+    "SessionSearchResult",
     "SuccessResponse",
     "Summary",
     "SummaryListResponse",

@@ -346,7 +346,11 @@ class DocumentClient:
         )
         client.document.add_documents(
             collection_name="collectionName",
-            request=[CreateDocumentRequest()],
+            request=[
+                CreateDocumentRequest(
+                    content="content",
+                )
+            ],
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1164,7 +1168,11 @@ class AsyncDocumentClient:
         )
         await client.document.add_documents(
             collection_name="collectionName",
-            request=[CreateDocumentRequest()],
+            request=[
+                CreateDocumentRequest(
+                    content="content",
+                )
+            ],
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
