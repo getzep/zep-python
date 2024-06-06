@@ -222,7 +222,7 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def search_multiple_sessions(
+    def search_sessions(
         self,
         *,
         limit: typing.Optional[int] = None,
@@ -277,7 +277,7 @@ class MemoryClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.memory.search_multiple_sessions()
+        client.memory.search_sessions()
         """
         _response = self._client_wrapper.httpx_client.request(
             "sessions/search",
@@ -1285,7 +1285,7 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def search_multiple_sessions(
+    async def search_sessions(
         self,
         *,
         limit: typing.Optional[int] = None,
@@ -1340,7 +1340,7 @@ class AsyncMemoryClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.memory.search_multiple_sessions()
+        await client.memory.search_sessions()
         """
         _response = await self._client_wrapper.httpx_client.request(
             "sessions/search",
