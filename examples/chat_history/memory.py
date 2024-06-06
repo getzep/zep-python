@@ -116,7 +116,7 @@ async def main() -> None:
     )
     print("messages_result: ", messages_result)
 
-    user_messages_result = await client.memory.search_multiple_sessions(
+    user_messages_result = await client.memory.search_sessions(
         limit=3,
         user_id=user_id,
         text=query,
