@@ -116,6 +116,14 @@ async def main() -> None:
     )
     print("messages_result: ", messages_result)
 
+    user_messages_result = await client.memory.search_multiple_sessions(
+        limit=3,
+        user_id=user_id,
+        text=query,
+        search_scope="messages",
+    )
+    print("user_messages_result: ", user_messages_result)
+
     # End session - this will trigger summarization and other background tasks on the completed session
     print(f"\n5---end_session for Session: {session_id}")
     await client.memory.end_session(session_id)
