@@ -10,7 +10,6 @@ from .summary import Summary
 
 
 class MemorySearchResult(pydantic_v1.BaseModel):
-    embedding: typing.Optional[typing.List[float]] = None
     message: typing.Optional[Message] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     score: typing.Optional[float] = None
