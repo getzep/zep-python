@@ -2,7 +2,7 @@ import datetime
 import typing
 from enum import Enum
 
-from pydantic import BaseModel, Field, WithJsonSchema, model_validator
+from pydantic import BaseModel, Field, WithJsonSchema
 from typing_extensions import Annotated
 
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaValue
