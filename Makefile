@@ -1,4 +1,4 @@
-.PHONY: all format lint test test coverage docs
+.PHONY: all format lint test coverage
 
 all: help
 
@@ -14,7 +14,7 @@ format:
 
 lint:
 	poetry run mypy --exclude tests src/
-	poetry run ruff check zep_python/
+	poetry run ruff check src/
 
 test:
 	poetry run pytest tests
