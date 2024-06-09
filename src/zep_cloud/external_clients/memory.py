@@ -1,13 +1,15 @@
 import datetime
 import json
 import typing
+
 from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from zep_cloud.extractor.models import ZepModel
 from zep_cloud.memory.client import (
-    MemoryClient as BaseMemoryClient,
     AsyncMemoryClient as AsyncBaseMemoryClient,
 )
-
-from zep_cloud.extractor.models import ZepModel
+from zep_cloud.memory.client import (
+    MemoryClient as BaseMemoryClient,
+)
 
 
 class MemoryClient(BaseMemoryClient):
@@ -19,8 +21,8 @@ class MemoryClient(BaseMemoryClient):
         session_id: str,
         model: ZepModel,
         current_date_time: typing.Optional[datetime.datetime] = None,
-        last_n: typing.Optional[int] = 4,
-        validate: typing.Optional[bool] = False,
+        last_n: int = 4,
+        validate: bool = False,
     ):
         model_schema = json.dumps(model.model_json_schema())
 
@@ -29,7 +31,9 @@ class MemoryClient(BaseMemoryClient):
             model_schema=model_schema,
             validate=validate,
             last_n=last_n,
-            current_date_time=current_date_time,
+            current_date_time=current_date_time.isoformat()
+            if current_date_time
+            else None,
         )
 
         return model.model_validate(result)
@@ -44,8 +48,8 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
         session_id: str,
         model: ZepModel,
         current_date_time: typing.Optional[datetime.datetime] = None,
-        last_n: typing.Optional[int] = 4,
-        validate: typing.Optional[bool] = False,
+        last_n: int = 4,
+        validate: bool = False,
     ):
         model_schema = json.dumps(model.model_json_schema())
 
@@ -54,7 +58,9 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
             model_schema=model_schema,
             validate=validate,
             last_n=last_n,
-            current_date_time=current_date_time,
+            current_date_time=current_date_time.isoformat()
+            if current_date_time
+            else None,
         )
 
         return model.model_validate(result)
