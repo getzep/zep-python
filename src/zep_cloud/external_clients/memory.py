@@ -57,8 +57,4 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
             current_date_time=current_date_time,
         )
 
-        result = {k: v for k, v in result.items() if v is not (None or "")}
-
-        print(result)
-
         return model.model_validate(result)
