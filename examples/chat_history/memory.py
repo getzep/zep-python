@@ -50,7 +50,9 @@ async def main() -> None:
     # Create session associated with the above user
     print(f"\n---Creating session: {session_id}")
 
-    await client.memory.add_session(session_id=session_id, user_id=user_id, metadata={"foo": "bar"})
+    await client.memory.add_session(
+        session_id=session_id, user_id=user_id, metadata={"foo": "bar"}
+    )
 
     # Update session metadata
     print(f"\n---Updating session: {session_id}")
@@ -99,11 +101,15 @@ async def main() -> None:
     # Search Memory for session
     query = "What are Jane's favorite shoe brands?"
     print(f"\n---Searching over summaries for: '{query}'")
-    summary_result = await client.memory.search(session_id, text=query, search_scope="summary")
+    summary_result = await client.memory.search(
+        session_id, text=query, search_scope="summary"
+    )
     print("summaryResult: ", summary_result)
 
     print("\n---Searching over summaries with MMR Reranking")
-    summary_mmr_result = await client.memory.search(session_id, text=query, search_scope="summary", search_type="mmr")
+    summary_mmr_result = await client.memory.search(
+        session_id, text=query, search_scope="summary", search_type="mmr"
+    )
     print("summary_mmr_result: ", summary_mmr_result)
 
     print("\n---Searching over messages using a metadata filter")
@@ -112,7 +118,7 @@ async def main() -> None:
         session_id,
         text=query,
         search_scope="messages",
-        metadata={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}}
+        metadata={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}},
     )
     print("messages_result: ", messages_result)
 
@@ -125,12 +131,13 @@ async def main() -> None:
     print("user_messages_result: ", user_messages_result)
 
     # End session - this will trigger summarization and other background tasks on the completed session
-    print(f"\n5---end_session for Session: {session_id}")
-    await client.memory.end_session(session_id)
+    # Uncomment to run
+    # print(f"\n5---end_session for Session: {session_id}")
+    # await client.memory.end_session(session_id)
 
     # Delete Memory for session
     # Uncomment to run
-    print(f"\n6---deleteMemory for Session: {session_id}")
+    # print(f"\n6---deleteMemory for Session: {session_id}")
     # await client.memory.delete(session_id)
 
 

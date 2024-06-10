@@ -2,10 +2,10 @@ name: Release to PyPI
 
 on:
   push:
-    tags: [ 'v*.*.*' ]
+    tags: ["v*.*.*"]
 
 env:
-  POETRY_VERSION: "1.7.1"
+  POETRY_VERSION: "1.8.3"
 
 jobs:
   release:
@@ -17,11 +17,11 @@ jobs:
       name: release
       url: https://pypi.org/p/zep-cloud
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install poetry
         run: pipx install poetry==$POETRY_VERSION
       - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: "poetry"
