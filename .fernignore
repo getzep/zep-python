@@ -7,3 +7,4 @@ pyproject.toml
 poetry.lock
 README.md
 .github
+Makefile
