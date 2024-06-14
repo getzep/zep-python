@@ -4,7 +4,7 @@ import uuid
 
 from dotenv import find_dotenv, load_dotenv
 
-from zep_cloud.types import ApiError, Session
+from zep_cloud.types import ApiError
 from zep_cloud.client import AsyncZep
 
 load_dotenv(

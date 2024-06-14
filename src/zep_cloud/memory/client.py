@@ -554,6 +554,86 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def extract_data(
+        self,
+        session_id: str,
+        *,
+        last_n: int,
+        model_schema: str,
+        current_date_time: typing.Optional[str] = OMIT,
+        validate: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.Dict[str, str]:
+        """
+        extract data from a session by session id
+
+        Parameters
+        ----------
+        session_id : str
+            Session ID
+
+        last_n : int
+            The number of messages in the chat history from which to extract data
+
+        model_schema : str
+            The schema describing the data to be extracted. See Zep's SDKs for more details.
+
+        current_date_time : typing.Optional[str]
+            Your current date and time in ISO 8601 format including timezone. This is used for determining relative dates.
+
+        validate : typing.Optional[bool]
+            Validate that the extracted data is present in the dialog and correct per the field description.
+            Mitigates hallucination, but is slower and may result in false negatives.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.Dict[str, str]
+            OK
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.extract_data(
+            session_id="sessionId",
+            last_n=1,
+            model_schema="model_schema",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"sessions/{jsonable_encoder(session_id)}/extract",
+            method="POST",
+            json={
+                "current_date_time": current_date_time,
+                "last_n": last_n,
+                "model_schema": model_schema,
+                "validate": validate,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(typing.Dict[str, str], _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def get(
         self,
         session_id: str,
@@ -1603,6 +1683,86 @@ class AsyncMemoryClient:
         )
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(EndSessionResponse, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def extract_data(
+        self,
+        session_id: str,
+        *,
+        last_n: int,
+        model_schema: str,
+        current_date_time: typing.Optional[str] = OMIT,
+        validate: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.Dict[str, str]:
+        """
+        extract data from a session by session id
+
+        Parameters
+        ----------
+        session_id : str
+            Session ID
+
+        last_n : int
+            The number of messages in the chat history from which to extract data
+
+        model_schema : str
+            The schema describing the data to be extracted. See Zep's SDKs for more details.
+
+        current_date_time : typing.Optional[str]
+            Your current date and time in ISO 8601 format including timezone. This is used for determining relative dates.
+
+        validate : typing.Optional[bool]
+            Validate that the extracted data is present in the dialog and correct per the field description.
+            Mitigates hallucination, but is slower and may result in false negatives.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.Dict[str, str]
+            OK
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.extract_data(
+            session_id="sessionId",
+            last_n=1,
+            model_schema="model_schema",
+        )
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"sessions/{jsonable_encoder(session_id)}/extract",
+            method="POST",
+            json={
+                "current_date_time": current_date_time,
+                "last_n": last_n,
+                "model_schema": model_schema,
+                "validate": validate,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(typing.Dict[str, str], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:

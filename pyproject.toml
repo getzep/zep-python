@@ -1,20 +1,20 @@
 [tool.poetry]
 name = "zep-cloud"
-version = "1.0.4"
+version = "1.0.5"
 description = ""
 readme = "README.md"
 authors = []
 packages = [
-    { include = "zep_cloud", from = "src"}
+    { include = "zep_cloud", from = "src" }
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8.1,<4.0"
+python = ">=3.9.0,<4.0"
 httpx = ">=0.21.2"
 pydantic = ">= 1.9.2"
 typing_extensions = ">= 4.0.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 mypy = "1.9.0"
 pytest = "^7.4.0"
 pytest-asyncio = "^0.23.5"
@@ -22,9 +22,12 @@ python-dateutil = "^2.9.0"
 langchain = "^0.1.3"
 openai = "^1.9.0"
 langchain-openai = "^0.0.3"
+black = "^24.4.2"
+ruff = "^0.4.8"
+ipykernel = "^6.29.4"
 
 [tool.pytest.ini_options]
-testpaths = [ "tests" ]
+testpaths = ["tests"]
 asyncio_mode = "auto"
 
 [tool.mypy]
