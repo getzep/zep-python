@@ -573,6 +573,8 @@ class MemoryClient:
             Session ID
 
         last_n : int
+            The artifact from which to extract data. "messages" or "facts". default: "messages"
+            ExtractArtifact ExtractArtifact `json:"extract_artifact" validate:"required"`
             The number of messages in the chat history from which to extract data
 
         model_schema : str
@@ -1716,6 +1718,8 @@ class AsyncMemoryClient:
             Session ID
 
         last_n : int
+            The artifact from which to extract data. "messages" or "facts". default: "messages"
+            ExtractArtifact ExtractArtifact `json:"extract_artifact" validate:"required"`
             The number of messages in the chat history from which to extract data
 
         model_schema : str

@@ -10,6 +10,7 @@ from .document_search_result import DocumentSearchResult
 from .document_search_result_page import DocumentSearchResultPage
 from .end_session_response import EndSessionResponse
 from .end_sessions_response import EndSessionsResponse
+from .fact import Fact
 from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .message import Message
@@ -40,6 +41,7 @@ __all__ = [
     "DocumentSearchResultPage",
     "EndSessionResponse",
     "EndSessionsResponse",
+    "Fact",
     "Memory",
     "MemorySearchResult",
     "Message",

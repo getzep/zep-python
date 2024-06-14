@@ -5,17 +5,12 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .fact import Fact
-from .message import Message
-from .summary import Summary
 
 
-class SessionSearchResult(pydantic_v1.BaseModel):
-    fact: typing.Optional[Fact] = None
-    message: typing.Optional[Message] = None
-    score: typing.Optional[float] = None
-    session_id: typing.Optional[str] = None
-    summary: typing.Optional[Summary] = None
+class Fact(pydantic_v1.BaseModel):
+    created_at: typing.Optional[str] = None
+    fact: typing.Optional[str] = None
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -32,5 +27,7 @@ class SessionSearchResult(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
+        allow_population_by_field_name = True
+        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}
