@@ -52,7 +52,7 @@ class MemoryClient(BaseMemoryClient):
         --------
         class CustomerInfo(ZepModel):
             name: Optional[ZepText] = Field(description="Customer name", default=None)
-            name: Optional[ZepEmail] = Field(description="Customer email", default=None)
+            email: Optional[ZepEmail] = Field(description="Customer email", default=None)
             signup_date: Optional[ZepDate] = Field(description="Customer Sign up date", default=None)
 
         client = AsyncMemoryClient(...)
