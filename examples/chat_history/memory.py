@@ -101,24 +101,24 @@ async def main() -> None:
     # Search Memory for session
     query = "What are Jane's favorite shoe brands?"
     print(f"\n---Searching over summaries for: '{query}'")
-    summary_result = await client.memory.search(
-        session_id, text=query, search_scope="summary"
+    summary_result = await client.memory.search_sessions(
+        session_ids=[session_id], text=query, search_scope="summary"
     )
     print("summaryResult: ", summary_result)
 
     print("\n---Searching over summaries with MMR Reranking")
-    summary_mmr_result = await client.memory.search(
-        session_id, text=query, search_scope="summary", search_type="mmr"
+    summary_mmr_result = await client.memory.search_sessions(
+        session_ids=[session_id], text=query, search_scope="summary", search_type="mmr"
     )
     print("summary_mmr_result: ", summary_mmr_result)
 
     print("\n---Searching over messages using a metadata filter")
 
-    messages_result = await client.memory.search(
-        session_id,
+    messages_result = await client.memory.search_sessions(
+        session_ids=[session_id],
         text=query,
         search_scope="messages",
-        metadata={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}},
+        record_filter={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}},
     )
     print("messages_result: ", messages_result)
 

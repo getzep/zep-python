@@ -2,4 +2,4 @@
 
 import typing
 
-SearchScope = typing.Union[typing.Literal["messages", "summary"], typing.Any]
+SearchScope = typing.Union[typing.Literal["messages", "summary", "facts"], typing.Any]
