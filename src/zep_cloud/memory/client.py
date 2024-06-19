@@ -19,6 +19,7 @@ from ..types.end_session_response import EndSessionResponse
 from ..types.end_sessions_response import EndSessionsResponse
 from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
+from ..types.memory_type import MemoryType
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.question import Question
@@ -29,7 +30,6 @@ from ..types.session_list_response import SessionListResponse
 from ..types.session_search_response import SessionSearchResponse
 from ..types.success_response import SuccessResponse
 from ..types.summary_list_response import SummaryListResponse
-from .types.memory_get_request_memory_type import MemoryGetRequestMemoryType
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -638,7 +638,7 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        memory_type: typing.Optional[MemoryGetRequestMemoryType] = None,
+        memory_type: typing.Optional[MemoryType] = None,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -650,7 +650,7 @@ class MemoryClient:
         session_id : str
             The ID of the session for which to retrieve memory.
 
-        memory_type : typing.Optional[MemoryGetRequestMemoryType]
+        memory_type : typing.Optional[MemoryType]
             The type of memory to retrieve: perpetual, summary_retriever, or message_window. Defaults to perpetual.
 
         lastn : typing.Optional[int]
@@ -1781,7 +1781,7 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        memory_type: typing.Optional[MemoryGetRequestMemoryType] = None,
+        memory_type: typing.Optional[MemoryType] = None,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -1793,7 +1793,7 @@ class AsyncMemoryClient:
         session_id : str
             The ID of the session for which to retrieve memory.
 
-        memory_type : typing.Optional[MemoryGetRequestMemoryType]
+        memory_type : typing.Optional[MemoryType]
             The type of memory to retrieve: perpetual, summary_retriever, or message_window. Defaults to perpetual.
 
         lastn : typing.Optional[int]

@@ -14,6 +14,7 @@ from .types import (
     Fact,
     Memory,
     MemorySearchResult,
+    MemoryType,
     Message,
     MessageListResponse,
     Question,
@@ -34,7 +35,6 @@ from .types import (
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
 from . import document, memory, user
 from .environment import ZepEnvironment
-from .memory import MemoryGetRequestMemoryType
 from .version import __version__
 
 __all__ = [
@@ -53,8 +53,8 @@ __all__ = [
     "Fact",
     "InternalServerError",
     "Memory",
-    "MemoryGetRequestMemoryType",
     "MemorySearchResult",
+    "MemoryType",
     "Message",
     "MessageListResponse",
     "NotFoundError",

@@ -13,6 +13,7 @@ from .end_sessions_response import EndSessionsResponse
 from .fact import Fact
 from .memory import Memory
 from .memory_search_result import MemorySearchResult
+from .memory_type import MemoryType
 from .message import Message
 from .message_list_response import MessageListResponse
 from .question import Question
@@ -44,6 +45,7 @@ __all__ = [
     "Fact",
     "Memory",
     "MemorySearchResult",
+    "MemoryType",
     "Message",
     "MessageListResponse",
     "Question",
