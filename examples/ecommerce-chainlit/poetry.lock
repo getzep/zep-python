@@ -2035,13 +2035,13 @@ opentelemetry-sdk = ">=1.22,<2.0"
 
 [[package]]
 name = "urllib3"
-version = "2.2.1"
+version = "2.2.2"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "urllib3-2.2.1-py3-none-any.whl", hash = "sha256:450b20ec296a467077128bff42b73080516e71b56ff59a60a02bef2232c4fa9d"},
-    {file = "urllib3-2.2.1.tar.gz", hash = "sha256:d0570876c61ab9e520d776c38acbbb5b05a776d3f9ff98a5c8fd5162a444cf19"},
+    {file = "urllib3-2.2.2-py3-none-any.whl", hash = "sha256:a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472"},
+    {file = "urllib3-2.2.2.tar.gz", hash = "sha256:dd505485549a7a552833da5e6063639d0d177c04f23bc3864e41e5dc5f612168"},
 ]
 
 [package.extras]
@@ -2381,17 +2381,18 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [[package]]
-name = "zep-python"
-version = "2.0.0-rc.2"
-description = "Zep: Fast, scalable building blocks for LLM apps. This is the Python client for the Zep service."
+name = "zep-cloud"
+version = "1.0.5"
+description = ""
 optional = false
-python-versions = ">=3.9.0,<4"
+python-versions = ">=3.9.0,<4.0"
 files = []
 develop = false
 
 [package.dependencies]
-httpx = "^0.26.0"
-pydantic = ">=2.0.0"
+httpx = ">=0.21.2"
+pydantic = ">= 1.9.2"
+typing_extensions = ">= 4.0.0"
 
 [package.source]
 type = "directory"
@@ -2415,4 +2416,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "283492b85df985093adf99db7c9dfa1a0522dfa154e186c1648666591f91f459"
+content-hash = "e163f78db058b161a5abd3870227b1169552a499cbd87fae76d4a1073c026fb4"
