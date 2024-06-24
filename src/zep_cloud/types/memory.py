@@ -5,6 +5,7 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .fact import Fact
 from .message import Message
 from .summary import Summary
 
@@ -13,6 +14,7 @@ class Memory(pydantic_v1.BaseModel):
     facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     Most recent list of facts derived from the session. Included only with perpetual memory type.
+    Deprecated: Facts will be deprecated in future releases and relevant_facts should be used instead.
     """
 
     messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
@@ -25,6 +27,7 @@ class Memory(pydantic_v1.BaseModel):
     A dictionary containing metadata associated with the memory.
     """
 
+    relevant_facts: typing.Optional[typing.List[Fact]] = None
     relevant_summaries: typing.Optional[typing.List[Summary]] = pydantic_v1.Field(default=None)
     """
     Summary list result from Summary Retriever Memory Type.
