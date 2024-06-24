@@ -1,5 +1,9 @@
+# mypy: disable-error-code=no-redef
+
+from typing import Type
+
 # Zep Extraction requires Pydantic v2. If v2 is not installed, catch the error
-# and set the variables to None
+# and set the variables to PydanticV2Required
 
 
 class PydanticV2Required:
@@ -21,16 +25,16 @@ try:
         ZepPhoneNumber,
     )
 except ImportError:
-    ZepModel = PydanticV2Required
-    ZepText = PydanticV2Required
-    ZepNumber = PydanticV2Required
-    ZepFloat = PydanticV2Required
-    ZepRegex = PydanticV2Required
-    ZepZipCode = PydanticV2Required
-    ZepDate = PydanticV2Required
-    ZepDateTime = PydanticV2Required
-    ZepEmail = PydanticV2Required
-    ZepPhoneNumber = PydanticV2Required
+    ZepModel: Type = PydanticV2Required
+    ZepText: Type = PydanticV2Required
+    ZepNumber: Type = PydanticV2Required
+    ZepFloat: Type = PydanticV2Required
+    ZepRegex: Type = PydanticV2Required
+    ZepZipCode: Type = PydanticV2Required
+    ZepDate: Type = PydanticV2Required
+    ZepDateTime: Type = PydanticV2Required
+    ZepEmail: Type = PydanticV2Required
+    ZepPhoneNumber: Type = PydanticV2Required
 
 __all__ = [
     "ZepModel",
