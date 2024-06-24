@@ -26,7 +26,7 @@ class MemoryClient(BaseMemoryClient):
     def extract(
         self,
         session_id: str,
-        model: ZepModel,
+        model: "ZepModel",
         current_date_time: typing.Optional[datetime.datetime] = None,
         last_n: int = 4,
         validate: bool = False,
@@ -100,7 +100,7 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
     async def extract(
         self,
         session_id: str,
-        model: ZepModel,
+        model: "ZepModel",
         current_date_time: typing.Optional[datetime.datetime] = None,
         last_n: int = 4,
         validate: bool = False,
