@@ -11,21 +11,16 @@ load_dotenv(
 )  # load environment variables from .env file, if present
 
 API_KEY = os.environ.get("ZEP_API_KEY") or "YOUR_API_KEY"
-SESSION_ID = os.environ.get("ZEP_SESSION_ID")
 
 async def main() -> None:
     zep_retriever = ZepCloudRetriever(
-        session_ids=[SESSION_ID],
         api_key=API_KEY,
-        search_scope="summary",
+        search_scope="facts",
+        min_score=0.8,
     )
 
     search_results = await zep_retriever.ainvoke("new shoes")
-
-    for r in search_results:
-        print(r)
-        if r.metadata["score"] > 0.8:  # Only print results with similarity of 0.8 or higher
-            print(r.page_content, "Score: ", r.metadata["score"])
+    print(search_results)
 
 
 if __name__ == "__main__":
