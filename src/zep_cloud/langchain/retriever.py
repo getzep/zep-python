@@ -21,7 +21,8 @@ class ZepCloudRetriever(BaseRetriever):
     Zep offers both simple semantic search and Maximal Marginal Relevance (MMR)
     reranking of search results.
 
-    Note: You will need to provide the user's `session_id` to use this retriever.
+    Note: By default the search will be performed against all records in the account.
+    You can optionally specify the session ID or user ID to search.
 
     Args:
         api_key: Your Zep API key
