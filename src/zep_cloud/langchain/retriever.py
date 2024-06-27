@@ -22,7 +22,7 @@ class ZepCloudRetriever(BaseRetriever):
     reranking of search results.
 
     Note: By default the search will be performed against all records in the account.
-    You can optionally specify the session ID or user ID to search.
+    You can optionally specify the session ID and user ID to search.
 
     Args:
         api_key: Your Zep API key
