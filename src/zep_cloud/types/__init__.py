@@ -11,11 +11,15 @@ from .document_search_result_page import DocumentSearchResultPage
 from .end_session_response import EndSessionResponse
 from .end_sessions_response import EndSessionsResponse
 from .fact import Fact
+from .fact_rating_examples import FactRatingExamples
+from .fact_rating_instruction import FactRatingInstruction
 from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .memory_type import MemoryType
 from .message import Message
 from .message_list_response import MessageListResponse
+from .models_fact_response import ModelsFactResponse
+from .models_facts_response import ModelsFactsResponse
 from .question import Question
 from .role_type import RoleType
 from .search_scope import SearchScope
@@ -43,11 +47,15 @@ __all__ = [
     "EndSessionResponse",
     "EndSessionsResponse",
     "Fact",
+    "FactRatingExamples",
+    "FactRatingInstruction",
     "Memory",
     "MemorySearchResult",
     "MemoryType",
     "Message",
     "MessageListResponse",
+    "ModelsFactResponse",
+    "ModelsFactsResponse",
     "Question",
     "RoleType",
     "SearchScope",

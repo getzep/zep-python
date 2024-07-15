@@ -12,11 +12,15 @@ from .types import (
     EndSessionResponse,
     EndSessionsResponse,
     Fact,
+    FactRatingExamples,
+    FactRatingInstruction,
     Memory,
     MemorySearchResult,
     MemoryType,
     Message,
     MessageListResponse,
+    ModelsFactResponse,
+    ModelsFactsResponse,
     Question,
     RoleType,
     SearchScope,
@@ -33,7 +37,7 @@ from .types import (
     UserListResponse,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
-from . import document, memory, user
+from . import document, fact, memory, user
 from .environment import ZepEnvironment
 from .version import __version__
 
@@ -51,12 +55,16 @@ __all__ = [
     "EndSessionResponse",
     "EndSessionsResponse",
     "Fact",
+    "FactRatingExamples",
+    "FactRatingInstruction",
     "InternalServerError",
     "Memory",
     "MemorySearchResult",
     "MemoryType",
     "Message",
     "MessageListResponse",
+    "ModelsFactResponse",
+    "ModelsFactsResponse",
     "NotFoundError",
     "Question",
     "RoleType",
@@ -76,6 +84,7 @@ __all__ = [
     "ZepEnvironment",
     "__version__",
     "document",
+    "fact",
     "memory",
     "user",
 ]
