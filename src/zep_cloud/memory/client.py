@@ -751,7 +751,7 @@ class MemoryClient:
         *,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[FactsResponse]]:
+    ) -> FactsResponse:
         """
         get facts for a session
 
@@ -768,7 +768,7 @@ class MemoryClient:
 
         Returns
         -------
-        typing.List[typing.List[FactsResponse]]
+        FactsResponse
             The facts for the session.
 
         Examples
@@ -789,7 +789,7 @@ class MemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[FactsResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -2069,7 +2069,7 @@ class AsyncMemoryClient:
         *,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[FactsResponse]]:
+    ) -> FactsResponse:
         """
         get facts for a session
 
@@ -2086,7 +2086,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        typing.List[typing.List[FactsResponse]]
+        FactsResponse
             The facts for the session.
 
         Examples
@@ -2107,7 +2107,7 @@ class AsyncMemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[FactsResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
