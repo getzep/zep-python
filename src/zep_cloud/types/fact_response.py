@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .fact import Fact
 
 
-class ModelsFactResponse(pydantic_v1.BaseModel):
+class FactResponse(pydantic_v1.BaseModel):
     fact: typing.Optional[Fact] = None
 
     def json(self, **kwargs: typing.Any) -> str:

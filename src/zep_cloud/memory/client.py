@@ -18,13 +18,13 @@ from ..types.classify_session_response import ClassifySessionResponse
 from ..types.end_session_response import EndSessionResponse
 from ..types.end_sessions_response import EndSessionsResponse
 from ..types.fact_rating_instruction import FactRatingInstruction
+from ..types.fact_response import FactResponse
+from ..types.facts_response import FactsResponse
 from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
 from ..types.memory_type import MemoryType
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
-from ..types.models_fact_response import ModelsFactResponse
-from ..types.models_facts_response import ModelsFactsResponse
 from ..types.question import Question
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
@@ -42,9 +42,7 @@ class MemoryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_fact(
-        self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ModelsFactResponse:
+    def get_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactResponse:
         """
         get fact by uuid
 
@@ -58,7 +56,7 @@ class MemoryClient:
 
         Returns
         -------
-        ModelsFactResponse
+        FactResponse
             The fact with the specified UUID.
 
         Examples
@@ -76,7 +74,52 @@ class MemoryClient:
             f"facts/{jsonable_encoder(fact_uuid)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsFactResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(FactResponse, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def delete_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+        """
+        delete a fact
+
+        Parameters
+        ----------
+        fact_uuid : str
+            Fact UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        str
+            Deleted
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.delete_fact(
+            fact_uuid="factUUID",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"facts/{jsonable_encoder(fact_uuid)}", method="DELETE", request_options=request_options
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -708,7 +751,7 @@ class MemoryClient:
         *,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[ModelsFactsResponse]]:
+    ) -> typing.List[typing.List[FactsResponse]]:
         """
         get facts for a session
 
@@ -725,7 +768,7 @@ class MemoryClient:
 
         Returns
         -------
-        typing.List[typing.List[ModelsFactsResponse]]
+        typing.List[typing.List[FactsResponse]]
             The facts for the session.
 
         Examples
@@ -746,7 +789,7 @@ class MemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ModelsFactsResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[FactsResponse]], _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -1317,7 +1360,7 @@ class AsyncMemoryClient:
 
     async def get_fact(
         self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ModelsFactResponse:
+    ) -> FactResponse:
         """
         get fact by uuid
 
@@ -1331,7 +1374,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        ModelsFactResponse
+        FactResponse
             The fact with the specified UUID.
 
         Examples
@@ -1349,7 +1392,52 @@ class AsyncMemoryClient:
             f"facts/{jsonable_encoder(fact_uuid)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ModelsFactResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(FactResponse, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def delete_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+        """
+        delete a fact
+
+        Parameters
+        ----------
+        fact_uuid : str
+            Fact UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        str
+            Deleted
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.delete_fact(
+            fact_uuid="factUUID",
+        )
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"facts/{jsonable_encoder(fact_uuid)}", method="DELETE", request_options=request_options
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -1981,7 +2069,7 @@ class AsyncMemoryClient:
         *,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[typing.List[ModelsFactsResponse]]:
+    ) -> typing.List[typing.List[FactsResponse]]:
         """
         get facts for a session
 
@@ -1998,7 +2086,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        typing.List[typing.List[ModelsFactsResponse]]
+        typing.List[typing.List[FactsResponse]]
             The facts for the session.
 
         Examples
@@ -2019,7 +2107,7 @@ class AsyncMemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ModelsFactsResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[FactsResponse]], _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
