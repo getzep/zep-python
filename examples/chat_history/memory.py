@@ -72,7 +72,7 @@ async def main() -> None:
         await client.memory.add(session_id=session_id, messages=[Message(**m)])
 
     #  Wait for the messages to be processed
-    await asyncio.sleep(65)
+    await asyncio.sleep(5)
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.
