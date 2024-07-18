@@ -17,6 +17,9 @@ from ..types.classify_session_request import ClassifySessionRequest
 from ..types.classify_session_response import ClassifySessionResponse
 from ..types.end_session_response import EndSessionResponse
 from ..types.end_sessions_response import EndSessionsResponse
+from ..types.fact_rating_instruction import FactRatingInstruction
+from ..types.fact_response import FactResponse
+from ..types.facts_response import FactsResponse
 from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
 from ..types.memory_type import MemoryType
@@ -39,10 +42,101 @@ class MemoryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
+    def get_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactResponse:
+        """
+        get fact by uuid
+
+        Parameters
+        ----------
+        fact_uuid : str
+            Fact UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FactResponse
+            The fact with the specified UUID.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.get_fact(
+            fact_uuid="factUUID",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"facts/{jsonable_encoder(fact_uuid)}", method="GET", request_options=request_options
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(FactResponse, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def delete_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+        """
+        delete a fact
+
+        Parameters
+        ----------
+        fact_uuid : str
+            Fact UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        str
+            Deleted
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.delete_fact(
+            fact_uuid="factUUID",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"facts/{jsonable_encoder(fact_uuid)}", method="DELETE", request_options=request_options
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def add_session(
         self,
         *,
         session_id: str,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -54,6 +148,9 @@ class MemoryClient:
         ----------
         session_id : str
             The unique identifier of the session.
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the session.
@@ -83,7 +180,12 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             "sessions",
             method="POST",
-            json={"metadata": metadata, "session_id": session_id, "user_id": user_id},
+            json={
+                "fact_rating_instruction": fact_rating_instruction,
+                "metadata": metadata,
+                "session_id": session_id,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -226,6 +328,7 @@ class MemoryClient:
         self,
         *,
         limit: typing.Optional[int] = None,
+        min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
@@ -243,6 +346,8 @@ class MemoryClient:
         ----------
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
+
+        min_fact_rating : typing.Optional[float]
 
         min_score : typing.Optional[float]
 
@@ -284,6 +389,7 @@ class MemoryClient:
             method="POST",
             params={"limit": limit},
             json={
+                "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "record_filter": record_filter,
@@ -358,6 +464,7 @@ class MemoryClient:
         session_id: str,
         *,
         metadata: typing.Dict[str, typing.Any],
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -370,6 +477,10 @@ class MemoryClient:
 
         metadata : typing.Dict[str, typing.Any]
             The metadata to update
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
+            Fact rating instructions can not be unset.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -394,7 +505,7 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}",
             method="PATCH",
-            json={"metadata": metadata},
+            json={"fact_rating_instruction": fact_rating_instruction, "metadata": metadata},
             request_options=request_options,
             omit=OMIT,
         )
@@ -634,12 +745,70 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def get_session_facts(
+        self,
+        session_id: str,
+        *,
+        min_rating: typing.Optional[float] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> FactsResponse:
+        """
+        get facts for a session
+
+        Parameters
+        ----------
+        session_id : str
+            Session ID
+
+        min_rating : typing.Optional[float]
+            Minimum rating by which to filter facts
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FactsResponse
+            The facts for the session.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.get_session_facts(
+            session_id="sessionId",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"sessions/{jsonable_encoder(session_id)}/facts",
+            method="GET",
+            params={"minRating": min_rating},
+            request_options=request_options,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def get(
         self,
         session_id: str,
         *,
         memory_type: typing.Optional[MemoryType] = None,
         lastn: typing.Optional[int] = None,
+        min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
@@ -655,6 +824,9 @@ class MemoryClient:
 
         lastn : typing.Optional[int]
             The number of most recent memory entries to retrieve.
+
+        min_rating : typing.Optional[float]
+            The minimum rating by which to filter facts
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -678,7 +850,7 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="GET",
-            params={"memoryType": memory_type, "lastn": lastn},
+            params={"memoryType": memory_type, "lastn": lastn, "minRating": min_rating},
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
@@ -994,6 +1166,7 @@ class MemoryClient:
         *,
         limit: typing.Optional[int] = None,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         search_scope: typing.Optional[SearchScope] = OMIT,
@@ -1014,6 +1187,8 @@ class MemoryClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Metadata Filter
+
+        min_fact_rating : typing.Optional[float]
 
         min_score : typing.Optional[float]
 
@@ -1050,6 +1225,7 @@ class MemoryClient:
             params={"limit": limit},
             json={
                 "metadata": metadata,
+                "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "search_scope": search_scope,
@@ -1182,10 +1358,103 @@ class AsyncMemoryClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
+    async def get_fact(
+        self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> FactResponse:
+        """
+        get fact by uuid
+
+        Parameters
+        ----------
+        fact_uuid : str
+            Fact UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FactResponse
+            The fact with the specified UUID.
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.get_fact(
+            fact_uuid="factUUID",
+        )
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"facts/{jsonable_encoder(fact_uuid)}", method="GET", request_options=request_options
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(FactResponse, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def delete_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+        """
+        delete a fact
+
+        Parameters
+        ----------
+        fact_uuid : str
+            Fact UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        str
+            Deleted
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.delete_fact(
+            fact_uuid="factUUID",
+        )
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"facts/{jsonable_encoder(fact_uuid)}", method="DELETE", request_options=request_options
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def add_session(
         self,
         *,
         session_id: str,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1197,6 +1466,9 @@ class AsyncMemoryClient:
         ----------
         session_id : str
             The unique identifier of the session.
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the session.
@@ -1226,7 +1498,12 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             "sessions",
             method="POST",
-            json={"metadata": metadata, "session_id": session_id, "user_id": user_id},
+            json={
+                "fact_rating_instruction": fact_rating_instruction,
+                "metadata": metadata,
+                "session_id": session_id,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -1369,6 +1646,7 @@ class AsyncMemoryClient:
         self,
         *,
         limit: typing.Optional[int] = None,
+        min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
@@ -1386,6 +1664,8 @@ class AsyncMemoryClient:
         ----------
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
+
+        min_fact_rating : typing.Optional[float]
 
         min_score : typing.Optional[float]
 
@@ -1427,6 +1707,7 @@ class AsyncMemoryClient:
             method="POST",
             params={"limit": limit},
             json={
+                "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "record_filter": record_filter,
@@ -1501,6 +1782,7 @@ class AsyncMemoryClient:
         session_id: str,
         *,
         metadata: typing.Dict[str, typing.Any],
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -1513,6 +1795,10 @@ class AsyncMemoryClient:
 
         metadata : typing.Dict[str, typing.Any]
             The metadata to update
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
+            Fact rating instructions can not be unset.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1537,7 +1823,7 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}",
             method="PATCH",
-            json={"metadata": metadata},
+            json={"fact_rating_instruction": fact_rating_instruction, "metadata": metadata},
             request_options=request_options,
             omit=OMIT,
         )
@@ -1777,12 +2063,70 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    async def get_session_facts(
+        self,
+        session_id: str,
+        *,
+        min_rating: typing.Optional[float] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> FactsResponse:
+        """
+        get facts for a session
+
+        Parameters
+        ----------
+        session_id : str
+            Session ID
+
+        min_rating : typing.Optional[float]
+            Minimum rating by which to filter facts
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FactsResponse
+            The facts for the session.
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.get_session_facts(
+            session_id="sessionId",
+        )
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"sessions/{jsonable_encoder(session_id)}/facts",
+            method="GET",
+            params={"minRating": min_rating},
+            request_options=request_options,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def get(
         self,
         session_id: str,
         *,
         memory_type: typing.Optional[MemoryType] = None,
         lastn: typing.Optional[int] = None,
+        min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
@@ -1798,6 +2142,9 @@ class AsyncMemoryClient:
 
         lastn : typing.Optional[int]
             The number of most recent memory entries to retrieve.
+
+        min_rating : typing.Optional[float]
+            The minimum rating by which to filter facts
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1821,7 +2168,7 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="GET",
-            params={"memoryType": memory_type, "lastn": lastn},
+            params={"memoryType": memory_type, "lastn": lastn, "minRating": min_rating},
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
@@ -2139,6 +2486,7 @@ class AsyncMemoryClient:
         *,
         limit: typing.Optional[int] = None,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         search_scope: typing.Optional[SearchScope] = OMIT,
@@ -2159,6 +2507,8 @@ class AsyncMemoryClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Metadata Filter
+
+        min_fact_rating : typing.Optional[float]
 
         min_score : typing.Optional[float]
 
@@ -2195,6 +2545,7 @@ class AsyncMemoryClient:
             params={"limit": limit},
             json={
                 "metadata": metadata,
+                "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "search_scope": search_scope,

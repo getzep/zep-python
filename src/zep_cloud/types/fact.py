@@ -10,6 +10,7 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 class Fact(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = None
     fact: typing.Optional[str] = None
+    rating: typing.Optional[float] = None
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:

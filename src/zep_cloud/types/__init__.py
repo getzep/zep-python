@@ -11,6 +11,10 @@ from .document_search_result_page import DocumentSearchResultPage
 from .end_session_response import EndSessionResponse
 from .end_sessions_response import EndSessionsResponse
 from .fact import Fact
+from .fact_rating_examples import FactRatingExamples
+from .fact_rating_instruction import FactRatingInstruction
+from .fact_response import FactResponse
+from .facts_response import FactsResponse
 from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .memory_type import MemoryType
@@ -43,6 +47,10 @@ __all__ = [
     "EndSessionResponse",
     "EndSessionsResponse",
     "Fact",
+    "FactRatingExamples",
+    "FactRatingInstruction",
+    "FactResponse",
+    "FactsResponse",
     "Memory",
     "MemorySearchResult",
     "MemoryType",
