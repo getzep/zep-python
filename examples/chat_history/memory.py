@@ -51,7 +51,9 @@ async def main() -> None:
     print(f"\n---Creating session: {session_id}")
 
     await client.memory.add_session(
-        session_id=session_id, user_id=user_id, metadata={"foo": "bar"}
+        session_id=session_id,
+        user_id=user_id,
+        metadata={"foo": "bar"},
     )
 
     # Update session metadata
@@ -70,7 +72,7 @@ async def main() -> None:
         await client.memory.add(session_id=session_id, messages=[Message(**m)])
 
     #  Wait for the messages to be processed
-    await asyncio.sleep(5)
+    await asyncio.sleep(65)
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.
@@ -92,6 +94,10 @@ async def main() -> None:
     )
     print(f"Classification: {classification}")
 
+    all_session_facts = await client.memory.get_session_facts(session_id)
+    for f in all_session_facts.facts:
+        print(f"{f.fact}\n")
+
     # Get Memory for session
     print(f"\n---Get Perpetual Memory for Session: {session_id}")
     memory = await client.memory.get(session_id, memory_type="perpetual")
@@ -105,6 +111,13 @@ async def main() -> None:
         session_ids=[session_id], text=query, search_scope="summary"
     )
     print("summaryResult: ", summary_result)
+
+    query = "What are Jane's favorite shoe brands?"
+    print(f"\n---Searching over facts for: '{query}'")
+    facts_result = await client.memory.search_sessions(
+        session_ids=[session_id], text=query, search_scope="facts"
+    )
+    print("facts_result: ", facts_result)
 
     print("\n---Searching over summaries with MMR Reranking")
     summary_mmr_result = await client.memory.search_sessions(
