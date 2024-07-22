@@ -802,6 +802,63 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def add_session_facts(
+        self,
+        session_id: str,
+        *,
+        facts: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds facts to a session
+
+        Parameters
+        ----------
+        session_id : str
+            Session ID
+
+        facts : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.memory.add_session_facts(
+            session_id="sessionId",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"sessions/{jsonable_encoder(session_id)}/facts",
+            method="POST",
+            json={"facts": facts},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def get(
         self,
         session_id: str,
@@ -2108,6 +2165,63 @@ class AsyncMemoryClient:
         )
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+        if _response.status_code == 404:
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def add_session_facts(
+        self,
+        session_id: str,
+        *,
+        facts: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds facts to a session
+
+        Parameters
+        ----------
+        session_id : str
+            Session ID
+
+        facts : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.memory.add_session_facts(
+            session_id="sessionId",
+        )
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"sessions/{jsonable_encoder(session_id)}/facts",
+            method="POST",
+            json={"facts": facts},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
