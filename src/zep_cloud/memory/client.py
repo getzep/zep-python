@@ -12,6 +12,7 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
+from ..types.added_fact import AddedFact
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.classify_session_request import ClassifySessionRequest
 from ..types.classify_session_response import ClassifySessionResponse
@@ -806,7 +807,7 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        facts: typing.Optional[typing.Sequence[str]] = OMIT,
+        facts: typing.Optional[typing.Sequence[AddedFact]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
@@ -817,7 +818,7 @@ class MemoryClient:
         session_id : str
             Session ID
 
-        facts : typing.Optional[typing.Sequence[str]]
+        facts : typing.Optional[typing.Sequence[AddedFact]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2181,7 +2182,7 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        facts: typing.Optional[typing.Sequence[str]] = OMIT,
+        facts: typing.Optional[typing.Sequence[AddedFact]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
@@ -2192,7 +2193,7 @@ class AsyncMemoryClient:
         session_id : str
             Session ID
 
-        facts : typing.Optional[typing.Sequence[str]]
+        facts : typing.Optional[typing.Sequence[AddedFact]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
