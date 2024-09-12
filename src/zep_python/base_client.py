@@ -7,7 +7,6 @@ import httpx
 
 from .core.api_error import ApiError
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from .document.client import AsyncDocumentClient, DocumentClient
 from .environment import ZepEnvironment
 from .memory.client import AsyncMemoryClient, MemoryClient
 from .user.client import AsyncUserClient, UserClient
@@ -73,7 +72,6 @@ class BaseClient:
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.document = DocumentClient(client_wrapper=self._client_wrapper)
         self.memory = MemoryClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
@@ -138,7 +136,6 @@ class AsyncBaseClient:
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.document = AsyncDocumentClient(client_wrapper=self._client_wrapper)
         self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 
