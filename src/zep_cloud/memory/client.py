@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError as core_api_error_ApiError
+from ..core.api_error import ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import pydantic_v1
@@ -12,28 +12,29 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.added_fact import AddedFact
-from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_api_error import ApidataApiError
+from ..types.apidata_end_session_response import ApidataEndSessionResponse
+from ..types.apidata_end_sessions_response import ApidataEndSessionsResponse
+from ..types.apidata_fact_response import ApidataFactResponse
+from ..types.apidata_facts_response import ApidataFactsResponse
+from ..types.apidata_memory import ApidataMemory
+from ..types.apidata_memory_search_result import ApidataMemorySearchResult
+from ..types.apidata_message import ApidataMessage
+from ..types.apidata_message_list_response import ApidataMessageListResponse
+from ..types.apidata_new_fact import ApidataNewFact
+from ..types.apidata_question import ApidataQuestion
+from ..types.apidata_session import ApidataSession
+from ..types.apidata_session_classification import ApidataSessionClassification
+from ..types.apidata_session_list_response import ApidataSessionListResponse
+from ..types.apidata_session_search_response import ApidataSessionSearchResponse
+from ..types.apidata_success_response import ApidataSuccessResponse
+from ..types.apidata_summary_list_response import ApidataSummaryListResponse
 from ..types.classify_session_request import ClassifySessionRequest
-from ..types.classify_session_response import ClassifySessionResponse
-from ..types.end_session_response import EndSessionResponse
-from ..types.end_sessions_response import EndSessionsResponse
 from ..types.fact_rating_instruction import FactRatingInstruction
-from ..types.fact_response import FactResponse
-from ..types.facts_response import FactsResponse
-from ..types.memory import Memory
-from ..types.memory_search_result import MemorySearchResult
 from ..types.memory_type import MemoryType
 from ..types.message import Message
-from ..types.message_list_response import MessageListResponse
-from ..types.question import Question
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
-from ..types.session import Session
-from ..types.session_list_response import SessionListResponse
-from ..types.session_search_response import SessionSearchResponse
-from ..types.success_response import SuccessResponse
-from ..types.summary_list_response import SummaryListResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -43,7 +44,9 @@ class MemoryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactResponse:
+    def get_fact(
+        self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataFactResponse:
         """
         get fact by uuid
 
@@ -57,7 +60,7 @@ class MemoryClient:
 
         Returns
         -------
-        FactResponse
+        ApidataFactResponse
             The fact with the specified UUID.
 
         Examples
@@ -75,18 +78,16 @@ class MemoryClient:
             f"facts/{jsonable_encoder(fact_uuid)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(FactResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataFactResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
         """
@@ -122,16 +123,14 @@ class MemoryClient:
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def add_session(
         self,
@@ -141,7 +140,7 @@ class MemoryClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Session:
+    ) -> ApidataSession:
         """
         Create New Session
 
@@ -164,7 +163,7 @@ class MemoryClient:
 
         Returns
         -------
-        Session
+        ApidataSession
             The added session.
 
         Examples
@@ -191,18 +190,16 @@ class MemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Session, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSession, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def list_sessions(
         self,
@@ -212,7 +209,7 @@ class MemoryClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SessionListResponse:
+    ) -> ApidataSessionListResponse:
         """
         Get all sessions with optional page number, page size, order by field and order direction for pagination.
 
@@ -235,7 +232,7 @@ class MemoryClient:
 
         Returns
         -------
-        SessionListResponse
+        ApidataSessionListResponse
             List of sessions
 
         Examples
@@ -254,18 +251,16 @@ class MemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SessionListResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSessionListResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def end_sessions(
         self,
@@ -273,7 +268,7 @@ class MemoryClient:
         session_ids: typing.Sequence[str],
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> EndSessionsResponse:
+    ) -> ApidataEndSessionsResponse:
         """
         End multiple sessions by their IDs
 
@@ -288,7 +283,7 @@ class MemoryClient:
 
         Returns
         -------
-        EndSessionsResponse
+        ApidataEndSessionsResponse
             OK
 
         Examples
@@ -310,36 +305,27 @@ class MemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(EndSessionsResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataEndSessionsResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def search_sessions(
         self,
         *,
         limit: typing.Optional[int] = None,
-        min_fact_rating: typing.Optional[float] = OMIT,
-        min_score: typing.Optional[float] = OMIT,
-        mmr_lambda: typing.Optional[float] = OMIT,
-        record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        search_scope: typing.Optional[SearchScope] = OMIT,
-        search_type: typing.Optional[SearchType] = OMIT,
-        session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         text: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SessionSearchResponse:
+    ) -> ApidataSessionSearchResponse:
         """
         Search sessions for the specified query.
 
@@ -347,22 +333,6 @@ class MemoryClient:
         ----------
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
-
-        min_fact_rating : typing.Optional[float]
-
-        min_score : typing.Optional[float]
-
-        mmr_lambda : typing.Optional[float]
-
-        record_filter : typing.Optional[typing.Dict[str, typing.Any]]
-            filter on the metadata
-
-        search_scope : typing.Optional[SearchScope]
-
-        search_type : typing.Optional[SearchType]
-
-        session_ids : typing.Optional[typing.Sequence[str]]
-            the session ids to search
 
         text : typing.Optional[str]
 
@@ -373,7 +343,7 @@ class MemoryClient:
 
         Returns
         -------
-        SessionSearchResponse
+        ApidataSessionSearchResponse
             A SessionSearchResponse object representing the search results.
 
         Examples
@@ -389,33 +359,23 @@ class MemoryClient:
             "sessions/search",
             method="POST",
             params={"limit": limit},
-            json={
-                "min_fact_rating": min_fact_rating,
-                "min_score": min_score,
-                "mmr_lambda": mmr_lambda,
-                "record_filter": record_filter,
-                "search_scope": search_scope,
-                "search_type": search_type,
-                "session_ids": session_ids,
-                "text": text,
-                "user_id": user_id,
-            },
+            json={"text": text, "user_id": user_id},
             request_options=request_options,
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SessionSearchResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSessionSearchResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
+    def get_session(
+        self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataSession:
         """
         get session by id
 
@@ -429,7 +389,7 @@ class MemoryClient:
 
         Returns
         -------
-        Session
+        ApidataSession
             The session with the specified ID.
 
         Examples
@@ -447,18 +407,16 @@ class MemoryClient:
             f"sessions/{jsonable_encoder(session_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Session, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSession, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def update_session(
         self,
@@ -467,7 +425,7 @@ class MemoryClient:
         metadata: typing.Dict[str, typing.Any],
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Session:
+    ) -> ApidataSession:
         """
         Update Session Metadata
 
@@ -488,7 +446,7 @@ class MemoryClient:
 
         Returns
         -------
-        Session
+        ApidataSession
             The updated session.
 
         Examples
@@ -511,22 +469,20 @@ class MemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Session, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSession, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 409:
-            raise ConflictError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise ConflictError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def classify_session(
         self,
@@ -538,7 +494,7 @@ class MemoryClient:
         last_n: typing.Optional[int] = OMIT,
         persist: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ClassifySessionResponse:
+    ) -> ApidataSessionClassification:
         """
         classify a session by session id
 
@@ -567,7 +523,7 @@ class MemoryClient:
 
         Returns
         -------
-        ClassifySessionResponse
+        ApidataSessionClassification
             A response object containing the name and classification result.
 
         Examples
@@ -591,18 +547,16 @@ class MemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ClassifySessionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSessionClassification, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def end_session(
         self,
@@ -611,7 +565,7 @@ class MemoryClient:
         classify: typing.Optional[ClassifySessionRequest] = OMIT,
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> EndSessionResponse:
+    ) -> ApidataEndSessionResponse:
         """
         End a session by ID
 
@@ -629,7 +583,7 @@ class MemoryClient:
 
         Returns
         -------
-        EndSessionResponse
+        ApidataEndSessionResponse
             OK
 
         Examples
@@ -651,20 +605,18 @@ class MemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(EndSessionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataEndSessionResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def extract_data(
         self,
@@ -733,18 +685,16 @@ class MemoryClient:
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(typing.Dict[str, str], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_session_facts(
         self,
@@ -752,7 +702,7 @@ class MemoryClient:
         *,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> FactsResponse:
+    ) -> ApidataFactsResponse:
         """
         get facts for a session
 
@@ -762,14 +712,14 @@ class MemoryClient:
             Session ID
 
         min_rating : typing.Optional[float]
-            Minimum rating by which to filter facts
+            Minimum rating by which to filter facts (Zep Cloud only)
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        FactsResponse
+        ApidataFactsResponse
             The facts for the session.
 
         Examples
@@ -790,26 +740,24 @@ class MemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataFactsResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def add_session_facts(
         self,
         session_id: str,
         *,
-        facts: typing.Optional[typing.Sequence[AddedFact]] = OMIT,
+        facts: typing.Optional[typing.Sequence[ApidataNewFact]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
+    ) -> ApidataSuccessResponse:
         """
         Adds facts to a session
 
@@ -818,14 +766,14 @@ class MemoryClient:
         session_id : str
             Session ID
 
-        facts : typing.Optional[typing.Sequence[AddedFact]]
+        facts : typing.Optional[typing.Sequence[ApidataNewFact]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
+        ApidataSuccessResponse
             OK
 
         Examples
@@ -847,40 +795,34 @@ class MemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get(
         self,
         session_id: str,
         *,
-        memory_type: typing.Optional[MemoryType] = None,
-        lastn: typing.Optional[int] = None,
+        lastn: typing.Optional[MemoryType] = None,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Memory:
+    ) -> ApidataMemory:
         """
-        Returns a memory (latest summary, list of messages and facts for models.MemoryTypePerpetual) for a given session
+        Returns a memory (latest summary, list of messages and facts) for a given session
 
         Parameters
         ----------
         session_id : str
             The ID of the session for which to retrieve memory.
 
-        memory_type : typing.Optional[MemoryType]
-            The type of memory to retrieve: perpetual, summary_retriever, or message_window. Defaults to perpetual.
-
-        lastn : typing.Optional[int]
+        lastn : typing.Optional[MemoryType]
             The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
@@ -891,7 +833,7 @@ class MemoryClient:
 
         Returns
         -------
-        Memory
+        ApidataMemory
             OK
 
         Examples
@@ -908,32 +850,28 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="GET",
-            params={"memoryType": memory_type, "lastn": lastn, "minRating": min_rating},
+            params={"lastn": lastn, "minRating": min_rating},
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Memory, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataMemory, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def add(
         self,
         session_id: str,
         *,
         messages: typing.Sequence[Message],
-        fact_instruction: typing.Optional[str] = OMIT,
-        summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
+    ) -> ApidataSuccessResponse:
         """
         Add memory to the specified session.
 
@@ -945,18 +883,12 @@ class MemoryClient:
         messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
-        fact_instruction : typing.Optional[str]
-            Additional instruction for generating the facts.
-
-        summary_instruction : typing.Optional[str]
-            Additional instruction for generating the summary.
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
+        ApidataSuccessResponse
             OK
 
         Examples
@@ -975,27 +907,23 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="POST",
-            json={
-                "fact_instruction": fact_instruction,
-                "messages": messages,
-                "summary_instruction": summary_instruction,
-            },
+            json={"messages": messages},
             request_options=request_options,
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+    def delete(
+        self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataSuccessResponse:
         """
         delete memory messages by session id
 
@@ -1009,7 +937,7 @@ class MemoryClient:
 
         Returns
         -------
-        SuccessResponse
+        ApidataSuccessResponse
             OK
 
         Examples
@@ -1027,18 +955,16 @@ class MemoryClient:
             f"sessions/{jsonable_encoder(session_id)}/memory", method="DELETE", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_session_messages(
         self,
@@ -1047,7 +973,7 @@ class MemoryClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> MessageListResponse:
+    ) -> ApidataMessageListResponse:
         """
         Lists messages for a session, specified by limit and cursor.
 
@@ -1067,7 +993,7 @@ class MemoryClient:
 
         Returns
         -------
-        MessageListResponse
+        ApidataMessageListResponse
             OK
 
         Examples
@@ -1088,22 +1014,20 @@ class MemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(MessageListResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataMessageListResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_session_message(
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> Message:
+    ) -> ApidataMessage:
         """
         Gets a specific message from a session
 
@@ -1120,7 +1044,7 @@ class MemoryClient:
 
         Returns
         -------
-        Message
+        ApidataMessage
             The message.
 
         Examples
@@ -1141,18 +1065,16 @@ class MemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Message, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataMessage, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def update_message_metadata(
         self,
@@ -1161,7 +1083,7 @@ class MemoryClient:
         *,
         metadata: typing.Dict[str, typing.Any],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Message:
+    ) -> ApidataMessage:
         """
         Updates the metadata of a message.
 
@@ -1181,7 +1103,7 @@ class MemoryClient:
 
         Returns
         -------
-        Message
+        ApidataMessage
             The updated message.
 
         Examples
@@ -1205,18 +1127,16 @@ class MemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Message, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataMessage, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def search(
         self,
@@ -1224,14 +1144,13 @@ class MemoryClient:
         *,
         limit: typing.Optional[int] = None,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         search_scope: typing.Optional[SearchScope] = OMIT,
         search_type: typing.Optional[SearchType] = OMIT,
         text: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[MemorySearchResult]:
+    ) -> typing.List[ApidataMemorySearchResult]:
         """
         Search memory for the specified session.
 
@@ -1245,8 +1164,6 @@ class MemoryClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Metadata Filter
-
-        min_fact_rating : typing.Optional[float]
 
         min_score : typing.Optional[float]
 
@@ -1263,7 +1180,7 @@ class MemoryClient:
 
         Returns
         -------
-        typing.List[MemorySearchResult]
+        typing.List[ApidataMemorySearchResult]
             A list of SearchResult objects representing the search results.
 
         Examples
@@ -1283,7 +1200,6 @@ class MemoryClient:
             params={"limit": limit},
             json={
                 "metadata": metadata,
-                "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "search_scope": search_scope,
@@ -1294,22 +1210,20 @@ class MemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[MemorySearchResult], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[ApidataMemorySearchResult], _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_summaries(
         self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SummaryListResponse:
+    ) -> ApidataSummaryListResponse:
         """
         Get session summaries by ID
 
@@ -1323,7 +1237,7 @@ class MemoryClient:
 
         Returns
         -------
-        SummaryListResponse
+        ApidataSummaryListResponse
             OK
 
         Examples
@@ -1341,18 +1255,16 @@ class MemoryClient:
             f"sessions/{jsonable_encoder(session_id)}/summary", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SummaryListResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSummaryListResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def synthesize_question(
         self,
@@ -1360,7 +1272,7 @@ class MemoryClient:
         *,
         last_n_messages: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Question:
+    ) -> ApidataQuestion:
         """
         Synthesize a question from the last N messages in the chat history.
 
@@ -1377,7 +1289,7 @@ class MemoryClient:
 
         Returns
         -------
-        Question
+        ApidataQuestion
             The synthesized question.
 
         Examples
@@ -1398,18 +1310,16 @@ class MemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Question, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataQuestion, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
 
 class AsyncMemoryClient:
@@ -1418,7 +1328,7 @@ class AsyncMemoryClient:
 
     async def get_fact(
         self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> FactResponse:
+    ) -> ApidataFactResponse:
         """
         get fact by uuid
 
@@ -1432,7 +1342,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        FactResponse
+        ApidataFactResponse
             The fact with the specified UUID.
 
         Examples
@@ -1450,18 +1360,16 @@ class AsyncMemoryClient:
             f"facts/{jsonable_encoder(fact_uuid)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(FactResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataFactResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
         """
@@ -1497,16 +1405,14 @@ class AsyncMemoryClient:
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def add_session(
         self,
@@ -1516,7 +1422,7 @@ class AsyncMemoryClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Session:
+    ) -> ApidataSession:
         """
         Create New Session
 
@@ -1539,7 +1445,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        Session
+        ApidataSession
             The added session.
 
         Examples
@@ -1566,18 +1472,16 @@ class AsyncMemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Session, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSession, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def list_sessions(
         self,
@@ -1587,7 +1491,7 @@ class AsyncMemoryClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SessionListResponse:
+    ) -> ApidataSessionListResponse:
         """
         Get all sessions with optional page number, page size, order by field and order direction for pagination.
 
@@ -1610,7 +1514,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        SessionListResponse
+        ApidataSessionListResponse
             List of sessions
 
         Examples
@@ -1629,18 +1533,16 @@ class AsyncMemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SessionListResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSessionListResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def end_sessions(
         self,
@@ -1648,7 +1550,7 @@ class AsyncMemoryClient:
         session_ids: typing.Sequence[str],
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> EndSessionsResponse:
+    ) -> ApidataEndSessionsResponse:
         """
         End multiple sessions by their IDs
 
@@ -1663,7 +1565,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        EndSessionsResponse
+        ApidataEndSessionsResponse
             OK
 
         Examples
@@ -1685,36 +1587,27 @@ class AsyncMemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(EndSessionsResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataEndSessionsResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def search_sessions(
         self,
         *,
         limit: typing.Optional[int] = None,
-        min_fact_rating: typing.Optional[float] = OMIT,
-        min_score: typing.Optional[float] = OMIT,
-        mmr_lambda: typing.Optional[float] = OMIT,
-        record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        search_scope: typing.Optional[SearchScope] = OMIT,
-        search_type: typing.Optional[SearchType] = OMIT,
-        session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         text: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SessionSearchResponse:
+    ) -> ApidataSessionSearchResponse:
         """
         Search sessions for the specified query.
 
@@ -1722,22 +1615,6 @@ class AsyncMemoryClient:
         ----------
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
-
-        min_fact_rating : typing.Optional[float]
-
-        min_score : typing.Optional[float]
-
-        mmr_lambda : typing.Optional[float]
-
-        record_filter : typing.Optional[typing.Dict[str, typing.Any]]
-            filter on the metadata
-
-        search_scope : typing.Optional[SearchScope]
-
-        search_type : typing.Optional[SearchType]
-
-        session_ids : typing.Optional[typing.Sequence[str]]
-            the session ids to search
 
         text : typing.Optional[str]
 
@@ -1748,7 +1625,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        SessionSearchResponse
+        ApidataSessionSearchResponse
             A SessionSearchResponse object representing the search results.
 
         Examples
@@ -1764,33 +1641,23 @@ class AsyncMemoryClient:
             "sessions/search",
             method="POST",
             params={"limit": limit},
-            json={
-                "min_fact_rating": min_fact_rating,
-                "min_score": min_score,
-                "mmr_lambda": mmr_lambda,
-                "record_filter": record_filter,
-                "search_scope": search_scope,
-                "search_type": search_type,
-                "session_ids": session_ids,
-                "text": text,
-                "user_id": user_id,
-            },
+            json={"text": text, "user_id": user_id},
             request_options=request_options,
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SessionSearchResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSessionSearchResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
+    async def get_session(
+        self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataSession:
         """
         get session by id
 
@@ -1804,7 +1671,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        Session
+        ApidataSession
             The session with the specified ID.
 
         Examples
@@ -1822,18 +1689,16 @@ class AsyncMemoryClient:
             f"sessions/{jsonable_encoder(session_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Session, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSession, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update_session(
         self,
@@ -1842,7 +1707,7 @@ class AsyncMemoryClient:
         metadata: typing.Dict[str, typing.Any],
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Session:
+    ) -> ApidataSession:
         """
         Update Session Metadata
 
@@ -1863,7 +1728,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        Session
+        ApidataSession
             The updated session.
 
         Examples
@@ -1886,22 +1751,20 @@ class AsyncMemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Session, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSession, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 409:
-            raise ConflictError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise ConflictError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def classify_session(
         self,
@@ -1913,7 +1776,7 @@ class AsyncMemoryClient:
         last_n: typing.Optional[int] = OMIT,
         persist: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ClassifySessionResponse:
+    ) -> ApidataSessionClassification:
         """
         classify a session by session id
 
@@ -1942,7 +1805,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        ClassifySessionResponse
+        ApidataSessionClassification
             A response object containing the name and classification result.
 
         Examples
@@ -1966,18 +1829,16 @@ class AsyncMemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ClassifySessionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSessionClassification, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def end_session(
         self,
@@ -1986,7 +1847,7 @@ class AsyncMemoryClient:
         classify: typing.Optional[ClassifySessionRequest] = OMIT,
         instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> EndSessionResponse:
+    ) -> ApidataEndSessionResponse:
         """
         End a session by ID
 
@@ -2004,7 +1865,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        EndSessionResponse
+        ApidataEndSessionResponse
             OK
 
         Examples
@@ -2026,20 +1887,18 @@ class AsyncMemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(EndSessionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataEndSessionResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def extract_data(
         self,
@@ -2108,18 +1967,16 @@ class AsyncMemoryClient:
         if 200 <= _response.status_code < 300:
             return pydantic_v1.parse_obj_as(typing.Dict[str, str], _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_session_facts(
         self,
@@ -2127,7 +1984,7 @@ class AsyncMemoryClient:
         *,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> FactsResponse:
+    ) -> ApidataFactsResponse:
         """
         get facts for a session
 
@@ -2137,14 +1994,14 @@ class AsyncMemoryClient:
             Session ID
 
         min_rating : typing.Optional[float]
-            Minimum rating by which to filter facts
+            Minimum rating by which to filter facts (Zep Cloud only)
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        FactsResponse
+        ApidataFactsResponse
             The facts for the session.
 
         Examples
@@ -2165,26 +2022,24 @@ class AsyncMemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataFactsResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def add_session_facts(
         self,
         session_id: str,
         *,
-        facts: typing.Optional[typing.Sequence[AddedFact]] = OMIT,
+        facts: typing.Optional[typing.Sequence[ApidataNewFact]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
+    ) -> ApidataSuccessResponse:
         """
         Adds facts to a session
 
@@ -2193,14 +2048,14 @@ class AsyncMemoryClient:
         session_id : str
             Session ID
 
-        facts : typing.Optional[typing.Sequence[AddedFact]]
+        facts : typing.Optional[typing.Sequence[ApidataNewFact]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
+        ApidataSuccessResponse
             OK
 
         Examples
@@ -2222,40 +2077,34 @@ class AsyncMemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get(
         self,
         session_id: str,
         *,
-        memory_type: typing.Optional[MemoryType] = None,
-        lastn: typing.Optional[int] = None,
+        lastn: typing.Optional[MemoryType] = None,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Memory:
+    ) -> ApidataMemory:
         """
-        Returns a memory (latest summary, list of messages and facts for models.MemoryTypePerpetual) for a given session
+        Returns a memory (latest summary, list of messages and facts) for a given session
 
         Parameters
         ----------
         session_id : str
             The ID of the session for which to retrieve memory.
 
-        memory_type : typing.Optional[MemoryType]
-            The type of memory to retrieve: perpetual, summary_retriever, or message_window. Defaults to perpetual.
-
-        lastn : typing.Optional[int]
+        lastn : typing.Optional[MemoryType]
             The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
@@ -2266,7 +2115,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        Memory
+        ApidataMemory
             OK
 
         Examples
@@ -2283,32 +2132,28 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="GET",
-            params={"memoryType": memory_type, "lastn": lastn, "minRating": min_rating},
+            params={"lastn": lastn, "minRating": min_rating},
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Memory, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataMemory, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def add(
         self,
         session_id: str,
         *,
         messages: typing.Sequence[Message],
-        fact_instruction: typing.Optional[str] = OMIT,
-        summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
+    ) -> ApidataSuccessResponse:
         """
         Add memory to the specified session.
 
@@ -2320,18 +2165,12 @@ class AsyncMemoryClient:
         messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
-        fact_instruction : typing.Optional[str]
-            Additional instruction for generating the facts.
-
-        summary_instruction : typing.Optional[str]
-            Additional instruction for generating the summary.
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
+        ApidataSuccessResponse
             OK
 
         Examples
@@ -2350,29 +2189,23 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="POST",
-            json={
-                "fact_instruction": fact_instruction,
-                "messages": messages,
-                "summary_instruction": summary_instruction,
-            },
+            json={"messages": messages},
             request_options=request_options,
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete(
         self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
+    ) -> ApidataSuccessResponse:
         """
         delete memory messages by session id
 
@@ -2386,7 +2219,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        SuccessResponse
+        ApidataSuccessResponse
             OK
 
         Examples
@@ -2404,18 +2237,16 @@ class AsyncMemoryClient:
             f"sessions/{jsonable_encoder(session_id)}/memory", method="DELETE", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_session_messages(
         self,
@@ -2424,7 +2255,7 @@ class AsyncMemoryClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> MessageListResponse:
+    ) -> ApidataMessageListResponse:
         """
         Lists messages for a session, specified by limit and cursor.
 
@@ -2444,7 +2275,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        MessageListResponse
+        ApidataMessageListResponse
             OK
 
         Examples
@@ -2465,22 +2296,20 @@ class AsyncMemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(MessageListResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataMessageListResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_session_message(
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> Message:
+    ) -> ApidataMessage:
         """
         Gets a specific message from a session
 
@@ -2497,7 +2326,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        Message
+        ApidataMessage
             The message.
 
         Examples
@@ -2518,18 +2347,16 @@ class AsyncMemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Message, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataMessage, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update_message_metadata(
         self,
@@ -2538,7 +2365,7 @@ class AsyncMemoryClient:
         *,
         metadata: typing.Dict[str, typing.Any],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Message:
+    ) -> ApidataMessage:
         """
         Updates the metadata of a message.
 
@@ -2558,7 +2385,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        Message
+        ApidataMessage
             The updated message.
 
         Examples
@@ -2582,18 +2409,16 @@ class AsyncMemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Message, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataMessage, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def search(
         self,
@@ -2601,14 +2426,13 @@ class AsyncMemoryClient:
         *,
         limit: typing.Optional[int] = None,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         search_scope: typing.Optional[SearchScope] = OMIT,
         search_type: typing.Optional[SearchType] = OMIT,
         text: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[MemorySearchResult]:
+    ) -> typing.List[ApidataMemorySearchResult]:
         """
         Search memory for the specified session.
 
@@ -2622,8 +2446,6 @@ class AsyncMemoryClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Metadata Filter
-
-        min_fact_rating : typing.Optional[float]
 
         min_score : typing.Optional[float]
 
@@ -2640,7 +2462,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        typing.List[MemorySearchResult]
+        typing.List[ApidataMemorySearchResult]
             A list of SearchResult objects representing the search results.
 
         Examples
@@ -2660,7 +2482,6 @@ class AsyncMemoryClient:
             params={"limit": limit},
             json={
                 "metadata": metadata,
-                "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "search_scope": search_scope,
@@ -2671,22 +2492,20 @@ class AsyncMemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[MemorySearchResult], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[ApidataMemorySearchResult], _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_summaries(
         self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SummaryListResponse:
+    ) -> ApidataSummaryListResponse:
         """
         Get session summaries by ID
 
@@ -2700,7 +2519,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        SummaryListResponse
+        ApidataSummaryListResponse
             OK
 
         Examples
@@ -2718,18 +2537,16 @@ class AsyncMemoryClient:
             f"sessions/{jsonable_encoder(session_id)}/summary", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SummaryListResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataSummaryListResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def synthesize_question(
         self,
@@ -2737,7 +2554,7 @@ class AsyncMemoryClient:
         *,
         last_n_messages: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Question:
+    ) -> ApidataQuestion:
         """
         Synthesize a question from the last N messages in the chat history.
 
@@ -2754,7 +2571,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        Question
+        ApidataQuestion
             The synthesized question.
 
         Examples
@@ -2775,15 +2592,13 @@ class AsyncMemoryClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Question, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataQuestion, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
+            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
