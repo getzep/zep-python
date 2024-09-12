@@ -74,79 +74,18 @@ async def main() -> None:
     #  Wait for the messages to be processed
     await asyncio.sleep(5)
 
-    # Synthesize a question from most recent messages.
-    # Useful for RAG apps. This is faster than using an LLM chain.
-    print("\n---Synthesize a question from most recent messages")
-    question = await client.memory.synthesize_question(session_id, last_n_messages=3)
-    print(f"Question: {question}")
-
-    # Classify the session.
-    # Useful for semantic routing, filtering, and many other use cases.
-    print("\n---Classify the session")
-    classes = [
-        "low spender <$50",
-        "medium spender >=$50, <$100",
-        "high spender >=$100",
-        "unknown",
-    ]
-    classification = await client.memory.classify_session(
-        session_id, name="spender_category", classes=classes, persist=True
-    )
-    print(f"Classification: {classification}")
-
-    all_session_facts = await client.memory.get_session_facts(session_id)
-    for f in all_session_facts.facts:
-        print(f"{f.fact}\n")
-
     # Get Memory for session
     print(f"\n---Get Perpetual Memory for Session: {session_id}")
     memory = await client.memory.get(session_id, memory_type="perpetual")
     print(f"Memory: {memory}")
     print("\n---End of Memory")
 
-    # Search Memory for session
     query = "What are Jane's favorite shoe brands?"
-    print(f"\n---Searching over summaries for: '{query}'")
-    summary_result = await client.memory.search_sessions(
-        session_ids=[session_id], text=query, search_scope="summary"
-    )
-    print("summaryResult: ", summary_result)
-
-    query = "What are Jane's favorite shoe brands?"
-    print(f"\n---Searching over facts for: '{query}'")
+    print(f"\n---Searching over user facts for: '{query}'")
     facts_result = await client.memory.search_sessions(
-        session_ids=[session_id], text=query, search_scope="facts"
+        user_id=user_id, text=query, search_scope="facts"
     )
     print("facts_result: ", facts_result)
-
-    print("\n---Searching over summaries with MMR Reranking")
-    summary_mmr_result = await client.memory.search_sessions(
-        session_ids=[session_id], text=query, search_scope="summary", search_type="mmr"
-    )
-    print("summary_mmr_result: ", summary_mmr_result)
-
-    print("\n---Searching over messages using a metadata filter")
-
-    messages_result = await client.memory.search_sessions(
-        session_ids=[session_id],
-        text=query,
-        search_scope="messages",
-        record_filter={"where": {"jsonpath": '$[*] ? (@.bar == "foo")'}},
-    )
-    print("messages_result: ", messages_result)
-
-    user_messages_result = await client.memory.search_sessions(
-        limit=3,
-        user_id=user_id,
-        text=query,
-        search_scope="messages",
-    )
-    print("user_messages_result: ", user_messages_result)
-
-    # End session - this will trigger summarization and other background tasks on the completed session
-    # Uncomment to run
-    # print(f"\n5---end_session for Session: {session_id}")
-    # await client.memory.end_session(session_id)
 
     # Delete Memory for session
     # Uncomment to run

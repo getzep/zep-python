@@ -12,8 +12,7 @@ class Zep(BaseClient):
     def __init__(
             self,
             *,
-            base_url: typing.Optional[str] = None,
-            environment: ZepEnvironment = ZepEnvironment.DEFAULT,
+            base_url: str = None,
             api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
             timeout: typing.Optional[float] = None,
             follow_redirects: typing.Optional[bool] = None,
@@ -24,7 +23,6 @@ class Zep(BaseClient):
             base_url = f"{env_api_url}/api/v2"
         super().__init__(
             base_url=base_url,
-            environment=environment,
             api_key=api_key,
             timeout=timeout,
             follow_redirects=follow_redirects,
@@ -38,8 +36,7 @@ class AsyncZep(AsyncBaseClient):
     def __init__(
             self,
             *,
-            base_url: typing.Optional[str] = None,
-            environment: ZepEnvironment = ZepEnvironment.DEFAULT,
+            base_url: str = None,
             api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
             timeout: typing.Optional[float] = None,
             follow_redirects: typing.Optional[bool] = None,
@@ -50,7 +47,6 @@ class AsyncZep(AsyncBaseClient):
             base_url = f"{env_api_url}/api/v2"
         super().__init__(
             base_url=base_url,
-            environment=environment,
             api_key=api_key,
             timeout=timeout,
             follow_redirects=follow_redirects,
