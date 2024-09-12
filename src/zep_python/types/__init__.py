@@ -8,13 +8,10 @@ from .apidata_message import ApidataMessage
 from .apidata_message_list_response import ApidataMessageListResponse
 from .apidata_role_type import ApidataRoleType
 from .apidata_session import ApidataSession
-from .apidata_session_fact_rating_examples import ApidataSessionFactRatingExamples
-from .apidata_session_fact_rating_instruction import ApidataSessionFactRatingInstruction
 from .apidata_session_list_response import ApidataSessionListResponse
 from .apidata_session_search_response import ApidataSessionSearchResponse
 from .apidata_session_search_result import ApidataSessionSearchResult
 from .apidata_success_response import ApidataSuccessResponse
-from .apidata_summary import ApidataSummary
 from .apidata_user import ApidataUser
 from .apidata_user_list_response import ApidataUserListResponse
 from .fact_rating_examples import FactRatingExamples
@@ -22,6 +19,8 @@ from .fact_rating_instruction import FactRatingInstruction
 from .memory_type import MemoryType
 from .message import Message
 from .role_type import RoleType
+from .search_scope import SearchScope
+from .search_type import SearchType
 
 __all__ = [
     "ApidataApiError",
@@ -32,13 +31,10 @@ __all__ = [
     "ApidataMessageListResponse",
     "ApidataRoleType",
     "ApidataSession",
-    "ApidataSessionFactRatingExamples",
-    "ApidataSessionFactRatingInstruction",
     "ApidataSessionListResponse",
     "ApidataSessionSearchResponse",
     "ApidataSessionSearchResult",
     "ApidataSuccessResponse",
-    "ApidataSummary",
     "ApidataUser",
     "ApidataUserListResponse",
     "FactRatingExamples",
@@ -46,4 +42,6 @@ __all__ = [
     "MemoryType",
     "Message",
     "RoleType",
+    "SearchScope",
+    "SearchType",
 ]

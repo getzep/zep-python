@@ -24,6 +24,8 @@ from ..types.apidata_success_response import ApidataSuccessResponse
 from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.memory_type import MemoryType
 from ..types.message import Message
+from ..types.search_scope import SearchScope
+from ..types.search_type import SearchType
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -255,6 +257,13 @@ class MemoryClient:
         self,
         *,
         limit: typing.Optional[int] = None,
+        min_fact_rating: typing.Optional[float] = OMIT,
+        min_score: typing.Optional[float] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search_scope: typing.Optional[SearchScope] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
+        session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         text: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -266,6 +275,27 @@ class MemoryClient:
         ----------
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
+
+        min_fact_rating : typing.Optional[float]
+            The minimum fact rating to filter on. Only supported on cloud. Will be ignored on Community Edition.
+
+        min_score : typing.Optional[float]
+            The minimum score for search results. Only supported on cloud. Will be ignored on Community Edition.
+
+        mmr_lambda : typing.Optional[float]
+            The lambda parameter for the MMR Reranking Algorithm. Only supported on cloud. Will be ignored on Community Edition.
+
+        record_filter : typing.Optional[typing.Dict[str, typing.Any]]
+            Record filter on the metadata. Only supported on cloud. Will be ignored on Community Edition.
+
+        search_scope : typing.Optional[SearchScope]
+            Search scope. Only supported on cloud. On Community Edition the search scope is always "facts".
+
+        search_type : typing.Optional[SearchType]
+            Search type. Only supported on cloud. Will be ignored on Community Edition.
+
+        session_ids : typing.Optional[typing.Sequence[str]]
+            the session ids to search
 
         text : typing.Optional[str]
             The search text.
@@ -294,7 +324,17 @@ class MemoryClient:
             "sessions/search",
             method="POST",
             params={"limit": limit},
-            json={"text": text, "user_id": user_id},
+            json={
+                "min_fact_rating": min_fact_rating,
+                "min_score": min_score,
+                "mmr_lambda": mmr_lambda,
+                "record_filter": record_filter,
+                "search_scope": search_scope,
+                "search_type": search_type,
+                "session_ids": session_ids,
+                "text": text,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -990,6 +1030,13 @@ class AsyncMemoryClient:
         self,
         *,
         limit: typing.Optional[int] = None,
+        min_fact_rating: typing.Optional[float] = OMIT,
+        min_score: typing.Optional[float] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search_scope: typing.Optional[SearchScope] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
+        session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         text: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1001,6 +1048,27 @@ class AsyncMemoryClient:
         ----------
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
+
+        min_fact_rating : typing.Optional[float]
+            The minimum fact rating to filter on. Only supported on cloud. Will be ignored on Community Edition.
+
+        min_score : typing.Optional[float]
+            The minimum score for search results. Only supported on cloud. Will be ignored on Community Edition.
+
+        mmr_lambda : typing.Optional[float]
+            The lambda parameter for the MMR Reranking Algorithm. Only supported on cloud. Will be ignored on Community Edition.
+
+        record_filter : typing.Optional[typing.Dict[str, typing.Any]]
+            Record filter on the metadata. Only supported on cloud. Will be ignored on Community Edition.
+
+        search_scope : typing.Optional[SearchScope]
+            Search scope. Only supported on cloud. On Community Edition the search scope is always "facts".
+
+        search_type : typing.Optional[SearchType]
+            Search type. Only supported on cloud. Will be ignored on Community Edition.
+
+        session_ids : typing.Optional[typing.Sequence[str]]
+            the session ids to search
 
         text : typing.Optional[str]
             The search text.
@@ -1029,7 +1097,17 @@ class AsyncMemoryClient:
             "sessions/search",
             method="POST",
             params={"limit": limit},
-            json={"text": text, "user_id": user_id},
+            json={
+                "min_fact_rating": min_fact_rating,
+                "min_score": min_score,
+                "mmr_lambda": mmr_lambda,
+                "record_filter": record_filter,
+                "search_scope": search_scope,
+                "search_type": search_type,
+                "session_ids": session_ids,
+                "text": text,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )

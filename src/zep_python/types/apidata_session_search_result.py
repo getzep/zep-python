@@ -5,17 +5,13 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_fact import ApidataFact
 from .apidata_message import ApidataMessage
-from .apidata_summary import ApidataSummary
 
 
 class ApidataSessionSearchResult(pydantic_v1.BaseModel):
-    fact: typing.Optional[ApidataFact] = None
     message: typing.Optional[ApidataMessage] = None
     score: typing.Optional[float] = None
     session_id: typing.Optional[str] = None
-    summary: typing.Optional[ApidataSummary] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
