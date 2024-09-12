@@ -5,30 +5,19 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_fact import ApidataFact
 from .apidata_message import ApidataMessage
-from .apidata_summary import ApidataSummary
 
 
 class ApidataMemory(pydantic_v1.BaseModel):
-    facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
-    """
-    Most recent list of facts derived from the session.
-    Deprecated: Facts will be deprecated in future releases and relevant_facts should be used instead.
-    """
-
     messages: typing.Optional[typing.List[ApidataMessage]] = pydantic_v1.Field(default=None)
     """
-    A list of message objects, where each message contains a role and content.
+    A list of message objects, where each message contains a role and content. Only last_n messages will be returned
     """
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
     """
     A dictionary containing metadata associated with the memory.
     """
-
-    relevant_facts: typing.Optional[typing.List[ApidataFact]] = None
-    summary: typing.Optional[ApidataSummary] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

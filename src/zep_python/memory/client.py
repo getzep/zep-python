@@ -523,6 +523,8 @@ class MemoryClient:
         session_id: str,
         *,
         messages: typing.Sequence[Message],
+        fact_instruction: typing.Optional[str] = OMIT,
+        summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ApidataSuccessResponse:
         """
@@ -535,6 +537,12 @@ class MemoryClient:
 
         messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
+
+        fact_instruction : typing.Optional[str]
+            Additional instruction for generating the facts.
+
+        summary_instruction : typing.Optional[str]
+            Additional instruction for generating the summary.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -560,7 +568,11 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="POST",
-            json={"messages": messages},
+            json={
+                "fact_instruction": fact_instruction,
+                "messages": messages,
+                "summary_instruction": summary_instruction,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -1284,6 +1296,8 @@ class AsyncMemoryClient:
         session_id: str,
         *,
         messages: typing.Sequence[Message],
+        fact_instruction: typing.Optional[str] = OMIT,
+        summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ApidataSuccessResponse:
         """
@@ -1296,6 +1310,12 @@ class AsyncMemoryClient:
 
         messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
+
+        fact_instruction : typing.Optional[str]
+            Additional instruction for generating the facts.
+
+        summary_instruction : typing.Optional[str]
+            Additional instruction for generating the summary.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1321,7 +1341,11 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="POST",
-            json={"messages": messages},
+            json={
+                "fact_instruction": fact_instruction,
+                "messages": messages,
+                "summary_instruction": summary_instruction,
+            },
             request_options=request_options,
             omit=OMIT,
         )

@@ -8,6 +8,8 @@ from .apidata_message import ApidataMessage
 from .apidata_message_list_response import ApidataMessageListResponse
 from .apidata_role_type import ApidataRoleType
 from .apidata_session import ApidataSession
+from .apidata_session_fact_rating_examples import ApidataSessionFactRatingExamples
+from .apidata_session_fact_rating_instruction import ApidataSessionFactRatingInstruction
 from .apidata_session_list_response import ApidataSessionListResponse
 from .apidata_session_search_response import ApidataSessionSearchResponse
 from .apidata_session_search_result import ApidataSessionSearchResult
@@ -32,6 +34,8 @@ __all__ = [
     "ApidataMessageListResponse",
     "ApidataRoleType",
     "ApidataSession",
+    "ApidataSessionFactRatingExamples",
+    "ApidataSessionFactRatingInstruction",
     "ApidataSessionListResponse",
     "ApidataSessionSearchResponse",
     "ApidataSessionSearchResult",
