@@ -5,30 +5,30 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_fact import ApidataFact
-from .apidata_message import ApidataMessage
-from .apidata_summary import ApidataSummary
 
 
-class ApidataMemory(pydantic_v1.BaseModel):
-    facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+class ApidataSummary(pydantic_v1.BaseModel):
+    content: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Most recent list of facts derived from the session.
-    Deprecated: Facts will be deprecated in future releases and relevant_facts should be used instead.
-    """
-
-    messages: typing.Optional[typing.List[ApidataMessage]] = pydantic_v1.Field(default=None)
-    """
-    A list of message objects, where each message contains a role and content.
+    The content of the summary.
     """
 
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
+    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    A dictionary containing metadata associated with the memory.
+    The timestamp of when the summary was created.
     """
 
-    relevant_facts: typing.Optional[typing.List[ApidataFact]] = None
-    summary: typing.Optional[ApidataSummary] = None
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+    related_message_uuids: typing.Optional[typing.List[str]] = None
+    token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+    """
+    The number of tokens in the summary.
+    """
+
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    """
+    The unique identifier of the summary.
+    """
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -45,5 +45,7 @@ class ApidataMemory(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
+        allow_population_by_field_name = True
+        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}
