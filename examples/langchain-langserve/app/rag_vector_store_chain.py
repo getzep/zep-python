@@ -16,8 +16,8 @@ from langchain_core.runnables import (
 from langchain_core.runnables.utils import ConfigurableFieldSingleOption
 from langchain_openai import ChatOpenAI
 
-from zep_cloud.client import Zep
-from zep_cloud.langchain import ZepVectorStore
+from zep_python.client import Zep
+from zep_python.langchain import ZepVectorStore
 
 ZEP_COLLECTION_NAME = os.environ.get("ZEP_COLLECTION_NAME")
 if ZEP_COLLECTION_NAME is None:

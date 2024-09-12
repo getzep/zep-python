@@ -4,8 +4,8 @@ import uuid
 
 from dotenv import find_dotenv, load_dotenv
 
-from zep_cloud.types import ApiError
-from zep_cloud.client import AsyncZep
+from zep_python.types import ApiError
+from zep_python.client import AsyncZep
 
 load_dotenv(
     dotenv_path=find_dotenv()

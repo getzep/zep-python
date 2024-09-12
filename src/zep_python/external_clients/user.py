@@ -1,5 +1,5 @@
-from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from zep_cloud.user.client import UserClient as BaseUserClient, AsyncUserClient as AsyncBaseUserClient
+from zep_python.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from zep_python.user.client import UserClient as BaseUserClient, AsyncUserClient as AsyncBaseUserClient
 
 
 class UserClient(BaseUserClient):

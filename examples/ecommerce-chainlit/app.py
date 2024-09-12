@@ -7,8 +7,8 @@ from chat_history_shoe_purchase import history as previous_chat_history
 from dotenv import find_dotenv, load_dotenv
 from openai import AsyncOpenAI
 
-from zep_cloud.client import AsyncZep
-from zep_cloud.types import Message
+from zep_python.client import AsyncZep
+from zep_python.types import Message
 
 load_dotenv(dotenv_path=find_dotenv())
 

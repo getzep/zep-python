@@ -11,8 +11,8 @@ from langchain_core.runnables import (
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 
-from zep_cloud.client import Zep
-from zep_cloud.langchain import ZepChatMessageHistory
+from zep_python.client import Zep
+from zep_python.langchain import ZepChatMessageHistory
 from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(

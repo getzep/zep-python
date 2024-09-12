@@ -84,7 +84,7 @@ We support `langchain_core@>=0.1.3<0.2.0`
 You can import these classes in the following way:
 
 ```python
-from zep_cloud.langchain import ZepChatMessageHistory, ZepVectorStore
+from zep_python.langchain import ZepChatMessageHistory, ZepVectorStore
 ```
 
 ### Running Examples
