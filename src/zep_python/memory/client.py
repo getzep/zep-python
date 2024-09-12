@@ -65,7 +65,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -108,7 +108,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -168,7 +168,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -237,7 +237,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -288,7 +288,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -348,7 +348,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -394,7 +394,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -451,7 +451,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -528,7 +528,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -588,7 +588,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -659,7 +659,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -724,7 +724,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -778,7 +778,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -838,7 +838,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -893,8 +893,8 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud import Message
-        from zep_cloud.client import Zep
+        from zep_python import Message
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -942,7 +942,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -998,7 +998,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -1049,7 +1049,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -1108,7 +1108,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -1185,7 +1185,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -1242,7 +1242,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -1294,7 +1294,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -1347,7 +1347,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1390,7 +1390,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1450,7 +1450,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1519,7 +1519,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1570,7 +1570,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1630,7 +1630,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1676,7 +1676,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1733,7 +1733,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1810,7 +1810,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1870,7 +1870,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1941,7 +1941,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2006,7 +2006,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2060,7 +2060,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2120,7 +2120,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2175,8 +2175,8 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud import Message
-        from zep_cloud.client import AsyncZep
+        from zep_python import Message
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2224,7 +2224,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2280,7 +2280,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2331,7 +2331,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2390,7 +2390,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2467,7 +2467,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2524,7 +2524,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -2576,7 +2576,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",

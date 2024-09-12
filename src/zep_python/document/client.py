@@ -47,7 +47,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -90,7 +90,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -148,7 +148,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -201,7 +201,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -259,7 +259,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -318,8 +318,8 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud import CreateDocumentRequest
-        from zep_cloud.client import Zep
+        from zep_python import CreateDocumentRequest
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -381,7 +381,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -442,7 +442,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -499,8 +499,8 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud import UpdateDocumentListRequest
-        from zep_cloud.client import Zep
+        from zep_python import UpdateDocumentListRequest
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -559,7 +559,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -612,7 +612,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -677,7 +677,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -757,7 +757,7 @@ class DocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import Zep
+        from zep_python.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -817,7 +817,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -860,7 +860,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -918,7 +918,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -971,7 +971,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1029,7 +1029,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1088,8 +1088,8 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud import CreateDocumentRequest
-        from zep_cloud.client import AsyncZep
+        from zep_python import CreateDocumentRequest
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1151,7 +1151,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1212,7 +1212,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1269,8 +1269,8 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud import UpdateDocumentListRequest
-        from zep_cloud.client import AsyncZep
+        from zep_python import UpdateDocumentListRequest
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1329,7 +1329,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1382,7 +1382,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1447,7 +1447,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1527,7 +1527,7 @@ class AsyncDocumentClient:
 
         Examples
         --------
-        from zep_cloud.client import AsyncZep
+        from zep_python.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
