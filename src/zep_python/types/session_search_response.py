@@ -5,26 +5,11 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .fact_rating_examples import FactRatingExamples
+from .session_search_result import SessionSearchResult
 
 
-class FactRatingInstruction(pydantic_v1.BaseModel):
-    examples: typing.Optional[FactRatingExamples] = pydantic_v1.Field(default=None)
-    """
-    Examples is a list of examples that demonstrate how facts might be rated based on your instruction. You should provide
-    an example of a highly rated example, a low rated example, and a medium (or in between example). For example, if you are rating
-    based on relevance to a trip planning application, your examples might be:
-    High: "Joe's dream vacation is Bali"
-    Medium: "Joe has a fear of flying",
-    Low: "Joe's favorite food is Japanese",
-    """
-
-    instruction: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    A string describing how to rate facts as they apply to your application. A trip planning application may
-    use something like "relevancy to planning a trip, the user's preferences when traveling,
-    or the user's travel history."
-    """
+class SessionSearchResponse(pydantic_v1.BaseModel):
+    results: typing.Optional[typing.List[SessionSearchResult]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

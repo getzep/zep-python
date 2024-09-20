@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError
+from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import pydantic_v1
@@ -11,11 +11,11 @@ from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.apidata_api_error import ApidataApiError
-from ..types.apidata_session import ApidataSession
-from ..types.apidata_success_response import ApidataSuccessResponse
-from ..types.apidata_user import ApidataUser
-from ..types.apidata_user_list_response import ApidataUserListResponse
+from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.session import Session
+from ..types.success_response import SuccessResponse
+from ..types.user import User
+from ..types.user_list_response import UserListResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -34,7 +34,7 @@ class UserClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Add a user.
 
@@ -60,7 +60,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was added.
 
         Examples
@@ -86,16 +86,18 @@ class UserClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataUser, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def list_ordered(
         self,
@@ -103,7 +105,7 @@ class UserClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUserListResponse:
+    ) -> UserListResponse:
         """
         List all users with pagination.
 
@@ -120,7 +122,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUserListResponse
+        UserListResponse
             Successfully retrieved list of users
 
         Examples
@@ -139,18 +141,20 @@ class UserClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataUserListResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(UserListResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataUser:
+    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
         Get a user.
 
@@ -164,7 +168,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was retrieved.
 
         Examples
@@ -182,20 +186,20 @@ class UserClient:
             f"users/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataUser, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         delete user by id
 
@@ -209,7 +213,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             OK
 
         Examples
@@ -227,16 +231,18 @@ class UserClient:
             f"users/{jsonable_encoder(user_id)}", method="DELETE", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataSuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def update(
         self,
@@ -247,7 +253,7 @@ class UserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Update a user.
 
@@ -273,7 +279,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was updated.
 
         Examples
@@ -295,22 +301,24 @@ class UserClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataUser, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_sessions(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[ApidataSession]]:
+    ) -> typing.List[typing.List[Session]]:
         """
         list all sessions for a user by user id
 
@@ -324,7 +332,7 @@ class UserClient:
 
         Returns
         -------
-        typing.List[typing.List[ApidataSession]]
+        typing.List[typing.List[Session]]
             OK
 
         Examples
@@ -342,14 +350,16 @@ class UserClient:
             f"users/{jsonable_encoder(user_id)}/sessions", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataSession]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[Session]], _response.json())  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
 
 class AsyncUserClient:
@@ -365,7 +375,7 @@ class AsyncUserClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Add a user.
 
@@ -391,7 +401,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was added.
 
         Examples
@@ -417,16 +427,18 @@ class AsyncUserClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataUser, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def list_ordered(
         self,
@@ -434,7 +446,7 @@ class AsyncUserClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUserListResponse:
+    ) -> UserListResponse:
         """
         List all users with pagination.
 
@@ -451,7 +463,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUserListResponse
+        UserListResponse
             Successfully retrieved list of users
 
         Examples
@@ -470,18 +482,20 @@ class AsyncUserClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataUserListResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(UserListResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataUser:
+    async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
         Get a user.
 
@@ -495,7 +509,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was retrieved.
 
         Examples
@@ -513,20 +527,20 @@ class AsyncUserClient:
             f"users/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataUser, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    async def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         delete user by id
 
@@ -540,7 +554,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             OK
 
         Examples
@@ -558,16 +572,18 @@ class AsyncUserClient:
             f"users/{jsonable_encoder(user_id)}", method="DELETE", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataSuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update(
         self,
@@ -578,7 +594,7 @@ class AsyncUserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Update a user.
 
@@ -604,7 +620,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was updated.
 
         Examples
@@ -626,22 +642,24 @@ class AsyncUserClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataUser, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
         if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_sessions(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[ApidataSession]]:
+    ) -> typing.List[typing.List[Session]]:
         """
         list all sessions for a user by user id
 
@@ -655,7 +673,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        typing.List[typing.List[ApidataSession]]
+        typing.List[typing.List[Session]]
             OK
 
         Examples
@@ -673,11 +691,13 @@ class AsyncUserClient:
             f"users/{jsonable_encoder(user_id)}/sessions", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataSession]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[Session]], _response.json())  # type: ignore
         if _response.status_code == 500:
-            raise InternalServerError(pydantic_v1.parse_obj_as(ApidataApiError, _response.json()))  # type: ignore
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
         try:
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)

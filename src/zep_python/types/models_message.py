@@ -5,18 +5,48 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_message import ApidataMessage
+from .models_role_type import ModelsRoleType
 
 
-class ApidataMemory(pydantic_v1.BaseModel):
-    messages: typing.Optional[typing.List[ApidataMessage]] = pydantic_v1.Field(default=None)
+class ModelsMessage(pydantic_v1.BaseModel):
+    content: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    A list of message objects, where each message contains a role and content. Only last_n messages will be returned
+    The content of the message.
+    """
+
+    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    The timestamp of when the message was created.
     """
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
     """
-    A dictionary containing metadata associated with the memory.
+    The metadata associated with the message.
+    """
+
+    role: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    The role of the sender of the message (e.g., "user", "assistant").
+    """
+
+    role_type: typing.Optional[ModelsRoleType] = pydantic_v1.Field(default=None)
+    """
+    The type of the role (e.g., "user", "system").
+    """
+
+    token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+    """
+    The number of tokens in the message.
+    """
+
+    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    The timestamp of when the message was last updated.
+    """
+
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    """
+    The unique identifier of the message.
     """
 
     def json(self, **kwargs: typing.Any) -> str:
@@ -34,5 +64,7 @@ class ApidataMemory(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
+        allow_population_by_field_name = True
+        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

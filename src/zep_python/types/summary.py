@@ -5,25 +5,29 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_session_fact_rating_examples import ApidataSessionFactRatingExamples
 
 
-class ApidataSessionFactRatingInstruction(pydantic_v1.BaseModel):
-    examples: typing.Optional[ApidataSessionFactRatingExamples] = pydantic_v1.Field(default=None)
+class Summary(pydantic_v1.BaseModel):
+    content: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Examples is a list of examples that demonstrate how facts might be rated based on your instruction. You should provide
-    an example of a highly rated example, a low rated example, and a medium (or in between example). For example, if you are rating
-    based on relevance to a trip planning application, your examples might be:
-    High: "Joe's dream vacation is Bali"
-    Medium: "Joe has a fear of flying",
-    Low: "Joe's favorite food is Japanese",
+    The content of the summary.
     """
 
-    instruction: typing.Optional[str] = pydantic_v1.Field(default=None)
+    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    A string describing how to rate facts as they apply to your application. A trip planning application may
-    use something like "relevancy to planning a trip, the user's preferences when traveling,
-    or the user's travel history."
+    The timestamp of when the summary was created.
+    """
+
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+    related_message_uuids: typing.Optional[typing.List[str]] = None
+    token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+    """
+    The number of tokens in the summary.
+    """
+
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    """
+    The unique identifier of the summary.
     """
 
     def json(self, **kwargs: typing.Any) -> str:
@@ -41,5 +45,7 @@ class ApidataSessionFactRatingInstruction(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
+        allow_population_by_field_name = True
+        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

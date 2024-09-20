@@ -5,11 +5,11 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_message import ApidataMessage
+from .message import Message
 
 
-class ApidataMessageListResponse(pydantic_v1.BaseModel):
-    messages: typing.Optional[typing.List[ApidataMessage]] = pydantic_v1.Field(default=None)
+class MessageListResponse(pydantic_v1.BaseModel):
+    messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
     """
     A list of message objects.
     """
