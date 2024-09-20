@@ -24,7 +24,6 @@ from ..types.memory_search_result import MemorySearchResult
 from ..types.memory_type import MemoryType
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
-from ..types.models_message import ModelsMessage
 from ..types.new_fact import NewFact
 from ..types.question import Question
 from ..types.search_scope import SearchScope
@@ -933,7 +932,7 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        messages: typing.Sequence[ModelsMessage],
+        messages: typing.Sequence[Message],
         fact_instruction: typing.Optional[str] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -946,7 +945,7 @@ class MemoryClient:
         session_id : str
             The ID of the session to which memory should be added.
 
-        messages : typing.Sequence[ModelsMessage]
+        messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
         fact_instruction : typing.Optional[str]
@@ -965,7 +964,7 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud import ModelsMessage
+        from zep_cloud import Message
         from zep_cloud.client import Zep
 
         client = Zep(
@@ -973,7 +972,7 @@ class MemoryClient:
         )
         client.memory.add(
             session_id="sessionId",
-            messages=[ModelsMessage()],
+            messages=[Message()],
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -2311,7 +2310,7 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        messages: typing.Sequence[ModelsMessage],
+        messages: typing.Sequence[Message],
         fact_instruction: typing.Optional[str] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -2324,7 +2323,7 @@ class AsyncMemoryClient:
         session_id : str
             The ID of the session to which memory should be added.
 
-        messages : typing.Sequence[ModelsMessage]
+        messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
         fact_instruction : typing.Optional[str]
@@ -2343,7 +2342,7 @@ class AsyncMemoryClient:
 
         Examples
         --------
-        from zep_cloud import ModelsMessage
+        from zep_cloud import Message
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -2351,7 +2350,7 @@ class AsyncMemoryClient:
         )
         await client.memory.add(
             session_id="sessionId",
-            messages=[ModelsMessage()],
+            messages=[Message()],
         )
         """
         _response = await self._client_wrapper.httpx_client.request(

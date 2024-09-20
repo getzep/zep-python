@@ -19,8 +19,6 @@ from .memory_search_result import MemorySearchResult
 from .memory_type import MemoryType
 from .message import Message
 from .message_list_response import MessageListResponse
-from .models_message import ModelsMessage
-from .models_role_type import ModelsRoleType
 from .new_fact import NewFact
 from .question import Question
 from .role_type import RoleType
@@ -60,8 +58,6 @@ __all__ = [
     "MemoryType",
     "Message",
     "MessageListResponse",
-    "ModelsMessage",
-    "ModelsRoleType",
     "NewFact",
     "Question",
     "RoleType",
