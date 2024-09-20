@@ -13,12 +13,15 @@ from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.fact_response import FactResponse
 from ..types.memory import Memory
 from ..types.memory_type import MemoryType
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.models_message import ModelsMessage
+from ..types.search_scope import SearchScope
+from ..types.search_type import SearchType
 from ..types.session import Session
 from ..types.session_list_response import SessionListResponse
 from ..types.session_search_response import SessionSearchResponse
@@ -126,6 +129,7 @@ class MemoryClient:
         self,
         *,
         session_id: str,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -137,6 +141,9 @@ class MemoryClient:
         ----------
         session_id : str
             The unique identifier of the session.
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the session.
@@ -166,7 +173,12 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             "sessions",
             method="POST",
-            json={"metadata": metadata, "session_id": session_id, "user_id": user_id},
+            json={
+                "fact_rating_instruction": fact_rating_instruction,
+                "metadata": metadata,
+                "session_id": session_id,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -251,6 +263,13 @@ class MemoryClient:
         self,
         *,
         limit: typing.Optional[int] = None,
+        min_fact_rating: typing.Optional[float] = OMIT,
+        min_score: typing.Optional[float] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search_scope: typing.Optional[SearchScope] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
+        session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         text: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -262,6 +281,27 @@ class MemoryClient:
         ----------
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
+
+        min_fact_rating : typing.Optional[float]
+            The minimum fact rating to filter on. Only supported on cloud. Will be ignored on Community Edition.
+
+        min_score : typing.Optional[float]
+            The minimum score for search results. Only supported on cloud. Will be ignored on Community Edition.
+
+        mmr_lambda : typing.Optional[float]
+            The lambda parameter for the MMR Reranking Algorithm. Only supported on cloud. Will be ignored on Community Edition.
+
+        record_filter : typing.Optional[typing.Dict[str, typing.Any]]
+            Record filter on the metadata. Only supported on cloud. Will be ignored on Community Edition.
+
+        search_scope : typing.Optional[SearchScope]
+            Search scope. Only supported on cloud. On Community Edition the search scope is always "facts".
+
+        search_type : typing.Optional[SearchType]
+            Search type. Only supported on cloud. Will be ignored on Community Edition.
+
+        session_ids : typing.Optional[typing.Sequence[str]]
+            the session ids to search
 
         text : typing.Optional[str]
             The search text.
@@ -290,7 +330,17 @@ class MemoryClient:
             "sessions/search",
             method="POST",
             params={"limit": limit},
-            json={"text": text, "user_id": user_id},
+            json={
+                "min_fact_rating": min_fact_rating,
+                "min_score": min_score,
+                "mmr_lambda": mmr_lambda,
+                "record_filter": record_filter,
+                "search_scope": search_scope,
+                "search_type": search_type,
+                "session_ids": session_ids,
+                "text": text,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -356,6 +406,7 @@ class MemoryClient:
         session_id: str,
         *,
         metadata: typing.Dict[str, typing.Any],
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -368,6 +419,10 @@ class MemoryClient:
 
         metadata : typing.Dict[str, typing.Any]
             The metadata to update
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
+            Fact rating instructions can not be unset.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -392,7 +447,7 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}",
             method="PATCH",
-            json={"metadata": metadata},
+            json={"fact_rating_instruction": fact_rating_instruction, "metadata": metadata},
             request_options=request_options,
             omit=OMIT,
         )
@@ -480,6 +535,8 @@ class MemoryClient:
         session_id: str,
         *,
         messages: typing.Sequence[ModelsMessage],
+        fact_instruction: typing.Optional[str] = OMIT,
+        summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
@@ -492,6 +549,12 @@ class MemoryClient:
 
         messages : typing.Sequence[ModelsMessage]
             A list of message objects, where each message contains a role and content.
+
+        fact_instruction : typing.Optional[str]
+            Additional instruction for generating the facts.
+
+        summary_instruction : typing.Optional[str]
+            Additional instruction for generating the summary.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -517,7 +580,11 @@ class MemoryClient:
         _response = self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="POST",
-            json={"messages": messages},
+            json={
+                "fact_instruction": fact_instruction,
+                "messages": messages,
+                "summary_instruction": summary_instruction,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -857,6 +924,7 @@ class AsyncMemoryClient:
         self,
         *,
         session_id: str,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -868,6 +936,9 @@ class AsyncMemoryClient:
         ----------
         session_id : str
             The unique identifier of the session.
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the session.
@@ -897,7 +968,12 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             "sessions",
             method="POST",
-            json={"metadata": metadata, "session_id": session_id, "user_id": user_id},
+            json={
+                "fact_rating_instruction": fact_rating_instruction,
+                "metadata": metadata,
+                "session_id": session_id,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -982,6 +1058,13 @@ class AsyncMemoryClient:
         self,
         *,
         limit: typing.Optional[int] = None,
+        min_fact_rating: typing.Optional[float] = OMIT,
+        min_score: typing.Optional[float] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        record_filter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search_scope: typing.Optional[SearchScope] = OMIT,
+        search_type: typing.Optional[SearchType] = OMIT,
+        session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         text: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -993,6 +1076,27 @@ class AsyncMemoryClient:
         ----------
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
+
+        min_fact_rating : typing.Optional[float]
+            The minimum fact rating to filter on. Only supported on cloud. Will be ignored on Community Edition.
+
+        min_score : typing.Optional[float]
+            The minimum score for search results. Only supported on cloud. Will be ignored on Community Edition.
+
+        mmr_lambda : typing.Optional[float]
+            The lambda parameter for the MMR Reranking Algorithm. Only supported on cloud. Will be ignored on Community Edition.
+
+        record_filter : typing.Optional[typing.Dict[str, typing.Any]]
+            Record filter on the metadata. Only supported on cloud. Will be ignored on Community Edition.
+
+        search_scope : typing.Optional[SearchScope]
+            Search scope. Only supported on cloud. On Community Edition the search scope is always "facts".
+
+        search_type : typing.Optional[SearchType]
+            Search type. Only supported on cloud. Will be ignored on Community Edition.
+
+        session_ids : typing.Optional[typing.Sequence[str]]
+            the session ids to search
 
         text : typing.Optional[str]
             The search text.
@@ -1021,7 +1125,17 @@ class AsyncMemoryClient:
             "sessions/search",
             method="POST",
             params={"limit": limit},
-            json={"text": text, "user_id": user_id},
+            json={
+                "min_fact_rating": min_fact_rating,
+                "min_score": min_score,
+                "mmr_lambda": mmr_lambda,
+                "record_filter": record_filter,
+                "search_scope": search_scope,
+                "search_type": search_type,
+                "session_ids": session_ids,
+                "text": text,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -1087,6 +1201,7 @@ class AsyncMemoryClient:
         session_id: str,
         *,
         metadata: typing.Dict[str, typing.Any],
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -1099,6 +1214,10 @@ class AsyncMemoryClient:
 
         metadata : typing.Dict[str, typing.Any]
             The metadata to update
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
+            Fact rating instructions can not be unset.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1123,7 +1242,7 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}",
             method="PATCH",
-            json={"metadata": metadata},
+            json={"fact_rating_instruction": fact_rating_instruction, "metadata": metadata},
             request_options=request_options,
             omit=OMIT,
         )
@@ -1211,6 +1330,8 @@ class AsyncMemoryClient:
         session_id: str,
         *,
         messages: typing.Sequence[ModelsMessage],
+        fact_instruction: typing.Optional[str] = OMIT,
+        summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
@@ -1223,6 +1344,12 @@ class AsyncMemoryClient:
 
         messages : typing.Sequence[ModelsMessage]
             A list of message objects, where each message contains a role and content.
+
+        fact_instruction : typing.Optional[str]
+            Additional instruction for generating the facts.
+
+        summary_instruction : typing.Optional[str]
+            Additional instruction for generating the summary.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1248,7 +1375,11 @@ class AsyncMemoryClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"sessions/{jsonable_encoder(session_id)}/memory",
             method="POST",
-            json={"messages": messages},
+            json={
+                "fact_instruction": fact_instruction,
+                "messages": messages,
+                "summary_instruction": summary_instruction,
+            },
             request_options=request_options,
             omit=OMIT,
         )

@@ -5,27 +5,26 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .session_fact_rating_instruction import SessionFactRatingInstruction
+from .fact_rating_examples import FactRatingExamples
 
 
-class Session(pydantic_v1.BaseModel):
-    classifications: typing.Optional[typing.Dict[str, str]] = None
-    created_at: typing.Optional[str] = None
-    deleted_at: typing.Optional[str] = None
-    ended_at: typing.Optional[str] = None
-    fact_rating_instruction: typing.Optional[SessionFactRatingInstruction] = None
-    facts: typing.Optional[typing.List[str]] = None
-    id: typing.Optional[int] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    project_uuid: typing.Optional[str] = None
-    session_id: typing.Optional[str] = None
-    updated_at: typing.Optional[str] = None
-    user_id: typing.Optional[str] = pydantic_v1.Field(default=None)
+class FactRatingInstruction(pydantic_v1.BaseModel):
+    examples: typing.Optional[FactRatingExamples] = pydantic_v1.Field(default=None)
     """
-    Must be a pointer to allow for null values
+    Examples is a list of examples that demonstrate how facts might be rated based on your instruction. You should provide
+    an example of a highly rated example, a low rated example, and a medium (or in between example). For example, if you are rating
+    based on relevance to a trip planning application, your examples might be:
+    High: "Joe's dream vacation is Bali"
+    Medium: "Joe has a fear of flying",
+    Low: "Joe's favorite food is Japanese",
     """
 
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    instruction: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    A string describing how to rate facts as they apply to your application. A trip planning application may
+    use something like "relevancy to planning a trip, the user's preferences when traveling,
+    or the user's travel history."
+    """
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -42,7 +41,5 @@ class Session(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}
