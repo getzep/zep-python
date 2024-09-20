@@ -67,17 +67,19 @@ async def main() -> None:
 
     # Add Memory for session
     print(f"\n---Add Memory for Session: {session_id}")
-    for m in history:
+    for m in history[0:3]:
         print(f"{m['role']}: {m['content']}")
         await client.memory.add(session_id=session_id, messages=[Message(**m)])
 
     #  Wait for the messages to be processed
-    await asyncio.sleep(5)
-
+    await asyncio.sleep(30)
+    #
     # Get Memory for session
     print(f"\n---Get Perpetual Memory for Session: {session_id}")
-    memory = await client.memory.get(session_id, memory_type="perpetual")
+    memory = await client.memory.get(session_id)
     print(f"Memory: {memory}")
+    for f in memory.relevant_facts:
+        print(f"Fact: {f}")
     print("\n---End of Memory")
 
     query = "What are Jane's favorite shoe brands?"
@@ -86,7 +88,7 @@ async def main() -> None:
         user_id=user_id, text=query, search_scope="facts"
     )
     print("facts_result: ", facts_result)
-
+    await client.user.delete(user_id)
     # Delete Memory for session
     # Uncomment to run
     # print(f"\n6---deleteMemory for Session: {session_id}")
