@@ -7,16 +7,10 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class DocumentSearchResult(pydantic_v1.BaseModel):
-    content: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    document_id: typing.Optional[str] = None
-    embedding: typing.Optional[typing.List[float]] = None
-    is_embedded: typing.Optional[bool] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    score: typing.Optional[float] = None
-    updated_at: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+class SessionFactRatingExamples(pydantic_v1.BaseModel):
+    high: typing.Optional[str] = None
+    low: typing.Optional[str] = None
+    medium: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -33,7 +27,5 @@ class DocumentSearchResult(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

@@ -13,13 +13,13 @@ from .summary import Summary
 class Memory(pydantic_v1.BaseModel):
     facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
-    Most recent list of facts derived from the session. Included only with perpetual memory type.
+    Most recent list of facts derived from the session. (cloud only)
     Deprecated: Facts will be deprecated in future releases and relevant_facts should be used instead.
     """
 
     messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
     """
-    A list of message objects, where each message contains a role and content.
+    A list of message objects, where each message contains a role and content. Only last_n messages will be returned
     """
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
@@ -27,15 +27,14 @@ class Memory(pydantic_v1.BaseModel):
     A dictionary containing metadata associated with the memory.
     """
 
-    relevant_facts: typing.Optional[typing.List[Fact]] = None
-    relevant_summaries: typing.Optional[typing.List[Summary]] = pydantic_v1.Field(default=None)
+    relevant_facts: typing.Optional[typing.List[Fact]] = pydantic_v1.Field(default=None)
     """
-    Summary list result from Summary Retriever Memory Type.
+    Most relevant facts to the recent messages in the session.
     """
 
     summary: typing.Optional[Summary] = pydantic_v1.Field(default=None)
     """
-    A Summary object.
+    The most recent summary before last nth message. (cloud only)
     """
 
     def json(self, **kwargs: typing.Any) -> str:

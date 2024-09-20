@@ -7,7 +7,7 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class DocumentResponse(pydantic_v1.BaseModel):
+class ApidataDocument(pydantic_v1.BaseModel):
     content: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
     document_id: typing.Optional[str] = None

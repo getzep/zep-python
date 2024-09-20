@@ -13,10 +13,10 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_document import ApidataDocument
+from ..types.apidata_document_collection import ApidataDocumentCollection
+from ..types.apidata_document_search_response import ApidataDocumentSearchResponse
 from ..types.create_document_request import CreateDocumentRequest
-from ..types.document_collection_response import DocumentCollectionResponse
-from ..types.document_response import DocumentResponse
-from ..types.document_search_result_page import DocumentSearchResultPage
 from ..types.search_type import SearchType
 from ..types.success_response import SuccessResponse
 from ..types.update_document_list_request import UpdateDocumentListRequest
@@ -31,7 +31,7 @@ class DocumentClient:
 
     def list_collections(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[DocumentCollectionResponse]]:
+    ) -> typing.List[typing.List[ApidataDocumentCollection]]:
         """
         Returns a list of all DocumentCollections.
 
@@ -42,7 +42,7 @@ class DocumentClient:
 
         Returns
         -------
-        typing.List[typing.List[DocumentCollectionResponse]]
+        typing.List[typing.List[ApidataDocumentCollection]]
             OK
 
         Examples
@@ -58,7 +58,7 @@ class DocumentClient:
             "collections", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentCollectionResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
         if _response.status_code == 401:
             raise UnauthorizedError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -75,7 +75,7 @@ class DocumentClient:
 
     def get_collection(
         self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> DocumentCollectionResponse:
+    ) -> ApidataDocumentCollection:
         """
         Returns a DocumentCollection if it exists.
 
@@ -89,7 +89,7 @@ class DocumentClient:
 
         Returns
         -------
-        DocumentCollectionResponse
+        ApidataDocumentCollection
             OK
 
         Examples
@@ -107,7 +107,7 @@ class DocumentClient:
             f"collections/{jsonable_encoder(collection_name)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(DocumentCollectionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -317,7 +317,7 @@ class DocumentClient:
         *,
         request: typing.Sequence[CreateDocumentRequest],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[str]:
+    ) -> typing.List[typing.List[str]]:
         """
         Creates Documents in a specified DocumentCollection and returns their UUIDs.
 
@@ -333,7 +333,7 @@ class DocumentClient:
 
         Returns
         -------
-        typing.List[str]
+        typing.List[typing.List[str]]
             OK
 
         Examples
@@ -361,7 +361,7 @@ class DocumentClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[str], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[str]], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -447,7 +447,7 @@ class DocumentClient:
         document_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[DocumentResponse]:
+    ) -> typing.List[typing.List[ApidataDocument]]:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
@@ -465,7 +465,7 @@ class DocumentClient:
 
         Returns
         -------
-        typing.List[DocumentResponse]
+        typing.List[typing.List[ApidataDocument]]
             OK
 
         Examples
@@ -487,7 +487,7 @@ class DocumentClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[DocumentResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocument]], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -571,9 +571,9 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def gets_a_document_from_a_document_collection_by_uuid(
+    def gets_a_document_from_a_document_collection_by_uuid_cloud_only(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> DocumentResponse:
+    ) -> ApidataDocument:
         """
         Returns specified Document from a DocumentCollection.
 
@@ -590,7 +590,7 @@ class DocumentClient:
 
         Returns
         -------
-        DocumentResponse
+        ApidataDocument
             OK
 
         Examples
@@ -600,7 +600,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.gets_a_document_from_a_document_collection_by_uuid(
+        client.document.gets_a_document_from_a_document_collection_by_uuid_cloud_only(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -611,7 +611,7 @@ class DocumentClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(DocumentResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataDocument, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -687,7 +687,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def updates_a_document(
+    def updates_a_document_cloud_only(
         self,
         collection_name: str,
         document_uuid: str,
@@ -726,7 +726,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.updates_a_document(
+        client.document.updates_a_document_cloud_only(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -769,7 +769,7 @@ class DocumentClient:
         search_type: typing.Optional[SearchType] = OMIT,
         text: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> DocumentSearchResultPage:
+    ) -> ApidataDocumentSearchResponse:
         """
         Searches over documents in a collection based on provided search criteria. One of text or metadata must be provided. Returns an empty list if no documents are found.
 
@@ -800,7 +800,7 @@ class DocumentClient:
 
         Returns
         -------
-        DocumentSearchResultPage
+        ApidataDocumentSearchResponse
             OK
 
         Examples
@@ -829,7 +829,7 @@ class DocumentClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(DocumentSearchResultPage, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataDocumentSearchResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -853,7 +853,7 @@ class AsyncDocumentClient:
 
     async def list_collections(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[DocumentCollectionResponse]]:
+    ) -> typing.List[typing.List[ApidataDocumentCollection]]:
         """
         Returns a list of all DocumentCollections.
 
@@ -864,7 +864,7 @@ class AsyncDocumentClient:
 
         Returns
         -------
-        typing.List[typing.List[DocumentCollectionResponse]]
+        typing.List[typing.List[ApidataDocumentCollection]]
             OK
 
         Examples
@@ -880,7 +880,7 @@ class AsyncDocumentClient:
             "collections", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[DocumentCollectionResponse]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
         if _response.status_code == 401:
             raise UnauthorizedError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -897,7 +897,7 @@ class AsyncDocumentClient:
 
     async def get_collection(
         self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> DocumentCollectionResponse:
+    ) -> ApidataDocumentCollection:
         """
         Returns a DocumentCollection if it exists.
 
@@ -911,7 +911,7 @@ class AsyncDocumentClient:
 
         Returns
         -------
-        DocumentCollectionResponse
+        ApidataDocumentCollection
             OK
 
         Examples
@@ -929,7 +929,7 @@ class AsyncDocumentClient:
             f"collections/{jsonable_encoder(collection_name)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(DocumentCollectionResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1139,7 +1139,7 @@ class AsyncDocumentClient:
         *,
         request: typing.Sequence[CreateDocumentRequest],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[str]:
+    ) -> typing.List[typing.List[str]]:
         """
         Creates Documents in a specified DocumentCollection and returns their UUIDs.
 
@@ -1155,7 +1155,7 @@ class AsyncDocumentClient:
 
         Returns
         -------
-        typing.List[str]
+        typing.List[typing.List[str]]
             OK
 
         Examples
@@ -1183,7 +1183,7 @@ class AsyncDocumentClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[str], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[str]], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1269,7 +1269,7 @@ class AsyncDocumentClient:
         document_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[DocumentResponse]:
+    ) -> typing.List[typing.List[ApidataDocument]]:
         """
         Returns Documents from a DocumentCollection specified by UUID or ID.
 
@@ -1287,7 +1287,7 @@ class AsyncDocumentClient:
 
         Returns
         -------
-        typing.List[DocumentResponse]
+        typing.List[typing.List[ApidataDocument]]
             OK
 
         Examples
@@ -1309,7 +1309,7 @@ class AsyncDocumentClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[DocumentResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocument]], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1393,9 +1393,9 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def gets_a_document_from_a_document_collection_by_uuid(
+    async def gets_a_document_from_a_document_collection_by_uuid_cloud_only(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> DocumentResponse:
+    ) -> ApidataDocument:
         """
         Returns specified Document from a DocumentCollection.
 
@@ -1412,7 +1412,7 @@ class AsyncDocumentClient:
 
         Returns
         -------
-        DocumentResponse
+        ApidataDocument
             OK
 
         Examples
@@ -1422,7 +1422,7 @@ class AsyncDocumentClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.gets_a_document_from_a_document_collection_by_uuid(
+        await client.document.gets_a_document_from_a_document_collection_by_uuid_cloud_only(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -1433,7 +1433,7 @@ class AsyncDocumentClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(DocumentResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataDocument, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:
@@ -1509,7 +1509,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def updates_a_document(
+    async def updates_a_document_cloud_only(
         self,
         collection_name: str,
         document_uuid: str,
@@ -1548,7 +1548,7 @@ class AsyncDocumentClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.updates_a_document(
+        await client.document.updates_a_document_cloud_only(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -1591,7 +1591,7 @@ class AsyncDocumentClient:
         search_type: typing.Optional[SearchType] = OMIT,
         text: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> DocumentSearchResultPage:
+    ) -> ApidataDocumentSearchResponse:
         """
         Searches over documents in a collection based on provided search criteria. One of text or metadata must be provided. Returns an empty list if no documents are found.
 
@@ -1622,7 +1622,7 @@ class AsyncDocumentClient:
 
         Returns
         -------
-        DocumentSearchResultPage
+        ApidataDocumentSearchResponse
             OK
 
         Examples
@@ -1651,7 +1651,7 @@ class AsyncDocumentClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(DocumentSearchResultPage, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataDocumentSearchResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 401:

@@ -5,30 +5,49 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .models_role_type import ModelsRoleType
 
 
-class DocumentCollectionResponse(pydantic_v1.BaseModel):
-    created_at: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    document_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+class ModelsMessage(pydantic_v1.BaseModel):
+    content: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Number of documents in the collection
+    The content of the message.
     """
 
-    document_embedded_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Number of documents with embeddings
+    The timestamp of when the message was created.
     """
 
-    embedding_dimensions: typing.Optional[int] = None
-    embedding_model_name: typing.Optional[str] = None
-    is_auto_embedded: typing.Optional[bool] = None
-    is_indexed: typing.Optional[bool] = None
-    is_normalized: typing.Optional[bool] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    name: typing.Optional[str] = None
-    updated_at: typing.Optional[str] = None
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
+    """
+    The metadata associated with the message.
+    """
+
+    role: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    The role of the sender of the message (e.g., "user", "assistant").
+    """
+
+    role_type: typing.Optional[ModelsRoleType] = pydantic_v1.Field(default=None)
+    """
+    The type of the role (e.g., "user", "system").
+    """
+
+    token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+    """
+    The number of tokens in the message.
+    """
+
+    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    The timestamp of when the message was last updated.
+    """
+
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    """
+    The unique identifier of the message.
+    """
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
