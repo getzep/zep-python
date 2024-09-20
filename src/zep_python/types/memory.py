@@ -7,9 +7,16 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .fact import Fact
 from .message import Message
+from .summary import Summary
 
 
 class Memory(pydantic_v1.BaseModel):
+    facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    """
+    Most recent list of facts derived from the session. (cloud only)
+    Deprecated: Facts will be deprecated in future releases and relevant_facts should be used instead.
+    """
+
     messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
     """
     A list of message objects, where each message contains a role and content. Only last_n messages will be returned
@@ -20,7 +27,15 @@ class Memory(pydantic_v1.BaseModel):
     A dictionary containing metadata associated with the memory.
     """
 
-    relevant_facts: typing.Optional[typing.List[Fact]] = None
+    relevant_facts: typing.Optional[typing.List[Fact]] = pydantic_v1.Field(default=None)
+    """
+    Most relevant facts to the recent messages in the session.
+    """
+
+    summary: typing.Optional[Summary] = pydantic_v1.Field(default=None)
+    """
+    The most recent summary before last nth message. (cloud only)
+    """
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
