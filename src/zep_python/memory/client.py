@@ -16,7 +16,6 @@ from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.fact_response import FactResponse
 from ..types.memory import Memory
-from ..types.memory_type import MemoryType
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.search_scope import SearchScope
@@ -472,7 +471,7 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        lastn: typing.Optional[MemoryType] = None,
+        lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -484,7 +483,7 @@ class MemoryClient:
         session_id : str
             The ID of the session for which to retrieve memory.
 
-        lastn : typing.Optional[MemoryType]
+        lastn : typing.Optional[int]
             The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
@@ -1267,7 +1266,7 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        lastn: typing.Optional[MemoryType] = None,
+        lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -1279,7 +1278,7 @@ class AsyncMemoryClient:
         session_id : str
             The ID of the session for which to retrieve memory.
 
-        lastn : typing.Optional[MemoryType]
+        lastn : typing.Optional[int]
             The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
