@@ -1,21 +1,23 @@
-name: Release to PyPI
+name: Release Community SDK to PyPI
 
 on:
   push:
     tags: ["v*.*.*"]
-
+    branches:
+      - community
 env:
   POETRY_VERSION: "1.8.3"
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: github.event.release.target_commitish == 'community'
     permissions:
       id-token: write
       contents: write
     environment:
       name: release
-      url: https://pypi.org/p/zep-cloud
+      url: https://pypi.org/p/zep-python
     steps:
       - uses: actions/checkout@v4
       - name: Install poetry
@@ -34,5 +36,5 @@ jobs:
           fi
       - name: Build project for distribution
         run: poetry build
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+#      - name: Publish package distributions to PyPI
+#        uses: pypa/gh-action-pypi-publish@release/v1
