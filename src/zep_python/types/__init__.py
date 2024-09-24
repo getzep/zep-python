@@ -9,8 +9,6 @@ from .memory import Memory
 from .memory_type import MemoryType
 from .message import Message
 from .message_list_response import MessageListResponse
-from .models_message import ModelsMessage
-from .models_role_type import ModelsRoleType
 from .role_type import RoleType
 from .search_scope import SearchScope
 from .search_type import SearchType
@@ -35,8 +33,6 @@ __all__ = [
     "MemoryType",
     "Message",
     "MessageListResponse",
-    "ModelsMessage",
-    "ModelsRoleType",
     "RoleType",
     "SearchScope",
     "SearchType",
