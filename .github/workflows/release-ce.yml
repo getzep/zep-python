@@ -1,10 +1,8 @@
 name: Release Community SDK to PyPI
 
 on:
-  push:
-    tags: ["v*.*.*"]
-    branches:
-      - community
+  release:
+    types: [published]
 env:
   POETRY_VERSION: "1.8.3"
 
