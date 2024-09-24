@@ -6,7 +6,6 @@ from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
 from .fact_response import FactResponse
 from .memory import Memory
-from .memory_type import MemoryType
 from .message import Message
 from .message_list_response import MessageListResponse
 from .role_type import RoleType
@@ -30,7 +29,6 @@ __all__ = [
     "FactRatingInstruction",
     "FactResponse",
     "Memory",
-    "MemoryType",
     "Message",
     "MessageListResponse",
     "RoleType",
