@@ -3,6 +3,7 @@ name: Release Community SDK to PyPI
 on:
   release:
     types: [published]
+
 env:
   POETRY_VERSION: "1.8.3"
 
@@ -34,5 +35,5 @@ jobs:
           fi
       - name: Build project for distribution
         run: poetry build
-#      - name: Publish package distributions to PyPI
-#        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
