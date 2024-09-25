@@ -549,10 +549,10 @@ class MemoryClient:
             A list of message objects, where each message contains a role and content.
 
         fact_instruction : typing.Optional[str]
-            Additional instruction for generating the facts.
+            Additional instruction for generating the facts. Zep Cloud Only, will be ignored on Community Edition.
 
         summary_instruction : typing.Optional[str]
-            Additional instruction for generating the summary.
+            Additional instruction for generating the summary. Zep Cloud Only, will be ignored on Community Edition.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1344,10 +1344,10 @@ class AsyncMemoryClient:
             A list of message objects, where each message contains a role and content.
 
         fact_instruction : typing.Optional[str]
-            Additional instruction for generating the facts.
+            Additional instruction for generating the facts. Zep Cloud Only, will be ignored on Community Edition.
 
         summary_instruction : typing.Optional[str]
-            Additional instruction for generating the summary.
+            Additional instruction for generating the summary. Zep Cloud Only, will be ignored on Community Edition.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
