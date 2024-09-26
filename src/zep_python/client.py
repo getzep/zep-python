@@ -12,7 +12,7 @@ class Zep(BaseClient):
     def __init__(
         self,
         *,
-        base_url: str = None,
+        base_url: typing.Optional[str] = None,
         api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = None,
@@ -23,7 +23,7 @@ class Zep(BaseClient):
         if env_api_url:
             api_url = f"{env_api_url}/{api_suffix}"
         else:
-            api_url = f"${base_url}/{api_suffix}"
+            api_url = f"{base_url}/{api_suffix}"
         super().__init__(
             base_url=api_url,
             api_key=api_key,
@@ -39,7 +39,7 @@ class AsyncZep(AsyncBaseClient):
     def __init__(
         self,
         *,
-        base_url: str = None,
+        base_url: typing.Optional[str] = None,
         api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = None,
@@ -50,7 +50,7 @@ class AsyncZep(AsyncBaseClient):
         if env_api_url:
             api_url = f"{env_api_url}/{api_suffix}"
         else:
-            api_url = f"${base_url}/{api_suffix}"
+            api_url = f"{base_url}/{api_suffix}"
         super().__init__(
             base_url=api_url,
             api_key=api_key,

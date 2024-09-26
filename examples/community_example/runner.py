@@ -60,6 +60,7 @@ async def seed_memory(client: AsyncZep, user_id: str) -> None:
         print(f"{m['role']}: {m['content']}")
         await client.memory.add(session_id=session_id, messages=[Message(**m)])
 
+
 async def continue_memory(client: AsyncZep, user_id: str) -> None:
     session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
 
@@ -80,6 +81,7 @@ async def continue_memory(client: AsyncZep, user_id: str) -> None:
     for m in part2_history:
         print(f"{m['role']}: {m['content']}")
         await client.memory.add(session_id=session_id, messages=[Message(**m)])
+
 
 async def retrieve_memory(client: AsyncZep, session_id: str) -> None:
     memory = await client.memory.get(session_id)
