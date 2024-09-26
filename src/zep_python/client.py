@@ -23,7 +23,7 @@ class Zep(BaseClient):
         if env_api_url:
             api_url = f"{env_api_url}/{api_suffix}"
         else:
-            api_url = f"${base_url}/{api_suffix}"
+            api_url = f"{base_url}/{api_suffix}"
         super().__init__(
             base_url=api_url,
             api_key=api_key,
@@ -50,7 +50,7 @@ class AsyncZep(AsyncBaseClient):
         if env_api_url:
             api_url = f"{env_api_url}/{api_suffix}"
         else:
-            api_url = f"${base_url}/{api_suffix}"
+            api_url = f"{base_url}/{api_suffix}"
         super().__init__(
             base_url=api_url,
             api_key=api_key,
