@@ -7,3 +7,5 @@ src/zep_python/langchain/
 README.md
 .github
 Makefile
+pyproject.toml
+poetry.lock
