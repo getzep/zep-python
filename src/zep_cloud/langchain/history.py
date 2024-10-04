@@ -7,6 +7,7 @@ from zep_cloud.environment import ZepEnvironment
 from zep_cloud.types import Memory, Message
 from zep_cloud.errors import NotFoundError
 from zep_cloud.langchain.helpers import get_zep_message_role_type
+
 try:
     from langchain_core.chat_history import BaseChatMessageHistory
     from langchain_core.messages import (
@@ -47,15 +48,15 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
     """
 
     def __init__(
-            self,
-            session_id: str,
-            zep_client: Optional[Zep] = None,
-            api_url: Optional[str] = str(ZepEnvironment.DEFAULT),
-            api_key: Optional[str] = None,
-            memory_type: Optional[str] = None,
-            ai_prefix: Optional[str] = None,
-            human_prefix: Optional[str] = None,
-            summary_instruction: Optional[str] = None,
+        self,
+        session_id: str,
+        zep_client: Optional[Zep] = None,
+        api_url: Optional[str] = str(ZepEnvironment.DEFAULT),
+        api_key: Optional[str] = None,
+        memory_type: Optional[str] = None,
+        ai_prefix: Optional[str] = None,
+        human_prefix: Optional[str] = None,
+        summary_instruction: Optional[str] = None,
     ) -> None:
         if zep_client is None:
             self._client = Zep(base_url=api_url, api_key=api_key)
@@ -96,7 +97,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
                 }
                 message_class = AIMessage if msg.role == "ai" else HumanMessage
                 messages.append(
-                    message_class(content=msg.content, additional_kwargs=metadata)
+                    message_class(content=msg.content, additional_kwargs=metadata)  # type: ignore # deprecated code
                 )
 
         return messages
@@ -133,7 +134,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         return zep_memory
 
     def add_user_message(  # type: ignore
-            self, message: str, metadata: Optional[Dict[str, Any]] = None
+        self, message: str, metadata: Optional[Dict[str, Any]] = None
     ) -> None:
         """Convenience method for adding a human message string to the store.
 
@@ -146,7 +147,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         self.add_message(HumanMessage(content=message), metadata=metadata)
 
     def add_ai_message(  # type: ignore
-            self, message: str, metadata: Optional[Dict[str, Any]] = None
+        self, message: str, metadata: Optional[Dict[str, Any]] = None
     ) -> None:
         """Convenience method for adding an AI message string to the store.
 
@@ -159,7 +160,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
         self.add_message(AIMessage(content=message), metadata=metadata)
 
     def add_message(
-            self, message: BaseMessage, metadata: Optional[Dict[str, Any]] = None
+        self, message: BaseMessage, metadata: Optional[Dict[str, Any]] = None
     ) -> None:
         """Append the message to the Zep memory history"""
 
@@ -182,7 +183,11 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
             metadata=metadata,
         )
 
-        self._client.memory.add(session_id=self.session_id, messages=[zep_message], summary_instruction=self.summary_instruction)
+        self._client.memory.add(
+            session_id=self.session_id,
+            messages=[zep_message],
+            summary_instruction=self.summary_instruction,
+        )
 
     def clear(self) -> None:
         """Clear session memory from Zep. Note that Zep is long-term storage for memory
