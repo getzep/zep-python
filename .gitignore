@@ -2,3 +2,7 @@ dist/
 .mypy_cache/
 __pycache__/
 poetry.toml
+.venv/
+.idea/
+.vscode/
+*.env
