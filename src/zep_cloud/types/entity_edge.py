@@ -7,10 +7,25 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class GraphitiEntityNode(pydantic_v1.BaseModel):
+class EntityEdge(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Creation time of the node
+    Creation time of the edge
+    """
+
+    episodes: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    """
+    List of episode ids that reference these entity edges
+    """
+
+    expired_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Datetime of when the node was invalidated
+    """
+
+    fact: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Fact representing the edge and nodes that it connects
     """
 
     graph_id: typing.Optional[str] = pydantic_v1.Field(default=None)
@@ -18,24 +33,34 @@ class GraphitiEntityNode(pydantic_v1.BaseModel):
     Partition of the graph
     """
 
-    labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    invalid_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Labels associated with the node
+    Datetime of when the fact stopped being true
     """
 
     name: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Name of the node
+    Name of the edge, relation name
     """
 
-    summary: typing.Optional[str] = pydantic_v1.Field(default=None)
+    source_node_uuid: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Regional summary of surrounding edges
+    UUID of the source node
+    """
+
+    target_node_uuid: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    UUID of the target node
     """
 
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
     """
-    UUID of the node
+    UUID of the edge
+    """
+
+    valid_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Datetime of when the fact became true
     """
 
     def json(self, **kwargs: typing.Any) -> str:

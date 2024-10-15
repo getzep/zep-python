@@ -12,7 +12,7 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.graphiti_entity_node import GraphitiEntityNode
+from ...types.entity_node import EntityNode
 
 
 class NodeClient:
@@ -21,7 +21,7 @@ class NodeClient:
 
     def get_by_group_id(
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityNode]:
+    ) -> typing.List[EntityNode]:
         """
         Get all nodes for a group
 
@@ -35,7 +35,7 @@ class NodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityNode]
+        typing.List[EntityNode]
             Nodes
 
         Examples
@@ -53,7 +53,7 @@ class NodeClient:
             f"graph/node/group/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEntityNode], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EntityNode], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -68,7 +68,7 @@ class NodeClient:
 
     def get_by_user_id(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityNode]:
+    ) -> typing.List[EntityNode]:
         """
         Get all nodes for a user
 
@@ -82,7 +82,7 @@ class NodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityNode]
+        typing.List[EntityNode]
             Nodes
 
         Examples
@@ -100,7 +100,7 @@ class NodeClient:
             f"graph/node/user/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEntityNode], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EntityNode], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -113,7 +113,7 @@ class NodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiEntityNode:
+    def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
         """
         Get a specific node by its UUID
 
@@ -127,7 +127,7 @@ class NodeClient:
 
         Returns
         -------
-        GraphitiEntityNode
+        EntityNode
             Node
 
         Examples
@@ -145,7 +145,7 @@ class NodeClient:
             f"graph/node/{jsonable_encoder(uuid_)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(GraphitiEntityNode, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EntityNode, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
@@ -167,7 +167,7 @@ class AsyncNodeClient:
 
     async def get_by_group_id(
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityNode]:
+    ) -> typing.List[EntityNode]:
         """
         Get all nodes for a group
 
@@ -181,7 +181,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityNode]
+        typing.List[EntityNode]
             Nodes
 
         Examples
@@ -199,7 +199,7 @@ class AsyncNodeClient:
             f"graph/node/group/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEntityNode], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EntityNode], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -214,7 +214,7 @@ class AsyncNodeClient:
 
     async def get_by_user_id(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityNode]:
+    ) -> typing.List[EntityNode]:
         """
         Get all nodes for a user
 
@@ -228,7 +228,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityNode]
+        typing.List[EntityNode]
             Nodes
 
         Examples
@@ -246,7 +246,7 @@ class AsyncNodeClient:
             f"graph/node/user/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEntityNode], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EntityNode], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -259,9 +259,7 @@ class AsyncNodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_by_uuid(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> GraphitiEntityNode:
+    async def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
         """
         Get a specific node by its UUID
 
@@ -275,7 +273,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        GraphitiEntityNode
+        EntityNode
             Node
 
         Examples
@@ -293,7 +291,7 @@ class AsyncNodeClient:
             f"graph/node/{jsonable_encoder(uuid_)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(GraphitiEntityNode, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EntityNode, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:

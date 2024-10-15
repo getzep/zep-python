@@ -12,7 +12,7 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_group import ApidataGroup
+from ..types.group import Group
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,7 +30,7 @@ class GroupClient:
         name: typing.Optional[str] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGroup:
+    ) -> Group:
         """
         Create a new user group
 
@@ -49,7 +49,7 @@ class GroupClient:
 
         Returns
         -------
-        ApidataGroup
+        Group
             The added group
 
         Examples
@@ -69,7 +69,7 @@ class GroupClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataGroup, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -89,7 +89,7 @@ class GroupClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGroup:
+    ) -> Group:
         """
         Update group information
 
@@ -107,7 +107,7 @@ class GroupClient:
 
         Returns
         -------
-        ApidataGroup
+        Group
             The added group
 
         Examples
@@ -129,7 +129,7 @@ class GroupClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataGroup, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
@@ -157,7 +157,7 @@ class AsyncGroupClient:
         name: typing.Optional[str] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGroup:
+    ) -> Group:
         """
         Create a new user group
 
@@ -176,7 +176,7 @@ class AsyncGroupClient:
 
         Returns
         -------
-        ApidataGroup
+        Group
             The added group
 
         Examples
@@ -196,7 +196,7 @@ class AsyncGroupClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataGroup, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -216,7 +216,7 @@ class AsyncGroupClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGroup:
+    ) -> Group:
         """
         Update group information
 
@@ -234,7 +234,7 @@ class AsyncGroupClient:
 
         Returns
         -------
-        ApidataGroup
+        Group
             The added group
 
         Examples
@@ -256,7 +256,7 @@ class AsyncGroupClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataGroup, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:

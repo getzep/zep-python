@@ -11,7 +11,7 @@ from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.graphiti_episode_response import GraphitiEpisodeResponse
+from ...types.episode_response import EpisodeResponse
 
 
 class EpisodeClient:
@@ -24,7 +24,7 @@ class EpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEpisodeResponse]:
+    ) -> typing.List[EpisodeResponse]:
         """
         Get episodes by Group ID
 
@@ -41,7 +41,7 @@ class EpisodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEpisodeResponse]
+        typing.List[EpisodeResponse]
             Episodes
 
         Examples
@@ -62,7 +62,7 @@ class EpisodeClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEpisodeResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EpisodeResponse], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -81,7 +81,7 @@ class EpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEpisodeResponse]:
+    ) -> typing.List[EpisodeResponse]:
         """
         Get episodes by User ID
 
@@ -98,7 +98,7 @@ class EpisodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEpisodeResponse]
+        typing.List[EpisodeResponse]
             Episodes
 
         Examples
@@ -119,7 +119,7 @@ class EpisodeClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEpisodeResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EpisodeResponse], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -132,9 +132,7 @@ class EpisodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_by_uuid(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> GraphitiEpisodeResponse:
+    def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EpisodeResponse:
         """
         Get episode by UUID
 
@@ -148,7 +146,7 @@ class EpisodeClient:
 
         Returns
         -------
-        GraphitiEpisodeResponse
+        EpisodeResponse
             Episode
 
         Examples
@@ -166,7 +164,7 @@ class EpisodeClient:
             f"graph/episodes/{jsonable_encoder(uuid_)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(GraphitiEpisodeResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EpisodeResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -190,7 +188,7 @@ class AsyncEpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEpisodeResponse]:
+    ) -> typing.List[EpisodeResponse]:
         """
         Get episodes by Group ID
 
@@ -207,7 +205,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEpisodeResponse]
+        typing.List[EpisodeResponse]
             Episodes
 
         Examples
@@ -228,7 +226,7 @@ class AsyncEpisodeClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEpisodeResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EpisodeResponse], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -247,7 +245,7 @@ class AsyncEpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEpisodeResponse]:
+    ) -> typing.List[EpisodeResponse]:
         """
         Get episodes by User ID
 
@@ -264,7 +262,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEpisodeResponse]
+        typing.List[EpisodeResponse]
             Episodes
 
         Examples
@@ -285,7 +283,7 @@ class AsyncEpisodeClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEpisodeResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EpisodeResponse], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -300,7 +298,7 @@ class AsyncEpisodeClient:
 
     async def get_by_uuid(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> GraphitiEpisodeResponse:
+    ) -> EpisodeResponse:
         """
         Get episode by UUID
 
@@ -314,7 +312,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        GraphitiEpisodeResponse
+        EpisodeResponse
             Episode
 
         Examples
@@ -332,7 +330,7 @@ class AsyncEpisodeClient:
             f"graph/episodes/{jsonable_encoder(uuid_)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(GraphitiEpisodeResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EpisodeResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:

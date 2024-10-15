@@ -12,7 +12,7 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.graphiti_entity_edge import GraphitiEntityEdge
+from ...types.entity_edge import EntityEdge
 from ...types.success_response import SuccessResponse
 
 
@@ -22,7 +22,7 @@ class EdgeClient:
 
     def get_by_group_id(
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Get all edges for a group
 
@@ -36,7 +36,7 @@ class EdgeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -54,7 +54,7 @@ class EdgeClient:
             f"graph/edge/group/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEntityEdge], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EntityEdge], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -69,7 +69,7 @@ class EdgeClient:
 
     def get_by_user_id(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Get all edges for a user
 
@@ -83,7 +83,7 @@ class EdgeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -101,7 +101,7 @@ class EdgeClient:
             f"graph/edge/user/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEntityEdge], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EntityEdge], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -114,7 +114,7 @@ class EdgeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiEntityEdge:
+    def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
         """
         Get a specific edge by its UUID
 
@@ -128,7 +128,7 @@ class EdgeClient:
 
         Returns
         -------
-        GraphitiEntityEdge
+        EntityEdge
             Edge
 
         Examples
@@ -146,7 +146,7 @@ class EdgeClient:
             f"graph/edge/{jsonable_encoder(uuid_)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(GraphitiEntityEdge, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EntityEdge, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
@@ -213,7 +213,7 @@ class AsyncEdgeClient:
 
     async def get_by_group_id(
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Get all edges for a group
 
@@ -227,7 +227,7 @@ class AsyncEdgeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -245,7 +245,7 @@ class AsyncEdgeClient:
             f"graph/edge/group/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEntityEdge], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EntityEdge], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -260,7 +260,7 @@ class AsyncEdgeClient:
 
     async def get_by_user_id(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Get all edges for a user
 
@@ -274,7 +274,7 @@ class AsyncEdgeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -292,7 +292,7 @@ class AsyncEdgeClient:
             f"graph/edge/user/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[GraphitiEntityEdge], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[EntityEdge], _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -305,9 +305,7 @@ class AsyncEdgeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_by_uuid(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> GraphitiEntityEdge:
+    async def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
         """
         Get a specific edge by its UUID
 
@@ -321,7 +319,7 @@ class AsyncEdgeClient:
 
         Returns
         -------
-        GraphitiEntityEdge
+        EntityEdge
             Edge
 
         Examples
@@ -339,7 +337,7 @@ class AsyncEdgeClient:
             f"graph/edge/{jsonable_encoder(uuid_)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(GraphitiEntityEdge, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EntityEdge, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:

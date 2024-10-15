@@ -7,25 +7,10 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class GraphitiEntityEdge(pydantic_v1.BaseModel):
+class CommunityNode(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Creation time of the edge
-    """
-
-    episodes: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
-    """
-    List of episode ids that reference these entity edges
-    """
-
-    expired_at: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Datetime of when the node was invalidated
-    """
-
-    fact: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Fact representing the edge and nodes that it connects
+    Creation time of the node
     """
 
     graph_id: typing.Optional[str] = pydantic_v1.Field(default=None)
@@ -33,34 +18,29 @@ class GraphitiEntityEdge(pydantic_v1.BaseModel):
     Partition of the graph
     """
 
-    invalid_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
-    Datetime of when the fact stopped being true
+    Labels associated with the node
     """
 
     name: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Name of the edge, relation name
+    Name of the node
     """
 
-    source_node_uuid: typing.Optional[str] = pydantic_v1.Field(default=None)
+    name_embedding: typing.Optional[typing.List[float]] = pydantic_v1.Field(default=None)
     """
-    UUID of the source node
+    Embedding of the name
     """
 
-    target_node_uuid: typing.Optional[str] = pydantic_v1.Field(default=None)
+    summary: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    UUID of the target node
+    Region summary of member nodes
     """
 
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
     """
-    UUID of the edge
-    """
-
-    valid_at: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Datetime of when the fact became true
+    UUID of the node
     """
 
     def json(self, **kwargs: typing.Any) -> str:

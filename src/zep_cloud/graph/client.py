@@ -10,9 +10,9 @@ from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.graphiti_graph_search_results import GraphitiGraphSearchResults
-from ..types.graphiti_graph_search_scope import GraphitiGraphSearchScope
-from ..types.graphiti_reranker import GraphitiReranker
+from ..types.graph_search_results import GraphSearchResults
+from ..types.graph_search_scope import GraphSearchScope
+from ..types.reranker import Reranker
 from ..types.success_response import SuccessResponse
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
@@ -98,11 +98,11 @@ class GraphClient:
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[GraphitiReranker] = OMIT,
-        scope: typing.Optional[GraphitiGraphSearchScope] = OMIT,
+        reranker: typing.Optional[Reranker] = OMIT,
+        scope: typing.Optional[GraphSearchScope] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
-    ) -> GraphitiGraphSearchResults:
+    ) -> GraphSearchResults:
         """
         Perform a graph search query
 
@@ -126,10 +126,10 @@ class GraphClient:
         query : typing.Optional[str]
             The string to search for (required)
 
-        reranker : typing.Optional[GraphitiReranker]
+        reranker : typing.Optional[Reranker]
             Defaults to RRF
 
-        scope : typing.Optional[GraphitiGraphSearchScope]
+        scope : typing.Optional[GraphSearchScope]
             Defaults to Edges. Nodes and Communities will be added in the future.
 
         user_id : typing.Optional[str]
@@ -140,7 +140,7 @@ class GraphClient:
 
         Returns
         -------
-        GraphitiGraphSearchResults
+        GraphSearchResults
             Graph search results
 
         Examples
@@ -170,7 +170,7 @@ class GraphClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(GraphitiGraphSearchResults, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(GraphSearchResults, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -260,11 +260,11 @@ class AsyncGraphClient:
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[GraphitiReranker] = OMIT,
-        scope: typing.Optional[GraphitiGraphSearchScope] = OMIT,
+        reranker: typing.Optional[Reranker] = OMIT,
+        scope: typing.Optional[GraphSearchScope] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
-    ) -> GraphitiGraphSearchResults:
+    ) -> GraphSearchResults:
         """
         Perform a graph search query
 
@@ -288,10 +288,10 @@ class AsyncGraphClient:
         query : typing.Optional[str]
             The string to search for (required)
 
-        reranker : typing.Optional[GraphitiReranker]
+        reranker : typing.Optional[Reranker]
             Defaults to RRF
 
-        scope : typing.Optional[GraphitiGraphSearchScope]
+        scope : typing.Optional[GraphSearchScope]
             Defaults to Edges. Nodes and Communities will be added in the future.
 
         user_id : typing.Optional[str]
@@ -302,7 +302,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        GraphitiGraphSearchResults
+        GraphSearchResults
             Graph search results
 
         Examples
@@ -332,7 +332,7 @@ class AsyncGraphClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(GraphitiGraphSearchResults, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(GraphSearchResults, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
