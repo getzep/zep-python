@@ -13,7 +13,7 @@ class EntityEdge(pydantic_v1.BaseModel):
     Creation time of the edge
     """
 
-    episodes: typing.List[str] = pydantic_v1.Field()
+    episodes: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     List of episode ids that reference these entity edges
     """
