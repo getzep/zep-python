@@ -93,7 +93,7 @@ class GraphClient:
         self,
         *,
         center_node_uuid: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
+        group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
@@ -111,7 +111,7 @@ class GraphClient:
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
 
-        graph_id : typing.Optional[str]
+        group_id : typing.Optional[str]
             one of user_id or group_id must be provided
 
         limit : typing.Optional[int]
@@ -157,7 +157,7 @@ class GraphClient:
             method="POST",
             json={
                 "center_node_uuid": center_node_uuid,
-                "graph_id": graph_id,
+                "group_id": group_id,
                 "limit": limit,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
@@ -255,7 +255,7 @@ class AsyncGraphClient:
         self,
         *,
         center_node_uuid: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
+        group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
@@ -273,7 +273,7 @@ class AsyncGraphClient:
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
 
-        graph_id : typing.Optional[str]
+        group_id : typing.Optional[str]
             one of user_id or group_id must be provided
 
         limit : typing.Optional[int]
@@ -319,7 +319,7 @@ class AsyncGraphClient:
             method="POST",
             json={
                 "center_node_uuid": center_node_uuid,
-                "graph_id": graph_id,
+                "group_id": group_id,
                 "limit": limit,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
