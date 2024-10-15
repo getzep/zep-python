@@ -11,6 +11,7 @@ from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...types.api_error import ApiError as types_api_error_ApiError
+from ...types.episode import Episode
 from ...types.episode_response import EpisodeResponse
 
 
@@ -132,7 +133,7 @@ class EpisodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EpisodeResponse:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
         """
         Get episode by UUID
 
@@ -146,7 +147,7 @@ class EpisodeClient:
 
         Returns
         -------
-        EpisodeResponse
+        Episode
             Episode
 
         Examples
@@ -164,7 +165,7 @@ class EpisodeClient:
             f"graph/episodes/{jsonable_encoder(uuid_)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(EpisodeResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -296,7 +297,7 @@ class AsyncEpisodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EpisodeResponse:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
         """
         Get episode by UUID
 
@@ -310,7 +311,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        EpisodeResponse
+        Episode
             Episode
 
         Examples
@@ -328,7 +329,7 @@ class AsyncEpisodeClient:
             f"graph/episodes/{jsonable_encoder(uuid_)}", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(EpisodeResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
