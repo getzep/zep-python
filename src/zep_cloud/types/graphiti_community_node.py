@@ -7,14 +7,41 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class Fact(pydantic_v1.BaseModel):
-    created_at: typing.Optional[str] = None
-    fact: typing.Optional[str] = None
-    name: typing.Optional[str] = None
-    rating: typing.Optional[float] = None
-    source_node_name: typing.Optional[str] = None
-    target_node_name: typing.Optional[str] = None
+class GraphitiCommunityNode(pydantic_v1.BaseModel):
+    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Creation time of the node
+    """
+
+    graph_id: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Partition of the graph
+    """
+
+    labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    """
+    Labels associated with the node
+    """
+
+    name: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Name of the node
+    """
+
+    name_embedding: typing.Optional[typing.List[float]] = pydantic_v1.Field(default=None)
+    """
+    Embedding of the name
+    """
+
+    summary: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Region summary of member nodes
+    """
+
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    """
+    UUID of the node
+    """
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

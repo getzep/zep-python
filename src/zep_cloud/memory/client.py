@@ -21,7 +21,6 @@ from ..types.fact_response import FactResponse
 from ..types.facts_response import FactsResponse
 from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
-from ..types.memory_type import MemoryType
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.new_fact import NewFact
@@ -871,7 +870,7 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        lastn: typing.Optional[MemoryType] = None,
+        lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -883,7 +882,7 @@ class MemoryClient:
         session_id : str
             The ID of the session for which to retrieve memory.
 
-        lastn : typing.Optional[MemoryType]
+        lastn : typing.Optional[int]
             The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
@@ -949,10 +948,10 @@ class MemoryClient:
             A list of message objects, where each message contains a role and content.
 
         fact_instruction : typing.Optional[str]
-            Additional instruction for generating the facts.
+            Additional instruction for generating the facts. Zep Cloud Only, will be ignored on Community Edition.
 
         summary_instruction : typing.Optional[str]
-            Additional instruction for generating the summary.
+            Additional instruction for generating the summary. Zep Cloud Only, will be ignored on Community Edition.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2249,7 +2248,7 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        lastn: typing.Optional[MemoryType] = None,
+        lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
@@ -2261,7 +2260,7 @@ class AsyncMemoryClient:
         session_id : str
             The ID of the session for which to retrieve memory.
 
-        lastn : typing.Optional[MemoryType]
+        lastn : typing.Optional[int]
             The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
@@ -2327,10 +2326,10 @@ class AsyncMemoryClient:
             A list of message objects, where each message contains a role and content.
 
         fact_instruction : typing.Optional[str]
-            Additional instruction for generating the facts.
+            Additional instruction for generating the facts. Zep Cloud Only, will be ignored on Community Edition.
 
         summary_instruction : typing.Optional[str]
-            Additional instruction for generating the summary.
+            Additional instruction for generating the summary. Zep Cloud Only, will be ignored on Community Edition.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

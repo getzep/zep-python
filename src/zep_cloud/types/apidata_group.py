@@ -7,13 +7,13 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class Fact(pydantic_v1.BaseModel):
+class ApidataGroup(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = None
-    fact: typing.Optional[str] = None
+    description: typing.Optional[str] = None
+    external_id: typing.Optional[str] = None
+    id: typing.Optional[int] = None
     name: typing.Optional[str] = None
-    rating: typing.Optional[float] = None
-    source_node_name: typing.Optional[str] = None
-    target_node_name: typing.Optional[str] = None
+    project_uuid: typing.Optional[str] = None
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:

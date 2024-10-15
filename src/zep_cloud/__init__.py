@@ -6,6 +6,7 @@ from .types import (
     ApidataDocumentCollection,
     ApidataDocumentSearchResponse,
     ApidataDocumentWithScore,
+    ApidataGroup,
     ClassifySessionRequest,
     CreateDocumentRequest,
     EndSessionResponse,
@@ -15,9 +16,17 @@ from .types import (
     FactRatingInstruction,
     FactResponse,
     FactsResponse,
+    GraphitiCommunityNode,
+    GraphitiEntityEdge,
+    GraphitiEntityNode,
+    GraphitiEpisode,
+    GraphitiEpisodeResponse,
+    GraphitiEpisodeType,
+    GraphitiGraphSearchResults,
+    GraphitiGraphSearchScope,
+    GraphitiReranker,
     Memory,
     MemorySearchResult,
-    MemoryType,
     Message,
     MessageListResponse,
     NewFact,
@@ -40,7 +49,7 @@ from .types import (
     UserListResponse,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
-from . import document, memory, user
+from . import document, graph, group, memory, user
 from .environment import ZepEnvironment
 from .version import __version__
 
@@ -50,6 +59,7 @@ __all__ = [
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",
     "ApidataDocumentWithScore",
+    "ApidataGroup",
     "BadRequestError",
     "ClassifySessionRequest",
     "ConflictError",
@@ -61,10 +71,18 @@ __all__ = [
     "FactRatingInstruction",
     "FactResponse",
     "FactsResponse",
+    "GraphitiCommunityNode",
+    "GraphitiEntityEdge",
+    "GraphitiEntityNode",
+    "GraphitiEpisode",
+    "GraphitiEpisodeResponse",
+    "GraphitiEpisodeType",
+    "GraphitiGraphSearchResults",
+    "GraphitiGraphSearchScope",
+    "GraphitiReranker",
     "InternalServerError",
     "Memory",
     "MemorySearchResult",
-    "MemoryType",
     "Message",
     "MessageListResponse",
     "NewFact",
@@ -90,6 +108,8 @@ __all__ = [
     "ZepEnvironment",
     "__version__",
     "document",
+    "graph",
+    "group",
     "memory",
     "user",
 ]
