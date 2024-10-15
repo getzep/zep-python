@@ -123,7 +123,7 @@ class GroupClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             f"groups/{jsonable_encoder(group_id)}",
-            method="POST",
+            method="PATCH",
             json={"description": description, "name": name},
             request_options=request_options,
             omit=OMIT,
@@ -250,7 +250,7 @@ class AsyncGroupClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"groups/{jsonable_encoder(group_id)}",
-            method="POST",
+            method="PATCH",
             json={"description": description, "name": name},
             request_options=request_options,
             omit=OMIT,
