@@ -24,7 +24,7 @@ class EpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[EpisodeResponse]:
+    ) -> EpisodeResponse:
         """
         Get episodes by Group ID
 
@@ -41,7 +41,7 @@ class EpisodeClient:
 
         Returns
         -------
-        typing.List[EpisodeResponse]
+        EpisodeResponse
             Episodes
 
         Examples
@@ -62,7 +62,7 @@ class EpisodeClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[EpisodeResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EpisodeResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -188,7 +188,7 @@ class AsyncEpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[EpisodeResponse]:
+    ) -> EpisodeResponse:
         """
         Get episodes by Group ID
 
@@ -205,7 +205,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        typing.List[EpisodeResponse]
+        EpisodeResponse
             Episodes
 
         Examples
@@ -226,7 +226,7 @@ class AsyncEpisodeClient:
             request_options=request_options,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[EpisodeResponse], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(EpisodeResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
