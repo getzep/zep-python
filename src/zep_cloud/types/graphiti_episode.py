@@ -10,7 +10,7 @@ from .graphiti_episode_type import GraphitiEpisodeType
 
 class GraphitiEpisode(pydantic_v1.BaseModel):
     content: typing.Optional[str] = None
-    group_id: typing.Optional[str] = None
+    graph_id: typing.Optional[str] = None
     name: typing.Optional[str] = None
     source: typing.Optional[GraphitiEpisodeType] = None
     source_description: typing.Optional[str] = None

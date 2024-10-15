@@ -5,6 +5,7 @@ from json.decoder import JSONDecodeError
 
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import pydantic_v1
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
@@ -21,18 +22,82 @@ class GroupClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def update_group_information(
+    def add(
         self,
         *,
         description: typing.Optional[str] = OMIT,
+        group_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataGroup:
+        """
+        Create a new user group
+
+        Parameters
+        ----------
+        description : typing.Optional[str]
+
+        group_id : typing.Optional[str]
+
+        name : typing.Optional[str]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGroup
+            The added group
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.group.add()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "groups",
+            method="POST",
+            json={"description": description, "group_id": group_id, "name": name, "user_ids": user_ids},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(ApidataGroup, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def update(
+        self,
+        group_id: str,
+        *,
+        description: typing.Optional[str] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> ApidataGroup:
         """
         Update group information
 
         Parameters
         ----------
+        group_id : str
+            Group ID
+
         description : typing.Optional[str]
 
         name : typing.Optional[str]
@@ -52,10 +117,12 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.update_group_information()
+        client.group.update(
+            group_id="groupId",
+        )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "groups",
+            f"groups/{jsonable_encoder(group_id)}",
             method="POST",
             json={"description": description, "name": name},
             request_options=request_options,
@@ -82,18 +149,82 @@ class AsyncGroupClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def update_group_information(
+    async def add(
         self,
         *,
         description: typing.Optional[str] = OMIT,
+        group_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataGroup:
+        """
+        Create a new user group
+
+        Parameters
+        ----------
+        description : typing.Optional[str]
+
+        group_id : typing.Optional[str]
+
+        name : typing.Optional[str]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGroup
+            The added group
+
+        Examples
+        --------
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+        await client.group.add()
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "groups",
+            method="POST",
+            json={"description": description, "group_id": group_id, "name": name, "user_ids": user_ids},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic_v1.parse_obj_as(ApidataGroup, _response.json())  # type: ignore
+        if _response.status_code == 400:
+            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
+        if _response.status_code == 500:
+            raise InternalServerError(
+                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+            )
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def update(
+        self,
+        group_id: str,
+        *,
+        description: typing.Optional[str] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> ApidataGroup:
         """
         Update group information
 
         Parameters
         ----------
+        group_id : str
+            Group ID
+
         description : typing.Optional[str]
 
         name : typing.Optional[str]
@@ -113,10 +244,12 @@ class AsyncGroupClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.group.update_group_information()
+        await client.group.update(
+            group_id="groupId",
+        )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "groups",
+            f"groups/{jsonable_encoder(group_id)}",
             method="POST",
             json={"description": description, "name": name},
             request_options=request_options,
