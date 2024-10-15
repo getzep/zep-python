@@ -1,15 +1,21 @@
 """
-Example of using the Zep Python SDK asynchronously.
+Example of using the Zep Python SDK asynchronously with Graph functionality.
 
 This script demonstrates the following functionality:
 - Creating a user.
 - Creating a session associated with the created user.
 - Adding messages to the session.
-- Searching the session memory for a specific query.
-- Searching the session memory with MMR reranking.
-- Searching the session memory with a metadata filter.
-- optionally deleting the session.
+- Retrieving episodes, edges, and nodes for a user.
+- Searching the user's graph memory.
+- Adding text and JSON episodes to the graph.
+- Performing a centered search on a specific node.
+
+The script showcases various operations using the Zep Graph API, including
+user and session management, adding different types of episodes, and querying
+the graph structure.
 """
+
+# ... rest of the file remains unchanged ...
 
 import asyncio
 import os
@@ -38,7 +44,7 @@ async def main() -> None:
     print(f"User {user_id} created")
     await client.memory.add_session(session_id=session_id, user_id=user_id)
     print(f"Session {session_id} created")
-    for message in history[1]:
+    for message in history[2]:
         await client.memory.add(
             session_id,
             messages=[
@@ -50,6 +56,8 @@ async def main() -> None:
             ],
         )
 
+    print("Waiting for the graph to be updated...")
+    await asyncio.sleep(10)
     episode_result = await client.graph.episode.get_by_user_id(user_id, lastn=3)
     episodes = episode_result.episodes
     print(f"Episodes for user {user_id}:")
@@ -92,7 +100,7 @@ async def main() -> None:
 
     print("Waiting for the graph to be updated...")
     # wait for the graph to be updated
-    await asyncio.sleep(15)
+    await asyncio.sleep(30)
 
     print("Getting nodes from the graph...")
     nodes = await client.graph.node.get_by_user_id(user_id)
