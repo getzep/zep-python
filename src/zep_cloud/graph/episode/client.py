@@ -75,7 +75,7 @@ class EpisodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(
+    def get_by_user_id(
         self,
         user_id: str,
         *,
@@ -108,7 +108,7 @@ class EpisodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.episode.get(
+        client.graph.episode.get_by_user_id(
             user_id="user_id",
         )
         """
@@ -241,7 +241,7 @@ class AsyncEpisodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(
+    async def get_by_user_id(
         self,
         user_id: str,
         *,
@@ -274,7 +274,7 @@ class AsyncEpisodeClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.graph.episode.get(
+        await client.graph.episode.get_by_user_id(
             user_id="user_id",
         )
         """
