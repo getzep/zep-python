@@ -19,6 +19,7 @@ from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
 from .fact_response import FactResponse
 from .facts_response import FactsResponse
+from .graph_data_type import GraphDataType
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
 from .group import Group
@@ -26,7 +27,6 @@ from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .message import Message
 from .message_list_response import MessageListResponse
-from .models_graph_data_type import ModelsGraphDataType
 from .new_fact import NewFact
 from .question import Question
 from .reranker import Reranker
@@ -67,6 +67,7 @@ __all__ = [
     "FactRatingInstruction",
     "FactResponse",
     "FactsResponse",
+    "GraphDataType",
     "GraphSearchResults",
     "GraphSearchScope",
     "Group",
@@ -74,7 +75,6 @@ __all__ = [
     "MemorySearchResult",
     "Message",
     "MessageListResponse",
-    "ModelsGraphDataType",
     "NewFact",
     "Question",
     "Reranker",

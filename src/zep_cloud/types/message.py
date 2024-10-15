@@ -9,7 +9,7 @@ from .role_type import RoleType
 
 
 class Message(pydantic_v1.BaseModel):
-    content: typing.Optional[str] = pydantic_v1.Field(default=None)
+    content: str = pydantic_v1.Field()
     """
     The content of the message.
     """
@@ -29,7 +29,7 @@ class Message(pydantic_v1.BaseModel):
     The role of the sender of the message (e.g., "user", "assistant").
     """
 
-    role_type: typing.Optional[RoleType] = pydantic_v1.Field(default=None)
+    role_type: RoleType = pydantic_v1.Field()
     """
     The type of the role (e.g., "user", "system").
     """

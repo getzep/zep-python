@@ -10,9 +10,9 @@ from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
-from ..types.models_graph_data_type import ModelsGraphDataType
 from ..types.reranker import Reranker
 from ..types.success_response import SuccessResponse
 from .edge.client import AsyncEdgeClient, EdgeClient
@@ -35,7 +35,7 @@ class GraphClient:
         *,
         data: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
-        type: typing.Optional[ModelsGraphDataType] = OMIT,
+        type: typing.Optional[GraphDataType] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
@@ -48,7 +48,7 @@ class GraphClient:
 
         group_id : typing.Optional[str]
 
-        type : typing.Optional[ModelsGraphDataType]
+        type : typing.Optional[GraphDataType]
 
         user_id : typing.Optional[str]
 
@@ -199,7 +199,7 @@ class AsyncGraphClient:
         *,
         data: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
-        type: typing.Optional[ModelsGraphDataType] = OMIT,
+        type: typing.Optional[GraphDataType] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
@@ -212,7 +212,7 @@ class AsyncGraphClient:
 
         group_id : typing.Optional[str]
 
-        type : typing.Optional[ModelsGraphDataType]
+        type : typing.Optional[GraphDataType]
 
         user_id : typing.Optional[str]
 

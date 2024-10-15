@@ -971,7 +971,12 @@ class MemoryClient:
         )
         client.memory.add(
             session_id="sessionId",
-            messages=[Message()],
+            messages=[
+                Message(
+                    content="content",
+                    role_type="norole",
+                )
+            ],
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -2349,7 +2354,12 @@ class AsyncMemoryClient:
         )
         await client.memory.add(
             session_id="sessionId",
-            messages=[Message()],
+            messages=[
+                Message(
+                    content="content",
+                    role_type="norole",
+                )
+            ],
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
