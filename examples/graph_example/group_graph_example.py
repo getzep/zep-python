@@ -89,7 +89,7 @@ async def main() -> None:
 
     print(f"Searching group {group_id}...")
     search_results = await client.graph.search(
-        group_id == group_id,
+        group_id=group_id,
         query="Eric Clapton",
     )
     print(f"Search results from group {group_id} {search_results}")

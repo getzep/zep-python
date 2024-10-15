@@ -100,7 +100,7 @@ async def main() -> None:
 
     # Get Memory for session
     print(f"\n---Get Perpetual Memory for Session: {session_id}")
-    memory = await client.memory.get(session_id, memory_type="perpetual")
+    memory = await client.memory.get(session_id)
     print(f"Memory: {memory}")
     print("\n---End of Memory")
 
