@@ -76,7 +76,7 @@ async def main() -> None:
     # print(f"Getting episodes from group {group_id}...")
     # results = await client.graph.episode.get_by_group_id(group_id, lastn=2)
     # print(f"Episodes from group {group_id} {results.episodes}")
-    # episode = await client.graph.episode.get_by_uuid(results.episodes[0].uuid_)
+    # episode = await client.graph.episode.get(results.episodes[0].uuid_)
     # print(f"Episode {episode.uuid_} from group {group_id} {episode}")
 
     print(f"Getting nodes from group {group_id}...")

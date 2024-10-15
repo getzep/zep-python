@@ -73,19 +73,19 @@ async def main() -> None:
     episodes = episode_result.episodes
     print(f"Episodes for user {user_id}:")
     print(episodes)
-    episode = await client.graph.episode.get_by_uuid(episodes[0].uuid_)
+    episode = await client.graph.episode.get(episodes[0].uuid_)
     print(episode)
 
     edges = await client.graph.edge.get_by_user_id(user_id)
     print(f"Edges for user {user_id}:")
     print(edges)
-    edge = await client.graph.edge.get_by_uuid(edges[0].uuid_)
+    edge = await client.graph.edge.get(edges[0].uuid_)
     print(edge)
 
     nodes = await client.graph.node.get_by_user_id(user_id)
     print(f"Nodes for user {user_id}:")
     print(nodes)
-    node = await client.graph.node.get_by_uuid(nodes[0].uuid_)
+    node = await client.graph.node.get(nodes[0].uuid_)
     print(node)
 
     print("Searching user graph memory...")
@@ -98,16 +98,27 @@ async def main() -> None:
     print("Adding a new text episode to the graph...")
     await client.graph.add(
         user_id=user_id,
-        text="The user is an avid fan of Eric Clapton",
+        type="text",
+        data="The user is an avid fan of Eric Clapton",
     )
     print("Text episode added")
     print("Adding a new JSON episode to the graph...")
     json_string = '{"name": "Eric Clapton", "age": 78, "genre": "Rock"}'
     await client.graph.add(
         user_id=user_id,
-        json=json_string,
+        type="json",
+        data=json_string,
     )
     print("JSON episode added")
+
+    print("Adding a new message episode to the graph...")
+    message = "Paul (user): I went to Eric Clapton concert last night"
+    await client.graph.add(
+        user_id=user_id,
+        type="message",
+        data=message,
+    )
+    print("Message episode added")
 
     print("Waiting for the graph to be updated...")
     # wait for the graph to be updated
@@ -121,14 +132,23 @@ async def main() -> None:
     clapton_node = [node for node in nodes if node.name == "Eric Clapton"]
     print(clapton_node)
 
-    print("Performing Eric Clapton centered search...")
+    print("Performing Eric Clapton centered edge search...")
     search_results = await client.graph.search(
         user_id=user_id,
         query="Eric Clapton",
         center_node_uuid=clapton_node[0].uuid_,
+        scope="edges",
     )
     print(search_results.edges)
 
+    print("Performing Eric Clapton centered node search...")
+    search_results = await client.graph.search(
+        user_id=user_id,
+        query="Eric Clapton",
+        center_node_uuid=clapton_node[0].uuid_,
+        scope="nodes",
+    )
+    print(search_results.nodes)
     print("Getting all user facts")
     result = await client.user.get_facts(user_id)
     print(result.facts)
