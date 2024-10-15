@@ -58,6 +58,17 @@ async def main() -> None:
 
     print("Waiting for the graph to be updated...")
     await asyncio.sleep(10)
+    print("Getting memory for session")
+    session_memory = await client.memory.get(session_id)
+    print(session_memory)
+    print("Searching user memory...")
+    search_results = await client.memory.search_sessions(
+        user_id=user_id,
+        text="What is the weather in San Francisco?",
+        search_scope="facts",
+    )
+    print(search_results)
+    print("Getting episodes for user")
     episode_result = await client.graph.episode.get_by_user_id(user_id, lastn=3)
     episodes = episode_result.episodes
     print(f"Episodes for user {user_id}:")
@@ -117,6 +128,10 @@ async def main() -> None:
         center_node_uuid=clapton_node[0].uuid_,
     )
     print(search_results.edges)
+
+    print("Getting all user facts")
+    result = await client.user.get_facts(user_id)
+    print(result.facts)
 
 
 if __name__ == "__main__":
