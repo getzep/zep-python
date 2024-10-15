@@ -317,7 +317,7 @@ class UserClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_user_facts(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactsResponse:
+    def get_facts(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactsResponse:
         """
         Get user facts.
 
@@ -341,7 +341,7 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.get_user_facts(
+        client.user.get_facts(
             user_id="userId",
         )
         """
@@ -703,7 +703,7 @@ class AsyncUserClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_user_facts(
+    async def get_facts(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> FactsResponse:
         """
@@ -729,7 +729,7 @@ class AsyncUserClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.user.get_user_facts(
+        await client.user.get_facts(
             user_id="userId",
         )
         """
