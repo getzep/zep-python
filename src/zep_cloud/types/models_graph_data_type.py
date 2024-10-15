@@ -2,4 +2,4 @@
 
 import typing
 
-GraphSearchScope = typing.Union[typing.Literal["edges", "nodes"], typing.Any]
+ModelsGraphDataType = typing.Union[typing.Literal["text", "json"], typing.Any]

@@ -5,13 +5,11 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .community_node import CommunityNode
 from .entity_edge import EntityEdge
 from .entity_node import EntityNode
 
 
 class GraphSearchResults(pydantic_v1.BaseModel):
-    communities: typing.Optional[typing.List[CommunityNode]] = None
     edges: typing.Optional[typing.List[EntityEdge]] = None
     nodes: typing.Optional[typing.List[EntityNode]] = None
 

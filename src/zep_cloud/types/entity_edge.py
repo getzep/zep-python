@@ -28,11 +28,6 @@ class EntityEdge(pydantic_v1.BaseModel):
     Fact representing the edge and nodes that it connects
     """
 
-    graph_id: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Partition of the graph
-    """
-
     invalid_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
     Datetime of when the fact stopped being true

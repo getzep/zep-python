@@ -12,6 +12,7 @@ from ..errors.internal_server_error import InternalServerError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
+from ..types.models_graph_data_type import ModelsGraphDataType
 from ..types.reranker import Reranker
 from ..types.success_response import SuccessResponse
 from .edge.client import AsyncEdgeClient, EdgeClient
@@ -32,9 +33,9 @@ class GraphClient:
     def add(
         self,
         *,
+        data: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
-        json: typing.Optional[str] = OMIT,
-        text: typing.Optional[str] = OMIT,
+        type: typing.Optional[ModelsGraphDataType] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
@@ -43,11 +44,11 @@ class GraphClient:
 
         Parameters
         ----------
+        data : typing.Optional[str]
+
         group_id : typing.Optional[str]
 
-        json : typing.Optional[str]
-
-        text : typing.Optional[str]
+        type : typing.Optional[ModelsGraphDataType]
 
         user_id : typing.Optional[str]
 
@@ -71,7 +72,7 @@ class GraphClient:
         _response = self._client_wrapper.httpx_client.request(
             "graph",
             method="POST",
-            json={"group_id": group_id, "json": json, "text": text, "user_id": user_id},
+            json={"data": data, "group_id": group_id, "type": type, "user_id": user_id},
             request_options=request_options,
             omit=OMIT,
         )
@@ -194,9 +195,9 @@ class AsyncGraphClient:
     async def add(
         self,
         *,
+        data: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
-        json: typing.Optional[str] = OMIT,
-        text: typing.Optional[str] = OMIT,
+        type: typing.Optional[ModelsGraphDataType] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
@@ -205,11 +206,11 @@ class AsyncGraphClient:
 
         Parameters
         ----------
+        data : typing.Optional[str]
+
         group_id : typing.Optional[str]
 
-        json : typing.Optional[str]
-
-        text : typing.Optional[str]
+        type : typing.Optional[ModelsGraphDataType]
 
         user_id : typing.Optional[str]
 
@@ -233,7 +234,7 @@ class AsyncGraphClient:
         _response = await self._client_wrapper.httpx_client.request(
             "graph",
             method="POST",
-            json={"group_id": group_id, "json": json, "text": text, "user_id": user_id},
+            json={"data": data, "group_id": group_id, "type": type, "user_id": user_id},
             request_options=request_options,
             omit=OMIT,
         )

@@ -13,11 +13,6 @@ class EntityNode(pydantic_v1.BaseModel):
     Creation time of the node
     """
 
-    graph_id: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Partition of the graph
-    """
-
     labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     Labels associated with the node

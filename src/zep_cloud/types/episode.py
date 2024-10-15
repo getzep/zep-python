@@ -11,7 +11,6 @@ from .episode_type import EpisodeType
 class Episode(pydantic_v1.BaseModel):
     content: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
-    graph_id: typing.Optional[str] = None
     name: typing.Optional[str] = None
     source: typing.Optional[EpisodeType] = None
     source_description: typing.Optional[str] = None

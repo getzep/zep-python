@@ -114,7 +114,7 @@ class EdgeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
         """
         Get a specific edge by its UUID
 
@@ -138,7 +138,7 @@ class EdgeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.edge.get_by_uuid(
+        client.graph.edge.get(
             uuid_="uuid",
         )
         """
@@ -305,7 +305,7 @@ class AsyncEdgeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
         """
         Get a specific edge by its UUID
 
@@ -329,7 +329,7 @@ class AsyncEdgeClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.graph.edge.get_by_uuid(
+        await client.graph.edge.get(
             uuid_="uuid",
         )
         """

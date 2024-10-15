@@ -113,7 +113,7 @@ class NodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
         """
         Get a specific node by its UUID
 
@@ -137,7 +137,7 @@ class NodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.node.get_by_uuid(
+        client.graph.node.get(
             uuid_="uuid",
         )
         """
@@ -259,7 +259,7 @@ class AsyncNodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
         """
         Get a specific node by its UUID
 
@@ -283,7 +283,7 @@ class AsyncNodeClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.graph.node.get_by_uuid(
+        await client.graph.node.get(
             uuid_="uuid",
         )
         """

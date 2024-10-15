@@ -132,7 +132,7 @@ class EpisodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_by_uuid(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EpisodeResponse:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EpisodeResponse:
         """
         Get episode by UUID
 
@@ -156,7 +156,7 @@ class EpisodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.episode.get_by_uuid(
+        client.graph.episode.get(
             uuid_="uuid",
         )
         """
@@ -296,9 +296,7 @@ class AsyncEpisodeClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_by_uuid(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> EpisodeResponse:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EpisodeResponse:
         """
         Get episode by UUID
 
@@ -322,7 +320,7 @@ class AsyncEpisodeClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.graph.episode.get_by_uuid(
+        await client.graph.episode.get(
             uuid_="uuid",
         )
         """
