@@ -9,7 +9,7 @@ from .episode import Episode
 
 
 class EpisodeResponse(pydantic_v1.BaseModel):
-    episodes: typing.Optional[typing.List[Episode]] = None
+    episodes: typing.List[Episode]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

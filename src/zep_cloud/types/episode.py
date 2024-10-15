@@ -9,12 +9,12 @@ from .episode_type import EpisodeType
 
 
 class Episode(pydantic_v1.BaseModel):
-    content: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    name: typing.Optional[str] = None
-    source: typing.Optional[EpisodeType] = None
-    source_description: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    content: str
+    created_at: str
+    name: str
+    source: EpisodeType
+    source_description: str
+    uuid_: str = pydantic_v1.Field(alias="uuid")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

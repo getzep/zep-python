@@ -93,12 +93,12 @@ class GraphClient:
     def search(
         self,
         *,
+        query: str,
         center_node_uuid: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -109,6 +109,9 @@ class GraphClient:
 
         Parameters
         ----------
+        query : str
+            The string to search for (required)
+
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
 
@@ -123,9 +126,6 @@ class GraphClient:
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
-
-        query : typing.Optional[str]
-            The string to search for (required)
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
@@ -151,7 +151,9 @@ class GraphClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.search()
+        client.graph.search(
+            query="query",
+        )
         """
         _response = self._client_wrapper.httpx_client.request(
             "graph/search",
@@ -255,12 +257,12 @@ class AsyncGraphClient:
     async def search(
         self,
         *,
+        query: str,
         center_node_uuid: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -271,6 +273,9 @@ class AsyncGraphClient:
 
         Parameters
         ----------
+        query : str
+            The string to search for (required)
+
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
 
@@ -285,9 +290,6 @@ class AsyncGraphClient:
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
-
-        query : typing.Optional[str]
-            The string to search for (required)
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
@@ -313,7 +315,9 @@ class AsyncGraphClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.graph.search()
+        await client.graph.search(
+            query="query",
+        )
         """
         _response = await self._client_wrapper.httpx_client.request(
             "graph/search",

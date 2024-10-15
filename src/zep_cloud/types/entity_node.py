@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class EntityNode(pydantic_v1.BaseModel):
-    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    created_at: str = pydantic_v1.Field()
     """
     Creation time of the node
     """
@@ -18,17 +18,17 @@ class EntityNode(pydantic_v1.BaseModel):
     Labels associated with the node
     """
 
-    name: typing.Optional[str] = pydantic_v1.Field(default=None)
+    name: str = pydantic_v1.Field()
     """
     Name of the node
     """
 
-    summary: typing.Optional[str] = pydantic_v1.Field(default=None)
+    summary: str = pydantic_v1.Field()
     """
     Regional summary of surrounding edges
     """
 
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    uuid_: str = pydantic_v1.Field(alias="uuid")
     """
     UUID of the node
     """

@@ -8,12 +8,12 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class EntityEdge(pydantic_v1.BaseModel):
-    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    created_at: str = pydantic_v1.Field()
     """
     Creation time of the edge
     """
 
-    episodes: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    episodes: typing.List[str] = pydantic_v1.Field()
     """
     List of episode ids that reference these entity edges
     """
@@ -23,7 +23,7 @@ class EntityEdge(pydantic_v1.BaseModel):
     Datetime of when the node was invalidated
     """
 
-    fact: typing.Optional[str] = pydantic_v1.Field(default=None)
+    fact: str = pydantic_v1.Field()
     """
     Fact representing the edge and nodes that it connects
     """
@@ -33,22 +33,22 @@ class EntityEdge(pydantic_v1.BaseModel):
     Datetime of when the fact stopped being true
     """
 
-    name: typing.Optional[str] = pydantic_v1.Field(default=None)
+    name: str = pydantic_v1.Field()
     """
     Name of the edge, relation name
     """
 
-    source_node_uuid: typing.Optional[str] = pydantic_v1.Field(default=None)
+    source_node_uuid: str = pydantic_v1.Field()
     """
     UUID of the source node
     """
 
-    target_node_uuid: typing.Optional[str] = pydantic_v1.Field(default=None)
+    target_node_uuid: str = pydantic_v1.Field()
     """
     UUID of the target node
     """
 
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    uuid_: str = pydantic_v1.Field(alias="uuid")
     """
     UUID of the edge
     """
