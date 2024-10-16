@@ -13,7 +13,6 @@ from .entity_edge import EntityEdge
 from .entity_node import EntityNode
 from .episode import Episode
 from .episode_response import EpisodeResponse
-from .episode_type import EpisodeType
 from .fact import Fact
 from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
@@ -61,7 +60,6 @@ __all__ = [
     "EntityNode",
     "Episode",
     "EpisodeResponse",
-    "EpisodeType",
     "Fact",
     "FactRatingExamples",
     "FactRatingInstruction",
