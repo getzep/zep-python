@@ -57,7 +57,7 @@ async def main() -> None:
         )
 
     print("Waiting for the graph to be updated...")
-    await asyncio.sleep(10)
+    await asyncio.sleep(30)
     print("Getting memory for session")
     session_memory = await client.memory.get(session_id)
     print(session_memory)

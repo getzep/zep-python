@@ -55,29 +55,32 @@ async def main() -> None:
     print(f"Adding episode to group {group_id}...")
     await client.graph.add(
         group_id=group_id,
-        text="This is a test episode",
+        data="This is a test episode",
+        type="text",
     )
 
     print(f"Adding more meaningful episode to group {group_id}...")
     await client.graph.add(
         group_id=group_id,
-        text="Eric Clapton is a rock star",
+        data="Eric Clapton is a rock star",
+        type="text",
     )
 
     print(f"Adding a JSON episode to group {group_id}...")
     json_string = '{"name": "Eric Clapton", "age": 78, "genre": "Rock"}'
     await client.graph.add(
         group_id=group_id,
-        json=json_string,
+        data=json_string,
+        type="json",
     )
-    await asyncio.sleep(10)
+    await asyncio.sleep(20)
 
     # TODO: Need to enable non-message episodic content retrieval
-    # print(f"Getting episodes from group {group_id}...")
-    # results = await client.graph.episode.get_by_group_id(group_id, lastn=2)
-    # print(f"Episodes from group {group_id} {results.episodes}")
-    # episode = await client.graph.episode.get(results.episodes[0].uuid_)
-    # print(f"Episode {episode.uuid_} from group {group_id} {episode}")
+    print(f"Getting episodes from group {group_id}...")
+    results = await client.graph.episode.get_by_group_id(group_id, lastn=2)
+    print(f"Episodes from group {group_id} {results.episodes}")
+    episode = await client.graph.episode.get(results.episodes[0].uuid_)
+    print(f"Episode {episode.uuid_} from group {group_id} {episode}")
 
     print(f"Getting nodes from group {group_id}...")
     nodes = await client.graph.node.get_by_group_id(group_id)

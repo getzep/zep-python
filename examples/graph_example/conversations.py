@@ -66,6 +66,11 @@ history = [
             "role_type": "user",
             "content": "now bananas are my favorite fruit",
         },
+        {
+            "role": "Paul",
+            "role_type": "user",
+            "content": "I went to Eric Clapton's concert last night",
+        },
     ],
     [
         {
