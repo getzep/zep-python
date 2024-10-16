@@ -28,7 +28,6 @@ class GroupClient:
         description: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
         """
@@ -41,8 +40,6 @@ class GroupClient:
         group_id : typing.Optional[str]
 
         name : typing.Optional[str]
-
-        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -64,7 +61,7 @@ class GroupClient:
         _response = self._client_wrapper.httpx_client.request(
             "groups",
             method="POST",
-            json={"description": description, "group_id": group_id, "name": name, "user_ids": user_ids},
+            json={"description": description, "group_id": group_id, "name": name},
             request_options=request_options,
             omit=OMIT,
         )
@@ -155,7 +152,6 @@ class AsyncGroupClient:
         description: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
         """
@@ -168,8 +164,6 @@ class AsyncGroupClient:
         group_id : typing.Optional[str]
 
         name : typing.Optional[str]
-
-        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -191,7 +185,7 @@ class AsyncGroupClient:
         _response = await self._client_wrapper.httpx_client.request(
             "groups",
             method="POST",
-            json={"description": description, "group_id": group_id, "name": name, "user_ids": user_ids},
+            json={"description": description, "group_id": group_id, "name": name},
             request_options=request_options,
             omit=OMIT,
         )
