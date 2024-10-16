@@ -327,6 +327,7 @@ class MemoryClient:
     def search_sessions(
         self,
         *,
+        text: str,
         limit: typing.Optional[int] = None,
         min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
@@ -335,7 +336,6 @@ class MemoryClient:
         search_scope: typing.Optional[SearchScope] = OMIT,
         search_type: typing.Optional[SearchType] = OMIT,
         session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        text: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionSearchResponse:
@@ -344,6 +344,9 @@ class MemoryClient:
 
         Parameters
         ----------
+        text : str
+            The search text.
+
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
 
@@ -368,9 +371,6 @@ class MemoryClient:
         session_ids : typing.Optional[typing.Sequence[str]]
             the session ids to search
 
-        text : typing.Optional[str]
-            The search text.
-
         user_id : typing.Optional[str]
             User ID used to determine which sessions to search. Required on Community Edition.
 
@@ -389,7 +389,9 @@ class MemoryClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.memory.search_sessions()
+        client.memory.search_sessions(
+            text="text",
+        )
         """
         _response = self._client_wrapper.httpx_client.request(
             "sessions/search",
@@ -1710,6 +1712,7 @@ class AsyncMemoryClient:
     async def search_sessions(
         self,
         *,
+        text: str,
         limit: typing.Optional[int] = None,
         min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
@@ -1718,7 +1721,6 @@ class AsyncMemoryClient:
         search_scope: typing.Optional[SearchScope] = OMIT,
         search_type: typing.Optional[SearchType] = OMIT,
         session_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        text: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionSearchResponse:
@@ -1727,6 +1729,9 @@ class AsyncMemoryClient:
 
         Parameters
         ----------
+        text : str
+            The search text.
+
         limit : typing.Optional[int]
             The maximum number of search results to return. Defaults to None (no limit).
 
@@ -1751,9 +1756,6 @@ class AsyncMemoryClient:
         session_ids : typing.Optional[typing.Sequence[str]]
             the session ids to search
 
-        text : typing.Optional[str]
-            The search text.
-
         user_id : typing.Optional[str]
             User ID used to determine which sessions to search. Required on Community Edition.
 
@@ -1772,7 +1774,9 @@ class AsyncMemoryClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.memory.search_sessions()
+        await client.memory.search_sessions(
+            text="text",
+        )
         """
         _response = await self._client_wrapper.httpx_client.request(
             "sessions/search",
