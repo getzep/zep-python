@@ -13,6 +13,7 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.group import Group
+from ..types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -79,33 +80,22 @@ class GroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(
-        self,
-        group_id: str,
-        *,
-        description: typing.Optional[str] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> Group:
+    def delete(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Update group information
+        Delete group
 
         Parameters
         ----------
         group_id : str
             Group ID
 
-        description : typing.Optional[str]
-
-        name : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        Group
-            The added group
+        SuccessResponse
+            Deleted
 
         Examples
         --------
@@ -114,19 +104,15 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.update(
+        client.group.delete(
             group_id="groupId",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}",
-            method="PATCH",
-            json={"description": description, "name": name},
-            request_options=request_options,
-            omit=OMIT,
+            f"groups/{jsonable_encoder(group_id)}", method="DELETE", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
@@ -203,33 +189,24 @@ class AsyncGroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(
-        self,
-        group_id: str,
-        *,
-        description: typing.Optional[str] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> Group:
+    async def delete(
+        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
         """
-        Update group information
+        Delete group
 
         Parameters
         ----------
         group_id : str
             Group ID
 
-        description : typing.Optional[str]
-
-        name : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        Group
-            The added group
+        SuccessResponse
+            Deleted
 
         Examples
         --------
@@ -238,19 +215,15 @@ class AsyncGroupClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.group.update(
+        await client.group.delete(
             group_id="groupId",
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}",
-            method="PATCH",
-            json={"description": description, "name": name},
-            request_options=request_options,
-            omit=OMIT,
+            f"groups/{jsonable_encoder(group_id)}", method="DELETE", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 400:
             raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 404:
