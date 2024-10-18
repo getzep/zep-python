@@ -364,7 +364,7 @@ class UserClient:
 
     def get_sessions(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[Session]]:
+    ) -> typing.List[Session]:
         """
         list all sessions for a user by user id
 
@@ -378,7 +378,7 @@ class UserClient:
 
         Returns
         -------
-        typing.List[typing.List[Session]]
+        typing.List[Session]
             OK
 
         Examples
@@ -396,7 +396,7 @@ class UserClient:
             f"users/{jsonable_encoder(user_id)}/sessions", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[Session]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -752,7 +752,7 @@ class AsyncUserClient:
 
     async def get_sessions(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[Session]]:
+    ) -> typing.List[Session]:
         """
         list all sessions for a user by user id
 
@@ -766,7 +766,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        typing.List[typing.List[Session]]
+        typing.List[Session]
             OK
 
         Examples
@@ -784,7 +784,7 @@ class AsyncUserClient:
             f"users/{jsonable_encoder(user_id)}/sessions", method="GET", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[Session]], _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
