@@ -26,28 +26,28 @@ Zep: Long-Term Memory for ‍AI Assistants.
 ## What is Zep? 💬
 Zep is a long-term memory service for AI Assistant apps. With Zep, you can provide AI assistants with the ability to recall past conversations, no matter how distant, while also reducing hallucinations, latency, and cost.
 
-### Installation Notes
-Main branch contains the latest version of zep-cloud sdk. You can install it by running:
+### Cloud Installation
+You can install the Zep Cloud SDK by running:
 ```bash
 pip install zep-cloud
 ```
+> [!NOTE]
+> Zep Cloud [overview](https://help.getzep.com/concepts) and [cloud sdk guide](https://help.getzep.com/sdks).
 
--- OR --
-
-```bash
-poetry add zep-cloud
-```
-
-Open Source Compatible SDK is available in the [oss](https://github.com/getzep/zep-python/tree/oss) branch, where you can also find Open Source compatible examples. You can install it by running:
+### Community Installation
 ```bash
 pip install zep-python
 ```
+> [!NOTE]
+> Zep Community Edition [quick start](https://help.getzep.com/ce/quickstart) and [sdk guide](https://help.getzep.com/ce/sdks).
 
--- OR --
-
+### Zep v0.x Compatible SDK
+You can install Zep v0.x compatible sdk by running:
 ```bash
-poetry add zep-python
+pip install "zep-python>=1.5.0,<2.0.0"
 ```
+> [!NOTE]
+> Zep v0.x [quick start](https://help.getzep.com/ce/legacy/deployment/quickstart) and [sdk guide](https://help.getzep.com/ce/legacy/sdk).
 
 ### How Zep works
 

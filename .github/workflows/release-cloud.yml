@@ -1,8 +1,8 @@
-name: Release to PyPI
+name: Release Cloud SDK to PyPI
 
 on:
-  push:
-    tags: ["v*.*.*"]
+  release:
+    types: [published]
 
 env:
   POETRY_VERSION: "1.8.3"
@@ -10,6 +10,7 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: github.event.release.target_commitish == 'main'
     permissions:
       id-token: write
       contents: write
