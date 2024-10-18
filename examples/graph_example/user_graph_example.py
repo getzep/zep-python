@@ -20,7 +20,7 @@ the graph structure.
 import asyncio
 import os
 import uuid
-
+import json
 from dotenv import find_dotenv, load_dotenv
 from conversations import history
 
@@ -49,7 +49,6 @@ async def main() -> None:
             session_id,
             messages=[
                 Message(
-                    role=message["role"],
                     role_type=message["role_type"],
                     content=message["content"],
                 )
@@ -63,11 +62,12 @@ async def main() -> None:
     print(session_memory)
     print("Searching user memory...")
     search_results = await client.memory.search_sessions(
-        user_id=user_id,
         text="What is the weather in San Francisco?",
+        user_id=user_id,
         search_scope="facts",
     )
     print(search_results)
+
     print("Getting episodes for user")
     episode_result = await client.graph.episode.get_by_user_id(user_id, lastn=3)
     episodes = episode_result.episodes
@@ -103,7 +103,13 @@ async def main() -> None:
     )
     print("Text episode added")
     print("Adding a new JSON episode to the graph...")
-    json_string = '{"name": "Eric Clapton", "age": 78, "genre": "Rock"}'
+    json_data = {
+        "name": "Eric Clapton",
+        "age": 78,
+        "genre": "Rock",
+        "favorite_user_id": user_id,
+    }
+    json_string = json.dumps(json_data)
     await client.graph.add(
         user_id=user_id,
         type="json",
@@ -152,6 +158,16 @@ async def main() -> None:
     print("Getting all user facts")
     result = await client.user.get_facts(user_id)
     print(result.facts)
+
+    for fact in result.facts:
+        if fact.valid_at or fact.invalid_at:
+            print(
+                f"Fact {fact.fact} is valid at {fact.valid_at} and invalid at {fact.invalid_at}\n "
+            )
+
+    # Uncomment to delete the user
+    # await client.user.delete(user_id)
+    # print(f"User {user_id} deleted")
 
 
 if __name__ == "__main__":

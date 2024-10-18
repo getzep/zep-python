@@ -44,14 +44,6 @@ async def main() -> None:
     )
     print(f"Group {group_id} created {group}")
 
-    print(f"Updating group {group_id}...")
-    group = await client.group.update(
-        group_id=group_id,
-        name="My Group 2",
-        description="This is my group 2",
-    )
-    print(f"Group {group_id} updated {group}")
-
     print(f"Adding episode to group {group_id}...")
     await client.graph.add(
         group_id=group_id,
@@ -96,6 +88,9 @@ async def main() -> None:
         query="Eric Clapton",
     )
     print(f"Search results from group {group_id} {search_results}")
+
+    await client.group.delete(group_id)
+    print(f"Group {group_id} deleted")
 
 
 if __name__ == "__main__":
