@@ -65,7 +65,8 @@ async def main() -> None:
         search_scope="facts",
     )
     print(search_results)
-
+    sessions = await client.user.get_sessions(user_id)
+    print(sessions)
     print("Getting episodes for user")
     episode_result = await client.graph.episode.get_by_user_id(user_id, lastn=3)
     episodes = episode_result.episodes
