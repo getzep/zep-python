@@ -136,9 +136,9 @@ class MemoryClient:
         self,
         *,
         session_id: str,
+        user_id: str,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -149,14 +149,14 @@ class MemoryClient:
         session_id : str
             The unique identifier of the session.
 
+        user_id : str
+            The unique identifier of the user associated with the session
+
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the session.
-
-        user_id : typing.Optional[str]
-            The unique identifier of the user associated with the session
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -175,6 +175,7 @@ class MemoryClient:
         )
         client.memory.add_session(
             session_id="session_id",
+            user_id="user_id",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1521,9 +1522,9 @@ class AsyncMemoryClient:
         self,
         *,
         session_id: str,
+        user_id: str,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -1534,14 +1535,14 @@ class AsyncMemoryClient:
         session_id : str
             The unique identifier of the session.
 
+        user_id : str
+            The unique identifier of the user associated with the session
+
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the session.
-
-        user_id : typing.Optional[str]
-            The unique identifier of the user associated with the session
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1560,6 +1561,7 @@ class AsyncMemoryClient:
         )
         await client.memory.add_session(
             session_id="session_id",
+            user_id="user_id",
         )
         """
         _response = await self._client_wrapper.httpx_client.request(
