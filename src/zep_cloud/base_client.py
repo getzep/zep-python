@@ -9,6 +9,8 @@ from .core.api_error import ApiError
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .document.client import AsyncDocumentClient, DocumentClient
 from .environment import ZepEnvironment
+from .graph.client import AsyncGraphClient, GraphClient
+from .group.client import AsyncGroupClient, GroupClient
 from .memory.client import AsyncMemoryClient, MemoryClient
 from .user.client import AsyncUserClient, UserClient
 
@@ -75,6 +77,8 @@ class BaseClient:
         )
         self.document = DocumentClient(client_wrapper=self._client_wrapper)
         self.memory = MemoryClient(client_wrapper=self._client_wrapper)
+        self.graph = GraphClient(client_wrapper=self._client_wrapper)
+        self.group = GroupClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
 
@@ -140,6 +144,8 @@ class AsyncBaseClient:
         )
         self.document = AsyncDocumentClient(client_wrapper=self._client_wrapper)
         self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
+        self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
+        self.group = AsyncGroupClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 
 

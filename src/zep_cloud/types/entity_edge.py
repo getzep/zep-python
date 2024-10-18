@@ -5,48 +5,57 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .role_type import RoleType
 
 
-class Message(pydantic_v1.BaseModel):
-    content: str = pydantic_v1.Field()
+class EntityEdge(pydantic_v1.BaseModel):
+    created_at: str = pydantic_v1.Field()
     """
-    The content of the message.
-    """
-
-    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    The timestamp of when the message was created.
+    Creation time of the edge
     """
 
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
+    episodes: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
-    The metadata associated with the message.
-    """
-
-    role: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    The role of the sender of the message (e.g., "user", "assistant").
+    List of episode ids that reference these entity edges
     """
 
-    role_type: RoleType = pydantic_v1.Field()
+    expired_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    The type of the role (e.g., "user", "system").
-    """
-
-    token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
-    """
-    The number of tokens in the message.
+    Datetime of when the node was invalidated
     """
 
-    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    fact: str = pydantic_v1.Field()
     """
-    The timestamp of when the message was last updated.
+    Fact representing the edge and nodes that it connects
     """
 
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    invalid_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    The unique identifier of the message.
+    Datetime of when the fact stopped being true
+    """
+
+    name: str = pydantic_v1.Field()
+    """
+    Name of the edge, relation name
+    """
+
+    source_node_uuid: str = pydantic_v1.Field()
+    """
+    UUID of the source node
+    """
+
+    target_node_uuid: str = pydantic_v1.Field()
+    """
+    UUID of the target node
+    """
+
+    uuid_: str = pydantic_v1.Field(alias="uuid")
+    """
+    UUID of the edge
+    """
+
+    valid_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Datetime of when the fact became true
     """
 
     def json(self, **kwargs: typing.Any) -> str:

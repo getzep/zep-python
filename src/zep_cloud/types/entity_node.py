@@ -7,15 +7,31 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class DocumentResponse(pydantic_v1.BaseModel):
-    content: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    document_id: typing.Optional[str] = None
-    embedding: typing.Optional[typing.List[float]] = None
-    is_embedded: typing.Optional[bool] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    updated_at: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+class EntityNode(pydantic_v1.BaseModel):
+    created_at: str = pydantic_v1.Field()
+    """
+    Creation time of the node
+    """
+
+    labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    """
+    Labels associated with the node
+    """
+
+    name: str = pydantic_v1.Field()
+    """
+    Name of the node
+    """
+
+    summary: str = pydantic_v1.Field()
+    """
+    Regional summary of surrounding edges
+    """
+
+    uuid_: str = pydantic_v1.Field(alias="uuid")
+    """
+    UUID of the node
+    """
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

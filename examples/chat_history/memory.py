@@ -72,7 +72,7 @@ async def main() -> None:
         await client.memory.add(session_id=session_id, messages=[Message(**m)])
 
     #  Wait for the messages to be processed
-    await asyncio.sleep(5)
+    await asyncio.sleep(20)
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.
@@ -100,7 +100,7 @@ async def main() -> None:
 
     # Get Memory for session
     print(f"\n---Get Perpetual Memory for Session: {session_id}")
-    memory = await client.memory.get(session_id, memory_type="perpetual")
+    memory = await client.memory.get(session_id)
     print(f"Memory: {memory}")
     print("\n---End of Memory")
 
@@ -115,7 +115,7 @@ async def main() -> None:
     query = "What are Jane's favorite shoe brands?"
     print(f"\n---Searching over facts for: '{query}'")
     facts_result = await client.memory.search_sessions(
-        session_ids=[session_id], text=query, search_scope="facts"
+        user_id=user_id, text=query, search_scope="facts"
     )
     print("facts_result: ", facts_result)
 

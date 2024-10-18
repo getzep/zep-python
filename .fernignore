@@ -9,4 +9,4 @@ poetry.lock
 README.md
 .github
 Makefile
-LICENSE
+.gitignore

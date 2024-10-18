@@ -5,13 +5,22 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .session import Session
-from .session_classification import SessionClassification
 
 
-class EndSessionResponse(pydantic_v1.BaseModel):
-    classification: typing.Optional[SessionClassification] = None
-    session: typing.Optional[Session] = None
+class ApidataDocumentCollection(pydantic_v1.BaseModel):
+    created_at: typing.Optional[str] = None
+    description: typing.Optional[str] = None
+    document_count: typing.Optional[int] = None
+    document_embedded_count: typing.Optional[int] = None
+    embedding_dimensions: typing.Optional[int] = None
+    embedding_model_name: typing.Optional[str] = None
+    is_auto_embedded: typing.Optional[bool] = None
+    is_indexed: typing.Optional[bool] = None
+    is_normalized: typing.Optional[bool] = None
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+    name: typing.Optional[str] = None
+    updated_at: typing.Optional[str] = None
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -28,5 +37,7 @@ class EndSessionResponse(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
+        allow_population_by_field_name = True
+        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}
