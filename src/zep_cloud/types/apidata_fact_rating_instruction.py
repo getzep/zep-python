@@ -5,11 +5,11 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .session_fact_rating_examples import SessionFactRatingExamples
+from .apidata_fact_rating_examples import ApidataFactRatingExamples
 
 
-class SessionFactRatingInstruction(pydantic_v1.BaseModel):
-    examples: typing.Optional[SessionFactRatingExamples] = pydantic_v1.Field(default=None)
+class ApidataFactRatingInstruction(pydantic_v1.BaseModel):
+    examples: typing.Optional[ApidataFactRatingExamples] = pydantic_v1.Field(default=None)
     """
     Examples is a list of examples that demonstrate how facts might be rated based on your instruction. You should provide
     an example of a highly rated example, a low rated example, and a medium (or in between example). For example, if you are rating

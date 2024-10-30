@@ -9,12 +9,12 @@ from .graph_data_type import GraphDataType
 
 
 class Episode(pydantic_v1.BaseModel):
-    content: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
+    content: str
+    created_at: str
     name: typing.Optional[str] = None
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    uuid_: str = pydantic_v1.Field(alias="uuid")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

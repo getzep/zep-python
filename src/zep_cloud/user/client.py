@@ -12,6 +12,7 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.facts_response import FactsResponse
 from ..types.session import Session
 from ..types.success_response import SuccessResponse
@@ -30,6 +31,7 @@ class UserClient:
         self,
         *,
         email: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
@@ -43,6 +45,9 @@ class UserClient:
         ----------
         email : typing.Optional[str]
             The email address of the user.
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -78,6 +83,7 @@ class UserClient:
             method="POST",
             json={
                 "email": email,
+                "fact_rating_instruction": fact_rating_instruction,
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
@@ -250,6 +256,7 @@ class UserClient:
         user_id: str,
         *,
         email: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
@@ -265,6 +272,9 @@ class UserClient:
 
         email : typing.Optional[str]
             The email address of the user.
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -297,7 +307,13 @@ class UserClient:
         _response = self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}",
             method="PATCH",
-            json={"email": email, "first_name": first_name, "last_name": last_name, "metadata": metadata},
+            json={
+                "email": email,
+                "fact_rating_instruction": fact_rating_instruction,
+                "first_name": first_name,
+                "last_name": last_name,
+                "metadata": metadata,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -416,6 +432,7 @@ class AsyncUserClient:
         self,
         *,
         email: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
@@ -429,6 +446,9 @@ class AsyncUserClient:
         ----------
         email : typing.Optional[str]
             The email address of the user.
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -464,6 +484,7 @@ class AsyncUserClient:
             method="POST",
             json={
                 "email": email,
+                "fact_rating_instruction": fact_rating_instruction,
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
@@ -636,6 +657,7 @@ class AsyncUserClient:
         user_id: str,
         *,
         email: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
@@ -651,6 +673,9 @@ class AsyncUserClient:
 
         email : typing.Optional[str]
             The email address of the user.
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -683,7 +708,13 @@ class AsyncUserClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}",
             method="PATCH",
-            json={"email": email, "first_name": first_name, "last_name": last_name, "metadata": metadata},
+            json={
+                "email": email,
+                "fact_rating_instruction": fact_rating_instruction,
+                "first_name": first_name,
+                "last_name": last_name,
+                "metadata": metadata,
+            },
             request_options=request_options,
             omit=OMIT,
         )

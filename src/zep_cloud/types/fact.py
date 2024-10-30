@@ -8,9 +8,14 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class Fact(pydantic_v1.BaseModel):
+    content: str
     created_at: str
     expired_at: typing.Optional[str] = None
-    fact: str
+    fact: str = pydantic_v1.Field()
+    """
+    Deprecated. This field will be removed in the future, please use `content` instead.
+    """
+
     invalid_at: typing.Optional[str] = None
     name: typing.Optional[str] = None
     rating: typing.Optional[float] = None
