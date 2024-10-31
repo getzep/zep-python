@@ -87,7 +87,9 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+    def delete_fact(
+        self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
         """
         delete a fact
 
@@ -101,7 +103,7 @@ class MemoryClient:
 
         Returns
         -------
-        str
+        SuccessResponse
             Deleted
 
         Examples
@@ -119,7 +121,7 @@ class MemoryClient:
             f"facts/{jsonable_encoder(fact_uuid)}", method="DELETE", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:
@@ -1473,7 +1475,9 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> str:
+    async def delete_fact(
+        self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
         """
         delete a fact
 
@@ -1487,7 +1491,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        str
+        SuccessResponse
             Deleted
 
         Examples
@@ -1505,7 +1509,7 @@ class AsyncMemoryClient:
             f"facts/{jsonable_encoder(fact_uuid)}", method="DELETE", request_options=request_options
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
         if _response.status_code == 404:
             raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
         if _response.status_code == 500:

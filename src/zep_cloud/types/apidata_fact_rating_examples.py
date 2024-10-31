@@ -7,7 +7,7 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class SessionFactRatingExamples(pydantic_v1.BaseModel):
+class ApidataFactRatingExamples(pydantic_v1.BaseModel):
     high: typing.Optional[str] = None
     low: typing.Optional[str] = None
     medium: typing.Optional[str] = None

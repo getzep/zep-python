@@ -12,6 +12,7 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_fact_rating_instruction import ApidataFactRatingInstruction
 from ..types.group import Group
 from ..types.success_response import SuccessResponse
 
@@ -27,6 +28,7 @@ class GroupClient:
         self,
         *,
         description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -37,6 +39,9 @@ class GroupClient:
         Parameters
         ----------
         description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
+            UserIDs     []string `json:"user_ids"`
 
         group_id : typing.Optional[str]
 
@@ -62,7 +67,12 @@ class GroupClient:
         _response = self._client_wrapper.httpx_client.request(
             "groups",
             method="POST",
-            json={"description": description, "group_id": group_id, "name": name},
+            json={
+                "description": description,
+                "fact_rating_instruction": fact_rating_instruction,
+                "group_id": group_id,
+                "name": name,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -136,6 +146,7 @@ class AsyncGroupClient:
         self,
         *,
         description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -146,6 +157,9 @@ class AsyncGroupClient:
         Parameters
         ----------
         description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
+            UserIDs     []string `json:"user_ids"`
 
         group_id : typing.Optional[str]
 
@@ -171,7 +185,12 @@ class AsyncGroupClient:
         _response = await self._client_wrapper.httpx_client.request(
             "groups",
             method="POST",
-            json={"description": description, "group_id": group_id, "name": name},
+            json={
+                "description": description,
+                "fact_rating_instruction": fact_rating_instruction,
+                "group_id": group_id,
+                "name": name,
+            },
             request_options=request_options,
             omit=OMIT,
         )
