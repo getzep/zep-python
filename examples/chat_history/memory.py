@@ -44,6 +44,8 @@ async def main() -> None:
         last_name="Smith",
         metadata={"vip": "true"},
     )
+    # await asyncio.sleep(1)
+    print(f"User added: {user_id}")
 
     session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
 
@@ -55,24 +57,26 @@ async def main() -> None:
         user_id=user_id,
         metadata={"foo": "bar"},
     )
-
+    # await asyncio.sleep(1)
     # Update session metadata
     print(f"\n---Updating session: {session_id}")
     await client.memory.update_session(session_id=session_id, metadata={"bar": "foo"})
-
+    # await asyncio.sleep(3)
     # Get session
     print(f"\n---Getting session: {session_id}")
     session = await client.memory.get_session(session_id)
     print(f"Session details: {session}")
+    # await asyncio.sleep(3)
 
     # Add Memory for session
     print(f"\n---Add Memory for Session: {session_id}")
     for m in history:
         print(f"{m['role']}: {m['content']}")
         await client.memory.add(session_id=session_id, messages=[Message(**m)])
+        # await asyncio.sleep(0.5)
 
     #  Wait for the messages to be processed
-    await asyncio.sleep(20)
+    await asyncio.sleep(50)
 
     # Synthesize a question from most recent messages.
     # Useful for RAG apps. This is faster than using an LLM chain.
@@ -93,10 +97,6 @@ async def main() -> None:
         session_id, name="spender_category", classes=classes, persist=True
     )
     print(f"Classification: {classification}")
-
-    all_session_facts = await client.memory.get_session_facts(session_id)
-    for f in all_session_facts.facts:
-        print(f"{f.fact}\n")
 
     # Get Memory for session
     print(f"\n---Get Perpetual Memory for Session: {session_id}")
