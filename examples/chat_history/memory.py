@@ -104,6 +104,8 @@ async def main() -> None:
     print(f"Memory: {memory}")
     print("\n---End of Memory")
 
+    print(f"Memory context: {memory.context}")
+
     # Search Memory for session
     query = "What are Jane's favorite shoe brands?"
     print(f"\n---Searching over summaries for: '{query}'")
