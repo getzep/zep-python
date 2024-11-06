@@ -11,6 +11,11 @@ from .summary import Summary
 
 
 class Memory(pydantic_v1.BaseModel):
+    context: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Memory context containing relevant facts and entities for the session. Can be put into the prompt directly.
+    """
+
     facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     Most recent list of facts derived from the session. (cloud only)
