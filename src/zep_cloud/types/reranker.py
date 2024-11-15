@@ -2,4 +2,4 @@
 
 import typing
 
-Reranker = typing.Union[typing.Literal["rrf", "mmr", "node_distance", "episode_mentions"], typing.Any]
+Reranker = typing.Union[typing.Literal["rrf", "mmr", "node_distance", "episode_mentions", "cross_encoder"], typing.Any]

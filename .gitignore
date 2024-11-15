@@ -8,3 +8,4 @@ poetry.toml
 *.env
 .venv/
 venv/
+.cache/
