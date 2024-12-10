@@ -5,23 +5,10 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .fact_rating_instruction import FactRatingInstruction
 
 
-class User(pydantic_v1.BaseModel):
-    created_at: typing.Optional[str] = None
-    deleted_at: typing.Optional[str] = None
-    email: typing.Optional[str] = None
-    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
-    first_name: typing.Optional[str] = None
-    id: typing.Optional[int] = None
-    last_name: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    project_uuid: typing.Optional[str] = None
-    session_count: typing.Optional[int] = None
-    updated_at: typing.Optional[str] = None
-    user_id: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+class ApidataAddMemoryResponse(pydantic_v1.BaseModel):
+    context: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -38,7 +25,5 @@ class User(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

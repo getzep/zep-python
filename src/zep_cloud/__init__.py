@@ -2,6 +2,7 @@
 
 from .types import (
     ApiError,
+    ApidataAddMemoryResponse,
     ApidataDocument,
     ApidataDocumentCollection,
     ApidataDocumentSearchResponse,
@@ -54,6 +55,7 @@ from .version import __version__
 
 __all__ = [
     "ApiError",
+    "ApidataAddMemoryResponse",
     "ApidataDocument",
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",

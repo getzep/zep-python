@@ -13,6 +13,7 @@ from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_add_memory_response import ApidataAddMemoryResponse
 from ..types.classify_session_request import ClassifySessionRequest
 from ..types.end_session_response import EndSessionResponse
 from ..types.end_sessions_response import EndSessionsResponse
@@ -938,9 +939,10 @@ class MemoryClient:
         *,
         messages: typing.Sequence[Message],
         fact_instruction: typing.Optional[str] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
+    ) -> ApidataAddMemoryResponse:
         """
         Add memory to the specified session.
 
@@ -955,6 +957,9 @@ class MemoryClient:
         fact_instruction : typing.Optional[str]
             Additional instruction for generating the facts. Zep Cloud Only, will be ignored on Community Edition.
 
+        return_context : typing.Optional[bool]
+            Optionally return memory context relevant to the most recent messages.
+
         summary_instruction : typing.Optional[str]
             Additional instruction for generating the summary. Zep Cloud Only, will be ignored on Community Edition.
 
@@ -963,8 +968,8 @@ class MemoryClient:
 
         Returns
         -------
-        SuccessResponse
-            OK
+        ApidataAddMemoryResponse
+            An object, optionally containing memory context retrieved for the last message
 
         Examples
         --------
@@ -990,13 +995,14 @@ class MemoryClient:
             json={
                 "fact_instruction": fact_instruction,
                 "messages": messages,
+                "return_context": return_context,
                 "summary_instruction": summary_instruction,
             },
             request_options=request_options,
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataAddMemoryResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -2326,9 +2332,10 @@ class AsyncMemoryClient:
         *,
         messages: typing.Sequence[Message],
         fact_instruction: typing.Optional[str] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
+    ) -> ApidataAddMemoryResponse:
         """
         Add memory to the specified session.
 
@@ -2343,6 +2350,9 @@ class AsyncMemoryClient:
         fact_instruction : typing.Optional[str]
             Additional instruction for generating the facts. Zep Cloud Only, will be ignored on Community Edition.
 
+        return_context : typing.Optional[bool]
+            Optionally return memory context relevant to the most recent messages.
+
         summary_instruction : typing.Optional[str]
             Additional instruction for generating the summary. Zep Cloud Only, will be ignored on Community Edition.
 
@@ -2351,8 +2361,8 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        SuccessResponse
-            OK
+        ApidataAddMemoryResponse
+            An object, optionally containing memory context retrieved for the last message
 
         Examples
         --------
@@ -2378,13 +2388,14 @@ class AsyncMemoryClient:
             json={
                 "fact_instruction": fact_instruction,
                 "messages": messages,
+                "return_context": return_context,
                 "summary_instruction": summary_instruction,
             },
             request_options=request_options,
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(ApidataAddMemoryResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
