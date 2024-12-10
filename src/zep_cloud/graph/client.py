@@ -105,7 +105,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None
     ) -> GraphSearchResults:
         """
-        Perform a graph search query
+        Perform a graph search query.
 
         Parameters
         ----------
@@ -119,7 +119,7 @@ class GraphClient:
             one of user_id or group_id must be provided
 
         limit : typing.Optional[int]
-            The maximum number of facts to retrieve
+            The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
         min_score : typing.Optional[float]
             minimum similarity score for a result to be returned
@@ -131,7 +131,7 @@ class GraphClient:
             Defaults to RRF
 
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Nodes and Communities will be added in the future.
+            Defaults to Edges. Communities will be added in the future.
 
         user_id : typing.Optional[str]
             one of user_id or group_id must be provided
@@ -269,7 +269,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None
     ) -> GraphSearchResults:
         """
-        Perform a graph search query
+        Perform a graph search query.
 
         Parameters
         ----------
@@ -283,7 +283,7 @@ class AsyncGraphClient:
             one of user_id or group_id must be provided
 
         limit : typing.Optional[int]
-            The maximum number of facts to retrieve
+            The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
         min_score : typing.Optional[float]
             minimum similarity score for a result to be returned
@@ -295,7 +295,7 @@ class AsyncGraphClient:
             Defaults to RRF
 
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Nodes and Communities will be added in the future.
+            Defaults to Edges. Communities will be added in the future.
 
         user_id : typing.Optional[str]
             one of user_id or group_id must be provided

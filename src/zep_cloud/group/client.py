@@ -27,9 +27,9 @@ class GroupClient:
     def add(
         self,
         *,
+        group_id: str,
         description: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
@@ -38,12 +38,12 @@ class GroupClient:
 
         Parameters
         ----------
+        group_id : str
+
         description : typing.Optional[str]
 
         fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
             UserIDs     []string `json:"user_ids"`
-
-        group_id : typing.Optional[str]
 
         name : typing.Optional[str]
 
@@ -62,7 +62,9 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.add()
+        client.group.add(
+            group_id="group_id",
+        )
         """
         _response = self._client_wrapper.httpx_client.request(
             "groups",
@@ -145,9 +147,9 @@ class AsyncGroupClient:
     async def add(
         self,
         *,
+        group_id: str,
         description: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
@@ -156,12 +158,12 @@ class AsyncGroupClient:
 
         Parameters
         ----------
+        group_id : str
+
         description : typing.Optional[str]
 
         fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
             UserIDs     []string `json:"user_ids"`
-
-        group_id : typing.Optional[str]
 
         name : typing.Optional[str]
 
@@ -180,7 +182,9 @@ class AsyncGroupClient:
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.group.add()
+        await client.group.add(
+            group_id="group_id",
+        )
         """
         _response = await self._client_wrapper.httpx_client.request(
             "groups",
