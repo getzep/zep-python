@@ -12,8 +12,8 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
+from ..types.add_memory_response import AddMemoryResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_add_memory_response import ApidataAddMemoryResponse
 from ..types.classify_session_request import ClassifySessionRequest
 from ..types.end_session_response import EndSessionResponse
 from ..types.end_sessions_response import EndSessionsResponse
@@ -942,7 +942,7 @@ class MemoryClient:
         return_context: typing.Optional[bool] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataAddMemoryResponse:
+    ) -> AddMemoryResponse:
         """
         Add memory to the specified session.
 
@@ -968,7 +968,7 @@ class MemoryClient:
 
         Returns
         -------
-        ApidataAddMemoryResponse
+        AddMemoryResponse
             An object, optionally containing memory context retrieved for the last message
 
         Examples
@@ -1002,7 +1002,7 @@ class MemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataAddMemoryResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(AddMemoryResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -2335,7 +2335,7 @@ class AsyncMemoryClient:
         return_context: typing.Optional[bool] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataAddMemoryResponse:
+    ) -> AddMemoryResponse:
         """
         Add memory to the specified session.
 
@@ -2361,7 +2361,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        ApidataAddMemoryResponse
+        AddMemoryResponse
             An object, optionally containing memory context retrieved for the last message
 
         Examples
@@ -2395,7 +2395,7 @@ class AsyncMemoryClient:
             omit=OMIT,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataAddMemoryResponse, _response.json())  # type: ignore
+            return pydantic_v1.parse_obj_as(AddMemoryResponse, _response.json())  # type: ignore
         if _response.status_code == 500:
             raise InternalServerError(
                 pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
