@@ -3339,7 +3339,7 @@ client.group.add(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[ApidataFactRatingInstruction]` — UserIDs     []string `json:"user_ids"`
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — UserIDs     []string `json:"user_ids"`
     
 </dd>
 </dl>

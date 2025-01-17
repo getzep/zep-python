@@ -6,9 +6,6 @@ from .apidata_document import ApidataDocument
 from .apidata_document_collection import ApidataDocumentCollection
 from .apidata_document_search_response import ApidataDocumentSearchResponse
 from .apidata_document_with_score import ApidataDocumentWithScore
-from .apidata_fact_rating_examples import ApidataFactRatingExamples
-from .apidata_fact_rating_instruction import ApidataFactRatingInstruction
-from .apidata_group_list_response import ApidataGroupListResponse
 from .classify_session_request import ClassifySessionRequest
 from .create_document_request import CreateDocumentRequest
 from .end_session_response import EndSessionResponse
@@ -26,6 +23,7 @@ from .graph_data_type import GraphDataType
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
 from .group import Group
+from .group_list_response import GroupListResponse
 from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .message import Message
@@ -55,9 +53,6 @@ __all__ = [
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",
     "ApidataDocumentWithScore",
-    "ApidataFactRatingExamples",
-    "ApidataFactRatingInstruction",
-    "ApidataGroupListResponse",
     "ClassifySessionRequest",
     "CreateDocumentRequest",
     "EndSessionResponse",
@@ -75,6 +70,7 @@ __all__ = [
     "GraphSearchResults",
     "GraphSearchScope",
     "Group",
+    "GroupListResponse",
     "Memory",
     "MemorySearchResult",
     "Message",

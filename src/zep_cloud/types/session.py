@@ -5,7 +5,7 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_fact_rating_instruction import ApidataFactRatingInstruction
+from .fact_rating_instruction import FactRatingInstruction
 
 
 class Session(pydantic_v1.BaseModel):
@@ -13,7 +13,7 @@ class Session(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = None
     deleted_at: typing.Optional[str] = None
     ended_at: typing.Optional[str] = None
-    fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = None
+    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
     facts: typing.Optional[typing.List[str]] = None
     id: typing.Optional[int] = pydantic_v1.Field(default=None)
     """

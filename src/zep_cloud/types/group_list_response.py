@@ -5,12 +5,13 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .group import Group
 
 
-class ApidataFactRatingExamples(pydantic_v1.BaseModel):
-    high: typing.Optional[str] = None
-    low: typing.Optional[str] = None
-    medium: typing.Optional[str] = None
+class GroupListResponse(pydantic_v1.BaseModel):
+    groups: typing.Optional[typing.List[Group]] = None
+    row_count: typing.Optional[int] = None
+    total_count: typing.Optional[int] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

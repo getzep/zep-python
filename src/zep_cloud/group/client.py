@@ -12,10 +12,10 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_fact_rating_instruction import ApidataFactRatingInstruction
-from ..types.apidata_group_list_response import ApidataGroupListResponse
+from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.facts_response import FactsResponse
 from ..types.group import Group
+from ..types.group_list_response import GroupListResponse
 from ..types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
@@ -31,7 +31,7 @@ class GroupClient:
         *,
         group_id: str,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
@@ -44,7 +44,7 @@ class GroupClient:
 
         description : typing.Optional[str]
 
-        fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             UserIDs     []string `json:"user_ids"`
 
         name : typing.Optional[str]
@@ -102,7 +102,7 @@ class GroupClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGroupListResponse:
+    ) -> GroupListResponse:
         """
         List all groups with pagination.
 
@@ -119,7 +119,7 @@ class GroupClient:
 
         Returns
         -------
-        ApidataGroupListResponse
+        GroupListResponse
             Successfully retrieved list of groups
 
         Examples
@@ -139,7 +139,7 @@ class GroupClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataGroupListResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(GroupListResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -308,7 +308,7 @@ class AsyncGroupClient:
         *,
         group_id: str,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
@@ -321,7 +321,7 @@ class AsyncGroupClient:
 
         description : typing.Optional[str]
 
-        fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             UserIDs     []string `json:"user_ids"`
 
         name : typing.Optional[str]
@@ -387,7 +387,7 @@ class AsyncGroupClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGroupListResponse:
+    ) -> GroupListResponse:
         """
         List all groups with pagination.
 
@@ -404,7 +404,7 @@ class AsyncGroupClient:
 
         Returns
         -------
-        ApidataGroupListResponse
+        GroupListResponse
             Successfully retrieved list of groups
 
         Examples
@@ -432,7 +432,7 @@ class AsyncGroupClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataGroupListResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(GroupListResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
