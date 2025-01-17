@@ -20,7 +20,7 @@ from dotenv import find_dotenv, load_dotenv
 from chat_history_shoe_purchase import history
 
 from zep_cloud.client import AsyncZep
-from zep_cloud.types import Message
+from zep_cloud.types import Message, FactRatingInstruction, FactRatingExamples
 
 load_dotenv(
     dotenv_path=find_dotenv()
@@ -34,78 +34,91 @@ async def main() -> None:
         api_key=API_KEY,
     )
 
-    # Create a user
-    user_id = uuid.uuid4().hex  # unique user id. can be any alphanum string
+    # # Create a user
+    # user_id = f"slack:{uuid.uuid4().hex}"  # unique user id. can be any alphanum string
 
-    await client.user.add(
-        user_id=user_id,
-        email="user@example.com",
-        first_name="Jane",
-        last_name="Smith",
-        metadata={"vip": "true"},
-    )
+    # await client.user.add(
+    #     user_id=user_id,
+    #     email="user@example.com",
+    #     first_name="Jane",
+    #     last_name="Smith",
+    #     metadata={"vip": "true"},
+    #     # fact_rating_instruction=FactRatingInstruction(
+    #     #     instruction="""Rate the facts by how relevant they 
+    #     #                 are to purchasing shoes.""",
+    #     #     examples=FactRatingExamples(
+    #     #         high="The user has agreed to purchase a Reebok running shoe.",
+    #     #         medium="The user prefers running to cycling.",
+    #     #         low="The user purchased a dress.",
+    #     #     ),
+    #     # ),
+    # )
     # await asyncio.sleep(1)
-    print(f"User added: {user_id}")
+    # # await asyncio.sleep(1)
+    # print(f"User added: {user_id}")
 
-    session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
+    # session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
 
-    # Create session associated with the above user
-    print(f"\n---Creating session: {session_id}")
+    # # Create session associated with the above user
+    # print(f"\n---Creating session: {session_id}")
 
-    await client.memory.add_session(
-        session_id=session_id,
-        user_id=user_id,
-        metadata={"foo": "bar"},
-    )
+    # await client.memory.add_session(
+    #     session_id=session_id,
+    #     user_id=user_id,
+    #     metadata={"foo": "bar"},
+    # )
     # await asyncio.sleep(1)
-    # Update session metadata
-    print(f"\n---Updating session: {session_id}")
-    await client.memory.update_session(session_id=session_id, metadata={"bar": "foo"})
-    # await asyncio.sleep(3)
-    # Get session
-    print(f"\n---Getting session: {session_id}")
-    session = await client.memory.get_session(session_id)
-    print(f"Session details: {session}")
-    # await asyncio.sleep(3)
+    # # await asyncio.sleep(1)
+    # # Update session metadata
+    # print(f"\n---Updating session: {session_id}")
+    # await client.memory.update_session(session_id=session_id, metadata={"bar": "foo"})
+    # await asyncio.sleep(1)
+    # # await asyncio.sleep(3)
+    # # Get session
+    # print(f"\n---Getting session: {session_id}")
+    # session = await client.memory.get_session(session_id)
+    # await asyncio.sleep(1)
+    # print(f"Session details: {session}")
+    # # await asyncio.sleep(3)
 
-    # Add Memory for session
-    print(f"\n---Add Memory for Session: {session_id}")
-    for m in history:
-        print(f"{m['role']}: {m['content']}")
-        await client.memory.add(session_id=session_id, messages=[Message(**m)])
-        # await asyncio.sleep(0.5)
+    # # Add Memory for session
+    # print(f"\n---Add Memory for Session: {session_id}")
+    # for m in history:
+    #     print(f"{m['role']}: {m['content']}")
+    #     await client.memory.add(session_id=session_id, messages=[Message(**m)])
+    #     await asyncio.sleep(1)
+    #     # await asyncio.sleep(0.5)
+    # #  Wait for the messages to be processed
+    # await asyncio.sleep(10)
 
-    #  Wait for the messages to be processed
-    await asyncio.sleep(50)
+    # # Synthesize a question from most recent messages.
+    # # Useful for RAG apps. This is faster than using an LLM chain.
+    # print("\n---Synthesize a question from most recent messages")
+    # question = await client.memory.synthesize_question(session_id, last_n_messages=3)
+    # print(f"Question: {question}")
 
-    # Synthesize a question from most recent messages.
-    # Useful for RAG apps. This is faster than using an LLM chain.
-    print("\n---Synthesize a question from most recent messages")
-    question = await client.memory.synthesize_question(session_id, last_n_messages=3)
-    print(f"Question: {question}")
+    # # Classify the session.
+    # # Useful for semantic routing, filtering, and many other use cases.
+    # print("\n---Classify the session")
+    # classes = [
+    #     "low spender <$50",
+    #     "medium spender >=$50, <$100",
+    #     "high spender >=$100",
+    #     "unknown",
+    # ]
+    # classification = await client.memory.classify_session(
+    #     session_id, name="spender_category", classes=classes, persist=True
+    # )
+    # print(f"Classification: {classification}")
 
-    # Classify the session.
-    # Useful for semantic routing, filtering, and many other use cases.
-    print("\n---Classify the session")
-    classes = [
-        "low spender <$50",
-        "medium spender >=$50, <$100",
-        "high spender >=$100",
-        "unknown",
-    ]
-    classification = await client.memory.classify_session(
-        session_id, name="spender_category", classes=classes, persist=True
-    )
-    print(f"Classification: {classification}")
-
-    # Get Memory for session
-    print(f"\n---Get Perpetual Memory for Session: {session_id}")
-    memory = await client.memory.get(session_id)
-    print(f"Memory: {memory}")
+    # # Get Memory for session
+    # print(f"\n---Get Perpetual Memory for Session: {session_id}")
+    memory = await client.memory.get("8c4ad5377f6747168bc479da3c744c13")
+    print(f"Memory: {memory.summary}")
     print("\n---End of Memory")
 
     print(f"Memory context: {memory.context}")
-
+    return
     # Search Memory for session
     query = "What are Jane's favorite shoe brands?"
     print(f"\n---Searching over summaries for: '{query}'")
