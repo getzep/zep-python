@@ -5,12 +5,15 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .fact_rating_instruction import FactRatingInstruction
 
 
 class Group(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = None
     description: typing.Optional[str] = None
     external_id: typing.Optional[str] = None
+    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
+    group_id: typing.Optional[str] = None
     id: typing.Optional[int] = pydantic_v1.Field(default=None)
     """
     TODO deprecate

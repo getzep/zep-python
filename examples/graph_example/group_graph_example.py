@@ -33,13 +33,14 @@ async def main() -> None:
         api_key=API_KEY,
     )
 
-    group_id = uuid.uuid4().hex
+    group_id = f"slack:{uuid.uuid4().hex}"
     print(f"Creating group {group_id}...")
     group = await client.group.add(
         group_id=group_id,
         name="My Group",
         description="This is my group",
     )
+    await asyncio.sleep(2)
     print(f"Group {group_id} created {group}")
 
     print(f"Adding episode to group {group_id}...")
@@ -48,14 +49,14 @@ async def main() -> None:
         data="This is a test episode",
         type="text",
     )
-
+    await asyncio.sleep(2)
     print(f"Adding more meaningful episode to group {group_id}...")
     await client.graph.add(
         group_id=group_id,
         data="Eric Clapton is a rock star",
         type="text",
     )
-
+    await asyncio.sleep(2)
     print(f"Adding a JSON episode to group {group_id}...")
     json_string = '{"name": "Eric Clapton", "age": 78, "genre": "Rock"}'
     await client.graph.add(
@@ -68,16 +69,20 @@ async def main() -> None:
     # TODO: Need to enable non-message episodic content retrieval
     print(f"Getting episodes from group {group_id}...")
     results = await client.graph.episode.get_by_group_id(group_id, lastn=2)
+    await asyncio.sleep(2)
     print(f"Episodes from group {group_id} {results.episodes}")
     episode = await client.graph.episode.get(results.episodes[0].uuid_)
+    await asyncio.sleep(2)
     print(f"Episode {episode.uuid_} from group {group_id} {episode}")
 
     print(f"Getting nodes from group {group_id}...")
     nodes = await client.graph.node.get_by_group_id(group_id)
+    await asyncio.sleep(2)
     print(f"Nodes from group {group_id} {nodes}")
 
     print(f"Getting edges from group {group_id}...")
     edges = await client.graph.edge.get_by_group_id(group_id)
+    await asyncio.sleep(2)
     print(f"Edges from group {group_id} {edges}")
 
     print(f"Searching group {group_id}...")
@@ -85,9 +90,10 @@ async def main() -> None:
         group_id=group_id,
         query="Eric Clapton",
     )
+    await asyncio.sleep(2)
     print(f"Search results from group {group_id} {search_results}")
 
-    await client.group.delete(group_id)
+    # await client.group.delete(group_id)
     print(f"Group {group_id} deleted")
 
 
