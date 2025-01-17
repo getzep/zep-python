@@ -8,6 +8,7 @@ from .apidata_document_search_response import ApidataDocumentSearchResponse
 from .apidata_document_with_score import ApidataDocumentWithScore
 from .apidata_fact_rating_examples import ApidataFactRatingExamples
 from .apidata_fact_rating_instruction import ApidataFactRatingInstruction
+from .apidata_group_list_response import ApidataGroupListResponse
 from .classify_session_request import ClassifySessionRequest
 from .create_document_request import CreateDocumentRequest
 from .end_session_response import EndSessionResponse
@@ -56,6 +57,7 @@ __all__ = [
     "ApidataDocumentWithScore",
     "ApidataFactRatingExamples",
     "ApidataFactRatingInstruction",
+    "ApidataGroupListResponse",
     "ClassifySessionRequest",
     "CreateDocumentRequest",
     "EndSessionResponse",

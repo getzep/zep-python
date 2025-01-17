@@ -57,17 +57,17 @@ class DocumentClient:
         _response = self._client_wrapper.httpx_client.request(
             "collections", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -106,21 +106,25 @@ class DocumentClient:
         _response = self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -172,21 +176,25 @@ class DocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -225,21 +233,25 @@ class DocumentClient:
         _response = self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}", method="DELETE", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -291,21 +303,25 @@ class DocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -360,19 +376,21 @@ class DocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[str]], _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[str]], _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -422,19 +440,21 @@ class DocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -486,19 +506,21 @@ class DocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocument]], _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocument]], _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -553,19 +575,21 @@ class DocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -610,19 +634,21 @@ class DocumentClient:
             method="GET",
             request_options=request_options,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataDocument, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataDocument, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -667,21 +693,25 @@ class DocumentClient:
             method="DELETE",
             request_options=request_options,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -738,21 +768,25 @@ class DocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -828,19 +862,21 @@ class DocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataDocumentSearchResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataDocumentSearchResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -869,27 +905,35 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.list_collections()
+
+
+        async def main() -> None:
+            await client.document.list_collections()
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             "collections", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -916,33 +960,45 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.get_collection(
-            collection_name="collectionName",
-        )
+
+
+        async def main() -> None:
+            await client.document.get_collection(
+                collection_name="collectionName",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -978,14 +1034,22 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.add_collection(
-            collection_name="collectionName",
-        )
+
+
+        async def main() -> None:
+            await client.document.add_collection(
+                collection_name="collectionName",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}",
@@ -994,21 +1058,25 @@ class AsyncDocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1035,33 +1103,45 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.delete_collection(
-            collection_name="collectionName",
-        )
+
+
+        async def main() -> None:
+            await client.document.delete_collection(
+                collection_name="collectionName",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}", method="DELETE", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1097,14 +1177,22 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.update_collection(
-            collection_name="collectionName",
-        )
+
+
+        async def main() -> None:
+            await client.document.update_collection(
+                collection_name="collectionName",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}",
@@ -1113,21 +1201,25 @@ class AsyncDocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1160,20 +1252,28 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud import CreateDocumentRequest
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.add_documents(
-            collection_name="collectionName",
-            request=[
-                CreateDocumentRequest(
-                    content="content",
-                )
-            ],
-        )
+
+
+        async def main() -> None:
+            await client.document.add_documents(
+                collection_name="collectionName",
+                request=[
+                    CreateDocumentRequest(
+                        content="content",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}/documents",
@@ -1182,19 +1282,21 @@ class AsyncDocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[str]], _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[str]], _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1227,15 +1329,23 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.batch_delete_documents(
-            collection_name="collectionName",
-            request=["string"],
-        )
+
+
+        async def main() -> None:
+            await client.document.batch_delete_documents(
+                collection_name="collectionName",
+                request=["string"],
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}/documents/batchDelete",
@@ -1244,19 +1354,21 @@ class AsyncDocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1292,14 +1404,22 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.batch_get_documents(
-            collection_name="collectionName",
-        )
+
+
+        async def main() -> None:
+            await client.document.batch_get_documents(
+                collection_name="collectionName",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}/documents/batchGet",
@@ -1308,19 +1428,21 @@ class AsyncDocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocument]], _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocument]], _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1353,20 +1475,28 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud import UpdateDocumentListRequest
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.batch_update_documents(
-            collection_name="collectionName",
-            request=[
-                UpdateDocumentListRequest(
-                    uuid_="uuid",
-                )
-            ],
-        )
+
+
+        async def main() -> None:
+            await client.document.batch_update_documents(
+                collection_name="collectionName",
+                request=[
+                    UpdateDocumentListRequest(
+                        uuid_="uuid",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}/documents/batchUpdate",
@@ -1375,19 +1505,21 @@ class AsyncDocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1417,34 +1549,44 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.gets_a_document_from_a_document_collection_by_uuid_cloud_only(
-            collection_name="collectionName",
-            document_uuid="documentUUID",
-        )
+
+
+        async def main() -> None:
+            await client.document.gets_a_document_from_a_document_collection_by_uuid_cloud_only(
+                collection_name="collectionName",
+                document_uuid="documentUUID",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
             method="GET",
             request_options=request_options,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataDocument, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataDocument, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1474,36 +1616,48 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.delete_document(
-            collection_name="collectionName",
-            document_uuid="documentUUID",
-        )
+
+
+        async def main() -> None:
+            await client.document.delete_document(
+                collection_name="collectionName",
+                document_uuid="documentUUID",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
             method="DELETE",
             request_options=request_options,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1543,15 +1697,23 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.updates_a_document_cloud_only(
-            collection_name="collectionName",
-            document_uuid="documentUUID",
-        )
+
+
+        async def main() -> None:
+            await client.document.updates_a_document_cloud_only(
+                collection_name="collectionName",
+                document_uuid="documentUUID",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}/documents/uuid/{jsonable_encoder(document_uuid)}",
@@ -1560,21 +1722,25 @@ class AsyncDocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -1627,14 +1793,22 @@ class AsyncDocumentClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.document.search(
-            collection_name="collectionName",
-        )
+
+
+        async def main() -> None:
+            await client.document.search(
+                collection_name="collectionName",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"collections/{jsonable_encoder(collection_name)}/search",
@@ -1650,19 +1824,21 @@ class AsyncDocumentClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(ApidataDocumentSearchResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 401:
-            raise UnauthorizedError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataDocumentSearchResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)

@@ -5,23 +5,13 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_fact_rating_instruction import ApidataFactRatingInstruction
+from .group import Group
 
 
-class Group(pydantic_v1.BaseModel):
-    created_at: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    external_id: typing.Optional[str] = None
-    fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = None
-    group_id: typing.Optional[str] = None
-    id: typing.Optional[int] = pydantic_v1.Field(default=None)
-    """
-    TODO deprecate
-    """
-
-    name: typing.Optional[str] = None
-    project_uuid: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+class ApidataGroupListResponse(pydantic_v1.BaseModel):
+    groups: typing.Optional[typing.List[Group]] = None
+    row_count: typing.Optional[int] = None
+    total_count: typing.Optional[int] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -38,7 +28,5 @@ class Group(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

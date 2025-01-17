@@ -39,7 +39,8 @@ class Memory(pydantic_v1.BaseModel):
 
     summary: typing.Optional[Summary] = pydantic_v1.Field(default=None)
     """
-    The most recent summary before last nth message. (cloud only)
+    The most relevant summaries to the recent conversation. (cloud only)
+    Deprecated: Please use context string instead.
     """
 
     def json(self, **kwargs: typing.Any) -> str:

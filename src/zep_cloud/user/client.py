@@ -92,15 +92,17 @@ class UserClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -147,15 +149,17 @@ class UserClient:
             params={"pageNumber": page_number, "pageSize": page_size},
             request_options=request_options,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(UserListResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(UserListResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -192,15 +196,17 @@ class UserClient:
         _response = self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -237,15 +243,17 @@ class UserClient:
         _response = self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}", method="DELETE", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -317,17 +325,21 @@ class UserClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -364,15 +376,17 @@ class UserClient:
         _response = self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}/facts", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -411,13 +425,13 @@ class UserClient:
         _response = self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}/sessions", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -472,12 +486,20 @@ class AsyncUserClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.user.add()
+
+
+        async def main() -> None:
+            await client.user.add()
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             "users",
@@ -493,15 +515,17 @@ class AsyncUserClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -535,12 +559,20 @@ class AsyncUserClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.user.list_ordered()
+
+
+        async def main() -> None:
+            await client.user.list_ordered()
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             "users-ordered",
@@ -548,15 +580,17 @@ class AsyncUserClient:
             params={"pageNumber": page_number, "pageSize": page_size},
             request_options=request_options,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(UserListResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(UserListResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -581,27 +615,37 @@ class AsyncUserClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.user.get(
-            user_id="userId",
-        )
+
+
+        async def main() -> None:
+            await client.user.get(
+                user_id="userId",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -626,27 +670,37 @@ class AsyncUserClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.user.delete(
-            user_id="userId",
-        )
+
+
+        async def main() -> None:
+            await client.user.delete(
+                user_id="userId",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}", method="DELETE", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -696,14 +750,22 @@ class AsyncUserClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.user.update(
-            user_id="userId",
-        )
+
+
+        async def main() -> None:
+            await client.user.update(
+                user_id="userId",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}",
@@ -718,17 +780,21 @@ class AsyncUserClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(User, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -755,27 +821,37 @@ class AsyncUserClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.user.get_facts(
-            user_id="userId",
-        )
+
+
+        async def main() -> None:
+            await client.user.get_facts(
+                user_id="userId",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}/facts", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -802,25 +878,33 @@ class AsyncUserClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.user.get_sessions(
-            user_id="userId",
-        )
+
+
+        async def main() -> None:
+            await client.user.get_sessions(
+                user_id="userId",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}/sessions", method="GET", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[Session], _response.json())  # type: ignore
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)

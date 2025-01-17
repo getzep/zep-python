@@ -13,6 +13,8 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.apidata_fact_rating_instruction import ApidataFactRatingInstruction
+from ..types.apidata_group_list_response import ApidataGroupListResponse
+from ..types.facts_response import FactsResponse
 from ..types.group import Group
 from ..types.success_response import SuccessResponse
 
@@ -78,15 +80,121 @@ class GroupClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def list_all_groups(
+        self,
+        *,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataGroupListResponse:
+        """
+        List all groups with pagination.
+
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1
+
+        page_size : typing.Optional[int]
+            Number of groups to retrieve per page
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGroupListResponse
+            Successfully retrieved list of groups
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.group.list_all_groups()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "groups-ordered",
+            method="GET",
+            params={"pageNumber": page_number, "pageSize": page_size},
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataGroupListResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_a_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
+        """
+        Get a group.
+
+        Parameters
+        ----------
+        group_id : str
+            The group_id of the group to get.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Group
+            The group that was retrieved.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.group.get_a_group(
+            group_id="groupId",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"groups/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -123,17 +231,68 @@ class GroupClient:
         _response = self._client_wrapper.httpx_client.request(
             f"groups/{jsonable_encoder(group_id)}", method="DELETE", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_facts(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactsResponse:
+        """
+        Get group facts.
+
+        Parameters
+        ----------
+        group_id : str
+            The group_id of the group to get.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FactsResponse
+            The group facts.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.group.get_facts(
+            group_id="groupId",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"groups/{jsonable_encoder(group_id)}/facts", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -177,14 +336,22 @@ class AsyncGroupClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.group.add(
-            group_id="group_id",
-        )
+
+
+        async def main() -> None:
+            await client.group.add(
+                group_id="group_id",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             "groups",
@@ -198,15 +365,137 @@ class AsyncGroupClient:
             request_options=request_options,
             omit=OMIT,
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def list_all_groups(
+        self,
+        *,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataGroupListResponse:
+        """
+        List all groups with pagination.
+
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1
+
+        page_size : typing.Optional[int]
+            Number of groups to retrieve per page
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGroupListResponse
+            Successfully retrieved list of groups
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.group.list_all_groups()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "groups-ordered",
+            method="GET",
+            params={"pageNumber": page_number, "pageSize": page_size},
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataGroupListResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_a_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
+        """
+        Get a group.
+
+        Parameters
+        ----------
+        group_id : str
+            The group_id of the group to get.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Group
+            The group that was retrieved.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.group.get_a_group(
+                group_id="groupId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"groups/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
@@ -233,29 +522,98 @@ class AsyncGroupClient:
 
         Examples
         --------
+        import asyncio
+
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
         )
-        await client.group.delete(
-            group_id="groupId",
-        )
+
+
+        async def main() -> None:
+            await client.group.delete(
+                group_id="groupId",
+            )
+
+
+        asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"groups/{jsonable_encoder(group_id)}", method="DELETE", request_options=request_options
         )
-        if 200 <= _response.status_code < 300:
-            return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-        if _response.status_code == 400:
-            raise BadRequestError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 404:
-            raise NotFoundError(pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json()))  # type: ignore
-        if _response.status_code == 500:
-            raise InternalServerError(
-                pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-            )
         try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_facts(
+        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> FactsResponse:
+        """
+        Get group facts.
+
+        Parameters
+        ----------
+        group_id : str
+            The group_id of the group to get.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FactsResponse
+            The group facts.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.group.get_facts(
+                group_id="groupId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"groups/{jsonable_encoder(group_id)}/facts", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
