@@ -2,6 +2,7 @@
 
 from .types import (
     AddMemoryResponse,
+    AddTripleResponse,
     ApiError,
     ApidataDocument,
     ApidataDocumentCollection,
@@ -46,6 +47,7 @@ from .types import (
     UpdateDocumentListRequest,
     User,
     UserListResponse,
+    UserNodeResponse,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
 from . import document, graph, group, memory, user
@@ -54,6 +56,7 @@ from .version import __version__
 
 __all__ = [
     "AddMemoryResponse",
+    "AddTripleResponse",
     "ApiError",
     "ApidataDocument",
     "ApidataDocumentCollection",
@@ -103,6 +106,7 @@ __all__ = [
     "UpdateDocumentListRequest",
     "User",
     "UserListResponse",
+    "UserNodeResponse",
     "ZepEnvironment",
     "__version__",
     "document",

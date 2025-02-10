@@ -3138,6 +3138,190 @@ client.graph.add()
 </dl>
 </details>
 
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">add_fact_triple</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add a fact triple for a user or group
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.add_fact_triple(
+    fact="fact",
+    fact_name="fact_name",
+    target_node_name="target_node_name",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fact:** `str` — The fact relating the two nodes that this edge represents
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fact_name:** `str` — The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_node_name:** `str` — The name of the target node to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_at:** `typing.Optional[str]` — The timestamp of the message
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expired_at:** `typing.Optional[str]` — The time (if any) at which the edge expires
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fact_uuid:** `typing.Optional[str]` — The uuid of the edge to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**invalid_at:** `typing.Optional[str]` — The time (if any) at which the fact stops being true
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_node_name:** `typing.Optional[str]` — The name of the source node to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_node_summary:** `typing.Optional[str]` — The summary of the source node to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_node_uuid:** `typing.Optional[str]` — The source node uuid
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_node_summary:** `typing.Optional[str]` — The summary of the target node to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_node_uuid:** `typing.Optional[str]` — The target node uuid
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**valid_at:** `typing.Optional[str]` — The time at which the fact becomes true
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">search</a>(...)</code></summary>
 <dl>
 <dd>
@@ -4158,6 +4342,76 @@ client.user.get_facts(
 </dl>
 </details>
 
+<details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">get_node</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get user node.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user.get_node(
+    user_id="userId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — The user_id of the user to get the node for.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">get_sessions</a>(...)</code></summary>
 <dl>
 <dd>
@@ -4699,6 +4953,76 @@ client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.graph.episode.get(
+    uuid_="uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**uuid_:** `str` — Episode UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Delete an episode by its UUID
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.episode.delete(
     uuid_="uuid",
 )
 
