@@ -2,7 +2,6 @@
 
 from .types import (
     AddMemoryResponse,
-    AddTripleResponse,
     ApiError,
     ApidataDocument,
     ApidataDocumentCollection,
@@ -56,7 +55,6 @@ from .version import __version__
 
 __all__ = [
     "AddMemoryResponse",
-    "AddTripleResponse",
     "ApiError",
     "ApidataDocument",
     "ApidataDocumentCollection",
