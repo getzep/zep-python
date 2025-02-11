@@ -46,6 +46,7 @@ from .types import (
     UpdateDocumentListRequest,
     User,
     UserListResponse,
+    UserNodeResponse,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
 from . import document, graph, group, memory, user
@@ -103,6 +104,7 @@ __all__ = [
     "UpdateDocumentListRequest",
     "User",
     "UserListResponse",
+    "UserNodeResponse",
     "ZepEnvironment",
     "__version__",
     "document",
