@@ -26,7 +26,7 @@ class Message(pydantic_v1.BaseModel):
 
     role: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    The role of the sender of the message (e.g., "user", "assistant").
+    Customizable role of the sender of the message (e.g., "john", "sales_agent").
     """
 
     role_type: RoleType = pydantic_v1.Field()
@@ -36,12 +36,12 @@ class Message(pydantic_v1.BaseModel):
 
     token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
     """
-    The number of tokens in the message.
+    Deprecated
     """
 
     updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    The timestamp of when the message was last updated.
+    Deprecated
     """
 
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)

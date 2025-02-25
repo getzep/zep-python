@@ -13,7 +13,7 @@ class Fact(pydantic_v1.BaseModel):
     expired_at: typing.Optional[str] = None
     fact: str = pydantic_v1.Field()
     """
-    Deprecated. This field will be removed in the future, please use `content` instead.
+    Deprecated
     """
 
     invalid_at: typing.Optional[str] = None

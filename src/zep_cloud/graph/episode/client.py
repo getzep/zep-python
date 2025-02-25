@@ -29,7 +29,7 @@ class EpisodeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EpisodeResponse:
         """
-        Get episodes by Group ID
+        Returns episodes by group id.
 
         Parameters
         ----------
@@ -88,7 +88,7 @@ class EpisodeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EpisodeResponse:
         """
-        Get episodes by User ID
+        Returns episodes by user id.
 
         Parameters
         ----------
@@ -141,7 +141,7 @@ class EpisodeClient:
 
     def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
         """
-        Get episode by UUID
+        Returns episodes by UUID
 
         Parameters
         ----------
@@ -188,7 +188,7 @@ class EpisodeClient:
 
     def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Delete an episode by its UUID
+        Deletes an episode by its UUID.
 
         Parameters
         ----------
@@ -250,7 +250,7 @@ class AsyncEpisodeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EpisodeResponse:
         """
-        Get episodes by Group ID
+        Returns episodes by group id.
 
         Parameters
         ----------
@@ -317,7 +317,7 @@ class AsyncEpisodeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EpisodeResponse:
         """
-        Get episodes by User ID
+        Returns episodes by user id.
 
         Parameters
         ----------
@@ -378,7 +378,7 @@ class AsyncEpisodeClient:
 
     async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
         """
-        Get episode by UUID
+        Returns episodes by UUID
 
         Parameters
         ----------
@@ -433,7 +433,7 @@ class AsyncEpisodeClient:
 
     async def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Delete an episode by its UUID
+        Deletes an episode by its UUID.
 
         Parameters
         ----------

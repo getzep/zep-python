@@ -18,8 +18,7 @@ class Memory(pydantic_v1.BaseModel):
 
     facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
-    Most recent list of facts derived from the session. (cloud only)
-    Deprecated: Facts will be deprecated in future releases and relevant_facts should be used instead.
+    Deprecated: Use relevant_facts instead.
     """
 
     messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
@@ -29,7 +28,7 @@ class Memory(pydantic_v1.BaseModel):
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
     """
-    A dictionary containing metadata associated with the memory.
+    Deprecated
     """
 
     relevant_facts: typing.Optional[typing.List[Fact]] = pydantic_v1.Field(default=None)
@@ -39,8 +38,7 @@ class Memory(pydantic_v1.BaseModel):
 
     summary: typing.Optional[Summary] = pydantic_v1.Field(default=None)
     """
-    The most relevant summaries to the recent conversation. (cloud only)
-    Deprecated: Please use context string instead.
+    Deprecated: Use context string instead.
     """
 
     def json(self, **kwargs: typing.Any) -> str:
