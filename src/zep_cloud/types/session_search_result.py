@@ -11,11 +11,11 @@ from .summary import Summary
 
 
 class SessionSearchResult(pydantic_v1.BaseModel):
-    fact: typing.Optional[Fact] = None
-    message: typing.Optional[Message] = None
-    score: typing.Optional[float] = None
-    session_id: typing.Optional[str] = None
-    summary: typing.Optional[Summary] = None
+    fact: Fact
+    message: Message
+    score: float
+    session_id: str
+    summary: Summary
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

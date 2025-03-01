@@ -30,7 +30,7 @@ class ClassifySessionRequest(pydantic_v1.BaseModel):
 
     persist: typing.Optional[bool] = pydantic_v1.Field(default=None)
     """
-    Deprecated
+    Whether to persist the classification as part of the session object. Defaults to True.
     """
 
     def json(self, **kwargs: typing.Any) -> str:

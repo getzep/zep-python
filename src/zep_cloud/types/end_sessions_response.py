@@ -9,7 +9,7 @@ from .session import Session
 
 
 class EndSessionsResponse(pydantic_v1.BaseModel):
-    sessions: typing.Optional[typing.List[Session]] = None
+    sessions: typing.List[Session]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

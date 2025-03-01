@@ -8,8 +8,8 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class SessionClassification(pydantic_v1.BaseModel):
-    class_: typing.Optional[str] = pydantic_v1.Field(alias="class", default=None)
-    label: typing.Optional[str] = None
+    class_: str = pydantic_v1.Field(alias="class")
+    label: str
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

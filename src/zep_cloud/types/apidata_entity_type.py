@@ -5,30 +5,12 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .apidata_entity_property import ApidataEntityProperty
 
 
-class Summary(pydantic_v1.BaseModel):
-    content: str = pydantic_v1.Field()
-    """
-    The content of the summary.
-    """
-
-    created_at: str = pydantic_v1.Field()
-    """
-    The timestamp of when the summary was created.
-    """
-
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    related_message_uuids: typing.List[str]
-    token_count: int = pydantic_v1.Field()
-    """
-    The number of tokens in the summary.
-    """
-
-    uuid_: str = pydantic_v1.Field(alias="uuid")
-    """
-    The unique identifier of the summary.
-    """
+class ApidataEntityType(pydantic_v1.BaseModel):
+    name: str
+    properties: typing.Optional[typing.List[ApidataEntityProperty]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -45,7 +27,5 @@ class Summary(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

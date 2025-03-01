@@ -9,22 +9,17 @@ from .role_type import RoleType
 
 
 class Message(pydantic_v1.BaseModel):
-    content: str = pydantic_v1.Field()
+    uuid_: str = pydantic_v1.Field(alias="uuid")
     """
-    The content of the message.
+    The unique identifier of the message.
     """
 
-    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    created_at: str = pydantic_v1.Field()
     """
     The timestamp of when the message was created.
     """
 
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
-    """
-    The metadata associated with the message.
-    """
-
-    role: typing.Optional[str] = pydantic_v1.Field(default=None)
+    role: str = pydantic_v1.Field()
     """
     Customizable role of the sender of the message (e.g., "john", "sales_agent").
     """
@@ -34,19 +29,24 @@ class Message(pydantic_v1.BaseModel):
     The type of the role (e.g., "user", "system").
     """
 
-    token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+    content: str = pydantic_v1.Field()
+    """
+    The content of the message.
+    """
+
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
+    """
+    The metadata associated with the message.
+    """
+
+    updated_at: str = pydantic_v1.Field()
     """
     Deprecated
     """
 
-    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    token_count: int = pydantic_v1.Field()
     """
     Deprecated
-    """
-
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
-    """
-    The unique identifier of the message.
     """
 
     def json(self, **kwargs: typing.Any) -> str:
