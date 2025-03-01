@@ -11,8 +11,8 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_entity_type import ApidataEntityType
 from ..types.apidata_entity_type_response import ApidataEntityTypeResponse
+from ..types.entity_type import EntityType
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
@@ -77,18 +77,15 @@ class GraphClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def set_entity_types(
-        self,
-        *,
-        entity_types: typing.Sequence[ApidataEntityType],
-        request_options: typing.Optional[RequestOptions] = None
+    def set_entity_types_internal(
+        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
     ) -> str:
         """
         Sets the entity types for a project, replacing any existing ones.
 
         Parameters
         ----------
-        entity_types : typing.Sequence[ApidataEntityType]
+        entity_types : typing.Sequence[EntityType]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -100,15 +97,15 @@ class GraphClient:
 
         Examples
         --------
-        from zep_cloud import ApidataEntityType
+        from zep_cloud import EntityType
         from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.set_entity_types(
+        client.graph.set_entity_types_internal(
             entity_types=[
-                ApidataEntityType(
+                EntityType(
                     name="name",
                 )
             ],
@@ -357,18 +354,15 @@ class AsyncGraphClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def set_entity_types(
-        self,
-        *,
-        entity_types: typing.Sequence[ApidataEntityType],
-        request_options: typing.Optional[RequestOptions] = None
+    async def set_entity_types_internal(
+        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
     ) -> str:
         """
         Sets the entity types for a project, replacing any existing ones.
 
         Parameters
         ----------
-        entity_types : typing.Sequence[ApidataEntityType]
+        entity_types : typing.Sequence[EntityType]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -382,7 +376,7 @@ class AsyncGraphClient:
         --------
         import asyncio
 
-        from zep_cloud import ApidataEntityType
+        from zep_cloud import EntityType
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -391,9 +385,9 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            await client.graph.set_entity_types(
+            await client.graph.set_entity_types_internal(
                 entity_types=[
-                    ApidataEntityType(
+                    EntityType(
                         name="name",
                     )
                 ],

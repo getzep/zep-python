@@ -1137,7 +1137,7 @@ client.graph.list_entity_types()
 </dl>
 </details>
 
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">set_entity_types</a>(...)</code></summary>
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">set_entity_types_internal</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -1164,15 +1164,15 @@ Sets the entity types for a project, replacing any existing ones.
 <dd>
 
 ```python
-from zep_cloud import ApidataEntityType
+from zep_cloud import EntityType
 from zep_cloud.client import Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.set_entity_types(
+client.graph.set_entity_types_internal(
     entity_types=[
-        ApidataEntityType(
+        EntityType(
             name="name",
         )
     ],
@@ -1192,7 +1192,7 @@ client.graph.set_entity_types(
 <dl>
 <dd>
 
-**entity_types:** `typing.Sequence[ApidataEntityType]` 
+**entity_types:** `typing.Sequence[EntityType]` 
     
 </dd>
 </dl>
