@@ -90,7 +90,7 @@ class EntityModel(BaseModel):
         return super().model_json_schema(*args, **kwargs)
 
 # Function to convert entity model to Go schema
-def entity_model_to_go_schema(model_class: typing.Type[EntityModel], name: str) -> str:
+def entity_model_to_go_schema(model_class: typing.Type[EntityModel], name: str) -> dict[str, typing.Any]:
     """Convert a Pydantic EntityModel to a JSON schema for Go EntityType"""
     import json
     
@@ -134,7 +134,7 @@ def entity_model_to_go_schema(model_class: typing.Type[EntityModel], name: str) 
             "description": description
         })
     
-    return json.dumps(entity_type)
+    return entity_type
 
 # Function to convert Go schema back to entity model
 def go_schema_to_entity_model(schema_json: str) -> typing.Type[EntityModel]:
