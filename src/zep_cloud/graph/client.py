@@ -79,7 +79,7 @@ class GraphClient:
 
     def set_entity_types_internal(
         self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
-    ) -> str:
+    ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
 
@@ -92,8 +92,8 @@ class GraphClient:
 
         Returns
         -------
-        str
-            OK
+        SuccessResponse
+            Entity types set successfully
 
         Examples
         --------
@@ -120,7 +120,7 @@ class GraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -356,7 +356,7 @@ class AsyncGraphClient:
 
     async def set_entity_types_internal(
         self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
-    ) -> str:
+    ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
 
@@ -369,8 +369,8 @@ class AsyncGraphClient:
 
         Returns
         -------
-        str
-            OK
+        SuccessResponse
+            Entity types set successfully
 
         Examples
         --------
@@ -405,7 +405,7 @@ class AsyncGraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
