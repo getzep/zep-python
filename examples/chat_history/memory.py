@@ -57,23 +57,23 @@ async def main() -> None:
         user_id=user_id,
         metadata={"foo": "bar"},
     )
-    # await asyncio.sleep(1)
+    await asyncio.sleep(1)
     # Update session metadata
     print(f"\n---Updating session: {session_id}")
     await client.memory.update_session(session_id=session_id, metadata={"bar": "foo"})
-    # await asyncio.sleep(3)
+    await asyncio.sleep(3)
     # Get session
     print(f"\n---Getting session: {session_id}")
     session = await client.memory.get_session(session_id)
     print(f"Session details: {session}")
-    # await asyncio.sleep(3)
+    await asyncio.sleep(3)
 
     # Add Memory for session
     print(f"\n---Add Memory for Session: {session_id}")
-    for m in history:
+    for m in history[:2]:
         print(f"{m['role']}: {m['content']}")
         await client.memory.add(session_id=session_id, messages=[Message(**m)])
-        # await asyncio.sleep(0.5)
+        await asyncio.sleep(0.5)
 
     #  Wait for the messages to be processed
     await asyncio.sleep(50)

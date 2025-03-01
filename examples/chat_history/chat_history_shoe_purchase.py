@@ -4,7 +4,7 @@ history = [
         "role_type": "user",
         "content": (
             "Hi there, I'm looking for a new pair of shoes. I'm not sure where"
-            " to start."
+            " to start. I also have a little brother named John. He is 12 years old and his email is john@example.com"
         ),
     },
     {
@@ -107,7 +107,7 @@ history = [
         "role_type": "user",
         "content": (
             "I've heard good things about Brooks, but I was kind of hoping to"
-            " get a Nike or an Adidas shoe."
+            " get a Nike or an Adidas shoe. I also have a little brother named John. He is 12 years old and his email is john@example.com"
         ),
     },
     {
