@@ -7,7 +7,7 @@ from .environment import ZepEnvironment
 from .external_clients.memory import MemoryClient, AsyncMemoryClient
 from .external_clients.document import DocumentClient, AsyncDocumentClient
 from .external_clients.user import UserClient, AsyncUserClient
-
+from .external_clients.graph import GraphClient, AsyncGraphClient
 
 class Zep(BaseClient):
     def __init__(
@@ -34,7 +34,7 @@ class Zep(BaseClient):
         self.memory = MemoryClient(client_wrapper=self._client_wrapper)
         self.document = DocumentClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
-
+        self.graph = GraphClient(client_wrapper=self._client_wrapper)
 
 class AsyncZep(AsyncBaseClient):
     def __init__(
@@ -61,3 +61,4 @@ class AsyncZep(AsyncBaseClient):
         self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
         self.document = AsyncDocumentClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
+        self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
