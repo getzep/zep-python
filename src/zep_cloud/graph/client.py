@@ -9,8 +9,10 @@ from ..core.pydantic_utilities import pydantic_v1
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
-from ..types.add_triple_response import AddTripleResponse
+from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_entity_type import ApidataEntityType
+from ..types.apidata_entity_type_response import ApidataEntityTypeResponse
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
@@ -30,6 +32,110 @@ class GraphClient:
         self.edge = EdgeClient(client_wrapper=self._client_wrapper)
         self.episode = EpisodeClient(client_wrapper=self._client_wrapper)
         self.node = NodeClient(client_wrapper=self._client_wrapper)
+
+    def list_entity_types(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataEntityTypeResponse:
+        """
+        Returns all entity types for a project.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataEntityTypeResponse
+            The list of entity types.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.list_entity_types()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "entity-types", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataEntityTypeResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def set_entity_types(
+        self,
+        *,
+        entity_types: typing.Sequence[ApidataEntityType],
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> str:
+        """
+        Sets the entity types for a project, replacing any existing ones.
+
+        Parameters
+        ----------
+        entity_types : typing.Sequence[ApidataEntityType]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        str
+            OK
+
+        Examples
+        --------
+        from zep_cloud import ApidataEntityType
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.set_entity_types(
+            entity_types=[
+                ApidataEntityType(
+                    name="name",
+                )
+            ],
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "entity-types",
+            method="PUT",
+            json={"entity_types": entity_types},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def add(
         self,
@@ -80,134 +186,6 @@ class GraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def add_fact_triple(
-        self,
-        *,
-        fact: str,
-        fact_name: str,
-        target_node_name: str,
-        created_at: typing.Optional[str] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
-        fact_uuid: typing.Optional[str] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        source_node_name: typing.Optional[str] = OMIT,
-        source_node_summary: typing.Optional[str] = OMIT,
-        source_node_uuid: typing.Optional[str] = OMIT,
-        target_node_summary: typing.Optional[str] = OMIT,
-        target_node_uuid: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
-    ) -> AddTripleResponse:
-        """
-        Add a fact triple for a user or group
-
-        Parameters
-        ----------
-        fact : str
-            The fact relating the two nodes that this edge represents
-
-        fact_name : str
-            The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
-
-        target_node_name : str
-            The name of the target node to add
-
-        created_at : typing.Optional[str]
-            The timestamp of the message
-
-        expired_at : typing.Optional[str]
-            The time (if any) at which the edge expires
-
-        fact_uuid : typing.Optional[str]
-            The uuid of the edge to add
-
-        group_id : typing.Optional[str]
-
-        invalid_at : typing.Optional[str]
-            The time (if any) at which the fact stops being true
-
-        source_node_name : typing.Optional[str]
-            The name of the source node to add
-
-        source_node_summary : typing.Optional[str]
-            The summary of the source node to add
-
-        source_node_uuid : typing.Optional[str]
-            The source node uuid
-
-        target_node_summary : typing.Optional[str]
-            The summary of the target node to add
-
-        target_node_uuid : typing.Optional[str]
-            The target node uuid
-
-        user_id : typing.Optional[str]
-
-        valid_at : typing.Optional[str]
-            The time at which the fact becomes true
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AddTripleResponse
-            Resulting triple
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.graph.add_fact_triple(
-            fact="fact",
-            fact_name="fact_name",
-            target_node_name="target_node_name",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graph/add-fact-triple",
-            method="POST",
-            json={
-                "created_at": created_at,
-                "expired_at": expired_at,
-                "fact": fact,
-                "fact_name": fact_name,
-                "fact_uuid": fact_uuid,
-                "group_id": group_id,
-                "invalid_at": invalid_at,
-                "source_node_name": source_node_name,
-                "source_node_summary": source_node_summary,
-                "source_node_uuid": source_node_uuid,
-                "target_node_name": target_node_name,
-                "target_node_summary": target_node_summary,
-                "target_node_uuid": target_node_uuid,
-                "user_id": user_id,
-                "valid_at": valid_at,
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(AddTripleResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -327,6 +305,126 @@ class AsyncGraphClient:
         self.episode = AsyncEpisodeClient(client_wrapper=self._client_wrapper)
         self.node = AsyncNodeClient(client_wrapper=self._client_wrapper)
 
+    async def list_entity_types(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataEntityTypeResponse:
+        """
+        Returns all entity types for a project.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataEntityTypeResponse
+            The list of entity types.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.list_entity_types()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "entity-types", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataEntityTypeResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def set_entity_types(
+        self,
+        *,
+        entity_types: typing.Sequence[ApidataEntityType],
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> str:
+        """
+        Sets the entity types for a project, replacing any existing ones.
+
+        Parameters
+        ----------
+        entity_types : typing.Sequence[ApidataEntityType]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        str
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import ApidataEntityType
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.set_entity_types(
+                entity_types=[
+                    ApidataEntityType(
+                        name="name",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "entity-types",
+            method="PUT",
+            json={"entity_types": entity_types},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(str, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def add(
         self,
         *,
@@ -384,142 +482,6 @@ class AsyncGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def add_fact_triple(
-        self,
-        *,
-        fact: str,
-        fact_name: str,
-        target_node_name: str,
-        created_at: typing.Optional[str] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
-        fact_uuid: typing.Optional[str] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        source_node_name: typing.Optional[str] = OMIT,
-        source_node_summary: typing.Optional[str] = OMIT,
-        source_node_uuid: typing.Optional[str] = OMIT,
-        target_node_summary: typing.Optional[str] = OMIT,
-        target_node_uuid: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
-    ) -> AddTripleResponse:
-        """
-        Add a fact triple for a user or group
-
-        Parameters
-        ----------
-        fact : str
-            The fact relating the two nodes that this edge represents
-
-        fact_name : str
-            The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
-
-        target_node_name : str
-            The name of the target node to add
-
-        created_at : typing.Optional[str]
-            The timestamp of the message
-
-        expired_at : typing.Optional[str]
-            The time (if any) at which the edge expires
-
-        fact_uuid : typing.Optional[str]
-            The uuid of the edge to add
-
-        group_id : typing.Optional[str]
-
-        invalid_at : typing.Optional[str]
-            The time (if any) at which the fact stops being true
-
-        source_node_name : typing.Optional[str]
-            The name of the source node to add
-
-        source_node_summary : typing.Optional[str]
-            The summary of the source node to add
-
-        source_node_uuid : typing.Optional[str]
-            The source node uuid
-
-        target_node_summary : typing.Optional[str]
-            The summary of the target node to add
-
-        target_node_uuid : typing.Optional[str]
-            The target node uuid
-
-        user_id : typing.Optional[str]
-
-        valid_at : typing.Optional[str]
-            The time at which the fact becomes true
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AddTripleResponse
-            Resulting triple
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.graph.add_fact_triple(
-                fact="fact",
-                fact_name="fact_name",
-                target_node_name="target_node_name",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graph/add-fact-triple",
-            method="POST",
-            json={
-                "created_at": created_at,
-                "expired_at": expired_at,
-                "fact": fact,
-                "fact_name": fact_name,
-                "fact_uuid": fact_uuid,
-                "group_id": group_id,
-                "invalid_at": invalid_at,
-                "source_node_name": source_node_name,
-                "source_node_summary": source_node_summary,
-                "source_node_uuid": source_node_uuid,
-                "target_node_name": target_node_name,
-                "target_node_summary": target_node_summary,
-                "target_node_uuid": target_node_uuid,
-                "user_id": user_id,
-                "valid_at": valid_at,
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(AddTripleResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

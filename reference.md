@@ -1076,6 +1076,368 @@ client.document.search(
 </dl>
 </details>
 
+## Graph
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_entity_types</a>()</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns all entity types for a project.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.list_entity_types()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">set_entity_types</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sets the entity types for a project, replacing any existing ones.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import ApidataEntityType
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.set_entity_types(
+    entity_types=[
+        ApidataEntityType(
+            name="name",
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**entity_types:** `typing.Sequence[ApidataEntityType]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">add</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.add()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**data:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `typing.Optional[GraphDataType]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">search</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Perform a graph search query.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.search(
+    query="query",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**query:** `str` — The string to search for (required)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**center_node_uuid:** `typing.Optional[str]` — Node to rerank around for node distance reranking
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group_id:** `typing.Optional[str]` — one of user_id or group_id must be provided
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**min_score:** `typing.Optional[float]` — Deprecated
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mmr_lambda:** `typing.Optional[float]` — weighting for maximal marginal relevance
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reranker:** `typing.Optional[Reranker]` — Defaults to RRF
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges. Communities will be added in the future.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` — one of user_id or group_id must be provided
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Memory
 <details><summary><code>client.memory.<a href="src/zep_cloud/memory/client.py">get_fact</a>(...)</code></summary>
 <dl>
@@ -1250,6 +1612,7 @@ client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.memory.add_session(
+    metadata={"key": "value"},
     session_id="session_id",
     user_id="user_id",
 )
@@ -1264,6 +1627,14 @@ client.memory.add_session(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Dict[str, typing.Any]` — Deprecated
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -1285,14 +1656,6 @@ client.memory.add_session(
 <dd>
 
 **fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Deprecated
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Deprecated
     
 </dd>
 </dl>
@@ -1876,7 +2239,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-**persist:** `typing.Optional[bool]` — Deprecated
+**persist:** `typing.Optional[bool]` — Whether to persist the classification as part of the session object. Defaults to True.
     
 </dd>
 </dl>
@@ -2368,8 +2731,13 @@ client.memory.add(
     session_id="sessionId",
     messages=[
         Message(
-            content="content",
+            uuid_="uuid",
+            created_at="created_at",
+            role="role",
             role_type="norole",
+            content="content",
+            updated_at="updated_at",
+            token_count=1,
         )
     ],
 )
@@ -3031,417 +3399,6 @@ client.memory.synthesize_question(
 </dl>
 </details>
 
-## Graph
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">add</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.add()
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**data:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**group_id:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**type:** `typing.Optional[GraphDataType]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">add_fact_triple</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Add a fact triple for a user or group
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.add_fact_triple(
-    fact="fact",
-    fact_name="fact_name",
-    target_node_name="target_node_name",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**fact:** `str` — The fact relating the two nodes that this edge represents
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**fact_name:** `str` — The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**target_node_name:** `str` — The name of the target node to add
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**created_at:** `typing.Optional[str]` — The timestamp of the message
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**expired_at:** `typing.Optional[str]` — The time (if any) at which the edge expires
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**fact_uuid:** `typing.Optional[str]` — The uuid of the edge to add
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**group_id:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**invalid_at:** `typing.Optional[str]` — The time (if any) at which the fact stops being true
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**source_node_name:** `typing.Optional[str]` — The name of the source node to add
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**source_node_summary:** `typing.Optional[str]` — The summary of the source node to add
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**source_node_uuid:** `typing.Optional[str]` — The source node uuid
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**target_node_summary:** `typing.Optional[str]` — The summary of the target node to add
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**target_node_uuid:** `typing.Optional[str]` — The target node uuid
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**valid_at:** `typing.Optional[str]` — The time at which the fact becomes true
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">search</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Perform a graph search query.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.search(
-    query="query",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**query:** `str` — The string to search for (required)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**center_node_uuid:** `typing.Optional[str]` — Node to rerank around for node distance reranking
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**group_id:** `typing.Optional[str]` — one of user_id or group_id must be provided
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `typing.Optional[int]` — The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**min_score:** `typing.Optional[float]` — Deprecated
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**mmr_lambda:** `typing.Optional[float]` — weighting for maximal marginal relevance
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**reranker:** `typing.Optional[Reranker]` — Defaults to RRF
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges. Communities will be added in the future.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `typing.Optional[str]` — one of user_id or group_id must be provided
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Group
 <details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">add</a>(...)</code></summary>
 <dl>
@@ -3945,12 +3902,20 @@ Adds a user.
 <dd>
 
 ```python
+from zep_cloud import FactRatingInstruction
 from zep_cloud.client import Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.user.add()
+client.user.add(
+    email="email",
+    fact_rating_instruction=FactRatingInstruction(),
+    first_name="first_name",
+    last_name="last_name",
+    metadata={"key": "value"},
+    user_id="user_id",
+)
 
 ```
 </dd>
@@ -3966,7 +3931,7 @@ client.user.add()
 <dl>
 <dd>
 
-**email:** `typing.Optional[str]` — The email address of the user.
+**email:** `str` — The email address of the user.
     
 </dd>
 </dl>
@@ -3974,7 +3939,7 @@ client.user.add()
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Optional instruction to use for fact rating.
+**fact_rating_instruction:** `FactRatingInstruction` — Optional instruction to use for fact rating.
     
 </dd>
 </dl>
@@ -3982,7 +3947,7 @@ client.user.add()
 <dl>
 <dd>
 
-**first_name:** `typing.Optional[str]` — The first name of the user.
+**first_name:** `str` — The first name of the user.
     
 </dd>
 </dl>
@@ -3990,7 +3955,7 @@ client.user.add()
 <dl>
 <dd>
 
-**last_name:** `typing.Optional[str]` — The last name of the user.
+**last_name:** `str` — The last name of the user.
     
 </dd>
 </dl>
@@ -3998,7 +3963,7 @@ client.user.add()
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — The metadata associated with the user.
+**metadata:** `typing.Dict[str, typing.Any]` — The metadata associated with the user.
     
 </dd>
 </dl>
@@ -4006,7 +3971,7 @@ client.user.add()
 <dl>
 <dd>
 
-**user_id:** `typing.Optional[str]` — The unique identifier of the user.
+**user_id:** `str` — The unique identifier of the user.
     
 </dd>
 </dl>
@@ -4269,6 +4234,7 @@ Updates a user.
 <dd>
 
 ```python
+from zep_cloud import FactRatingInstruction
 from zep_cloud.client import Zep
 
 client = Zep(
@@ -4276,6 +4242,11 @@ client = Zep(
 )
 client.user.update(
     user_id="userId",
+    email="email",
+    fact_rating_instruction=FactRatingInstruction(),
+    first_name="first_name",
+    last_name="last_name",
+    metadata={"key": "value"},
 )
 
 ```
@@ -4300,7 +4271,7 @@ client.user.update(
 <dl>
 <dd>
 
-**email:** `typing.Optional[str]` — The email address of the user.
+**email:** `str` — The email address of the user.
     
 </dd>
 </dl>
@@ -4308,7 +4279,7 @@ client.user.update(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Optional instruction to use for fact rating.
+**fact_rating_instruction:** `FactRatingInstruction` — Optional instruction to use for fact rating.
     
 </dd>
 </dl>
@@ -4316,7 +4287,7 @@ client.user.update(
 <dl>
 <dd>
 
-**first_name:** `typing.Optional[str]` — The first name of the user.
+**first_name:** `str` — The first name of the user.
     
 </dd>
 </dl>
@@ -4324,7 +4295,7 @@ client.user.update(
 <dl>
 <dd>
 
-**last_name:** `typing.Optional[str]` — The last name of the user.
+**last_name:** `str` — The last name of the user.
     
 </dd>
 </dl>
@@ -4332,7 +4303,7 @@ client.user.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — The metadata to update
+**metadata:** `typing.Dict[str, typing.Any]` — The metadata to update
     
 </dd>
 </dl>

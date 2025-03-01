@@ -142,10 +142,10 @@ class MemoryClient:
     def add_session(
         self,
         *,
+        metadata: typing.Dict[str, typing.Any],
         session_id: str,
         user_id: str,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -153,6 +153,9 @@ class MemoryClient:
 
         Parameters
         ----------
+        metadata : typing.Dict[str, typing.Any]
+            Deprecated
+
         session_id : str
             The unique identifier of the session.
 
@@ -160,9 +163,6 @@ class MemoryClient:
             The unique identifier of the user associated with the session
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Deprecated
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Deprecated
 
         request_options : typing.Optional[RequestOptions]
@@ -181,6 +181,7 @@ class MemoryClient:
             api_key="YOUR_API_KEY",
         )
         client.memory.add_session(
+            metadata={"key": "value"},
             session_id="session_id",
             user_id="user_id",
         )
@@ -592,7 +593,7 @@ class MemoryClient:
             The number of session messages to consider for classification. Defaults to 4.
 
         persist : typing.Optional[bool]
-            Deprecated
+            Whether to persist the classification as part of the session object. Defaults to True.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1019,8 +1020,13 @@ class MemoryClient:
             session_id="sessionId",
             messages=[
                 Message(
-                    content="content",
+                    uuid_="uuid",
+                    created_at="created_at",
+                    role="role",
                     role_type="norole",
+                    content="content",
+                    updated_at="updated_at",
+                    token_count=1,
                 )
             ],
         )
@@ -1599,10 +1605,10 @@ class AsyncMemoryClient:
     async def add_session(
         self,
         *,
+        metadata: typing.Dict[str, typing.Any],
         session_id: str,
         user_id: str,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
@@ -1610,6 +1616,9 @@ class AsyncMemoryClient:
 
         Parameters
         ----------
+        metadata : typing.Dict[str, typing.Any]
+            Deprecated
+
         session_id : str
             The unique identifier of the session.
 
@@ -1617,9 +1626,6 @@ class AsyncMemoryClient:
             The unique identifier of the user associated with the session
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Deprecated
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Deprecated
 
         request_options : typing.Optional[RequestOptions]
@@ -1643,6 +1649,7 @@ class AsyncMemoryClient:
 
         async def main() -> None:
             await client.memory.add_session(
+                metadata={"key": "value"},
                 session_id="session_id",
                 user_id="user_id",
             )
@@ -2097,7 +2104,7 @@ class AsyncMemoryClient:
             The number of session messages to consider for classification. Defaults to 4.
 
         persist : typing.Optional[bool]
-            Deprecated
+            Whether to persist the classification as part of the session object. Defaults to True.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2577,8 +2584,13 @@ class AsyncMemoryClient:
                 session_id="sessionId",
                 messages=[
                     Message(
-                        content="content",
+                        uuid_="uuid",
+                        created_at="created_at",
+                        role="role",
                         role_type="norole",
+                        content="content",
+                        updated_at="updated_at",
+                        token_count=1,
                     )
                 ],
             )

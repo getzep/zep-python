@@ -9,9 +9,9 @@ from .user import User
 
 
 class UserListResponse(pydantic_v1.BaseModel):
-    row_count: typing.Optional[int] = None
-    total_count: typing.Optional[int] = None
-    users: typing.Optional[typing.List[User]] = None
+    users: typing.List[User]
+    total_count: int
+    row_count: int
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

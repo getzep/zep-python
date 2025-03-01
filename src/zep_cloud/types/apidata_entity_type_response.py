@@ -5,14 +5,11 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .entity_edge import EntityEdge
-from .entity_node import EntityNode
+from .apidata_entity_type import ApidataEntityType
 
 
-class AddTripleResponse(pydantic_v1.BaseModel):
-    edge: typing.Optional[EntityEdge] = None
-    source_node: typing.Optional[EntityNode] = None
-    target_node: typing.Optional[EntityNode] = None
+class ApidataEntityTypeResponse(pydantic_v1.BaseModel):
+    entity_types: typing.Optional[typing.List[ApidataEntityType]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

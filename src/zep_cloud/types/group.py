@@ -9,19 +9,18 @@ from .fact_rating_instruction import FactRatingInstruction
 
 
 class Group(pydantic_v1.BaseModel):
+    group_id: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
+    name: typing.Optional[str] = None
     description: typing.Optional[str] = None
+    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
+    project_uuid: typing.Optional[str] = None
+    id: typing.Optional[int] = None
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
     external_id: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """
-
-    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
-    group_id: typing.Optional[str] = None
-    id: typing.Optional[int] = None
-    name: typing.Optional[str] = None
-    project_uuid: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
