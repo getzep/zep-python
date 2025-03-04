@@ -23,7 +23,6 @@ from .facts_response import FactsResponse
 from .graph_data_type import GraphDataType
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
-from .graphiti_search_filters import GraphitiSearchFilters
 from .group import Group
 from .group_list_response import GroupListResponse
 from .memory import Memory
@@ -34,6 +33,7 @@ from .new_fact import NewFact
 from .question import Question
 from .reranker import Reranker
 from .role_type import RoleType
+from .search_filters import SearchFilters
 from .search_scope import SearchScope
 from .search_type import SearchType
 from .session import Session
@@ -73,7 +73,6 @@ __all__ = [
     "GraphDataType",
     "GraphSearchResults",
     "GraphSearchScope",
-    "GraphitiSearchFilters",
     "Group",
     "GroupListResponse",
     "Memory",
@@ -84,6 +83,7 @@ __all__ = [
     "Question",
     "Reranker",
     "RoleType",
+    "SearchFilters",
     "SearchScope",
     "SearchType",
     "Session",

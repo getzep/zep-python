@@ -3422,7 +3422,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**search_filters:** `typing.Optional[GraphitiSearchFilters]` — Search filters to apply to the search
+**search_filters:** `typing.Optional[SearchFilters]` — Search filters to apply to the search
     
 </dd>
 </dl>

@@ -7,7 +7,7 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class GraphitiSearchFilters(pydantic_v1.BaseModel):
+class SearchFilters(pydantic_v1.BaseModel):
     node_labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     List of node labels to filter on

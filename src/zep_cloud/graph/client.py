@@ -14,8 +14,8 @@ from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
-from ..types.graphiti_search_filters import GraphitiSearchFilters
 from ..types.reranker import Reranker
+from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
@@ -233,7 +233,7 @@ class GraphClient:
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> GraphSearchResults:
@@ -266,7 +266,7 @@ class GraphClient:
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges. Communities will be added in the future.
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
@@ -550,7 +550,7 @@ class AsyncGraphClient:
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> GraphSearchResults:
@@ -583,7 +583,7 @@ class AsyncGraphClient:
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges. Communities will be added in the future.
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
