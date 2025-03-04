@@ -9,7 +9,7 @@ from .entity_node import EntityNode
 
 
 class UserNodeResponse(pydantic_v1.BaseModel):
-    node: typing.Optional[EntityNode] = None
+    node: EntityNode
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

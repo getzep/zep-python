@@ -580,19 +580,19 @@ class MemoryClient:
             Session ID
 
         classes : typing.Sequence[str]
-            The classes to use for classification.
+            The classes to use for classification
 
         name : str
-            The name of the classifier.
+            The name of the classifier
 
         instruction : typing.Optional[str]
-            Custom instruction to use for classification.
+            Custom instruction to use for classification
 
         last_n : typing.Optional[int]
-            The number of session messages to consider for classification. Defaults to 4.
+            The number of session messages to consider for classification. Defaults to 4
 
         persist : typing.Optional[bool]
-            Deprecated
+            Whether to persist the classification as part of the session object. Defaults to True
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -988,7 +988,7 @@ class MemoryClient:
             The ID of the session to which memory should be added.
 
         messages : typing.Sequence[Message]
-            A list of message objects, where each message contains a role and content.
+            A list of message objects, where each message contains a role and content
 
         fact_instruction : typing.Optional[str]
             Deprecated
@@ -1019,8 +1019,8 @@ class MemoryClient:
             session_id="sessionId",
             messages=[
                 Message(
-                    content="content",
                     role_type="norole",
+                    content="content",
                 )
             ],
         )
@@ -2085,19 +2085,19 @@ class AsyncMemoryClient:
             Session ID
 
         classes : typing.Sequence[str]
-            The classes to use for classification.
+            The classes to use for classification
 
         name : str
-            The name of the classifier.
+            The name of the classifier
 
         instruction : typing.Optional[str]
-            Custom instruction to use for classification.
+            Custom instruction to use for classification
 
         last_n : typing.Optional[int]
-            The number of session messages to consider for classification. Defaults to 4.
+            The number of session messages to consider for classification. Defaults to 4
 
         persist : typing.Optional[bool]
-            Deprecated
+            Whether to persist the classification as part of the session object. Defaults to True
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2541,7 +2541,7 @@ class AsyncMemoryClient:
             The ID of the session to which memory should be added.
 
         messages : typing.Sequence[Message]
-            A list of message objects, where each message contains a role and content.
+            A list of message objects, where each message contains a role and content
 
         fact_instruction : typing.Optional[str]
             Deprecated
@@ -2577,8 +2577,8 @@ class AsyncMemoryClient:
                 session_id="sessionId",
                 messages=[
                     Message(
-                        content="content",
                         role_type="norole",
+                        content="content",
                     )
                 ],
             )

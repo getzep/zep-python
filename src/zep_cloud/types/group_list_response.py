@@ -9,9 +9,9 @@ from .group import Group
 
 
 class GroupListResponse(pydantic_v1.BaseModel):
-    groups: typing.Optional[typing.List[Group]] = None
-    row_count: typing.Optional[int] = None
-    total_count: typing.Optional[int] = None
+    groups: typing.List[Group]
+    total_count: int
+    row_count: int
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -14,6 +14,7 @@ from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
+from ..types.graphiti_search_filters import GraphitiSearchFilters
 from ..types.reranker import Reranker
 from ..types.success_response import SuccessResponse
 from .edge.client import AsyncEdgeClient, EdgeClient
@@ -41,7 +42,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+        Adds data to the graph. One of user_id or group_id must be provided. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
         Parameters
         ----------
@@ -232,6 +233,7 @@ class GraphClient:
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
+        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> GraphSearchResults:
@@ -247,7 +249,7 @@ class GraphClient:
             Node to rerank around for node distance reranking
 
         group_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            One of user_id or group_id must be provided.
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
@@ -256,7 +258,7 @@ class GraphClient:
             Deprecated
 
         mmr_lambda : typing.Optional[float]
-            weighting for maximal marginal relevance
+            Weighting for maximal marginal relevance.
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
@@ -264,8 +266,11 @@ class GraphClient:
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges. Communities will be added in the future.
 
+        search_filters : typing.Optional[GraphitiSearchFilters]
+            Search filters to apply to the search
+
         user_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            One of user_id or group_id must be provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -298,6 +303,7 @@ class GraphClient:
                 "query": query,
                 "reranker": reranker,
                 "scope": scope,
+                "search_filters": search_filters,
                 "user_id": user_id,
             },
             request_options=request_options,
@@ -337,7 +343,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+        Adds data to the graph. One of user_id or group_id must be provided. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
         Parameters
         ----------
@@ -544,6 +550,7 @@ class AsyncGraphClient:
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
+        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> GraphSearchResults:
@@ -559,7 +566,7 @@ class AsyncGraphClient:
             Node to rerank around for node distance reranking
 
         group_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            One of user_id or group_id must be provided.
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
@@ -568,7 +575,7 @@ class AsyncGraphClient:
             Deprecated
 
         mmr_lambda : typing.Optional[float]
-            weighting for maximal marginal relevance
+            Weighting for maximal marginal relevance.
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
@@ -576,8 +583,11 @@ class AsyncGraphClient:
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges. Communities will be added in the future.
 
+        search_filters : typing.Optional[GraphitiSearchFilters]
+            Search filters to apply to the search
+
         user_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            One of user_id or group_id must be provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -618,6 +628,7 @@ class AsyncGraphClient:
                 "query": query,
                 "reranker": reranker,
                 "scope": scope,
+                "search_filters": search_filters,
                 "user_id": user_id,
             },
             request_options=request_options,

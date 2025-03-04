@@ -10,9 +10,9 @@ from .entity_node import EntityNode
 
 
 class AddTripleResponse(pydantic_v1.BaseModel):
-    edge: typing.Optional[EntityEdge] = None
-    source_node: typing.Optional[EntityNode] = None
-    target_node: typing.Optional[EntityNode] = None
+    edge: EntityEdge
+    source_node: EntityNode
+    target_node: EntityNode
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

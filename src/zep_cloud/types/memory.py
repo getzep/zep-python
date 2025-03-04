@@ -16,12 +16,12 @@ class Memory(pydantic_v1.BaseModel):
     Memory context containing relevant facts and entities for the session. Can be put into the prompt directly.
     """
 
-    facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    facts: typing.List[str] = pydantic_v1.Field()
     """
-    Deprecated: Use relevant_facts instead.
+    Deprecated
     """
 
-    messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
+    messages: typing.List[Message] = pydantic_v1.Field()
     """
     A list of message objects, where each message contains a role and content. Only last_n messages will be returned
     """
@@ -31,14 +31,14 @@ class Memory(pydantic_v1.BaseModel):
     Deprecated
     """
 
-    relevant_facts: typing.Optional[typing.List[Fact]] = pydantic_v1.Field(default=None)
+    relevant_facts: typing.List[Fact] = pydantic_v1.Field()
     """
     Most relevant facts to the recent messages in the session.
     """
 
     summary: typing.Optional[Summary] = pydantic_v1.Field(default=None)
     """
-    Deprecated: Use context string instead.
+    Deprecated
     """
 
     def json(self, **kwargs: typing.Any) -> str:

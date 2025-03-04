@@ -8,24 +8,24 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class Summary(pydantic_v1.BaseModel):
-    content: typing.Optional[str] = pydantic_v1.Field(default=None)
+    content: str = pydantic_v1.Field()
     """
     The content of the summary.
     """
 
-    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    created_at: str = pydantic_v1.Field()
     """
     The timestamp of when the summary was created.
     """
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    related_message_uuids: typing.Optional[typing.List[str]] = None
+    related_message_uuids: typing.List[str]
     token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
     """
     The number of tokens in the summary.
     """
 
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    uuid_: str = pydantic_v1.Field(alias="uuid")
     """
     The unique identifier of the summary.
     """

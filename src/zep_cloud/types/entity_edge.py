@@ -8,12 +8,27 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class EntityEdge(pydantic_v1.BaseModel):
+    uuid_: str = pydantic_v1.Field(alias="uuid")
+    """
+    UUID of the edge
+    """
+
+    source_node_uuid: str = pydantic_v1.Field()
+    """
+    UUID of the source node
+    """
+
+    target_node_uuid: str = pydantic_v1.Field()
+    """
+    UUID of the target node
+    """
+
     created_at: str = pydantic_v1.Field()
     """
     Creation time of the edge
     """
 
-    episodes: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    episodes: typing.List[str] = pydantic_v1.Field()
     """
     List of episode ids that reference these entity edges
     """
@@ -36,21 +51,6 @@ class EntityEdge(pydantic_v1.BaseModel):
     name: str = pydantic_v1.Field()
     """
     Name of the edge, relation name
-    """
-
-    source_node_uuid: str = pydantic_v1.Field()
-    """
-    UUID of the source node
-    """
-
-    target_node_uuid: str = pydantic_v1.Field()
-    """
-    UUID of the target node
-    """
-
-    uuid_: str = pydantic_v1.Field(alias="uuid")
-    """
-    UUID of the edge
     """
 
     valid_at: typing.Optional[str] = pydantic_v1.Field(default=None)

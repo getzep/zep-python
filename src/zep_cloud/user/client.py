@@ -57,7 +57,7 @@ class UserClient:
             The last name of the user.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            The metadata associated with the user.
+            Deprecated
 
         user_id : typing.Optional[str]
             The unique identifier of the user.
@@ -292,7 +292,7 @@ class UserClient:
             The last name of the user.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            The metadata to update
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -519,7 +519,7 @@ class AsyncUserClient:
             The last name of the user.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            The metadata associated with the user.
+            Deprecated
 
         user_id : typing.Optional[str]
             The unique identifier of the user.
@@ -786,7 +786,7 @@ class AsyncUserClient:
             The last name of the user.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            The metadata to update
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

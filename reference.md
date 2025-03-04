@@ -1844,7 +1844,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-**classes:** `typing.Sequence[str]` — The classes to use for classification.
+**classes:** `typing.Sequence[str]` — The classes to use for classification
     
 </dd>
 </dl>
@@ -1852,7 +1852,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-**name:** `str` — The name of the classifier.
+**name:** `str` — The name of the classifier
     
 </dd>
 </dl>
@@ -1860,7 +1860,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-**instruction:** `typing.Optional[str]` — Custom instruction to use for classification.
+**instruction:** `typing.Optional[str]` — Custom instruction to use for classification
     
 </dd>
 </dl>
@@ -1868,7 +1868,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-**last_n:** `typing.Optional[int]` — The number of session messages to consider for classification. Defaults to 4.
+**last_n:** `typing.Optional[int]` — The number of session messages to consider for classification. Defaults to 4
     
 </dd>
 </dl>
@@ -1876,7 +1876,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-**persist:** `typing.Optional[bool]` — Deprecated
+**persist:** `typing.Optional[bool]` — Whether to persist the classification as part of the session object. Defaults to True
     
 </dd>
 </dl>
@@ -2368,8 +2368,8 @@ client.memory.add(
     session_id="sessionId",
     messages=[
         Message(
-            content="content",
             role_type="norole",
+            content="content",
         )
     ],
 )
@@ -2396,7 +2396,7 @@ client.memory.add(
 <dl>
 <dd>
 
-**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content.
+**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content
     
 </dd>
 </dl>
@@ -3044,7 +3044,7 @@ client.memory.synthesize_question(
 <dl>
 <dd>
 
-Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+Adds data to the graph. One of user_id or group_id must be provided. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 </dd>
 </dl>
 </dd>
@@ -3374,7 +3374,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**group_id:** `typing.Optional[str]` — one of user_id or group_id must be provided
+**group_id:** `typing.Optional[str]` — One of user_id or group_id must be provided.
     
 </dd>
 </dl>
@@ -3398,7 +3398,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**mmr_lambda:** `typing.Optional[float]` — weighting for maximal marginal relevance
+**mmr_lambda:** `typing.Optional[float]` — Weighting for maximal marginal relevance.
     
 </dd>
 </dl>
@@ -3422,7 +3422,15 @@ client.graph.search(
 <dl>
 <dd>
 
-**user_id:** `typing.Optional[str]` — one of user_id or group_id must be provided
+**search_filters:** `typing.Optional[GraphitiSearchFilters]` — Search filters to apply to the search
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` — One of user_id or group_id must be provided.
     
 </dd>
 </dl>
@@ -3998,7 +4006,7 @@ client.user.add()
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — The metadata associated with the user.
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Deprecated
     
 </dd>
 </dl>
@@ -4332,7 +4340,7 @@ client.user.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — The metadata to update
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Deprecated
     
 </dd>
 </dl>

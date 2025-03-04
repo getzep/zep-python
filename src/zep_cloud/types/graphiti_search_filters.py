@@ -5,21 +5,12 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .fact_rating_instruction import FactRatingInstruction
 
 
-class Group(pydantic_v1.BaseModel):
-    group_id: str
-    created_at: str
-    name: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
-    project_uuid: str
-    id: int
-    uuid_: str = pydantic_v1.Field(alias="uuid")
-    external_id: str = pydantic_v1.Field()
+class GraphitiSearchFilters(pydantic_v1.BaseModel):
+    node_labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
-    Deprecated
+    List of node labels to filter on
     """
 
     def json(self, **kwargs: typing.Any) -> str:
@@ -37,7 +28,5 @@ class Group(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}
