@@ -18,7 +18,7 @@ class EntityNode(pydantic_v1.BaseModel):
     Name of the node
     """
 
-    labels: typing.List[str] = pydantic_v1.Field()
+    labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     Labels associated with the node
     """

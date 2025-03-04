@@ -42,7 +42,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Adds data to the graph. One of user_id or group_id must be provided. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+        Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
         Parameters
         ----------
@@ -249,7 +249,7 @@ class GraphClient:
             Node to rerank around for node distance reranking
 
         group_id : typing.Optional[str]
-            One of user_id or group_id must be provided.
+            one of user_id or group_id must be provided
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
@@ -258,7 +258,7 @@ class GraphClient:
             Deprecated
 
         mmr_lambda : typing.Optional[float]
-            Weighting for maximal marginal relevance.
+            weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
@@ -270,7 +270,7 @@ class GraphClient:
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
-            One of user_id or group_id must be provided.
+            one of user_id or group_id must be provided
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -343,7 +343,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Adds data to the graph. One of user_id or group_id must be provided. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+        Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
         Parameters
         ----------
@@ -566,7 +566,7 @@ class AsyncGraphClient:
             Node to rerank around for node distance reranking
 
         group_id : typing.Optional[str]
-            One of user_id or group_id must be provided.
+            one of user_id or group_id must be provided
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
@@ -575,7 +575,7 @@ class AsyncGraphClient:
             Deprecated
 
         mmr_lambda : typing.Optional[float]
-            Weighting for maximal marginal relevance.
+            weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
@@ -587,7 +587,7 @@ class AsyncGraphClient:
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
-            One of user_id or group_id must be provided.
+            one of user_id or group_id must be provided
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

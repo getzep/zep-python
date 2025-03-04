@@ -10,27 +10,27 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 class ClassifySessionRequest(pydantic_v1.BaseModel):
     classes: typing.List[str] = pydantic_v1.Field()
     """
-    The classes to use for classification
+    The classes to use for classification.
     """
 
     instruction: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Custom instruction to use for classification
+    Custom instruction to use for classification.
     """
 
     last_n: typing.Optional[int] = pydantic_v1.Field(default=None)
     """
-    The number of session messages to consider for classification. Defaults to 4
+    The number of session messages to consider for classification. Defaults to 4.
     """
 
     name: str = pydantic_v1.Field()
     """
-    The name of the classifier
+    The name of the classifier.
     """
 
     persist: typing.Optional[bool] = pydantic_v1.Field(default=None)
     """
-    Whether to persist the classification as part of the session object. Defaults to True
+    Whether to persist the classification as part of the session object. Defaults to True.
     """
 
     def json(self, **kwargs: typing.Any) -> str:

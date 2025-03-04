@@ -9,15 +9,15 @@ from .fact_rating_instruction import FactRatingInstruction
 
 
 class Group(pydantic_v1.BaseModel):
-    group_id: str
-    created_at: str
+    group_id: typing.Optional[str] = None
+    created_at: typing.Optional[str] = None
     name: typing.Optional[str] = None
     description: typing.Optional[str] = None
     fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
-    project_uuid: str
-    id: int
-    uuid_: str = pydantic_v1.Field(alias="uuid")
-    external_id: str = pydantic_v1.Field()
+    project_uuid: typing.Optional[str] = None
+    id: typing.Optional[int] = None
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+    external_id: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """

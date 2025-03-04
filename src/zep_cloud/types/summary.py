@@ -20,7 +20,7 @@ class Summary(pydantic_v1.BaseModel):
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     related_message_uuids: typing.List[str]
-    token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+    token_count: int = pydantic_v1.Field()
     """
     The number of tokens in the summary.
     """

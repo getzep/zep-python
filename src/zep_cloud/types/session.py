@@ -9,11 +9,7 @@ from .fact_rating_instruction import FactRatingInstruction
 
 
 class Session(pydantic_v1.BaseModel):
-    classifications: typing.Dict[str, str] = pydantic_v1.Field()
-    """
-    The classes associated with the session
-    """
-
+    classifications: typing.Dict[str, str]
     created_at: str
     deleted_at: str
     ended_at: str

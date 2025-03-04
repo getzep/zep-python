@@ -9,8 +9,13 @@ from .fact_rating_instruction import FactRatingInstruction
 
 
 class User(pydantic_v1.BaseModel):
-    user_id: str
-    id: int
+    user_id: typing.Optional[str] = None
+    id: typing.Optional[int] = None
+    updated_at: str = pydantic_v1.Field()
+    """
+    Deprecated
+    """
+
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
     """
     Deprecated
@@ -22,12 +27,12 @@ class User(pydantic_v1.BaseModel):
     """
 
     created_at: str
-    deleted_at: typing.Optional[str] = None
-    email: typing.Optional[str] = None
-    first_name: typing.Optional[str] = None
-    last_name: typing.Optional[str] = None
+    deleted_at: str
+    email: str
+    first_name: str
+    last_name: str
     fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
-    uuid_: str = pydantic_v1.Field(alias="uuid")
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
     project_uuid: str
 
     def json(self, **kwargs: typing.Any) -> str:

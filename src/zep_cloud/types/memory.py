@@ -21,7 +21,7 @@ class Memory(pydantic_v1.BaseModel):
     Deprecated
     """
 
-    messages: typing.List[Message] = pydantic_v1.Field()
+    messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
     """
     A list of message objects, where each message contains a role and content. Only last_n messages will be returned
     """
