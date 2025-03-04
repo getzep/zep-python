@@ -40,6 +40,7 @@ async def main() -> None:
     await client.user.add(
         user_id=user_id,
         email="user@example.com",
+        fact_rating_instructions="Rate the quality of the fact in a scale of 1-10",
         first_name="Jane",
         last_name="Smith",
         metadata={"vip": "true"},

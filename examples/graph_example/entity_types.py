@@ -51,8 +51,13 @@ async def main() -> None:
             "Purchase": Purchase,
         }
     )
-    entity_types = await client.graph.list_entity_types()
-    print(entity_types)
+    search_results = await client.graph.search(
+        "grocery purchases",
+        scope="edges",
+        entity_type="Purchase", # mocked for now
+    )
+    purchases = [Purchase(**purchase_edge.entity) for purchase_edge in search_results.edges]
+    
     return
     group_id = f"playground_dataset:{uuid.uuid4().hex}"
     print(f"Creating group {group_id}...")

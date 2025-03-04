@@ -18,6 +18,7 @@ import os
 import uuid
 
 from dotenv import find_dotenv, load_dotenv
+from conversations import history
 
 from zep_cloud.client import AsyncZep
 
@@ -33,7 +34,7 @@ async def main() -> None:
         api_key=API_KEY,
     )
 
-    group_id = f"slack:{uuid.uuid4().hex}"
+    group_id = f"playground_dataset:{uuid.uuid4().hex}"
     print(f"Creating group {group_id}...")
     group = await client.group.add(
         group_id=group_id,
@@ -44,11 +45,14 @@ async def main() -> None:
     print(f"Group {group_id} created {group}")
 
     print(f"Adding episode to group {group_id}...")
-    await client.graph.add(
-        group_id=group_id,
-        data="This is a test episode",
-        type="text",
-    )
+    last_conversation = history[-1]
+    for message in last_conversation:
+        await client.graph.add(
+            group_id=group_id,
+            data=f"{message['role']}: {message['content']}",
+            type="message",
+        )
+        await asyncio.sleep(2)
     await asyncio.sleep(2)
     print(f"Adding more meaningful episode to group {group_id}...")
     await client.graph.add(
