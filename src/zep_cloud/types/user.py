@@ -11,11 +11,6 @@ from .fact_rating_instruction import FactRatingInstruction
 class User(pydantic_v1.BaseModel):
     user_id: str
     id: int
-    updated_at: str = pydantic_v1.Field()
-    """
-    Deprecated
-    """
-
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
     """
     Deprecated
@@ -27,7 +22,7 @@ class User(pydantic_v1.BaseModel):
     """
 
     created_at: str
-    deleted_at: str
+    deleted_at: typing.Optional[str] = None
     email: typing.Optional[str] = None
     first_name: typing.Optional[str] = None
     last_name: typing.Optional[str] = None
