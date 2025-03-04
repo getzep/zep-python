@@ -1020,13 +1020,8 @@ class MemoryClient:
             session_id="sessionId",
             messages=[
                 Message(
-                    uuid_="uuid",
-                    created_at="created_at",
-                    role="role",
                     role_type="norole",
                     content="content",
-                    updated_at="updated_at",
-                    token_count=1,
                 )
             ],
         )
@@ -2584,13 +2579,8 @@ class AsyncMemoryClient:
                 session_id="sessionId",
                 messages=[
                     Message(
-                        uuid_="uuid",
-                        created_at="created_at",
-                        role="role",
                         role_type="norole",
                         content="content",
-                        updated_at="updated_at",
-                        token_count=1,
                     )
                 ],
             )

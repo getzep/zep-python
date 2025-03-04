@@ -9,17 +9,17 @@ from .role_type import RoleType
 
 
 class Message(pydantic_v1.BaseModel):
-    uuid_: str = pydantic_v1.Field(alias="uuid")
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
     """
     The unique identifier of the message.
     """
 
-    created_at: str = pydantic_v1.Field()
+    created_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
     The timestamp of when the message was created.
     """
 
-    role: str = pydantic_v1.Field()
+    role: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
     Customizable role of the sender of the message (e.g., "john", "sales_agent").
     """
@@ -39,12 +39,12 @@ class Message(pydantic_v1.BaseModel):
     The metadata associated with the message.
     """
 
-    updated_at: str = pydantic_v1.Field()
+    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """
 
-    token_count: int = pydantic_v1.Field()
+    token_count: typing.Optional[int] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """
