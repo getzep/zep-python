@@ -9,19 +9,19 @@ from .message import Message
 
 
 class MessageListResponse(pydantic_v1.BaseModel):
-    messages: typing.List[Message] = pydantic_v1.Field()
+    messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
     """
     A list of message objects.
     """
 
-    total_count: int = pydantic_v1.Field()
-    """
-    The total number of messages.
-    """
-
-    row_count: int = pydantic_v1.Field()
+    row_count: typing.Optional[int] = pydantic_v1.Field(default=None)
     """
     The number of messages returned.
+    """
+
+    total_count: typing.Optional[int] = pydantic_v1.Field(default=None)
+    """
+    The total number of messages.
     """
 
     def json(self, **kwargs: typing.Any) -> str:

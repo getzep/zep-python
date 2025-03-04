@@ -1250,7 +1250,6 @@ client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.memory.add_session(
-    metadata={"key": "value"},
     session_id="session_id",
     user_id="user_id",
 )
@@ -1265,14 +1264,6 @@ client.memory.add_session(
 
 <dl>
 <dd>
-
-<dl>
-<dd>
-
-**metadata:** `typing.Dict[str, typing.Any]` — Deprecated
-    
-</dd>
-</dl>
 
 <dl>
 <dd>
@@ -1294,6 +1285,14 @@ client.memory.add_session(
 <dd>
 
 **fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Deprecated
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Deprecated
     
 </dd>
 </dl>
@@ -1877,7 +1876,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-**persist:** `typing.Optional[bool]` — Whether to persist the classification as part of the session object. Defaults to True.
+**persist:** `typing.Optional[bool]` — Deprecated
     
 </dd>
 </dl>
@@ -2369,8 +2368,8 @@ client.memory.add(
     session_id="sessionId",
     messages=[
         Message(
-            role_type="norole",
             content="content",
+            role_type="norole",
         )
     ],
 )
@@ -3954,20 +3953,12 @@ Adds a user.
 <dd>
 
 ```python
-from zep_cloud import FactRatingInstruction
 from zep_cloud.client import Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.user.add(
-    email="email",
-    fact_rating_instruction=FactRatingInstruction(),
-    first_name="first_name",
-    last_name="last_name",
-    metadata={"key": "value"},
-    user_id="user_id",
-)
+client.user.add()
 
 ```
 </dd>
@@ -3983,7 +3974,7 @@ client.user.add(
 <dl>
 <dd>
 
-**email:** `str` — The email address of the user.
+**email:** `typing.Optional[str]` — The email address of the user.
     
 </dd>
 </dl>
@@ -3991,7 +3982,7 @@ client.user.add(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `FactRatingInstruction` — Optional instruction to use for fact rating.
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Optional instruction to use for fact rating.
     
 </dd>
 </dl>
@@ -3999,7 +3990,7 @@ client.user.add(
 <dl>
 <dd>
 
-**first_name:** `str` — The first name of the user.
+**first_name:** `typing.Optional[str]` — The first name of the user.
     
 </dd>
 </dl>
@@ -4007,7 +3998,7 @@ client.user.add(
 <dl>
 <dd>
 
-**last_name:** `str` — The last name of the user.
+**last_name:** `typing.Optional[str]` — The last name of the user.
     
 </dd>
 </dl>
@@ -4015,7 +4006,7 @@ client.user.add(
 <dl>
 <dd>
 
-**metadata:** `typing.Dict[str, typing.Any]` — The metadata associated with the user.
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — The metadata associated with the user.
     
 </dd>
 </dl>
@@ -4023,7 +4014,7 @@ client.user.add(
 <dl>
 <dd>
 
-**user_id:** `str` — The unique identifier of the user.
+**user_id:** `typing.Optional[str]` — The unique identifier of the user.
     
 </dd>
 </dl>
@@ -4286,7 +4277,6 @@ Updates a user.
 <dd>
 
 ```python
-from zep_cloud import FactRatingInstruction
 from zep_cloud.client import Zep
 
 client = Zep(
@@ -4294,11 +4284,6 @@ client = Zep(
 )
 client.user.update(
     user_id="userId",
-    email="email",
-    fact_rating_instruction=FactRatingInstruction(),
-    first_name="first_name",
-    last_name="last_name",
-    metadata={"key": "value"},
 )
 
 ```
@@ -4323,7 +4308,7 @@ client.user.update(
 <dl>
 <dd>
 
-**email:** `str` — The email address of the user.
+**email:** `typing.Optional[str]` — The email address of the user.
     
 </dd>
 </dl>
@@ -4331,7 +4316,7 @@ client.user.update(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `FactRatingInstruction` — Optional instruction to use for fact rating.
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Optional instruction to use for fact rating.
     
 </dd>
 </dl>
@@ -4339,7 +4324,7 @@ client.user.update(
 <dl>
 <dd>
 
-**first_name:** `str` — The first name of the user.
+**first_name:** `typing.Optional[str]` — The first name of the user.
     
 </dd>
 </dl>
@@ -4347,7 +4332,7 @@ client.user.update(
 <dl>
 <dd>
 
-**last_name:** `str` — The last name of the user.
+**last_name:** `typing.Optional[str]` — The last name of the user.
     
 </dd>
 </dl>
@@ -4355,7 +4340,7 @@ client.user.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Dict[str, typing.Any]` — The metadata to update
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — The metadata to update
     
 </dd>
 </dl>

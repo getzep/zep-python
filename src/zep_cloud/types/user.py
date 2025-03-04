@@ -9,31 +9,31 @@ from .fact_rating_instruction import FactRatingInstruction
 
 
 class User(pydantic_v1.BaseModel):
-    user_id: typing.Optional[str] = None
+    created_at: typing.Optional[str] = None
+    deleted_at: typing.Optional[str] = None
+    email: typing.Optional[str] = None
+    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
+    first_name: typing.Optional[str] = None
     id: typing.Optional[int] = None
-    updated_at: str = pydantic_v1.Field()
-    """
-    Deprecated
-    """
-
+    last_name: typing.Optional[str] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """
 
+    project_uuid: typing.Optional[str] = None
     session_count: typing.Optional[int] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """
 
-    created_at: str
-    deleted_at: str
-    email: str
-    first_name: str
-    last_name: str
-    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
+    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Deprecated
+    """
+
+    user_id: typing.Optional[str] = None
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
-    project_uuid: str
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

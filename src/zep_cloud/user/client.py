@@ -31,12 +31,12 @@ class UserClient:
     def add(
         self,
         *,
-        email: str,
-        fact_rating_instruction: FactRatingInstruction,
-        first_name: str,
-        last_name: str,
-        metadata: typing.Dict[str, typing.Any],
-        user_id: str,
+        email: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        first_name: typing.Optional[str] = OMIT,
+        last_name: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -44,22 +44,22 @@ class UserClient:
 
         Parameters
         ----------
-        email : str
+        email : typing.Optional[str]
             The email address of the user.
 
-        fact_rating_instruction : FactRatingInstruction
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
-        first_name : str
+        first_name : typing.Optional[str]
             The first name of the user.
 
-        last_name : str
+        last_name : typing.Optional[str]
             The last name of the user.
 
-        metadata : typing.Dict[str, typing.Any]
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the user.
 
-        user_id : str
+        user_id : typing.Optional[str]
             The unique identifier of the user.
 
         request_options : typing.Optional[RequestOptions]
@@ -72,20 +72,12 @@ class UserClient:
 
         Examples
         --------
-        from zep_cloud import FactRatingInstruction
         from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.add(
-            email="email",
-            fact_rating_instruction=FactRatingInstruction(),
-            first_name="first_name",
-            last_name="last_name",
-            metadata={"key": "value"},
-            user_id="user_id",
-        )
+        client.user.add()
         """
         _response = self._client_wrapper.httpx_client.request(
             "users",
@@ -272,11 +264,11 @@ class UserClient:
         self,
         user_id: str,
         *,
-        email: str,
-        fact_rating_instruction: FactRatingInstruction,
-        first_name: str,
-        last_name: str,
-        metadata: typing.Dict[str, typing.Any],
+        email: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        first_name: typing.Optional[str] = OMIT,
+        last_name: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -287,19 +279,19 @@ class UserClient:
         user_id : str
             User ID
 
-        email : str
+        email : typing.Optional[str]
             The email address of the user.
 
-        fact_rating_instruction : FactRatingInstruction
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
-        first_name : str
+        first_name : typing.Optional[str]
             The first name of the user.
 
-        last_name : str
+        last_name : typing.Optional[str]
             The last name of the user.
 
-        metadata : typing.Dict[str, typing.Any]
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata to update
 
         request_options : typing.Optional[RequestOptions]
@@ -312,7 +304,6 @@ class UserClient:
 
         Examples
         --------
-        from zep_cloud import FactRatingInstruction
         from zep_cloud.client import Zep
 
         client = Zep(
@@ -320,11 +311,6 @@ class UserClient:
         )
         client.user.update(
             user_id="userId",
-            email="email",
-            fact_rating_instruction=FactRatingInstruction(),
-            first_name="first_name",
-            last_name="last_name",
-            metadata={"key": "value"},
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -507,12 +493,12 @@ class AsyncUserClient:
     async def add(
         self,
         *,
-        email: str,
-        fact_rating_instruction: FactRatingInstruction,
-        first_name: str,
-        last_name: str,
-        metadata: typing.Dict[str, typing.Any],
-        user_id: str,
+        email: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        first_name: typing.Optional[str] = OMIT,
+        last_name: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -520,22 +506,22 @@ class AsyncUserClient:
 
         Parameters
         ----------
-        email : str
+        email : typing.Optional[str]
             The email address of the user.
 
-        fact_rating_instruction : FactRatingInstruction
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
-        first_name : str
+        first_name : typing.Optional[str]
             The first name of the user.
 
-        last_name : str
+        last_name : typing.Optional[str]
             The last name of the user.
 
-        metadata : typing.Dict[str, typing.Any]
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the user.
 
-        user_id : str
+        user_id : typing.Optional[str]
             The unique identifier of the user.
 
         request_options : typing.Optional[RequestOptions]
@@ -550,7 +536,6 @@ class AsyncUserClient:
         --------
         import asyncio
 
-        from zep_cloud import FactRatingInstruction
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -559,14 +544,7 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.add(
-                email="email",
-                fact_rating_instruction=FactRatingInstruction(),
-                first_name="first_name",
-                last_name="last_name",
-                metadata={"key": "value"},
-                user_id="user_id",
-            )
+            await client.user.add()
 
 
         asyncio.run(main())
@@ -780,11 +758,11 @@ class AsyncUserClient:
         self,
         user_id: str,
         *,
-        email: str,
-        fact_rating_instruction: FactRatingInstruction,
-        first_name: str,
-        last_name: str,
-        metadata: typing.Dict[str, typing.Any],
+        email: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        first_name: typing.Optional[str] = OMIT,
+        last_name: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -795,19 +773,19 @@ class AsyncUserClient:
         user_id : str
             User ID
 
-        email : str
+        email : typing.Optional[str]
             The email address of the user.
 
-        fact_rating_instruction : FactRatingInstruction
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
-        first_name : str
+        first_name : typing.Optional[str]
             The first name of the user.
 
-        last_name : str
+        last_name : typing.Optional[str]
             The last name of the user.
 
-        metadata : typing.Dict[str, typing.Any]
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata to update
 
         request_options : typing.Optional[RequestOptions]
@@ -822,7 +800,6 @@ class AsyncUserClient:
         --------
         import asyncio
 
-        from zep_cloud import FactRatingInstruction
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -833,11 +810,6 @@ class AsyncUserClient:
         async def main() -> None:
             await client.user.update(
                 user_id="userId",
-                email="email",
-                fact_rating_instruction=FactRatingInstruction(),
-                first_name="first_name",
-                last_name="last_name",
-                metadata={"key": "value"},
             )
 
 

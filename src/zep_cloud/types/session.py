@@ -9,35 +9,35 @@ from .fact_rating_instruction import FactRatingInstruction
 
 
 class Session(pydantic_v1.BaseModel):
-    classifications: typing.Dict[str, str]
-    created_at: str
-    deleted_at: str
-    ended_at: str
+    classifications: typing.Optional[typing.Dict[str, str]] = None
+    created_at: typing.Optional[str] = None
+    deleted_at: typing.Optional[str] = None
+    ended_at: typing.Optional[str] = None
     fact_rating_instruction: typing.Optional[FactRatingInstruction] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """
 
-    facts: typing.List[str] = pydantic_v1.Field()
+    facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """
 
-    id: int
-    metadata: typing.Dict[str, typing.Any] = pydantic_v1.Field()
+    id: typing.Optional[int] = None
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """
 
-    project_uuid: str
-    session_id: str
-    updated_at: str = pydantic_v1.Field()
+    project_uuid: typing.Optional[str] = None
+    session_id: typing.Optional[str] = None
+    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
     Deprecated
     """
 
-    user_id: str
-    uuid_: str = pydantic_v1.Field(alias="uuid")
+    user_id: typing.Optional[str] = None
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

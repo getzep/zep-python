@@ -8,19 +8,9 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class EntityNode(pydantic_v1.BaseModel):
-    uuid_: str = pydantic_v1.Field(alias="uuid")
+    attributes: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
     """
-    UUID of the node
-    """
-
-    name: str = pydantic_v1.Field()
-    """
-    Name of the node
-    """
-
-    labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
-    """
-    Labels associated with the node
+    Additional attributes of the node. Dependent on node labels
     """
 
     created_at: str = pydantic_v1.Field()
@@ -28,14 +18,24 @@ class EntityNode(pydantic_v1.BaseModel):
     Creation time of the node
     """
 
-    attributes: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
+    labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
-    Additional attributes of the node. Dependent on node labels
+    Labels associated with the node
+    """
+
+    name: str = pydantic_v1.Field()
+    """
+    Name of the node
     """
 
     summary: str = pydantic_v1.Field()
     """
     Regional summary of surrounding edges
+    """
+
+    uuid_: str = pydantic_v1.Field(alias="uuid")
+    """
+    UUID of the node
     """
 
     def json(self, **kwargs: typing.Any) -> str:

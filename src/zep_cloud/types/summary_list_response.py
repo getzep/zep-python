@@ -9,9 +9,9 @@ from .summary import Summary
 
 
 class SummaryListResponse(pydantic_v1.BaseModel):
-    row_count: int
-    summaries: typing.List[Summary]
-    total_count: int
+    row_count: typing.Optional[int] = None
+    summaries: typing.Optional[typing.List[Summary]] = None
+    total_count: typing.Optional[int] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

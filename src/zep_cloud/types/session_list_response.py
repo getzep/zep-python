@@ -9,9 +9,9 @@ from .session import Session
 
 
 class SessionListResponse(pydantic_v1.BaseModel):
-    response_count: int
-    sessions: typing.List[Session]
-    total_count: int
+    response_count: typing.Optional[int] = None
+    sessions: typing.Optional[typing.List[Session]] = None
+    total_count: typing.Optional[int] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
