@@ -9,11 +9,13 @@ from ..core.pydantic_utilities import pydantic_v1
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
+from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
 from ..types.reranker import Reranker
+from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
@@ -40,7 +42,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Add data to the graph
+        Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
         Parameters
         ----------
@@ -92,6 +94,134 @@ class GraphClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def add_fact_triple(
+        self,
+        *,
+        fact: str,
+        fact_name: str,
+        target_node_name: str,
+        created_at: typing.Optional[str] = OMIT,
+        expired_at: typing.Optional[str] = OMIT,
+        fact_uuid: typing.Optional[str] = OMIT,
+        group_id: typing.Optional[str] = OMIT,
+        invalid_at: typing.Optional[str] = OMIT,
+        source_node_name: typing.Optional[str] = OMIT,
+        source_node_summary: typing.Optional[str] = OMIT,
+        source_node_uuid: typing.Optional[str] = OMIT,
+        target_node_summary: typing.Optional[str] = OMIT,
+        target_node_uuid: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        valid_at: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> AddTripleResponse:
+        """
+        Add a fact triple for a user or group
+
+        Parameters
+        ----------
+        fact : str
+            The fact relating the two nodes that this edge represents
+
+        fact_name : str
+            The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
+
+        target_node_name : str
+            The name of the target node to add
+
+        created_at : typing.Optional[str]
+            The timestamp of the message
+
+        expired_at : typing.Optional[str]
+            The time (if any) at which the edge expires
+
+        fact_uuid : typing.Optional[str]
+            The uuid of the edge to add
+
+        group_id : typing.Optional[str]
+
+        invalid_at : typing.Optional[str]
+            The time (if any) at which the fact stops being true
+
+        source_node_name : typing.Optional[str]
+            The name of the source node to add
+
+        source_node_summary : typing.Optional[str]
+            The summary of the source node to add
+
+        source_node_uuid : typing.Optional[str]
+            The source node uuid
+
+        target_node_summary : typing.Optional[str]
+            The summary of the target node to add
+
+        target_node_uuid : typing.Optional[str]
+            The target node uuid
+
+        user_id : typing.Optional[str]
+
+        valid_at : typing.Optional[str]
+            The time at which the fact becomes true
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AddTripleResponse
+            Resulting triple
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.add_fact_triple(
+            fact="fact",
+            fact_name="fact_name",
+            target_node_name="target_node_name",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph/add-fact-triple",
+            method="POST",
+            json={
+                "created_at": created_at,
+                "expired_at": expired_at,
+                "fact": fact,
+                "fact_name": fact_name,
+                "fact_uuid": fact_uuid,
+                "group_id": group_id,
+                "invalid_at": invalid_at,
+                "source_node_name": source_node_name,
+                "source_node_summary": source_node_summary,
+                "source_node_uuid": source_node_uuid,
+                "target_node_name": target_node_name,
+                "target_node_summary": target_node_summary,
+                "target_node_uuid": target_node_uuid,
+                "user_id": user_id,
+                "valid_at": valid_at,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(AddTripleResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def search(
         self,
         *,
@@ -103,6 +233,7 @@ class GraphClient:
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> GraphSearchResults:
@@ -124,7 +255,7 @@ class GraphClient:
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
         min_score : typing.Optional[float]
-            minimum similarity score for a result to be returned
+            Deprecated
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
@@ -134,6 +265,9 @@ class GraphClient:
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges. Communities will be added in the future.
+
+        search_filters : typing.Optional[SearchFilters]
+            Search filters to apply to the search
 
         user_id : typing.Optional[str]
             one of user_id or group_id must be provided
@@ -169,6 +303,7 @@ class GraphClient:
                 "query": query,
                 "reranker": reranker,
                 "scope": scope,
+                "search_filters": search_filters,
                 "user_id": user_id,
             },
             request_options=request_options,
@@ -208,7 +343,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Add data to the graph
+        Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
         Parameters
         ----------
@@ -268,6 +403,142 @@ class AsyncGraphClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    async def add_fact_triple(
+        self,
+        *,
+        fact: str,
+        fact_name: str,
+        target_node_name: str,
+        created_at: typing.Optional[str] = OMIT,
+        expired_at: typing.Optional[str] = OMIT,
+        fact_uuid: typing.Optional[str] = OMIT,
+        group_id: typing.Optional[str] = OMIT,
+        invalid_at: typing.Optional[str] = OMIT,
+        source_node_name: typing.Optional[str] = OMIT,
+        source_node_summary: typing.Optional[str] = OMIT,
+        source_node_uuid: typing.Optional[str] = OMIT,
+        target_node_summary: typing.Optional[str] = OMIT,
+        target_node_uuid: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        valid_at: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> AddTripleResponse:
+        """
+        Add a fact triple for a user or group
+
+        Parameters
+        ----------
+        fact : str
+            The fact relating the two nodes that this edge represents
+
+        fact_name : str
+            The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
+
+        target_node_name : str
+            The name of the target node to add
+
+        created_at : typing.Optional[str]
+            The timestamp of the message
+
+        expired_at : typing.Optional[str]
+            The time (if any) at which the edge expires
+
+        fact_uuid : typing.Optional[str]
+            The uuid of the edge to add
+
+        group_id : typing.Optional[str]
+
+        invalid_at : typing.Optional[str]
+            The time (if any) at which the fact stops being true
+
+        source_node_name : typing.Optional[str]
+            The name of the source node to add
+
+        source_node_summary : typing.Optional[str]
+            The summary of the source node to add
+
+        source_node_uuid : typing.Optional[str]
+            The source node uuid
+
+        target_node_summary : typing.Optional[str]
+            The summary of the target node to add
+
+        target_node_uuid : typing.Optional[str]
+            The target node uuid
+
+        user_id : typing.Optional[str]
+
+        valid_at : typing.Optional[str]
+            The time at which the fact becomes true
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AddTripleResponse
+            Resulting triple
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.add_fact_triple(
+                fact="fact",
+                fact_name="fact_name",
+                target_node_name="target_node_name",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph/add-fact-triple",
+            method="POST",
+            json={
+                "created_at": created_at,
+                "expired_at": expired_at,
+                "fact": fact,
+                "fact_name": fact_name,
+                "fact_uuid": fact_uuid,
+                "group_id": group_id,
+                "invalid_at": invalid_at,
+                "source_node_name": source_node_name,
+                "source_node_summary": source_node_summary,
+                "source_node_uuid": source_node_uuid,
+                "target_node_name": target_node_name,
+                "target_node_summary": target_node_summary,
+                "target_node_uuid": target_node_uuid,
+                "user_id": user_id,
+                "valid_at": valid_at,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(AddTripleResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def search(
         self,
         *,
@@ -279,6 +550,7 @@ class AsyncGraphClient:
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> GraphSearchResults:
@@ -300,7 +572,7 @@ class AsyncGraphClient:
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
         min_score : typing.Optional[float]
-            minimum similarity score for a result to be returned
+            Deprecated
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
@@ -310,6 +582,9 @@ class AsyncGraphClient:
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges. Communities will be added in the future.
+
+        search_filters : typing.Optional[SearchFilters]
+            Search filters to apply to the search
 
         user_id : typing.Optional[str]
             one of user_id or group_id must be provided
@@ -353,6 +628,7 @@ class AsyncGraphClient:
                 "query": query,
                 "reranker": reranker,
                 "scope": scope,
+                "search_filters": search_filters,
                 "user_id": user_id,
             },
             request_options=request_options,

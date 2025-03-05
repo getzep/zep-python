@@ -23,7 +23,7 @@ class NodeClient:
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityNode]:
         """
-        Get all nodes for a group
+        Returns all nodes for a group.
 
         Parameters
         ----------
@@ -72,7 +72,7 @@ class NodeClient:
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityNode]:
         """
-        Get all nodes for a user
+        Returns all nodes for a user
 
         Parameters
         ----------
@@ -119,7 +119,7 @@ class NodeClient:
 
     def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
         """
-        Get a specific node by its UUID
+        Returns a specific node by its UUID.
 
         Parameters
         ----------
@@ -177,7 +177,7 @@ class AsyncNodeClient:
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityNode]:
         """
-        Get all nodes for a group
+        Returns all nodes for a group.
 
         Parameters
         ----------
@@ -234,7 +234,7 @@ class AsyncNodeClient:
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityNode]:
         """
-        Get all nodes for a user
+        Returns all nodes for a user
 
         Parameters
         ----------
@@ -289,7 +289,7 @@ class AsyncNodeClient:
 
     async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
         """
-        Get a specific node by its UUID
+        Returns a specific node by its UUID.
 
         Parameters
         ----------

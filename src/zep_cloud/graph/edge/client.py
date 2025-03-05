@@ -24,7 +24,7 @@ class EdgeClient:
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityEdge]:
         """
-        Get all edges for a group
+        Returns all edges for a group.
 
         Parameters
         ----------
@@ -73,7 +73,7 @@ class EdgeClient:
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityEdge]:
         """
-        Get all edges for a user
+        Returns all edges for a user.
 
         Parameters
         ----------
@@ -120,7 +120,7 @@ class EdgeClient:
 
     def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
         """
-        Get a specific edge by its UUID
+        Returns a specific edge by its UUID.
 
         Parameters
         ----------
@@ -171,7 +171,7 @@ class EdgeClient:
 
     def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Delete an edge by UUID
+        Deletes an edge by UUID.
 
         Parameters
         ----------
@@ -225,7 +225,7 @@ class AsyncEdgeClient:
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityEdge]:
         """
-        Get all edges for a group
+        Returns all edges for a group.
 
         Parameters
         ----------
@@ -282,7 +282,7 @@ class AsyncEdgeClient:
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityEdge]:
         """
-        Get all edges for a user
+        Returns all edges for a user.
 
         Parameters
         ----------
@@ -337,7 +337,7 @@ class AsyncEdgeClient:
 
     async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
         """
-        Get a specific edge by its UUID
+        Returns a specific edge by its UUID.
 
         Parameters
         ----------
@@ -396,7 +396,7 @@ class AsyncEdgeClient:
 
     async def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Delete an edge by UUID
+        Deletes an edge by UUID.
 
         Parameters
         ----------

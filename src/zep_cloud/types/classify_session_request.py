@@ -25,12 +25,12 @@ class ClassifySessionRequest(pydantic_v1.BaseModel):
 
     name: str = pydantic_v1.Field()
     """
-    The name of the classifier. Will be used to store the classification in session metadata if persist is True.
+    The name of the classifier.
     """
 
     persist: typing.Optional[bool] = pydantic_v1.Field(default=None)
     """
-    Whether to persist the classification to session metadata. Defaults to True.
+    Deprecated
     """
 
     def json(self, **kwargs: typing.Any) -> str:

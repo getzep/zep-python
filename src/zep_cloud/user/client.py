@@ -40,7 +40,7 @@ class UserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        Add a user.
+        Adds a user.
 
         Parameters
         ----------
@@ -117,7 +117,7 @@ class UserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UserListResponse:
         """
-        List all users with pagination.
+        Returns all users.
 
         Parameters
         ----------
@@ -168,7 +168,7 @@ class UserClient:
 
     def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
-        Get a user.
+        Returns a user.
 
         Parameters
         ----------
@@ -215,7 +215,7 @@ class UserClient:
 
     def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        delete user by id
+        Deletes a user.
 
         Parameters
         ----------
@@ -272,7 +272,7 @@ class UserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        Update a user.
+        Updates a user.
 
         Parameters
         ----------
@@ -348,7 +348,7 @@ class UserClient:
 
     def get_facts(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactsResponse:
         """
-        Get user facts.
+        Deprecated: Use Get User Edges instead.
 
         Parameters
         ----------
@@ -395,7 +395,7 @@ class UserClient:
 
     def get_node(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> UserNodeResponse:
         """
-        Get user node.
+        Returns a user's node.
 
         Parameters
         ----------
@@ -444,7 +444,7 @@ class UserClient:
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[Session]:
         """
-        list all sessions for a user by user id
+        Returns all sessions for a user.
 
         Parameters
         ----------
@@ -502,7 +502,7 @@ class AsyncUserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        Add a user.
+        Adds a user.
 
         Parameters
         ----------
@@ -587,7 +587,7 @@ class AsyncUserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UserListResponse:
         """
-        List all users with pagination.
+        Returns all users.
 
         Parameters
         ----------
@@ -646,7 +646,7 @@ class AsyncUserClient:
 
     async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
-        Get a user.
+        Returns a user.
 
         Parameters
         ----------
@@ -701,7 +701,7 @@ class AsyncUserClient:
 
     async def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        delete user by id
+        Deletes a user.
 
         Parameters
         ----------
@@ -766,7 +766,7 @@ class AsyncUserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        Update a user.
+        Updates a user.
 
         Parameters
         ----------
@@ -852,7 +852,7 @@ class AsyncUserClient:
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> FactsResponse:
         """
-        Get user facts.
+        Deprecated: Use Get User Edges instead.
 
         Parameters
         ----------
@@ -909,7 +909,7 @@ class AsyncUserClient:
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> UserNodeResponse:
         """
-        Get user node.
+        Returns a user's node.
 
         Parameters
         ----------
@@ -966,7 +966,7 @@ class AsyncUserClient:
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[Session]:
         """
-        list all sessions for a user by user id
+        Returns all sessions for a user.
 
         Parameters
         ----------

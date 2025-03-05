@@ -595,7 +595,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def gets_a_document_from_a_document_collection_by_uuid_cloud_only(
+    def gets_a_document_from_a_document_collection_by_uuid(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ApidataDocument:
         """
@@ -624,7 +624,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.gets_a_document_from_a_document_collection_by_uuid_cloud_only(
+        client.document.gets_a_document_from_a_document_collection_by_uuid(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -717,7 +717,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def updates_a_document_cloud_only(
+    def updates_a_document(
         self,
         collection_name: str,
         document_uuid: str,
@@ -756,7 +756,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.updates_a_document_cloud_only(
+        client.document.updates_a_document(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -1525,7 +1525,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def gets_a_document_from_a_document_collection_by_uuid_cloud_only(
+    async def gets_a_document_from_a_document_collection_by_uuid(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ApidataDocument:
         """
@@ -1559,7 +1559,7 @@ class AsyncDocumentClient:
 
 
         async def main() -> None:
-            await client.document.gets_a_document_from_a_document_collection_by_uuid_cloud_only(
+            await client.document.gets_a_document_from_a_document_collection_by_uuid(
                 collection_name="collectionName",
                 document_uuid="documentUUID",
             )
@@ -1663,7 +1663,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def updates_a_document_cloud_only(
+    async def updates_a_document(
         self,
         collection_name: str,
         document_uuid: str,
@@ -1707,7 +1707,7 @@ class AsyncDocumentClient:
 
 
         async def main() -> None:
-            await client.document.updates_a_document_cloud_only(
+            await client.document.updates_a_document(
                 collection_name="collectionName",
                 document_uuid="documentUUID",
             )

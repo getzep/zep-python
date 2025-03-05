@@ -45,7 +45,7 @@ class MemoryClient:
 
     def get_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactResponse:
         """
-        get fact by uuid
+        Deprecated API: get fact by uuid
 
         Parameters
         ----------
@@ -94,7 +94,7 @@ class MemoryClient:
         self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        delete a fact
+        Deprecated API: delete a fact
 
         Parameters
         ----------
@@ -149,7 +149,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Create New Session
+        Creates a new session.
 
         Parameters
         ----------
@@ -160,10 +160,10 @@ class MemoryClient:
             The unique identifier of the user associated with the session
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
+            Deprecated
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            The metadata associated with the session.
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -223,7 +223,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionListResponse:
         """
-        Get all sessions with optional page number, page size, order by field and order direction for pagination.
+        Returns all sessions.
 
         Parameters
         ----------
@@ -231,13 +231,13 @@ class MemoryClient:
             Page number for pagination, starting from 1
 
         page_size : typing.Optional[int]
-            Number of sessions to retrieve per page
+            Number of sessions to retrieve per page.
 
         order_by : typing.Optional[str]
-            Field to order the results by: created_at, updated_at, user_id, session_id
+            Field to order the results by: created_at, updated_at, user_id, session_id.
 
         asc : typing.Optional[bool]
-            Order direction: true for ascending, false for descending
+            Order direction: true for ascending, false for descending.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -286,7 +286,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EndSessionsResponse:
         """
-        End multiple sessions by their IDs.
+        Deprecated API: End multiple sessions by their IDs.
 
         Parameters
         ----------
@@ -356,7 +356,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionSearchResponse:
         """
-        Search sessions for the specified query.
+        Deprecated API: Search sessions for the specified query.
 
         Parameters
         ----------
@@ -367,28 +367,28 @@ class MemoryClient:
             The maximum number of search results to return. Defaults to None (no limit).
 
         min_fact_rating : typing.Optional[float]
-            The minimum fact rating to filter on. Only supported on cloud. Will be ignored on Community Edition.
+            The minimum fact rating to filter on.
 
         min_score : typing.Optional[float]
-            The minimum score for search results. Only supported on cloud. Will be ignored on Community Edition.
+            The minimum score for search results.
 
         mmr_lambda : typing.Optional[float]
-            The lambda parameter for the MMR Reranking Algorithm. Only supported on cloud. Will be ignored on Community Edition.
+            The lambda parameter for the MMR Reranking Algorithm.
 
         record_filter : typing.Optional[typing.Dict[str, typing.Any]]
-            Record filter on the metadata. Only supported on cloud. Will be ignored on Community Edition.
+            Record filter on the metadata.
 
         search_scope : typing.Optional[SearchScope]
-            Search scope. Only supported on cloud. On Community Edition the search scope is always "facts".
+            Search scope.
 
         search_type : typing.Optional[SearchType]
-            Search type. Only supported on cloud. Will be ignored on Community Edition.
+            Search type.
 
         session_ids : typing.Optional[typing.Sequence[str]]
             the session ids to search
 
         user_id : typing.Optional[str]
-            User ID used to determine which sessions to search. Required on Community Edition.
+            User ID used to determine which sessions to search.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -441,12 +441,12 @@ class MemoryClient:
 
     def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
-        get session by id
+        Returns a session.
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The unique identifier of the session.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -500,10 +500,10 @@ class MemoryClient:
         Parameters
         ----------
         session_id : str
-            Session ID
+            The unique identifier of the session.
 
         metadata : typing.Dict[str, typing.Any]
-            The metadata to update
+            Deprecated
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
@@ -572,7 +572,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionClassification:
         """
-        classify a session by session id.
+        Classifies a session.
 
         Parameters
         ----------
@@ -583,7 +583,7 @@ class MemoryClient:
             The classes to use for classification.
 
         name : str
-            The name of the classifier. Will be used to store the classification in session metadata if persist is True.
+            The name of the classifier.
 
         instruction : typing.Optional[str]
             Custom instruction to use for classification.
@@ -592,7 +592,7 @@ class MemoryClient:
             The number of session messages to consider for classification. Defaults to 4.
 
         persist : typing.Optional[bool]
-            Whether to persist the classification to session metadata. Defaults to True.
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -647,7 +647,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EndSessionResponse:
         """
-        End a session by ID.
+        Deprecated API: End a session by ID.
 
         Parameters
         ----------
@@ -796,7 +796,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> FactsResponse:
         """
-        get facts for a session
+        Deprecated API: get facts for a session
 
         Parameters
         ----------
@@ -804,7 +804,7 @@ class MemoryClient:
             Session ID
 
         min_rating : typing.Optional[float]
-            Minimum rating by which to filter facts (Zep Cloud only)
+            Minimum rating by which to filter facts
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -855,7 +855,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Adds facts to a session
+        Deprecated API: Adds facts to a session
 
         Parameters
         ----------
@@ -915,7 +915,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
-        Returns a memory (latest summary, list of messages and facts) for a given session
+        Returns a memory for a given session.
 
         Parameters
         ----------
@@ -926,7 +926,7 @@ class MemoryClient:
             The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
-            The minimum rating by which to filter facts
+            The minimum rating by which to filter relevant facts.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -991,13 +991,13 @@ class MemoryClient:
             A list of message objects, where each message contains a role and content.
 
         fact_instruction : typing.Optional[str]
-            Additional instruction for generating the facts. Zep Cloud Only, will be ignored on Community Edition.
+            Deprecated
 
         return_context : typing.Optional[bool]
             Optionally return memory context relevant to the most recent messages.
 
         summary_instruction : typing.Optional[str]
-            Additional instruction for generating the summary. Zep Cloud Only, will be ignored on Community Edition.
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1051,7 +1051,7 @@ class MemoryClient:
 
     def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        delete memory messages by session id
+        Deletes a session.
 
         Parameters
         ----------
@@ -1105,7 +1105,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
-        Lists messages for a session, specified by limit and cursor.
+        Returns messages for a session.
 
         Parameters
         ----------
@@ -1163,12 +1163,12 @@ class MemoryClient:
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
-        Gets a specific message from a session
+        Returns a specific message from a session.
 
         Parameters
         ----------
         session_id : str
-            The ID of the session.
+            Soon to be deprecated as this is not needed.
 
         message_uuid : str
             The UUID of the message.
@@ -1234,7 +1234,7 @@ class MemoryClient:
             The UUID of the message.
 
         metadata : typing.Dict[str, typing.Any]
-            The metadata to update
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1295,8 +1295,6 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[MemorySearchResult]:
         """
-        Search memory for the specified session. Deprecated, please use search_sessions method instead
-
         Parameters
         ----------
         session_id : str
@@ -1375,7 +1373,7 @@ class MemoryClient:
         self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SummaryListResponse:
         """
-        Get session summaries by ID
+        Deprecated API: Get session summaries by ID
 
         Parameters
         ----------
@@ -1428,7 +1426,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Question:
         """
-        Synthesize a question from the last N messages in the chat history.
+        Deprecated API: Synthesize a question from the last N messages in the chat history.
 
         Parameters
         ----------
@@ -1488,7 +1486,7 @@ class AsyncMemoryClient:
         self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> FactResponse:
         """
-        get fact by uuid
+        Deprecated API: get fact by uuid
 
         Parameters
         ----------
@@ -1545,7 +1543,7 @@ class AsyncMemoryClient:
         self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        delete a fact
+        Deprecated API: delete a fact
 
         Parameters
         ----------
@@ -1608,7 +1606,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Create New Session
+        Creates a new session.
 
         Parameters
         ----------
@@ -1619,10 +1617,10 @@ class AsyncMemoryClient:
             The unique identifier of the user associated with the session
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
+            Deprecated
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            The metadata associated with the session.
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1690,7 +1688,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionListResponse:
         """
-        Get all sessions with optional page number, page size, order by field and order direction for pagination.
+        Returns all sessions.
 
         Parameters
         ----------
@@ -1698,13 +1696,13 @@ class AsyncMemoryClient:
             Page number for pagination, starting from 1
 
         page_size : typing.Optional[int]
-            Number of sessions to retrieve per page
+            Number of sessions to retrieve per page.
 
         order_by : typing.Optional[str]
-            Field to order the results by: created_at, updated_at, user_id, session_id
+            Field to order the results by: created_at, updated_at, user_id, session_id.
 
         asc : typing.Optional[bool]
-            Order direction: true for ascending, false for descending
+            Order direction: true for ascending, false for descending.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1761,7 +1759,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EndSessionsResponse:
         """
-        End multiple sessions by their IDs.
+        Deprecated API: End multiple sessions by their IDs.
 
         Parameters
         ----------
@@ -1839,7 +1837,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionSearchResponse:
         """
-        Search sessions for the specified query.
+        Deprecated API: Search sessions for the specified query.
 
         Parameters
         ----------
@@ -1850,28 +1848,28 @@ class AsyncMemoryClient:
             The maximum number of search results to return. Defaults to None (no limit).
 
         min_fact_rating : typing.Optional[float]
-            The minimum fact rating to filter on. Only supported on cloud. Will be ignored on Community Edition.
+            The minimum fact rating to filter on.
 
         min_score : typing.Optional[float]
-            The minimum score for search results. Only supported on cloud. Will be ignored on Community Edition.
+            The minimum score for search results.
 
         mmr_lambda : typing.Optional[float]
-            The lambda parameter for the MMR Reranking Algorithm. Only supported on cloud. Will be ignored on Community Edition.
+            The lambda parameter for the MMR Reranking Algorithm.
 
         record_filter : typing.Optional[typing.Dict[str, typing.Any]]
-            Record filter on the metadata. Only supported on cloud. Will be ignored on Community Edition.
+            Record filter on the metadata.
 
         search_scope : typing.Optional[SearchScope]
-            Search scope. Only supported on cloud. On Community Edition the search scope is always "facts".
+            Search scope.
 
         search_type : typing.Optional[SearchType]
-            Search type. Only supported on cloud. Will be ignored on Community Edition.
+            Search type.
 
         session_ids : typing.Optional[typing.Sequence[str]]
             the session ids to search
 
         user_id : typing.Optional[str]
-            User ID used to determine which sessions to search. Required on Community Edition.
+            User ID used to determine which sessions to search.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1932,12 +1930,12 @@ class AsyncMemoryClient:
 
     async def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
-        get session by id
+        Returns a session.
 
         Parameters
         ----------
         session_id : str
-            Session ID
+            The unique identifier of the session.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1999,10 +1997,10 @@ class AsyncMemoryClient:
         Parameters
         ----------
         session_id : str
-            Session ID
+            The unique identifier of the session.
 
         metadata : typing.Dict[str, typing.Any]
-            The metadata to update
+            Deprecated
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
@@ -2079,7 +2077,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionClassification:
         """
-        classify a session by session id.
+        Classifies a session.
 
         Parameters
         ----------
@@ -2090,7 +2088,7 @@ class AsyncMemoryClient:
             The classes to use for classification.
 
         name : str
-            The name of the classifier. Will be used to store the classification in session metadata if persist is True.
+            The name of the classifier.
 
         instruction : typing.Optional[str]
             Custom instruction to use for classification.
@@ -2099,7 +2097,7 @@ class AsyncMemoryClient:
             The number of session messages to consider for classification. Defaults to 4.
 
         persist : typing.Optional[bool]
-            Whether to persist the classification to session metadata. Defaults to True.
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2162,7 +2160,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EndSessionResponse:
         """
-        End a session by ID.
+        Deprecated API: End a session by ID.
 
         Parameters
         ----------
@@ -2327,7 +2325,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> FactsResponse:
         """
-        get facts for a session
+        Deprecated API: get facts for a session
 
         Parameters
         ----------
@@ -2335,7 +2333,7 @@ class AsyncMemoryClient:
             Session ID
 
         min_rating : typing.Optional[float]
-            Minimum rating by which to filter facts (Zep Cloud only)
+            Minimum rating by which to filter facts
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2394,7 +2392,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Adds facts to a session
+        Deprecated API: Adds facts to a session
 
         Parameters
         ----------
@@ -2462,7 +2460,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
-        Returns a memory (latest summary, list of messages and facts) for a given session
+        Returns a memory for a given session.
 
         Parameters
         ----------
@@ -2473,7 +2471,7 @@ class AsyncMemoryClient:
             The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
-            The minimum rating by which to filter facts
+            The minimum rating by which to filter relevant facts.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2546,13 +2544,13 @@ class AsyncMemoryClient:
             A list of message objects, where each message contains a role and content.
 
         fact_instruction : typing.Optional[str]
-            Additional instruction for generating the facts. Zep Cloud Only, will be ignored on Community Edition.
+            Deprecated
 
         return_context : typing.Optional[bool]
             Optionally return memory context relevant to the most recent messages.
 
         summary_instruction : typing.Optional[str]
-            Additional instruction for generating the summary. Zep Cloud Only, will be ignored on Community Edition.
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2616,7 +2614,7 @@ class AsyncMemoryClient:
         self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        delete memory messages by session id
+        Deletes a session.
 
         Parameters
         ----------
@@ -2678,7 +2676,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
-        Lists messages for a session, specified by limit and cursor.
+        Returns messages for a session.
 
         Parameters
         ----------
@@ -2744,12 +2742,12 @@ class AsyncMemoryClient:
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
-        Gets a specific message from a session
+        Returns a specific message from a session.
 
         Parameters
         ----------
         session_id : str
-            The ID of the session.
+            Soon to be deprecated as this is not needed.
 
         message_uuid : str
             The UUID of the message.
@@ -2823,7 +2821,7 @@ class AsyncMemoryClient:
             The UUID of the message.
 
         metadata : typing.Dict[str, typing.Any]
-            The metadata to update
+            Deprecated
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2892,8 +2890,6 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[MemorySearchResult]:
         """
-        Search memory for the specified session. Deprecated, please use search_sessions method instead
-
         Parameters
         ----------
         session_id : str
@@ -2980,7 +2976,7 @@ class AsyncMemoryClient:
         self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SummaryListResponse:
         """
-        Get session summaries by ID
+        Deprecated API: Get session summaries by ID
 
         Parameters
         ----------
@@ -3041,7 +3037,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Question:
         """
-        Synthesize a question from the last N messages in the chat history.
+        Deprecated API: Synthesize a question from the last N messages in the chat history.
 
         Parameters
         ----------

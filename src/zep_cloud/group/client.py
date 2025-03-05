@@ -36,7 +36,7 @@ class GroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
         """
-        Create a new user group
+        Creates a new group.
 
         Parameters
         ----------
@@ -45,7 +45,6 @@ class GroupClient:
         description : typing.Optional[str]
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            UserIDs     []string `json:"user_ids"`
 
         name : typing.Optional[str]
 
@@ -96,7 +95,7 @@ class GroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def list_all_groups(
+    def get_all_groups(
         self,
         *,
         page_number: typing.Optional[int] = None,
@@ -104,15 +103,15 @@ class GroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GroupListResponse:
         """
-        List all groups with pagination.
+        Returns all groups.
 
         Parameters
         ----------
         page_number : typing.Optional[int]
-            Page number for pagination, starting from 1
+            Page number for pagination, starting from 1.
 
         page_size : typing.Optional[int]
-            Number of groups to retrieve per page
+            Number of groups to retrieve per page.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -120,7 +119,7 @@ class GroupClient:
         Returns
         -------
         GroupListResponse
-            Successfully retrieved list of groups
+            Successfully retrieved list of groups.
 
         Examples
         --------
@@ -129,7 +128,7 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.list_all_groups()
+        client.group.get_all_groups()
         """
         _response = self._client_wrapper.httpx_client.request(
             "groups-ordered",
@@ -153,9 +152,9 @@ class GroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_a_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
+    def get_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
         """
-        Get a group.
+        Returns a group.
 
         Parameters
         ----------
@@ -177,7 +176,7 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.get_a_group(
+        client.group.get_group(
             group_id="groupId",
         )
         """
@@ -202,7 +201,7 @@ class GroupClient:
 
     def delete(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Delete group
+        Deletes a group.
 
         Parameters
         ----------
@@ -251,9 +250,78 @@ class GroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def update(
+        self,
+        group_id: str,
+        *,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Group:
+        """
+        Updates information about a group.
+
+        Parameters
+        ----------
+        group_id : str
+            Group ID
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Group
+            The added group
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.group.update(
+            group_id="groupId",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"groups/{jsonable_encoder(group_id)}",
+            method="PATCH",
+            json={"description": description, "fact_rating_instruction": fact_rating_instruction, "name": name},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def get_facts(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactsResponse:
         """
-        Get group facts.
+        Deprecated: Use Get Group Edges instead.
 
         Parameters
         ----------
@@ -313,7 +381,7 @@ class AsyncGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
         """
-        Create a new user group
+        Creates a new group.
 
         Parameters
         ----------
@@ -322,7 +390,6 @@ class AsyncGroupClient:
         description : typing.Optional[str]
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            UserIDs     []string `json:"user_ids"`
 
         name : typing.Optional[str]
 
@@ -381,7 +448,7 @@ class AsyncGroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def list_all_groups(
+    async def get_all_groups(
         self,
         *,
         page_number: typing.Optional[int] = None,
@@ -389,15 +456,15 @@ class AsyncGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GroupListResponse:
         """
-        List all groups with pagination.
+        Returns all groups.
 
         Parameters
         ----------
         page_number : typing.Optional[int]
-            Page number for pagination, starting from 1
+            Page number for pagination, starting from 1.
 
         page_size : typing.Optional[int]
-            Number of groups to retrieve per page
+            Number of groups to retrieve per page.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -405,7 +472,7 @@ class AsyncGroupClient:
         Returns
         -------
         GroupListResponse
-            Successfully retrieved list of groups
+            Successfully retrieved list of groups.
 
         Examples
         --------
@@ -419,7 +486,7 @@ class AsyncGroupClient:
 
 
         async def main() -> None:
-            await client.group.list_all_groups()
+            await client.group.get_all_groups()
 
 
         asyncio.run(main())
@@ -446,9 +513,9 @@ class AsyncGroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_a_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
+    async def get_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
         """
-        Get a group.
+        Returns a group.
 
         Parameters
         ----------
@@ -475,7 +542,7 @@ class AsyncGroupClient:
 
 
         async def main() -> None:
-            await client.group.get_a_group(
+            await client.group.get_group(
                 group_id="groupId",
             )
 
@@ -505,7 +572,7 @@ class AsyncGroupClient:
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Delete group
+        Deletes a group.
 
         Parameters
         ----------
@@ -562,11 +629,88 @@ class AsyncGroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    async def update(
+        self,
+        group_id: str,
+        *,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Group:
+        """
+        Updates information about a group.
+
+        Parameters
+        ----------
+        group_id : str
+            Group ID
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Group
+            The added group
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.group.update(
+                group_id="groupId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"groups/{jsonable_encoder(group_id)}",
+            method="PATCH",
+            json={"description": description, "fact_rating_instruction": fact_rating_instruction, "name": name},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def get_facts(
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> FactsResponse:
         """
-        Get group facts.
+        Deprecated: Use Get Group Edges instead.
 
         Parameters
         ----------

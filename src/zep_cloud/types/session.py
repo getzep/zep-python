@@ -13,22 +13,30 @@ class Session(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = None
     deleted_at: typing.Optional[str] = None
     ended_at: typing.Optional[str] = None
-    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
-    facts: typing.Optional[typing.List[str]] = None
-    id: typing.Optional[int] = pydantic_v1.Field(default=None)
+    fact_rating_instruction: typing.Optional[FactRatingInstruction] = pydantic_v1.Field(default=None)
     """
-    TODO deprecate
+    Deprecated
     """
 
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+    facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    """
+    Deprecated
+    """
+
+    id: typing.Optional[int] = None
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
+    """
+    Deprecated
+    """
+
     project_uuid: typing.Optional[str] = None
     session_id: typing.Optional[str] = None
-    updated_at: typing.Optional[str] = None
-    user_id: typing.Optional[str] = pydantic_v1.Field(default=None)
+    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Must be a pointer to allow for null values
+    Deprecated
     """
 
+    user_id: typing.Optional[str] = None
     uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:

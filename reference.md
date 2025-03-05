@@ -705,7 +705,7 @@ client.document.batch_update_documents(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">gets_a_document_from_a_document_collection_by_uuid_cloud_only</a>(...)</code></summary>
+<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">gets_a_document_from_a_document_collection_by_uuid</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -737,7 +737,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.gets_a_document_from_a_document_collection_by_uuid_cloud_only(
+client.document.gets_a_document_from_a_document_collection_by_uuid(
     collection_name="collectionName",
     document_uuid="documentUUID",
 )
@@ -863,7 +863,7 @@ client.document.delete_document(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">updates_a_document_cloud_only</a>(...)</code></summary>
+<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">updates_a_document</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -895,7 +895,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.updates_a_document_cloud_only(
+client.document.updates_a_document(
     collection_name="collectionName",
     document_uuid="documentUUID",
 )
@@ -1089,7 +1089,7 @@ client.document.search(
 <dl>
 <dd>
 
-get fact by uuid
+Deprecated API: get fact by uuid
 </dd>
 </dl>
 </dd>
@@ -1159,7 +1159,7 @@ client.memory.get_fact(
 <dl>
 <dd>
 
-delete a fact
+Deprecated API: delete a fact
 </dd>
 </dl>
 </dd>
@@ -1229,7 +1229,7 @@ client.memory.delete_fact(
 <dl>
 <dd>
 
-Create New Session
+Creates a new session.
 </dd>
 </dl>
 </dd>
@@ -1284,7 +1284,7 @@ client.memory.add_session(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Optional instruction to use for fact rating.
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Deprecated
     
 </dd>
 </dl>
@@ -1292,7 +1292,7 @@ client.memory.add_session(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — The metadata associated with the session.
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Deprecated
     
 </dd>
 </dl>
@@ -1324,7 +1324,7 @@ client.memory.add_session(
 <dl>
 <dd>
 
-Get all sessions with optional page number, page size, order by field and order direction for pagination.
+Returns all sessions.
 </dd>
 </dl>
 </dd>
@@ -1368,7 +1368,7 @@ client.memory.list_sessions()
 <dl>
 <dd>
 
-**page_size:** `typing.Optional[int]` — Number of sessions to retrieve per page
+**page_size:** `typing.Optional[int]` — Number of sessions to retrieve per page.
     
 </dd>
 </dl>
@@ -1376,7 +1376,7 @@ client.memory.list_sessions()
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to order the results by: created_at, updated_at, user_id, session_id
+**order_by:** `typing.Optional[str]` — Field to order the results by: created_at, updated_at, user_id, session_id.
     
 </dd>
 </dl>
@@ -1384,7 +1384,7 @@ client.memory.list_sessions()
 <dl>
 <dd>
 
-**asc:** `typing.Optional[bool]` — Order direction: true for ascending, false for descending
+**asc:** `typing.Optional[bool]` — Order direction: true for ascending, false for descending.
     
 </dd>
 </dl>
@@ -1416,7 +1416,7 @@ client.memory.list_sessions()
 <dl>
 <dd>
 
-End multiple sessions by their IDs.
+Deprecated API: End multiple sessions by their IDs.
 </dd>
 </dl>
 </dd>
@@ -1494,7 +1494,7 @@ client.memory.end_sessions(
 <dl>
 <dd>
 
-Search sessions for the specified query.
+Deprecated API: Search sessions for the specified query.
 </dd>
 </dl>
 </dd>
@@ -1548,7 +1548,7 @@ client.memory.search_sessions(
 <dl>
 <dd>
 
-**min_fact_rating:** `typing.Optional[float]` — The minimum fact rating to filter on. Only supported on cloud. Will be ignored on Community Edition.
+**min_fact_rating:** `typing.Optional[float]` — The minimum fact rating to filter on.
     
 </dd>
 </dl>
@@ -1556,7 +1556,7 @@ client.memory.search_sessions(
 <dl>
 <dd>
 
-**min_score:** `typing.Optional[float]` — The minimum score for search results. Only supported on cloud. Will be ignored on Community Edition.
+**min_score:** `typing.Optional[float]` — The minimum score for search results.
     
 </dd>
 </dl>
@@ -1564,7 +1564,7 @@ client.memory.search_sessions(
 <dl>
 <dd>
 
-**mmr_lambda:** `typing.Optional[float]` — The lambda parameter for the MMR Reranking Algorithm. Only supported on cloud. Will be ignored on Community Edition.
+**mmr_lambda:** `typing.Optional[float]` — The lambda parameter for the MMR Reranking Algorithm.
     
 </dd>
 </dl>
@@ -1572,7 +1572,7 @@ client.memory.search_sessions(
 <dl>
 <dd>
 
-**record_filter:** `typing.Optional[typing.Dict[str, typing.Any]]` — Record filter on the metadata. Only supported on cloud. Will be ignored on Community Edition.
+**record_filter:** `typing.Optional[typing.Dict[str, typing.Any]]` — Record filter on the metadata.
     
 </dd>
 </dl>
@@ -1580,7 +1580,7 @@ client.memory.search_sessions(
 <dl>
 <dd>
 
-**search_scope:** `typing.Optional[SearchScope]` — Search scope. Only supported on cloud. On Community Edition the search scope is always "facts".
+**search_scope:** `typing.Optional[SearchScope]` — Search scope.
     
 </dd>
 </dl>
@@ -1588,7 +1588,7 @@ client.memory.search_sessions(
 <dl>
 <dd>
 
-**search_type:** `typing.Optional[SearchType]` — Search type. Only supported on cloud. Will be ignored on Community Edition.
+**search_type:** `typing.Optional[SearchType]` — Search type.
     
 </dd>
 </dl>
@@ -1604,7 +1604,7 @@ client.memory.search_sessions(
 <dl>
 <dd>
 
-**user_id:** `typing.Optional[str]` — User ID used to determine which sessions to search. Required on Community Edition.
+**user_id:** `typing.Optional[str]` — User ID used to determine which sessions to search.
     
 </dd>
 </dl>
@@ -1636,7 +1636,7 @@ client.memory.search_sessions(
 <dl>
 <dd>
 
-get session by id
+Returns a session.
 </dd>
 </dl>
 </dd>
@@ -1674,7 +1674,7 @@ client.memory.get_session(
 <dl>
 <dd>
 
-**session_id:** `str` — Session ID
+**session_id:** `str` — The unique identifier of the session.
     
 </dd>
 </dl>
@@ -1745,7 +1745,7 @@ client.memory.update_session(
 <dl>
 <dd>
 
-**session_id:** `str` — Session ID
+**session_id:** `str` — The unique identifier of the session.
     
 </dd>
 </dl>
@@ -1753,7 +1753,7 @@ client.memory.update_session(
 <dl>
 <dd>
 
-**metadata:** `typing.Dict[str, typing.Any]` — The metadata to update
+**metadata:** `typing.Dict[str, typing.Any]` — Deprecated
     
 </dd>
 </dl>
@@ -1796,7 +1796,7 @@ Fact rating instructions can not be unset.
 <dl>
 <dd>
 
-classify a session by session id.
+Classifies a session.
 </dd>
 </dl>
 </dd>
@@ -1852,7 +1852,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-**name:** `str` — The name of the classifier. Will be used to store the classification in session metadata if persist is True.
+**name:** `str` — The name of the classifier.
     
 </dd>
 </dl>
@@ -1876,7 +1876,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-**persist:** `typing.Optional[bool]` — Whether to persist the classification to session metadata. Defaults to True.
+**persist:** `typing.Optional[bool]` — Deprecated
     
 </dd>
 </dl>
@@ -1908,7 +1908,7 @@ client.memory.classify_session(
 <dl>
 <dd>
 
-End a session by ID.
+Deprecated API: End a session by ID.
 </dd>
 </dl>
 </dd>
@@ -2101,7 +2101,7 @@ Mitigates hallucination, but is slower and may result in false negatives.
 <dl>
 <dd>
 
-get facts for a session
+Deprecated API: get facts for a session
 </dd>
 </dl>
 </dd>
@@ -2147,7 +2147,7 @@ client.memory.get_session_facts(
 <dl>
 <dd>
 
-**min_rating:** `typing.Optional[float]` — Minimum rating by which to filter facts (Zep Cloud only)
+**min_rating:** `typing.Optional[float]` — Minimum rating by which to filter facts
     
 </dd>
 </dl>
@@ -2179,7 +2179,7 @@ client.memory.get_session_facts(
 <dl>
 <dd>
 
-Adds facts to a session
+Deprecated API: Adds facts to a session
 </dd>
 </dl>
 </dd>
@@ -2257,7 +2257,7 @@ client.memory.add_session_facts(
 <dl>
 <dd>
 
-Returns a memory (latest summary, list of messages and facts) for a given session
+Returns a memory for a given session.
 </dd>
 </dl>
 </dd>
@@ -2311,7 +2311,7 @@ client.memory.get(
 <dl>
 <dd>
 
-**min_rating:** `typing.Optional[float]` — The minimum rating by which to filter facts
+**min_rating:** `typing.Optional[float]` — The minimum rating by which to filter relevant facts.
     
 </dd>
 </dl>
@@ -2404,7 +2404,7 @@ client.memory.add(
 <dl>
 <dd>
 
-**fact_instruction:** `typing.Optional[str]` — Additional instruction for generating the facts. Zep Cloud Only, will be ignored on Community Edition.
+**fact_instruction:** `typing.Optional[str]` — Deprecated
     
 </dd>
 </dl>
@@ -2420,7 +2420,7 @@ client.memory.add(
 <dl>
 <dd>
 
-**summary_instruction:** `typing.Optional[str]` — Additional instruction for generating the summary. Zep Cloud Only, will be ignored on Community Edition.
+**summary_instruction:** `typing.Optional[str]` — Deprecated
     
 </dd>
 </dl>
@@ -2452,7 +2452,7 @@ client.memory.add(
 <dl>
 <dd>
 
-delete memory messages by session id
+Deletes a session.
 </dd>
 </dl>
 </dd>
@@ -2522,7 +2522,7 @@ client.memory.delete(
 <dl>
 <dd>
 
-Lists messages for a session, specified by limit and cursor.
+Returns messages for a session.
 </dd>
 </dl>
 </dd>
@@ -2608,7 +2608,7 @@ client.memory.get_session_messages(
 <dl>
 <dd>
 
-Gets a specific message from a session
+Returns a specific message from a session.
 </dd>
 </dl>
 </dd>
@@ -2647,7 +2647,7 @@ client.memory.get_session_message(
 <dl>
 <dd>
 
-**session_id:** `str` — The ID of the session.
+**session_id:** `str` — Soon to be deprecated as this is not needed.
     
 </dd>
 </dl>
@@ -2743,7 +2743,7 @@ client.memory.update_message_metadata(
 <dl>
 <dd>
 
-**metadata:** `typing.Dict[str, typing.Any]` — The metadata to update
+**metadata:** `typing.Dict[str, typing.Any]` — Deprecated
     
 </dd>
 </dl>
@@ -2766,20 +2766,6 @@ client.memory.update_message_metadata(
 <details><summary><code>client.memory.<a href="src/zep_cloud/memory/client.py">search</a>(...)</code></summary>
 <dl>
 <dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Search memory for the specified session. Deprecated, please use search_sessions method instead
-</dd>
-</dl>
-</dd>
-</dl>
 
 #### 🔌 Usage
 
@@ -2909,7 +2895,7 @@ client.memory.search(
 <dl>
 <dd>
 
-Get session summaries by ID
+Deprecated API: Get session summaries by ID
 </dd>
 </dl>
 </dd>
@@ -2979,7 +2965,7 @@ client.memory.get_summaries(
 <dl>
 <dd>
 
-Synthesize a question from the last N messages in the chat history.
+Deprecated API: Synthesize a question from the last N messages in the chat history.
 </dd>
 </dl>
 </dd>
@@ -3058,7 +3044,7 @@ client.memory.synthesize_question(
 <dl>
 <dd>
 
-Add data to the graph
+Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 </dd>
 </dl>
 </dd>
@@ -3119,6 +3105,190 @@ client.graph.add()
 <dd>
 
 **user_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">add_fact_triple</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add a fact triple for a user or group
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.add_fact_triple(
+    fact="fact",
+    fact_name="fact_name",
+    target_node_name="target_node_name",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fact:** `str` — The fact relating the two nodes that this edge represents
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fact_name:** `str` — The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_node_name:** `str` — The name of the target node to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_at:** `typing.Optional[str]` — The timestamp of the message
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expired_at:** `typing.Optional[str]` — The time (if any) at which the edge expires
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fact_uuid:** `typing.Optional[str]` — The uuid of the edge to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**invalid_at:** `typing.Optional[str]` — The time (if any) at which the fact stops being true
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_node_name:** `typing.Optional[str]` — The name of the source node to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_node_summary:** `typing.Optional[str]` — The summary of the source node to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_node_uuid:** `typing.Optional[str]` — The source node uuid
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_node_summary:** `typing.Optional[str]` — The summary of the target node to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_node_uuid:** `typing.Optional[str]` — The target node uuid
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**valid_at:** `typing.Optional[str]` — The time at which the fact becomes true
     
 </dd>
 </dl>
@@ -3220,7 +3390,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**min_score:** `typing.Optional[float]` — minimum similarity score for a result to be returned
+**min_score:** `typing.Optional[float]` — Deprecated
     
 </dd>
 </dl>
@@ -3245,6 +3415,14 @@ client.graph.search(
 <dd>
 
 **scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges. Communities will be added in the future.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search_filters:** `typing.Optional[SearchFilters]` — Search filters to apply to the search
     
 </dd>
 </dl>
@@ -3285,7 +3463,7 @@ client.graph.search(
 <dl>
 <dd>
 
-Create a new user group
+Creates a new group.
 </dd>
 </dl>
 </dd>
@@ -3339,7 +3517,7 @@ client.group.add(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — UserIDs     []string `json:"user_ids"`
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` 
     
 </dd>
 </dl>
@@ -3367,7 +3545,7 @@ client.group.add(
 </dl>
 </details>
 
-<details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">list_all_groups</a>(...)</code></summary>
+<details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">get_all_groups</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -3379,7 +3557,7 @@ client.group.add(
 <dl>
 <dd>
 
-List all groups with pagination.
+Returns all groups.
 </dd>
 </dl>
 </dd>
@@ -3399,7 +3577,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.group.list_all_groups()
+client.group.get_all_groups()
 
 ```
 </dd>
@@ -3415,7 +3593,7 @@ client.group.list_all_groups()
 <dl>
 <dd>
 
-**page_number:** `typing.Optional[int]` — Page number for pagination, starting from 1
+**page_number:** `typing.Optional[int]` — Page number for pagination, starting from 1.
     
 </dd>
 </dl>
@@ -3423,7 +3601,7 @@ client.group.list_all_groups()
 <dl>
 <dd>
 
-**page_size:** `typing.Optional[int]` — Number of groups to retrieve per page
+**page_size:** `typing.Optional[int]` — Number of groups to retrieve per page.
     
 </dd>
 </dl>
@@ -3443,7 +3621,7 @@ client.group.list_all_groups()
 </dl>
 </details>
 
-<details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">get_a_group</a>(...)</code></summary>
+<details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">get_group</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -3455,7 +3633,7 @@ client.group.list_all_groups()
 <dl>
 <dd>
 
-Get a group.
+Returns a group.
 </dd>
 </dl>
 </dd>
@@ -3475,7 +3653,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.group.get_a_group(
+client.group.get_group(
     group_id="groupId",
 )
 
@@ -3525,7 +3703,7 @@ client.group.get_a_group(
 <dl>
 <dd>
 
-Delete group
+Deletes a group.
 </dd>
 </dl>
 </dd>
@@ -3583,6 +3761,100 @@ client.group.delete(
 </dl>
 </details>
 
+<details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates information about a group.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.group.update(
+    group_id="groupId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_id:** `str` — Group ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">get_facts</a>(...)</code></summary>
 <dl>
 <dd>
@@ -3595,7 +3867,7 @@ client.group.delete(
 <dl>
 <dd>
 
-Get group facts.
+Deprecated: Use Get Group Edges instead.
 </dd>
 </dl>
 </dd>
@@ -3666,7 +3938,7 @@ client.group.get_facts(
 <dl>
 <dd>
 
-Add a user.
+Adds a user.
 </dd>
 </dl>
 </dd>
@@ -3774,7 +4046,7 @@ client.user.add()
 <dl>
 <dd>
 
-List all users with pagination.
+Returns all users.
 </dd>
 </dl>
 </dd>
@@ -3850,7 +4122,7 @@ client.user.list_ordered()
 <dl>
 <dd>
 
-Get a user.
+Returns a user.
 </dd>
 </dl>
 </dd>
@@ -3920,7 +4192,7 @@ client.user.get(
 <dl>
 <dd>
 
-delete user by id
+Deletes a user.
 </dd>
 </dl>
 </dd>
@@ -3990,7 +4262,7 @@ client.user.delete(
 <dl>
 <dd>
 
-Update a user.
+Updates a user.
 </dd>
 </dl>
 </dd>
@@ -4100,7 +4372,7 @@ client.user.update(
 <dl>
 <dd>
 
-Get user facts.
+Deprecated: Use Get User Edges instead.
 </dd>
 </dl>
 </dd>
@@ -4170,7 +4442,7 @@ client.user.get_facts(
 <dl>
 <dd>
 
-Get user node.
+Returns a user's node.
 </dd>
 </dl>
 </dd>
@@ -4240,7 +4512,7 @@ client.user.get_node(
 <dl>
 <dd>
 
-list all sessions for a user by user id
+Returns all sessions for a user.
 </dd>
 </dl>
 </dd>
@@ -4311,7 +4583,7 @@ client.user.get_sessions(
 <dl>
 <dd>
 
-Get all edges for a group
+Returns all edges for a group.
 </dd>
 </dl>
 </dd>
@@ -4381,7 +4653,7 @@ client.graph.edge.get_by_group_id(
 <dl>
 <dd>
 
-Get all edges for a user
+Returns all edges for a user.
 </dd>
 </dl>
 </dd>
@@ -4451,7 +4723,7 @@ client.graph.edge.get_by_user_id(
 <dl>
 <dd>
 
-Get a specific edge by its UUID
+Returns a specific edge by its UUID.
 </dd>
 </dl>
 </dd>
@@ -4521,7 +4793,7 @@ client.graph.edge.get(
 <dl>
 <dd>
 
-Delete an edge by UUID
+Deletes an edge by UUID.
 </dd>
 </dl>
 </dd>
@@ -4592,7 +4864,7 @@ client.graph.edge.delete(
 <dl>
 <dd>
 
-Get episodes by Group ID
+Returns episodes by group id.
 </dd>
 </dl>
 </dd>
@@ -4670,7 +4942,7 @@ client.graph.episode.get_by_group_id(
 <dl>
 <dd>
 
-Get episodes by User ID
+Returns episodes by user id.
 </dd>
 </dl>
 </dd>
@@ -4748,7 +5020,7 @@ client.graph.episode.get_by_user_id(
 <dl>
 <dd>
 
-Get episode by UUID
+Returns episodes by UUID
 </dd>
 </dl>
 </dd>
@@ -4818,7 +5090,7 @@ client.graph.episode.get(
 <dl>
 <dd>
 
-Delete an episode by its UUID
+Deletes an episode by its UUID.
 </dd>
 </dl>
 </dd>
@@ -4889,7 +5161,7 @@ client.graph.episode.delete(
 <dl>
 <dd>
 
-Get all nodes for a group
+Returns all nodes for a group.
 </dd>
 </dl>
 </dd>
@@ -4959,7 +5231,7 @@ client.graph.node.get_by_group_id(
 <dl>
 <dd>
 
-Get all nodes for a user
+Returns all nodes for a user
 </dd>
 </dl>
 </dd>
@@ -5029,7 +5301,7 @@ client.graph.node.get_by_user_id(
 <dl>
 <dd>
 
-Get a specific node by its UUID
+Returns a specific node by its UUID.
 </dd>
 </dl>
 </dd>
