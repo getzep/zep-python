@@ -26,6 +26,7 @@ from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.new_fact import NewFact
 from ..types.question import Question
+from ..types.role_type import RoleType
 from ..types.search_scope import SearchScope
 from ..types.search_type import SearchType
 from ..types.session import Session
@@ -975,6 +976,7 @@ class MemoryClient:
         *,
         messages: typing.Sequence[Message],
         fact_instruction: typing.Optional[str] = OMIT,
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -992,6 +994,11 @@ class MemoryClient:
 
         fact_instruction : typing.Optional[str]
             Deprecated
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added retained and used as context for messages
+            that are added to a user's graph.
 
         return_context : typing.Optional[bool]
             Optionally return memory context relevant to the most recent messages.
@@ -1030,6 +1037,7 @@ class MemoryClient:
             method="POST",
             json={
                 "fact_instruction": fact_instruction,
+                "ignore_roles": ignore_roles,
                 "messages": messages,
                 "return_context": return_context,
                 "summary_instruction": summary_instruction,
@@ -2528,6 +2536,7 @@ class AsyncMemoryClient:
         *,
         messages: typing.Sequence[Message],
         fact_instruction: typing.Optional[str] = OMIT,
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         summary_instruction: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -2545,6 +2554,11 @@ class AsyncMemoryClient:
 
         fact_instruction : typing.Optional[str]
             Deprecated
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added retained and used as context for messages
+            that are added to a user's graph.
 
         return_context : typing.Optional[bool]
             Optionally return memory context relevant to the most recent messages.
@@ -2591,6 +2605,7 @@ class AsyncMemoryClient:
             method="POST",
             json={
                 "fact_instruction": fact_instruction,
+                "ignore_roles": ignore_roles,
                 "messages": messages,
                 "return_context": return_context,
                 "summary_instruction": summary_instruction,

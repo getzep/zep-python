@@ -2412,6 +2412,18 @@ client.memory.add(
 <dl>
 <dd>
 
+**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
+
+Optional list of role types to ignore when adding messages to graph memory.
+The message itself will still be added retained and used as context for messages
+that are added to a user's graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **return_context:** `typing.Optional[bool]` — Optionally return memory context relevant to the most recent messages.
     
 </dd>
