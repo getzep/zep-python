@@ -11,12 +11,12 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.episode import Episode
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
-from ..types.success_response import SuccessResponse
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
 from .node.client import AsyncNodeClient, NodeClient
@@ -40,7 +40,7 @@ class GraphClient:
         type: typing.Optional[GraphDataType] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
+    ) -> Episode:
         """
         Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
@@ -59,8 +59,8 @@ class GraphClient:
 
         Returns
         -------
-        SuccessResponse
-            Data added
+        Episode
+            Added episode
 
         Examples
         --------
@@ -80,7 +80,7 @@ class GraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -341,7 +341,7 @@ class AsyncGraphClient:
         type: typing.Optional[GraphDataType] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
+    ) -> Episode:
         """
         Add data to the graph. Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
@@ -360,8 +360,8 @@ class AsyncGraphClient:
 
         Returns
         -------
-        SuccessResponse
-            Data added
+        Episode
+            Added episode
 
         Examples
         --------
@@ -389,7 +389,7 @@ class AsyncGraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
