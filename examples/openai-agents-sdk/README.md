@@ -1,6 +1,6 @@
 # OpenAI Agents SDK with AsyncZep Memory Example
 
-This example demonstrates how to integrate AsyncZep memory with the OpenAI Agents SDK. It creates an assistant that can remember previous conversations using Zep's asynchronous memory capabilities.
+This example demonstrates how to integrate Zep memory with an agent built using the OpenAI Agents SDK. It creates an assistant that can remember previous conversations using Zep's asynchronous memory capabilities.
 
 ## Features
 
