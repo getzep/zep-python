@@ -49,7 +49,6 @@ if not ZEP_API_KEY:
 set_default_openai_key(OPENAI_API_KEY)
 
 # Initialize AsyncZep client
-zep_client = None  # Will be initialized in the AsyncZepMemoryManager
 
 
 class AsyncZepMemoryManager:
