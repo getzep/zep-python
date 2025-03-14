@@ -5160,6 +5160,76 @@ client.graph.episode.delete(
 </dl>
 </details>
 
+<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_nodes_and_edges</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns nodes and edges mentioned in an episode
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.episode.get_nodes_and_edges(
+    uuid_="uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**uuid_:** `str` — Episode uuid
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Graph Node
 <details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_by_group_id</a>(...)</code></summary>
 <dl>
