@@ -27,7 +27,13 @@ dotenv.load_dotenv()
 
 MODEL_NAME = "gpt-4o-mini"
 SYSTEM_PROMPT = """
-You are a helpful assistant with memory capabilities. Use the memory search tool to recall important information about the user.
+You are a helpful assistant with memory capabilities. Use the memory search tool to recall important information about the user. 
+
+Ask the user plenty of questions about their life so you can build up a profile of them. Some things to ask them: 
+- Where they live
+- their favorite things
+- their favorite activities
+- what they like about the place they live
 """
 
 # Set your API keys in environment variables
@@ -119,7 +125,6 @@ class AsyncZepMemoryManager:
         await self.zep_client.memory.add_session(
             session_id=self.session_id,
             user_id=self.user_id,
-            metadata={"source": "openai_agents_sdk_example", "created_at": timestamp},
         )
 
     async def add_message(self, message: dict) -> None:
@@ -130,13 +135,18 @@ class AsyncZepMemoryManager:
             message: The message to add to memory.
         """
         # Convert OpenAI message to Zep message
-        # Get the role from the message or default to "user"
-        role = message.get("role", "user")
+        role = message.get("role", None)
+
+        zep_message_role = ""
+        if role == "user" and self.first_name:
+            zep_message_role = self.first_name
+            if self.last_name:
+                zep_message_role += " " + self.last_name
 
         zep_message = ZepMessage(
-            role=self.first_name + " " + self.last_name
-            if self.first_name and self.last_name
-            else "user",  # role in Zep is the name of the user
+            role=zep_message_role
+            if zep_message_role
+            else "assistant",  # role in Zep is the name of the user
             role_type=role,  # Use the role directly
             content=message.get("content", ""),
         )
@@ -210,7 +220,6 @@ class AsyncZepMemoryManager:
                         {
                             "role": "assistant",  # These are facts, so mark them as from the assistant
                             "content": edge.fact,
-                            "metadata": {"source": "graph_search"},
                         }
                         for edge in search_response.edges[:limit]
                     ]
