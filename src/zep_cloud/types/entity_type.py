@@ -5,12 +5,12 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_entity_property import ApidataEntityProperty
+from .entity_property import EntityProperty
 
 
-class ApidataEntityType(pydantic_v1.BaseModel):
+class EntityType(pydantic_v1.BaseModel):
     name: str
-    properties: typing.Optional[typing.List[ApidataEntityProperty]] = None
+    properties: typing.Optional[typing.List[EntityProperty]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -12,8 +12,8 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_entity_type import ApidataEntityType
-from ..types.apidata_entity_type_response import ApidataEntityTypeResponse
+from ..types.entity_type import EntityType
+from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
@@ -36,9 +36,7 @@ class GraphClient:
         self.episode = EpisodeClient(client_wrapper=self._client_wrapper)
         self.node = NodeClient(client_wrapper=self._client_wrapper)
 
-    def list_entity_types(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataEntityTypeResponse:
+    def list_entity_types(self, *, request_options: typing.Optional[RequestOptions] = None) -> EntityTypeResponse:
         """
         Returns all entity types for a project.
 
@@ -49,7 +47,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataEntityTypeResponse
+        EntityTypeResponse
             The list of entity types.
 
         Examples
@@ -66,7 +64,7 @@ class GraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataEntityTypeResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(EntityTypeResponse, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -81,17 +79,14 @@ class GraphClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def set_entity_types_internal(
-        self,
-        *,
-        entity_types: typing.Sequence[ApidataEntityType],
-        request_options: typing.Optional[RequestOptions] = None
+        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
 
         Parameters
         ----------
-        entity_types : typing.Sequence[ApidataEntityType]
+        entity_types : typing.Sequence[EntityType]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -103,7 +98,7 @@ class GraphClient:
 
         Examples
         --------
-        from zep_cloud import ApidataEntityType
+        from zep_cloud import EntityType
         from zep_cloud.client import Zep
 
         client = Zep(
@@ -111,7 +106,7 @@ class GraphClient:
         )
         client.graph.set_entity_types_internal(
             entity_types=[
-                ApidataEntityType(
+                EntityType(
                     name="name",
                 )
             ],
@@ -446,9 +441,7 @@ class AsyncGraphClient:
         self.episode = AsyncEpisodeClient(client_wrapper=self._client_wrapper)
         self.node = AsyncNodeClient(client_wrapper=self._client_wrapper)
 
-    async def list_entity_types(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataEntityTypeResponse:
+    async def list_entity_types(self, *, request_options: typing.Optional[RequestOptions] = None) -> EntityTypeResponse:
         """
         Returns all entity types for a project.
 
@@ -459,7 +452,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataEntityTypeResponse
+        EntityTypeResponse
             The list of entity types.
 
         Examples
@@ -484,7 +477,7 @@ class AsyncGraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataEntityTypeResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(EntityTypeResponse, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -499,17 +492,14 @@ class AsyncGraphClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def set_entity_types_internal(
-        self,
-        *,
-        entity_types: typing.Sequence[ApidataEntityType],
-        request_options: typing.Optional[RequestOptions] = None
+        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
 
         Parameters
         ----------
-        entity_types : typing.Sequence[ApidataEntityType]
+        entity_types : typing.Sequence[EntityType]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -523,7 +513,7 @@ class AsyncGraphClient:
         --------
         import asyncio
 
-        from zep_cloud import ApidataEntityType
+        from zep_cloud import EntityType
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -534,7 +524,7 @@ class AsyncGraphClient:
         async def main() -> None:
             await client.graph.set_entity_types_internal(
                 entity_types=[
-                    ApidataEntityType(
+                    EntityType(
                         name="name",
                     )
                 ],

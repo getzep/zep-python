@@ -14,12 +14,12 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_memory_response import AddMemoryResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_facts_response import ApidataFactsResponse
 from ..types.classify_session_request import ClassifySessionRequest
 from ..types.end_session_response import EndSessionResponse
 from ..types.end_sessions_response import EndSessionsResponse
 from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.fact_response import FactResponse
-from ..types.facts_response import FactsResponse
 from ..types.memory import Memory
 from ..types.memory_search_result import MemorySearchResult
 from ..types.message import Message
@@ -795,7 +795,7 @@ class MemoryClient:
         *,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> FactsResponse:
+    ) -> ApidataFactsResponse:
         """
         Deprecated API: get facts for a session
 
@@ -812,7 +812,7 @@ class MemoryClient:
 
         Returns
         -------
-        FactsResponse
+        ApidataFactsResponse
             The facts for the session.
 
         Examples
@@ -834,7 +834,7 @@ class MemoryClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ApidataFactsResponse, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -2331,7 +2331,7 @@ class AsyncMemoryClient:
         *,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> FactsResponse:
+    ) -> ApidataFactsResponse:
         """
         Deprecated API: get facts for a session
 
@@ -2348,7 +2348,7 @@ class AsyncMemoryClient:
 
         Returns
         -------
-        FactsResponse
+        ApidataFactsResponse
             The facts for the session.
 
         Examples
@@ -2378,7 +2378,7 @@ class AsyncMemoryClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ApidataFactsResponse, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

@@ -12,8 +12,8 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_facts_response import ApidataFactsResponse
 from ..types.fact_rating_instruction import FactRatingInstruction
-from ..types.facts_response import FactsResponse
 from ..types.group import Group
 from ..types.group_list_response import GroupListResponse
 from ..types.success_response import SuccessResponse
@@ -319,7 +319,9 @@ class GroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_facts(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactsResponse:
+    def get_facts(
+        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataFactsResponse:
         """
         Deprecated: Use Get Group Edges instead.
 
@@ -333,7 +335,7 @@ class GroupClient:
 
         Returns
         -------
-        FactsResponse
+        ApidataFactsResponse
             The group facts.
 
         Examples
@@ -352,7 +354,7 @@ class GroupClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ApidataFactsResponse, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -708,7 +710,7 @@ class AsyncGroupClient:
 
     async def get_facts(
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> FactsResponse:
+    ) -> ApidataFactsResponse:
         """
         Deprecated: Use Get Group Edges instead.
 
@@ -722,7 +724,7 @@ class AsyncGroupClient:
 
         Returns
         -------
-        FactsResponse
+        ApidataFactsResponse
             The group facts.
 
         Examples
@@ -749,7 +751,7 @@ class AsyncGroupClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ApidataFactsResponse, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

@@ -1164,7 +1164,7 @@ Sets the entity types for a project, replacing any existing ones.
 <dd>
 
 ```python
-from zep_cloud import ApidataEntityType
+from zep_cloud import EntityType
 from zep_cloud.client import Zep
 
 client = Zep(
@@ -1172,7 +1172,7 @@ client = Zep(
 )
 client.graph.set_entity_types_internal(
     entity_types=[
-        ApidataEntityType(
+        EntityType(
             name="name",
         )
     ],
@@ -1192,7 +1192,7 @@ client.graph.set_entity_types_internal(
 <dl>
 <dd>
 
-**entity_types:** `typing.Sequence[ApidataEntityType]` 
+**entity_types:** `typing.Sequence[EntityType]` 
     
 </dd>
 </dl>

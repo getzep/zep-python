@@ -5,11 +5,11 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .fact import Fact
+from .entity_type import EntityType
 
 
-class FactsResponse(pydantic_v1.BaseModel):
-    facts: typing.Optional[typing.List[Fact]] = None
+class EntityTypeResponse(pydantic_v1.BaseModel):
+    entity_types: typing.Optional[typing.List[EntityType]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

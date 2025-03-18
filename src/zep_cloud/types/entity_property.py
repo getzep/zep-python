@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .models_entity_property_type import ModelsEntityPropertyType
 
 
-class ApidataEntityProperty(pydantic_v1.BaseModel):
+class EntityProperty(pydantic_v1.BaseModel):
     description: str
     name: str
     type: ModelsEntityPropertyType
