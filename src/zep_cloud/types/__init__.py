@@ -7,7 +7,6 @@ from .apidata_document import ApidataDocument
 from .apidata_document_collection import ApidataDocumentCollection
 from .apidata_document_search_response import ApidataDocumentSearchResponse
 from .apidata_document_with_score import ApidataDocumentWithScore
-from .apidata_facts_response import ApidataFactsResponse
 from .classify_session_request import ClassifySessionRequest
 from .create_document_request import CreateDocumentRequest
 from .end_session_response import EndSessionResponse
@@ -15,6 +14,7 @@ from .end_sessions_response import EndSessionsResponse
 from .entity_edge import EntityEdge
 from .entity_node import EntityNode
 from .entity_property import EntityProperty
+from .entity_property_type import EntityPropertyType
 from .entity_type import EntityType
 from .entity_type_response import EntityTypeResponse
 from .episode import Episode
@@ -23,6 +23,7 @@ from .fact import Fact
 from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
 from .fact_response import FactResponse
+from .facts_response import FactsResponse
 from .graph_data_type import GraphDataType
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
@@ -32,7 +33,6 @@ from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .message import Message
 from .message_list_response import MessageListResponse
-from .models_entity_property_type import ModelsEntityPropertyType
 from .new_fact import NewFact
 from .question import Question
 from .reranker import Reranker
@@ -61,7 +61,6 @@ __all__ = [
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",
     "ApidataDocumentWithScore",
-    "ApidataFactsResponse",
     "ClassifySessionRequest",
     "CreateDocumentRequest",
     "EndSessionResponse",
@@ -69,6 +68,7 @@ __all__ = [
     "EntityEdge",
     "EntityNode",
     "EntityProperty",
+    "EntityPropertyType",
     "EntityType",
     "EntityTypeResponse",
     "Episode",
@@ -77,6 +77,7 @@ __all__ = [
     "FactRatingExamples",
     "FactRatingInstruction",
     "FactResponse",
+    "FactsResponse",
     "GraphDataType",
     "GraphSearchResults",
     "GraphSearchScope",
@@ -86,7 +87,6 @@ __all__ = [
     "MemorySearchResult",
     "Message",
     "MessageListResponse",
-    "ModelsEntityPropertyType",
     "NewFact",
     "Question",
     "Reranker",
