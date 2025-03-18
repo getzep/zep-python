@@ -7,7 +7,7 @@ from pydantic_core import core_schema
 
 class EntityPropertyType(Enum):
     Text = "Text"
-    Number = "Number"
+    Int = "Int"
     Float = "Float"
     Boolean = "Boolean"
 
@@ -17,8 +17,8 @@ class EntityField(BaseModel):
 class EntityBaseText(EntityField):
     type: EntityPropertyType = EntityPropertyType.Text
 
-class EntityBaseNumber(EntityField):
-    type: EntityPropertyType = EntityPropertyType.Number
+class EntityBaseInt(EntityField):
+    type: EntityPropertyType = EntityPropertyType.Int
 
 class EntityBaseFloat(EntityField):
     type: EntityPropertyType = EntityPropertyType.Float
@@ -33,11 +33,11 @@ EntityText = Annotated[
     WithJsonSchema(EntityBaseText.model_json_schema(), mode="serialization"),
 ]
 
-EntityNumber = Annotated[
+EntityInt = Annotated[
     typing.Optional[int],
     Field(default=None),
-    Field(..., entity_type=EntityPropertyType.Number),
-    WithJsonSchema(EntityBaseNumber.model_json_schema(), mode="serialization"),
+    Field(..., entity_type=EntityPropertyType.Int),
+    WithJsonSchema(EntityBaseInt.model_json_schema(), mode="serialization"),
 ]
 
 EntityFloat = Annotated[
@@ -83,16 +83,17 @@ def entity_model_to_api_schema(model_class: typing.Type[EntityModel], name: str)
             continue
         
         property_type = field_schema.get("type")
-        
         type_mapping = {
             "string": "Text",
-            "integer": "Number",
+            "integer": "Int",
             "number": "Float",
             "boolean": "Boolean"
         }
         
         if property_type in type_mapping:
             property_type = type_mapping[property_type]
+        else:
+            raise ValueError(f"Unsupported property type: {property_type}")
         
         description = field_schema.get("description", "")
         

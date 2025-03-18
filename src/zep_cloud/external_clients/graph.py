@@ -33,6 +33,7 @@ class AsyncGraphClient(AsyncBaseGraphClient):
         for name, entity in entities.items():
             entity_dict = entity_model_to_api_schema(entity, name)
             api_entity_types.append(EntityType(**entity_dict))
+        print("api_entity_types", api_entity_types)
         res = await self.set_entity_types_internal(entity_types=api_entity_types, request_options=request_options)
         return res
    

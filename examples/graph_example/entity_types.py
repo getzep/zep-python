@@ -6,7 +6,7 @@ from dotenv import find_dotenv, load_dotenv
 from zep_cloud.client import AsyncZep
 from zep_cloud.types import SearchFilters
 from pydantic import Field
-from zep_cloud.external_clients.ontology import EntityModel, EntityText, EntityFloat
+from zep_cloud.external_clients.ontology import EntityModel, EntityText, EntityFloat, EntityInt
 load_dotenv(
     dotenv_path=find_dotenv()
 )
@@ -25,6 +25,10 @@ async def main() -> None:
         )
         item_price: EntityFloat = Field(
             description="The price of the item",
+            default=None
+        )
+        quantity: EntityInt = Field(
+            description="The quantity of the item purchased",
             default=None
         )
         additional_notes: EntityText = Field(
