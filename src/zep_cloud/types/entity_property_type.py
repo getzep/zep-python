@@ -2,4 +2,4 @@
 
 import typing
 
-EntityPropertyType = typing.Union[typing.Literal["Text", "Number", "Float", "Boolean"], typing.Any]
+EntityPropertyType = typing.Union[typing.Literal["Text", "Int", "Float", "Boolean"], typing.Any]

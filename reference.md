@@ -1173,6 +1173,7 @@ client = Zep(
 client.graph.set_entity_types_internal(
     entity_types=[
         EntityType(
+            description="description",
             name="name",
         )
     ],

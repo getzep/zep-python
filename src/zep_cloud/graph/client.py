@@ -107,6 +107,7 @@ class GraphClient:
         client.graph.set_entity_types_internal(
             entity_types=[
                 EntityType(
+                    description="description",
                     name="name",
                 )
             ],
@@ -525,6 +526,7 @@ class AsyncGraphClient:
             await client.graph.set_entity_types_internal(
                 entity_types=[
                     EntityType(
+                        description="description",
                         name="name",
                     )
                 ],

@@ -9,6 +9,7 @@ from .entity_property import EntityProperty
 
 
 class EntityType(pydantic_v1.BaseModel):
+    description: str
     name: str
     properties: typing.Optional[typing.List[EntityProperty]] = None
 
