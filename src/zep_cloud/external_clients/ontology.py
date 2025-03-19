@@ -75,6 +75,7 @@ def entity_model_to_api_schema(model_class: typing.Type[EntityModel], name: str)
     
     entity_type = {
         "name": name,
+        "description": model_class.__doc__.strip() if model_class.__doc__ else "",
         "properties": []
     }
     
@@ -103,5 +104,6 @@ def entity_model_to_api_schema(model_class: typing.Type[EntityModel], name: str)
             "description": description
         })
     
+    print(entity_type)
     return entity_type
 
