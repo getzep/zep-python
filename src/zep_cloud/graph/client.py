@@ -9,14 +9,18 @@ from ..core.pydantic_utilities import pydantic_v1
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
+from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.entity_type import EntityType
+from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
+from ..types.success_response import SuccessResponse
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
 from .node.client import AsyncNodeClient, NodeClient
@@ -31,6 +35,106 @@ class GraphClient:
         self.edge = EdgeClient(client_wrapper=self._client_wrapper)
         self.episode = EpisodeClient(client_wrapper=self._client_wrapper)
         self.node = NodeClient(client_wrapper=self._client_wrapper)
+
+    def list_entity_types(self, *, request_options: typing.Optional[RequestOptions] = None) -> EntityTypeResponse:
+        """
+        Returns all entity types for a project.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityTypeResponse
+            The list of entity types.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.list_entity_types()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "entity-types", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(EntityTypeResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def set_entity_types_internal(
+        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
+        """
+        Sets the entity types for a project, replacing any existing ones.
+
+        Parameters
+        ----------
+        entity_types : typing.Sequence[EntityType]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Entity types set successfully
+
+        Examples
+        --------
+        from zep_cloud import EntityType
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.set_entity_types_internal(
+            entity_types=[
+                EntityType(
+                    description="description",
+                    name="name",
+                )
+            ],
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "entity-types",
+            method="PUT",
+            json={"entity_types": entity_types},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def add(
         self,
@@ -229,6 +333,7 @@ class GraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
@@ -253,6 +358,9 @@ class GraphClient:
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
+
+        min_fact_rating : typing.Optional[float]
+            The minimum rating by which to filter relevant facts
 
         min_score : typing.Optional[float]
             Deprecated
@@ -298,6 +406,7 @@ class GraphClient:
                 "center_node_uuid": center_node_uuid,
                 "group_id": group_id,
                 "limit": limit,
+                "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "query": query,
@@ -332,6 +441,122 @@ class AsyncGraphClient:
         self.edge = AsyncEdgeClient(client_wrapper=self._client_wrapper)
         self.episode = AsyncEpisodeClient(client_wrapper=self._client_wrapper)
         self.node = AsyncNodeClient(client_wrapper=self._client_wrapper)
+
+    async def list_entity_types(self, *, request_options: typing.Optional[RequestOptions] = None) -> EntityTypeResponse:
+        """
+        Returns all entity types for a project.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityTypeResponse
+            The list of entity types.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.list_entity_types()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "entity-types", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(EntityTypeResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def set_entity_types_internal(
+        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
+        """
+        Sets the entity types for a project, replacing any existing ones.
+
+        Parameters
+        ----------
+        entity_types : typing.Sequence[EntityType]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Entity types set successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import EntityType
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.set_entity_types_internal(
+                entity_types=[
+                    EntityType(
+                        description="description",
+                        name="name",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "entity-types",
+            method="PUT",
+            json={"entity_types": entity_types},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def add(
         self,
@@ -546,6 +771,7 @@ class AsyncGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
@@ -570,6 +796,9 @@ class AsyncGraphClient:
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
+
+        min_fact_rating : typing.Optional[float]
+            The minimum rating by which to filter relevant facts
 
         min_score : typing.Optional[float]
             Deprecated
@@ -623,6 +852,7 @@ class AsyncGraphClient:
                 "center_node_uuid": center_node_uuid,
                 "group_id": group_id,
                 "limit": limit,
+                "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "query": query,

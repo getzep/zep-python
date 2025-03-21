@@ -76,8 +76,8 @@ class BaseClient:
             timeout=_defaulted_timeout,
         )
         self.document = DocumentClient(client_wrapper=self._client_wrapper)
-        self.memory = MemoryClient(client_wrapper=self._client_wrapper)
         self.graph = GraphClient(client_wrapper=self._client_wrapper)
+        self.memory = MemoryClient(client_wrapper=self._client_wrapper)
         self.group = GroupClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
@@ -143,8 +143,8 @@ class AsyncBaseClient:
             timeout=_defaulted_timeout,
         )
         self.document = AsyncDocumentClient(client_wrapper=self._client_wrapper)
-        self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
         self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
+        self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
         self.group = AsyncGroupClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 

@@ -13,6 +13,10 @@ from .end_session_response import EndSessionResponse
 from .end_sessions_response import EndSessionsResponse
 from .entity_edge import EntityEdge
 from .entity_node import EntityNode
+from .entity_property import EntityProperty
+from .entity_property_type import EntityPropertyType
+from .entity_type import EntityType
+from .entity_type_response import EntityTypeResponse
 from .episode import Episode
 from .episode_response import EpisodeResponse
 from .fact import Fact
@@ -63,6 +67,10 @@ __all__ = [
     "EndSessionsResponse",
     "EntityEdge",
     "EntityNode",
+    "EntityProperty",
+    "EntityPropertyType",
+    "EntityType",
+    "EntityTypeResponse",
     "Episode",
     "EpisodeResponse",
     "Fact",
