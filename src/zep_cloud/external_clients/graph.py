@@ -13,7 +13,7 @@ class GraphClient(BaseGraphClient):
             client_wrapper=client_wrapper
         )
 
-    def set_entity_types(self, entities: dict[str, "EntityModel"], request_options: RequestOptions | None = None):
+    def set_entity_types(self, entities: dict[str, "EntityModel"], request_options: typing.Optional[RequestOptions] = None):
         api_entity_types: list[EntityType] = []
         for name, entity in entities.items():
             entity_dict = entity_model_to_api_schema(entity, name)
@@ -28,7 +28,7 @@ class AsyncGraphClient(AsyncBaseGraphClient):
             client_wrapper=client_wrapper
         )
 
-    async def set_entity_types(self, entities: dict[str, "EntityModel"], request_options: RequestOptions | None = None):
+    async def set_entity_types(self, entities: dict[str, "EntityModel"], request_options: typing.Optional[RequestOptions] = None):
         api_entity_types: list[EntityType] = []
         for name, entity in entities.items():
             entity_dict = entity_model_to_api_schema(entity, name)

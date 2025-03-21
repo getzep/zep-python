@@ -68,12 +68,13 @@ class EntityModel(BaseModel):
         kwargs["schema_generator"] = _CustomJsonSchema
         return super().model_json_schema(*args, **kwargs)
 
-def entity_model_to_api_schema(model_class: typing.Type[EntityModel], name: str) -> dict[str, typing.Any]:
+def entity_model_to_api_schema(model_class: "EntityModel", name: str) -> dict[str, typing.Any]:
     """Convert a Pydantic EntityModel to a JSON schema for Go EntityType"""
     
     schema = model_class.model_json_schema()
     
-    entity_type = {
+    # Define the entity type with proper typings for properties as a list of dictionaries
+    entity_type: dict[str, typing.Any] = {
         "name": name,
         "description": model_class.__doc__.strip() if model_class.__doc__ else "",
         "properties": []
@@ -104,6 +105,5 @@ def entity_model_to_api_schema(model_class: typing.Type[EntityModel], name: str)
             "description": description
         })
     
-    print(entity_type)
     return entity_type
 

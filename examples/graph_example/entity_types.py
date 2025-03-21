@@ -19,6 +19,9 @@ async def main() -> None:
         api_key=API_KEY,
     )
     class Purchase(EntityModel):
+        """
+        A purchase is an item that was purchased.
+        """
         item_name: EntityText = Field(
             description="The name of the item purchased",
             default=None
