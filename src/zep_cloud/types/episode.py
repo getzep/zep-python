@@ -12,6 +12,7 @@ class Episode(pydantic_v1.BaseModel):
     content: str
     created_at: str
     name: typing.Optional[str] = None
+    processed: typing.Optional[bool] = None
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
     uuid_: str = pydantic_v1.Field(alias="uuid")

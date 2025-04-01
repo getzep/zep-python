@@ -24,6 +24,11 @@ class Message(pydantic_v1.BaseModel):
     The metadata associated with the message.
     """
 
+    processed: typing.Optional[bool] = pydantic_v1.Field(default=None)
+    """
+    Whether the message has been processed.
+    """
+
     role: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
     Customizable role of the sender of the message (e.g., "john", "sales_agent").
