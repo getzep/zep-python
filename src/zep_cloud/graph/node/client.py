@@ -14,13 +14,21 @@ from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.entity_node import EntityNode
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class NodeClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def get_by_group_id(
-        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        group_id: str,
+        *,
+        limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
         Returns all nodes for a group.
@@ -29,6 +37,12 @@ class NodeClient:
         ----------
         group_id : str
             Group ID
+
+        limit : typing.Optional[int]
+            Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -50,7 +64,11 @@ class NodeClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/node/group/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
+            f"graph/node/group/{jsonable_encoder(group_id)}",
+            method="POST",
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
@@ -69,7 +87,12 @@ class NodeClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_by_user_id(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        user_id: str,
+        *,
+        limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
         Returns all nodes for a user
@@ -78,6 +101,12 @@ class NodeClient:
         ----------
         user_id : str
             User ID
+
+        limit : typing.Optional[int]
+            Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -99,7 +128,11 @@ class NodeClient:
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/node/user/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
+            f"graph/node/user/{jsonable_encoder(user_id)}",
+            method="POST",
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
@@ -174,7 +207,12 @@ class AsyncNodeClient:
         self._client_wrapper = client_wrapper
 
     async def get_by_group_id(
-        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        group_id: str,
+        *,
+        limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
         Returns all nodes for a group.
@@ -183,6 +221,12 @@ class AsyncNodeClient:
         ----------
         group_id : str
             Group ID
+
+        limit : typing.Optional[int]
+            Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -212,7 +256,11 @@ class AsyncNodeClient:
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/node/group/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
+            f"graph/node/group/{jsonable_encoder(group_id)}",
+            method="POST",
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
@@ -231,7 +279,12 @@ class AsyncNodeClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_by_user_id(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        user_id: str,
+        *,
+        limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
         Returns all nodes for a user
@@ -240,6 +293,12 @@ class AsyncNodeClient:
         ----------
         user_id : str
             User ID
+
+        limit : typing.Optional[int]
+            Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -269,7 +328,11 @@ class AsyncNodeClient:
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/node/user/{jsonable_encoder(user_id)}", method="GET", request_options=request_options
+            f"graph/node/user/{jsonable_encoder(user_id)}",
+            method="POST",
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
