@@ -4785,6 +4785,22 @@ client.graph.edge.get_by_group_id(
 <dl>
 <dd>
 
+**created_at_cursor:** `typing.Optional[str]` — Return only items created after this time (RFC3339 format)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -4848,6 +4864,22 @@ client.graph.edge.get_by_user_id(
 <dd>
 
 **user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_at_cursor:** `typing.Optional[str]` — Return only items created after this time (RFC3339 format)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
 </dl>
@@ -5433,6 +5465,22 @@ client.graph.node.get_by_group_id(
 <dl>
 <dd>
 
+**created_at_cursor:** `typing.Optional[str]` — Return only items created after this time (RFC3339 format)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -5496,6 +5544,22 @@ client.graph.node.get_by_user_id(
 <dd>
 
 **user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_at_cursor:** `typing.Optional[str]` — Return only items created after this time (RFC3339 format)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
 </dl>

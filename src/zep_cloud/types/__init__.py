@@ -25,6 +25,8 @@ from .fact_rating_instruction import FactRatingInstruction
 from .fact_response import FactResponse
 from .facts_response import FactsResponse
 from .graph_data_type import GraphDataType
+from .graph_edges_request import GraphEdgesRequest
+from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
 from .group import Group
@@ -79,6 +81,8 @@ __all__ = [
     "FactResponse",
     "FactsResponse",
     "GraphDataType",
+    "GraphEdgesRequest",
+    "GraphNodesRequest",
     "GraphSearchResults",
     "GraphSearchScope",
     "Group",
