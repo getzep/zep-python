@@ -26,8 +26,8 @@ class NodeClient:
         self,
         group_id: str,
         *,
-        created_at_cursor: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
@@ -38,11 +38,11 @@ class NodeClient:
         group_id : str
             Group ID
 
-        created_at_cursor : typing.Optional[str]
-            Return only items created after this time (RFC3339 format)
-
         limit : typing.Optional[int]
             Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -66,7 +66,7 @@ class NodeClient:
         _response = self._client_wrapper.httpx_client.request(
             f"graph/node/group/{jsonable_encoder(group_id)}",
             method="POST",
-            json={"created_at_cursor": created_at_cursor, "limit": limit},
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
             omit=OMIT,
         )
@@ -90,8 +90,8 @@ class NodeClient:
         self,
         user_id: str,
         *,
-        created_at_cursor: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
@@ -102,11 +102,11 @@ class NodeClient:
         user_id : str
             User ID
 
-        created_at_cursor : typing.Optional[str]
-            Return only items created after this time (RFC3339 format)
-
         limit : typing.Optional[int]
             Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -130,7 +130,7 @@ class NodeClient:
         _response = self._client_wrapper.httpx_client.request(
             f"graph/node/user/{jsonable_encoder(user_id)}",
             method="POST",
-            json={"created_at_cursor": created_at_cursor, "limit": limit},
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
             omit=OMIT,
         )
@@ -210,8 +210,8 @@ class AsyncNodeClient:
         self,
         group_id: str,
         *,
-        created_at_cursor: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
@@ -222,11 +222,11 @@ class AsyncNodeClient:
         group_id : str
             Group ID
 
-        created_at_cursor : typing.Optional[str]
-            Return only items created after this time (RFC3339 format)
-
         limit : typing.Optional[int]
             Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -258,7 +258,7 @@ class AsyncNodeClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"graph/node/group/{jsonable_encoder(group_id)}",
             method="POST",
-            json={"created_at_cursor": created_at_cursor, "limit": limit},
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
             omit=OMIT,
         )
@@ -282,8 +282,8 @@ class AsyncNodeClient:
         self,
         user_id: str,
         *,
-        created_at_cursor: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
@@ -294,11 +294,11 @@ class AsyncNodeClient:
         user_id : str
             User ID
 
-        created_at_cursor : typing.Optional[str]
-            Return only items created after this time (RFC3339 format)
-
         limit : typing.Optional[int]
             Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -330,7 +330,7 @@ class AsyncNodeClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"graph/node/user/{jsonable_encoder(user_id)}",
             method="POST",
-            json={"created_at_cursor": created_at_cursor, "limit": limit},
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
             omit=OMIT,
         )

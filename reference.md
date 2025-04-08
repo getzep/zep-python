@@ -4785,7 +4785,7 @@ client.graph.edge.get_by_group_id(
 <dl>
 <dd>
 
-**created_at_cursor:** `typing.Optional[str]` — Return only items created after this time (RFC3339 format)
+**limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
 </dl>
@@ -4793,7 +4793,7 @@ client.graph.edge.get_by_group_id(
 <dl>
 <dd>
 
-**limit:** `typing.Optional[int]` — Maximum number of items to return
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
     
 </dd>
 </dl>
@@ -4871,7 +4871,7 @@ client.graph.edge.get_by_user_id(
 <dl>
 <dd>
 
-**created_at_cursor:** `typing.Optional[str]` — Return only items created after this time (RFC3339 format)
+**limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
 </dl>
@@ -4879,7 +4879,7 @@ client.graph.edge.get_by_user_id(
 <dl>
 <dd>
 
-**limit:** `typing.Optional[int]` — Maximum number of items to return
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
     
 </dd>
 </dl>
@@ -5465,7 +5465,7 @@ client.graph.node.get_by_group_id(
 <dl>
 <dd>
 
-**created_at_cursor:** `typing.Optional[str]` — Return only items created after this time (RFC3339 format)
+**limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
 </dl>
@@ -5473,7 +5473,7 @@ client.graph.node.get_by_group_id(
 <dl>
 <dd>
 
-**limit:** `typing.Optional[int]` — Maximum number of items to return
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
     
 </dd>
 </dl>
@@ -5551,7 +5551,7 @@ client.graph.node.get_by_user_id(
 <dl>
 <dd>
 
-**created_at_cursor:** `typing.Optional[str]` — Return only items created after this time (RFC3339 format)
+**limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
 </dl>
@@ -5559,7 +5559,7 @@ client.graph.node.get_by_user_id(
 <dl>
 <dd>
 
-**limit:** `typing.Optional[int]` — Maximum number of items to return
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
     
 </dd>
 </dl>

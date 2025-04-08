@@ -27,8 +27,8 @@ class EdgeClient:
         self,
         group_id: str,
         *,
-        created_at_cursor: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityEdge]:
         """
@@ -39,11 +39,11 @@ class EdgeClient:
         group_id : str
             Group ID
 
-        created_at_cursor : typing.Optional[str]
-            Return only items created after this time (RFC3339 format)
-
         limit : typing.Optional[int]
             Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -67,7 +67,7 @@ class EdgeClient:
         _response = self._client_wrapper.httpx_client.request(
             f"graph/edge/group/{jsonable_encoder(group_id)}",
             method="POST",
-            json={"created_at_cursor": created_at_cursor, "limit": limit},
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
             omit=OMIT,
         )
@@ -91,8 +91,8 @@ class EdgeClient:
         self,
         user_id: str,
         *,
-        created_at_cursor: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityEdge]:
         """
@@ -103,11 +103,11 @@ class EdgeClient:
         user_id : str
             User ID
 
-        created_at_cursor : typing.Optional[str]
-            Return only items created after this time (RFC3339 format)
-
         limit : typing.Optional[int]
             Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -131,7 +131,7 @@ class EdgeClient:
         _response = self._client_wrapper.httpx_client.request(
             f"graph/edge/user/{jsonable_encoder(user_id)}",
             method="POST",
-            json={"created_at_cursor": created_at_cursor, "limit": limit},
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
             omit=OMIT,
         )
@@ -258,8 +258,8 @@ class AsyncEdgeClient:
         self,
         group_id: str,
         *,
-        created_at_cursor: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityEdge]:
         """
@@ -270,11 +270,11 @@ class AsyncEdgeClient:
         group_id : str
             Group ID
 
-        created_at_cursor : typing.Optional[str]
-            Return only items created after this time (RFC3339 format)
-
         limit : typing.Optional[int]
             Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -306,7 +306,7 @@ class AsyncEdgeClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"graph/edge/group/{jsonable_encoder(group_id)}",
             method="POST",
-            json={"created_at_cursor": created_at_cursor, "limit": limit},
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
             omit=OMIT,
         )
@@ -330,8 +330,8 @@ class AsyncEdgeClient:
         self,
         user_id: str,
         *,
-        created_at_cursor: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityEdge]:
         """
@@ -342,11 +342,11 @@ class AsyncEdgeClient:
         user_id : str
             User ID
 
-        created_at_cursor : typing.Optional[str]
-            Return only items created after this time (RFC3339 format)
-
         limit : typing.Optional[int]
             Maximum number of items to return
+
+        uuid_cursor : typing.Optional[str]
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -378,7 +378,7 @@ class AsyncEdgeClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"graph/edge/user/{jsonable_encoder(user_id)}",
             method="POST",
-            json={"created_at_cursor": created_at_cursor, "limit": limit},
+            json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
             omit=OMIT,
         )

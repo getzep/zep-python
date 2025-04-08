@@ -8,14 +8,14 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class GraphNodesRequest(pydantic_v1.BaseModel):
-    created_at_cursor: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Return only items created after this time (RFC3339 format)
-    """
-
     limit: typing.Optional[int] = pydantic_v1.Field(default=None)
     """
     Maximum number of items to return
+    """
+
+    uuid_cursor: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
     """
 
     def json(self, **kwargs: typing.Any) -> str:
