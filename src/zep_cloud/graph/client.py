@@ -139,9 +139,10 @@ class GraphClient:
     def add(
         self,
         *,
-        data: typing.Optional[str] = OMIT,
+        data: str,
+        type: GraphDataType,
         group_id: typing.Optional[str] = OMIT,
-        type: typing.Optional[GraphDataType] = OMIT,
+        source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> Episode:
@@ -150,11 +151,13 @@ class GraphClient:
 
         Parameters
         ----------
-        data : typing.Optional[str]
+        data : str
+
+        type : GraphDataType
 
         group_id : typing.Optional[str]
 
-        type : typing.Optional[GraphDataType]
+        source_description : typing.Optional[str]
 
         user_id : typing.Optional[str]
 
@@ -173,12 +176,21 @@ class GraphClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.add()
+        client.graph.add(
+            data="data",
+            type="text",
+        )
         """
         _response = self._client_wrapper.httpx_client.request(
             "graph",
             method="POST",
-            json={"data": data, "group_id": group_id, "type": type, "user_id": user_id},
+            json={
+                "data": data,
+                "group_id": group_id,
+                "source_description": source_description,
+                "type": type,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -561,9 +573,10 @@ class AsyncGraphClient:
     async def add(
         self,
         *,
-        data: typing.Optional[str] = OMIT,
+        data: str,
+        type: GraphDataType,
         group_id: typing.Optional[str] = OMIT,
-        type: typing.Optional[GraphDataType] = OMIT,
+        source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> Episode:
@@ -572,11 +585,13 @@ class AsyncGraphClient:
 
         Parameters
         ----------
-        data : typing.Optional[str]
+        data : str
+
+        type : GraphDataType
 
         group_id : typing.Optional[str]
 
-        type : typing.Optional[GraphDataType]
+        source_description : typing.Optional[str]
 
         user_id : typing.Optional[str]
 
@@ -600,7 +615,10 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            await client.graph.add()
+            await client.graph.add(
+                data="data",
+                type="text",
+            )
 
 
         asyncio.run(main())
@@ -608,7 +626,13 @@ class AsyncGraphClient:
         _response = await self._client_wrapper.httpx_client.request(
             "graph",
             method="POST",
-            json={"data": data, "group_id": group_id, "type": type, "user_id": user_id},
+            json={
+                "data": data,
+                "group_id": group_id,
+                "source_description": source_description,
+                "type": type,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
