@@ -1245,7 +1245,10 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.add()
+client.graph.add(
+    data="data",
+    type="text",
+)
 
 ```
 </dd>
@@ -1261,7 +1264,15 @@ client.graph.add()
 <dl>
 <dd>
 
-**data:** `typing.Optional[str]` 
+**data:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `GraphDataType` 
     
 </dd>
 </dl>
@@ -1277,7 +1288,7 @@ client.graph.add()
 <dl>
 <dd>
 
-**type:** `typing.Optional[GraphDataType]` 
+**source_description:** `typing.Optional[str]` 
     
 </dd>
 </dl>
