@@ -39,21 +39,10 @@ async def main() -> None:
             default=None
         )
     await client.graph.set_entity_types(
-        entities={
-            "Purchase": Purchase,
-        }
+        entities={}
     )
-    search_results = await client.graph.search(
-        user_id="<user_id>",
-        query="tickets for the concert",
-        scope="nodes",
-        search_filters=SearchFilters(
-            node_labels=["Purchase"]
-        )
-    )
-    print("search_results", search_results)
-    purchases = [Purchase(**purchase_node.attributes) for purchase_node in search_results.nodes]
-    print(purchases)
+    enntl = await client.graph.list_entity_types()
+    print(enntl)
 
 
 if __name__ == "__main__":
