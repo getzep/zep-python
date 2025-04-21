@@ -1164,20 +1164,12 @@ Sets the entity types for a project, replacing any existing ones.
 <dd>
 
 ```python
-from zep_cloud import EntityType
 from zep_cloud.client import Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.set_entity_types_internal(
-    entity_types=[
-        EntityType(
-            description="description",
-            name="name",
-        )
-    ],
-)
+client.graph.set_entity_types_internal()
 
 ```
 </dd>
@@ -1193,7 +1185,7 @@ client.graph.set_entity_types_internal(
 <dl>
 <dd>
 
-**entity_types:** `typing.Sequence[EntityType]` 
+**entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
     
 </dd>
 </dl>
