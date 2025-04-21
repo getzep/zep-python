@@ -18,6 +18,11 @@ class EntityNode(pydantic_v1.BaseModel):
     Creation time of the node
     """
 
+    episodes: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    """
+    List of episode uuids that mention this node
+    """
+
     labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     Labels associated with the node

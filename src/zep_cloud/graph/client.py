@@ -79,14 +79,17 @@ class GraphClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def set_entity_types_internal(
-        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
 
         Parameters
         ----------
-        entity_types : typing.Sequence[EntityType]
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -98,20 +101,12 @@ class GraphClient:
 
         Examples
         --------
-        from zep_cloud import EntityType
         from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.set_entity_types_internal(
-            entity_types=[
-                EntityType(
-                    description="description",
-                    name="name",
-                )
-            ],
-        )
+        client.graph.set_entity_types_internal()
         """
         _response = self._client_wrapper.httpx_client.request(
             "entity-types",
@@ -505,14 +500,17 @@ class AsyncGraphClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def set_entity_types_internal(
-        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
 
         Parameters
         ----------
-        entity_types : typing.Sequence[EntityType]
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -526,7 +524,6 @@ class AsyncGraphClient:
         --------
         import asyncio
 
-        from zep_cloud import EntityType
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -535,14 +532,7 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            await client.graph.set_entity_types_internal(
-                entity_types=[
-                    EntityType(
-                        description="description",
-                        name="name",
-                    )
-                ],
-            )
+            await client.graph.set_entity_types_internal()
 
 
         asyncio.run(main())
