@@ -8,12 +8,10 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .graph_data_type import GraphDataType
 
 
-class AddDataRequest(pydantic_v1.BaseModel):
+class ApidataEpisodeData(pydantic_v1.BaseModel):
     data: str
-    group_id: typing.Optional[str] = None
     source_description: typing.Optional[str] = None
     type: GraphDataType
-    user_id: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

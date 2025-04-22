@@ -12,6 +12,7 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_episode_data import ApidataEpisodeData
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
@@ -208,10 +209,8 @@ class GraphClient:
     def add_batch(
         self,
         *,
-        data: str,
-        type: GraphDataType,
+        episodes: typing.Sequence[ApidataEpisodeData],
         group_id: typing.Optional[str] = OMIT,
-        source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[typing.List[Episode]]:
@@ -220,13 +219,9 @@ class GraphClient:
 
         Parameters
         ----------
-        data : str
-
-        type : GraphDataType
+        episodes : typing.Sequence[ApidataEpisodeData]
 
         group_id : typing.Optional[str]
-
-        source_description : typing.Optional[str]
 
         user_id : typing.Optional[str]
 
@@ -240,26 +235,25 @@ class GraphClient:
 
         Examples
         --------
+        from zep_cloud import ApidataEpisodeData
         from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.graph.add_batch(
-            data="data",
-            type="text",
+            episodes=[
+                ApidataEpisodeData(
+                    data="data",
+                    type="text",
+                )
+            ],
         )
         """
         _response = self._client_wrapper.httpx_client.request(
             "graph-batch",
             method="POST",
-            json={
-                "data": data,
-                "group_id": group_id,
-                "source_description": source_description,
-                "type": type,
-                "user_id": user_id,
-            },
+            json={"episodes": episodes, "group_id": group_id, "user_id": user_id},
             request_options=request_options,
             omit=OMIT,
         )
@@ -719,10 +713,8 @@ class AsyncGraphClient:
     async def add_batch(
         self,
         *,
-        data: str,
-        type: GraphDataType,
+        episodes: typing.Sequence[ApidataEpisodeData],
         group_id: typing.Optional[str] = OMIT,
-        source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[typing.List[Episode]]:
@@ -731,13 +723,9 @@ class AsyncGraphClient:
 
         Parameters
         ----------
-        data : str
-
-        type : GraphDataType
+        episodes : typing.Sequence[ApidataEpisodeData]
 
         group_id : typing.Optional[str]
-
-        source_description : typing.Optional[str]
 
         user_id : typing.Optional[str]
 
@@ -753,6 +741,7 @@ class AsyncGraphClient:
         --------
         import asyncio
 
+        from zep_cloud import ApidataEpisodeData
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -762,8 +751,12 @@ class AsyncGraphClient:
 
         async def main() -> None:
             await client.graph.add_batch(
-                data="data",
-                type="text",
+                episodes=[
+                    ApidataEpisodeData(
+                        data="data",
+                        type="text",
+                    )
+                ],
             )
 
 
@@ -772,13 +765,7 @@ class AsyncGraphClient:
         _response = await self._client_wrapper.httpx_client.request(
             "graph-batch",
             method="POST",
-            json={
-                "data": data,
-                "group_id": group_id,
-                "source_description": source_description,
-                "type": type,
-                "user_id": user_id,
-            },
+            json={"episodes": episodes, "group_id": group_id, "user_id": user_id},
             request_options=request_options,
             omit=OMIT,
         )
