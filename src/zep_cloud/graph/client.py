@@ -12,10 +12,10 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_episode_data import ApidataEpisodeData
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
+from ..types.episode_data import EpisodeData
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
@@ -209,7 +209,7 @@ class GraphClient:
     def add_batch(
         self,
         *,
-        episodes: typing.Sequence[ApidataEpisodeData],
+        episodes: typing.Sequence[EpisodeData],
         group_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
@@ -219,7 +219,7 @@ class GraphClient:
 
         Parameters
         ----------
-        episodes : typing.Sequence[ApidataEpisodeData]
+        episodes : typing.Sequence[EpisodeData]
 
         group_id : typing.Optional[str]
 
@@ -235,7 +235,7 @@ class GraphClient:
 
         Examples
         --------
-        from zep_cloud import ApidataEpisodeData
+        from zep_cloud import EpisodeData
         from zep_cloud.client import Zep
 
         client = Zep(
@@ -243,7 +243,7 @@ class GraphClient:
         )
         client.graph.add_batch(
             episodes=[
-                ApidataEpisodeData(
+                EpisodeData(
                     data="data",
                     type="text",
                 )
@@ -713,7 +713,7 @@ class AsyncGraphClient:
     async def add_batch(
         self,
         *,
-        episodes: typing.Sequence[ApidataEpisodeData],
+        episodes: typing.Sequence[EpisodeData],
         group_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
@@ -723,7 +723,7 @@ class AsyncGraphClient:
 
         Parameters
         ----------
-        episodes : typing.Sequence[ApidataEpisodeData]
+        episodes : typing.Sequence[EpisodeData]
 
         group_id : typing.Optional[str]
 
@@ -741,7 +741,7 @@ class AsyncGraphClient:
         --------
         import asyncio
 
-        from zep_cloud import ApidataEpisodeData
+        from zep_cloud import EpisodeData
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -752,7 +752,7 @@ class AsyncGraphClient:
         async def main() -> None:
             await client.graph.add_batch(
                 episodes=[
-                    ApidataEpisodeData(
+                    EpisodeData(
                         data="data",
                         type="text",
                     )

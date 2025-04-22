@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .graph_data_type import GraphDataType
 
 
-class ApidataEpisodeData(pydantic_v1.BaseModel):
+class EpisodeData(pydantic_v1.BaseModel):
     data: str
     source_description: typing.Optional[str] = None
     type: GraphDataType

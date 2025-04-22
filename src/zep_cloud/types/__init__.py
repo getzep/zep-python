@@ -7,7 +7,6 @@ from .apidata_document import ApidataDocument
 from .apidata_document_collection import ApidataDocumentCollection
 from .apidata_document_search_response import ApidataDocumentSearchResponse
 from .apidata_document_with_score import ApidataDocumentWithScore
-from .apidata_episode_data import ApidataEpisodeData
 from .classify_session_request import ClassifySessionRequest
 from .create_document_request import CreateDocumentRequest
 from .end_session_response import EndSessionResponse
@@ -19,6 +18,7 @@ from .entity_property_type import EntityPropertyType
 from .entity_type import EntityType
 from .entity_type_response import EntityTypeResponse
 from .episode import Episode
+from .episode_data import EpisodeData
 from .episode_response import EpisodeResponse
 from .fact import Fact
 from .fact_rating_examples import FactRatingExamples
@@ -64,7 +64,6 @@ __all__ = [
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",
     "ApidataDocumentWithScore",
-    "ApidataEpisodeData",
     "ClassifySessionRequest",
     "CreateDocumentRequest",
     "EndSessionResponse",
@@ -76,6 +75,7 @@ __all__ = [
     "EntityType",
     "EntityTypeResponse",
     "Episode",
+    "EpisodeData",
     "EpisodeResponse",
     "Fact",
     "FactRatingExamples",

@@ -1335,7 +1335,7 @@ Add data to the graph in batch mode (each episode processed concurrently). Note:
 <dd>
 
 ```python
-from zep_cloud import ApidataEpisodeData
+from zep_cloud import EpisodeData
 from zep_cloud.client import Zep
 
 client = Zep(
@@ -1343,7 +1343,7 @@ client = Zep(
 )
 client.graph.add_batch(
     episodes=[
-        ApidataEpisodeData(
+        EpisodeData(
             data="data",
             type="text",
         )
@@ -1364,7 +1364,7 @@ client.graph.add_batch(
 <dl>
 <dd>
 
-**episodes:** `typing.Sequence[ApidataEpisodeData]` 
+**episodes:** `typing.Sequence[EpisodeData]` 
     
 </dd>
 </dl>
