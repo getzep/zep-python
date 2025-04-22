@@ -205,6 +205,80 @@ class GraphClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def add_batch(
+        self,
+        *,
+        data: str,
+        type: GraphDataType,
+        group_id: typing.Optional[str] = OMIT,
+        source_description: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> Episode:
+        """
+        Add data to the graph in batch mode (each episode processed concurrently). Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+
+        Parameters
+        ----------
+        data : str
+
+        type : GraphDataType
+
+        group_id : typing.Optional[str]
+
+        source_description : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Episode
+            Added episode
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.add_batch(
+            data="data",
+            type="text",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph-batch",
+            method="POST",
+            json={
+                "data": data,
+                "group_id": group_id,
+                "source_description": source_description,
+                "type": type,
+                "user_id": user_id,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def add_fact_triple(
         self,
         *,
@@ -615,6 +689,88 @@ class AsyncGraphClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "graph",
+            method="POST",
+            json={
+                "data": data,
+                "group_id": group_id,
+                "source_description": source_description,
+                "type": type,
+                "user_id": user_id,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def add_batch(
+        self,
+        *,
+        data: str,
+        type: GraphDataType,
+        group_id: typing.Optional[str] = OMIT,
+        source_description: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> Episode:
+        """
+        Add data to the graph in batch mode (each episode processed concurrently). Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+
+        Parameters
+        ----------
+        data : str
+
+        type : GraphDataType
+
+        group_id : typing.Optional[str]
+
+        source_description : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Episode
+            Added episode
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.add_batch(
+                data="data",
+                type="text",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph-batch",
             method="POST",
             json={
                 "data": data,

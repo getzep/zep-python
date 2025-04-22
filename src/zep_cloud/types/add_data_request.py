@@ -5,38 +5,15 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .graph_data_type import GraphDataType
 
 
-class EntityNode(pydantic_v1.BaseModel):
-    attributes: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
-    """
-    Additional attributes of the node. Dependent on node labels
-    """
-
-    created_at: str = pydantic_v1.Field()
-    """
-    Creation time of the node
-    """
-
-    labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
-    """
-    Labels associated with the node
-    """
-
-    name: str = pydantic_v1.Field()
-    """
-    Name of the node
-    """
-
-    summary: str = pydantic_v1.Field()
-    """
-    Regional summary of surrounding edges
-    """
-
-    uuid_: str = pydantic_v1.Field(alias="uuid")
-    """
-    UUID of the node
-    """
+class AddDataRequest(pydantic_v1.BaseModel):
+    data: str
+    group_id: typing.Optional[str] = None
+    source_description: typing.Optional[str] = None
+    type: GraphDataType
+    user_id: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -53,7 +30,5 @@ class EntityNode(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}
