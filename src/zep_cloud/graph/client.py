@@ -214,7 +214,7 @@ class GraphClient:
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
-    ) -> Episode:
+    ) -> typing.List[typing.List[Episode]]:
         """
         Add data to the graph in batch mode (each episode processed concurrently). Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
@@ -235,8 +235,8 @@ class GraphClient:
 
         Returns
         -------
-        Episode
-            Added episode
+        typing.List[typing.List[Episode]]
+            Added episodes
 
         Examples
         --------
@@ -265,7 +265,7 @@ class GraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[Episode]], _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -725,7 +725,7 @@ class AsyncGraphClient:
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
-    ) -> Episode:
+    ) -> typing.List[typing.List[Episode]]:
         """
         Add data to the graph in batch mode (each episode processed concurrently). Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
 
@@ -746,8 +746,8 @@ class AsyncGraphClient:
 
         Returns
         -------
-        Episode
-            Added episode
+        typing.List[typing.List[Episode]]
+            Added episodes
 
         Examples
         --------
@@ -784,7 +784,7 @@ class AsyncGraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[Episode]], _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
