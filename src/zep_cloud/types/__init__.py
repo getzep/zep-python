@@ -18,6 +18,7 @@ from .entity_property_type import EntityPropertyType
 from .entity_type import EntityType
 from .entity_type_response import EntityTypeResponse
 from .episode import Episode
+from .episode_data import EpisodeData
 from .episode_response import EpisodeResponse
 from .fact import Fact
 from .fact_rating_examples import FactRatingExamples
@@ -74,6 +75,7 @@ __all__ = [
     "EntityType",
     "EntityTypeResponse",
     "Episode",
+    "EpisodeData",
     "EpisodeResponse",
     "Fact",
     "FactRatingExamples",
