@@ -1,9 +1,6 @@
 import datetime
 import json
 import typing
-from packaging import version
-
-import pydantic
 
 from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from zep_cloud.memory.client import (
@@ -15,9 +12,6 @@ from zep_cloud.memory.client import (
 
 if typing.TYPE_CHECKING:
     from zep_cloud.extractor.models import ZepModel
-
-MIN_PYDANTIC_VERSION = "2.0"
-
 
 class MemoryClient(BaseMemoryClient):
     def __init__(self, *, client_wrapper: SyncClientWrapper):
@@ -72,11 +66,6 @@ class MemoryClient(BaseMemoryClient):
 
         print(customer_data.name)  # Access extracted and validated customer name
         """
-
-        if version.parse(pydantic.VERSION) < version.parse(MIN_PYDANTIC_VERSION):
-            raise RuntimeError(
-                f"Pydantic version {MIN_PYDANTIC_VERSION} or greater is required."
-            )
 
         model_schema = json.dumps(model.model_json_schema())
 
@@ -146,11 +135,6 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
 
         print(customer_data.name)  # Access extracted and validated customer name
         """
-
-        if version.parse(pydantic.VERSION) < version.parse(MIN_PYDANTIC_VERSION):
-            raise RuntimeError(
-                f"Pydantic version {MIN_PYDANTIC_VERSION} or greater is required."
-            )
 
         model_schema = json.dumps(model.model_json_schema())
 
