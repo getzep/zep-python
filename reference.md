@@ -1272,6 +1272,14 @@ client.graph.add(
 <dl>
 <dd>
 
+**created_at:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **group_id:** `typing.Optional[str]` 
     
 </dd>
@@ -2852,6 +2860,7 @@ Deprecated API: Adds facts to a session
 <dd>
 
 ```python
+from zep_cloud import NewFact
 from zep_cloud.client import Zep
 
 client = Zep(
@@ -2859,6 +2868,11 @@ client = Zep(
 )
 client.memory.add_session_facts(
     session_id="sessionId",
+    facts=[
+        NewFact(
+            fact="fact",
+        )
+    ],
 )
 
 ```
@@ -2883,7 +2897,7 @@ client.memory.add_session_facts(
 <dl>
 <dd>
 
-**facts:** `typing.Optional[typing.Sequence[NewFact]]` 
+**facts:** `typing.Sequence[NewFact]` 
     
 </dd>
 </dl>
@@ -4209,7 +4223,9 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.user.add()
+client.user.add(
+    user_id="user_id",
+)
 
 ```
 </dd>
@@ -4221,6 +4237,14 @@ client.user.add()
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — The unique identifier of the user.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -4258,14 +4282,6 @@ client.user.add()
 <dd>
 
 **metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — The metadata associated with the user.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `typing.Optional[str]` — The unique identifier of the user.
     
 </dd>
 </dl>
