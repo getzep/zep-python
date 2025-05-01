@@ -31,12 +31,12 @@ class UserClient:
     def add(
         self,
         *,
+        user_id: str,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -44,6 +44,9 @@ class UserClient:
 
         Parameters
         ----------
+        user_id : str
+            The unique identifier of the user.
+
         email : typing.Optional[str]
             The email address of the user.
 
@@ -58,9 +61,6 @@ class UserClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the user.
-
-        user_id : typing.Optional[str]
-            The unique identifier of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -77,7 +77,9 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.add()
+        client.user.add(
+            user_id="user_id",
+        )
         """
         _response = self._client_wrapper.httpx_client.request(
             "users",
@@ -493,12 +495,12 @@ class AsyncUserClient:
     async def add(
         self,
         *,
+        user_id: str,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -506,6 +508,9 @@ class AsyncUserClient:
 
         Parameters
         ----------
+        user_id : str
+            The unique identifier of the user.
+
         email : typing.Optional[str]
             The email address of the user.
 
@@ -520,9 +525,6 @@ class AsyncUserClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             The metadata associated with the user.
-
-        user_id : typing.Optional[str]
-            The unique identifier of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -544,7 +546,9 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.add()
+            await client.user.add(
+                user_id="user_id",
+            )
 
 
         asyncio.run(main())

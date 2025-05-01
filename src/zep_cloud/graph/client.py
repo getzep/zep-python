@@ -137,6 +137,7 @@ class GraphClient:
         *,
         data: str,
         type: GraphDataType,
+        created_at: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -150,6 +151,8 @@ class GraphClient:
         data : str
 
         type : GraphDataType
+
+        created_at : typing.Optional[str]
 
         group_id : typing.Optional[str]
 
@@ -181,6 +184,7 @@ class GraphClient:
             "graph",
             method="POST",
             json={
+                "created_at": created_at,
                 "data": data,
                 "group_id": group_id,
                 "source_description": source_description,
@@ -633,6 +637,7 @@ class AsyncGraphClient:
         *,
         data: str,
         type: GraphDataType,
+        created_at: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -646,6 +651,8 @@ class AsyncGraphClient:
         data : str
 
         type : GraphDataType
+
+        created_at : typing.Optional[str]
 
         group_id : typing.Optional[str]
 
@@ -685,6 +692,7 @@ class AsyncGraphClient:
             "graph",
             method="POST",
             json={
+                "created_at": created_at,
                 "data": data,
                 "group_id": group_id,
                 "source_description": source_description,

@@ -9,6 +9,7 @@ from .graph_data_type import GraphDataType
 
 
 class EpisodeData(pydantic_v1.BaseModel):
+    created_at: typing.Optional[str] = None
     data: str
     source_description: typing.Optional[str] = None
     type: GraphDataType
