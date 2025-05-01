@@ -4,8 +4,7 @@ src/zep_cloud/external_clients/
 src/zep_cloud/extractor/
 examples/
 src/zep_cloud/langchain/
-pyproject.toml
-poetry.lock
+
 README.md
 .github
 Makefile
