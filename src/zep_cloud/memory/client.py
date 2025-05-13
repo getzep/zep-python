@@ -1177,7 +1177,7 @@ class MemoryClient:
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
-        Returns a specific message from a session.
+        Deprecated: Use graph.episodes.get instead. Returns a specific message from a session.
 
         Parameters
         ----------
@@ -2769,7 +2769,7 @@ class AsyncMemoryClient:
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
-        Returns a specific message from a session.
+        Deprecated: Use graph.episodes.get instead. Returns a specific message from a session.
 
         Parameters
         ----------

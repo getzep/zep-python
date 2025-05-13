@@ -3292,7 +3292,7 @@ client.memory.get_session_messages(
 <dl>
 <dd>
 
-Returns a specific message from a session.
+Deprecated: Use graph.episodes.get instead. Returns a specific message from a session.
 </dd>
 </dl>
 </dd>
