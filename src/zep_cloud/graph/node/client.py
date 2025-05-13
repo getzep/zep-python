@@ -14,7 +14,7 @@ from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.entity_edge import EntityEdge
 from ...types.entity_node import EntityNode
-from ...types.graphiti_episode import GraphitiEpisode
+from ...types.episode_response import EpisodeResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -203,7 +203,7 @@ class NodeClient:
 
     def get_episodes(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEpisode]:
+    ) -> EpisodeResponse:
         """
         Returns all episodes that mentioned a given node
 
@@ -217,7 +217,7 @@ class NodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEpisode]
+        EpisodeResponse
             Episodes
 
         Examples
@@ -236,7 +236,7 @@ class NodeClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(typing.List[GraphitiEpisode], _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(EpisodeResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -509,7 +509,7 @@ class AsyncNodeClient:
 
     async def get_episodes(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEpisode]:
+    ) -> EpisodeResponse:
         """
         Returns all episodes that mentioned a given node
 
@@ -523,7 +523,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEpisode]
+        EpisodeResponse
             Episodes
 
         Examples
@@ -550,7 +550,7 @@ class AsyncNodeClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(typing.List[GraphitiEpisode], _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(EpisodeResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

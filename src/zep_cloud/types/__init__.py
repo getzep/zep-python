@@ -20,7 +20,6 @@ from .entity_type_response import EntityTypeResponse
 from .episode import Episode
 from .episode_data import EpisodeData
 from .episode_response import EpisodeResponse
-from .episode_type import EpisodeType
 from .fact import Fact
 from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
@@ -31,7 +30,6 @@ from .graph_edges_request import GraphEdgesRequest
 from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
-from .graphiti_episode import GraphitiEpisode
 from .group import Group
 from .group_list_response import GroupListResponse
 from .memory import Memory
@@ -79,7 +77,6 @@ __all__ = [
     "Episode",
     "EpisodeData",
     "EpisodeResponse",
-    "EpisodeType",
     "Fact",
     "FactRatingExamples",
     "FactRatingInstruction",
@@ -90,7 +87,6 @@ __all__ = [
     "GraphNodesRequest",
     "GraphSearchResults",
     "GraphSearchScope",
-    "GraphitiEpisode",
     "Group",
     "GroupListResponse",
     "Memory",
