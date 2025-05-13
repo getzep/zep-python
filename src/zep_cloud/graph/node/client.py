@@ -12,7 +12,9 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
+from ...types.entity_edge import EntityEdge
 from ...types.entity_node import EntityNode
+from ...types.graphiti_episode import GraphitiEpisode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -137,6 +139,104 @@ class NodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(typing.List[EntityNode], _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_edges(
+        self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[EntityEdge]:
+        """
+        Returns all edges for a node
+
+        Parameters
+        ----------
+        node_uuid : str
+            Node UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[EntityEdge]
+            Edges
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.node.get_edges(
+            node_uuid="node_uuid",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(node_uuid)}/entity-edges", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[EntityEdge], _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_episodes(
+        self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[GraphitiEpisode]:
+        """
+        Returns all episodes that mentioned a given node
+
+        Parameters
+        ----------
+        node_uuid : str
+            Node UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[GraphitiEpisode]
+            Episodes
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.node.get_episodes(
+            node_uuid="node_uuid",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(node_uuid)}/episodes", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[GraphitiEpisode], _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -337,6 +437,120 @@ class AsyncNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(typing.List[EntityNode], _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_edges(
+        self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[EntityEdge]:
+        """
+        Returns all edges for a node
+
+        Parameters
+        ----------
+        node_uuid : str
+            Node UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[EntityEdge]
+            Edges
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.node.get_edges(
+                node_uuid="node_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(node_uuid)}/entity-edges", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[EntityEdge], _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_episodes(
+        self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[GraphitiEpisode]:
+        """
+        Returns all episodes that mentioned a given node
+
+        Parameters
+        ----------
+        node_uuid : str
+            Node UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[GraphitiEpisode]
+            Episodes
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.node.get_episodes(
+                node_uuid="node_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(node_uuid)}/episodes", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[GraphitiEpisode], _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
