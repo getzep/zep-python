@@ -12,6 +12,11 @@ class Episode(pydantic_v1.BaseModel):
     content: str
     created_at: str
     processed: typing.Optional[bool] = None
+    session_id: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Optional session ID. Will be present only if the episode corresponds to the messages added using memory.add API
+    """
+
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
     uuid_: str = pydantic_v1.Field(alias="uuid")

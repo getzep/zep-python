@@ -1,6 +1,6 @@
 history = [
     {
-        "role": "user",
+        "role": "Jane",
         "role_type": "user",
         "content": (
             "Hi there, I'm looking for a new pair of shoes. I'm not sure where"
@@ -17,7 +17,7 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "Jane",
         "role_type": "user",
         "content": "I like Nike and Adidas, but I'm open to other brands too.",
     },
@@ -32,7 +32,7 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "Jane",
         "role_type": "user",
         "content": "I'll be using them for running.",
     },
@@ -46,7 +46,7 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "Jane",
         "role_type": "user",
         "content": ("I wear a men's size 10, and I'm not sure about the foot width."),
     },
@@ -59,7 +59,7 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "Jane",
         "role_type": "user",
         "content": (
             "I have a bit of a pronation issue. Do I need to consider that"
@@ -78,7 +78,7 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "Jane",
         "role_type": "user",
         "content": "Great, I have a budget of around $120.",
     },
@@ -103,7 +103,7 @@ history = [
         "metadata": {"bar": "foo"},
     },
     {
-        "role": "user",
+        "role": "Jane",
         "role_type": "user",
         "content": (
             "I've heard good things about Brooks, but I was kind of hoping to"
@@ -121,7 +121,7 @@ history = [
         ),
     },
     {
-        "role": "user",
+        "role": "Jane",
         "role_type": "user",
         "content": "They're nice looking. Yes, I think I'll go with those.",
     },
