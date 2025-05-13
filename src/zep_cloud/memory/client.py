@@ -852,7 +852,7 @@ class MemoryClient:
         self,
         session_id: str,
         *,
-        facts: typing.Optional[typing.Sequence[NewFact]] = OMIT,
+        facts: typing.Sequence[NewFact],
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
@@ -863,7 +863,7 @@ class MemoryClient:
         session_id : str
             Session ID
 
-        facts : typing.Optional[typing.Sequence[NewFact]]
+        facts : typing.Sequence[NewFact]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -875,6 +875,7 @@ class MemoryClient:
 
         Examples
         --------
+        from zep_cloud import NewFact
         from zep_cloud.client import Zep
 
         client = Zep(
@@ -882,6 +883,11 @@ class MemoryClient:
         )
         client.memory.add_session_facts(
             session_id="sessionId",
+            facts=[
+                NewFact(
+                    fact="fact",
+                )
+            ],
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1171,7 +1177,7 @@ class MemoryClient:
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
-        Returns a specific message from a session.
+        Deprecated: Use graph.episodes.get instead. Returns a specific message from a session.
 
         Parameters
         ----------
@@ -2396,7 +2402,7 @@ class AsyncMemoryClient:
         self,
         session_id: str,
         *,
-        facts: typing.Optional[typing.Sequence[NewFact]] = OMIT,
+        facts: typing.Sequence[NewFact],
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
@@ -2407,7 +2413,7 @@ class AsyncMemoryClient:
         session_id : str
             Session ID
 
-        facts : typing.Optional[typing.Sequence[NewFact]]
+        facts : typing.Sequence[NewFact]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2421,6 +2427,7 @@ class AsyncMemoryClient:
         --------
         import asyncio
 
+        from zep_cloud import NewFact
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -2431,6 +2438,11 @@ class AsyncMemoryClient:
         async def main() -> None:
             await client.memory.add_session_facts(
                 session_id="sessionId",
+                facts=[
+                    NewFact(
+                        fact="fact",
+                    )
+                ],
             )
 
 
@@ -2757,7 +2769,7 @@ class AsyncMemoryClient:
         self, session_id: str, message_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Message:
         """
-        Returns a specific message from a session.
+        Deprecated: Use graph.episodes.get instead. Returns a specific message from a session.
 
         Parameters
         ----------

@@ -15,6 +15,7 @@ from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
+from ..types.episode_data import EpisodeData
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
@@ -79,14 +80,17 @@ class GraphClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     def set_entity_types_internal(
-        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
 
         Parameters
         ----------
-        entity_types : typing.Sequence[EntityType]
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -98,20 +102,12 @@ class GraphClient:
 
         Examples
         --------
-        from zep_cloud import EntityType
         from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.set_entity_types_internal(
-            entity_types=[
-                EntityType(
-                    description="description",
-                    name="name",
-                )
-            ],
-        )
+        client.graph.set_entity_types_internal()
         """
         _response = self._client_wrapper.httpx_client.request(
             "entity-types",
@@ -139,9 +135,11 @@ class GraphClient:
     def add(
         self,
         *,
-        data: typing.Optional[str] = OMIT,
+        data: str,
+        type: GraphDataType,
+        created_at: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
-        type: typing.Optional[GraphDataType] = OMIT,
+        source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> Episode:
@@ -150,11 +148,15 @@ class GraphClient:
 
         Parameters
         ----------
-        data : typing.Optional[str]
+        data : str
+
+        type : GraphDataType
+
+        created_at : typing.Optional[str]
 
         group_id : typing.Optional[str]
 
-        type : typing.Optional[GraphDataType]
+        source_description : typing.Optional[str]
 
         user_id : typing.Optional[str]
 
@@ -173,18 +175,95 @@ class GraphClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.add()
+        client.graph.add(
+            data="data",
+            type="text",
+        )
         """
         _response = self._client_wrapper.httpx_client.request(
             "graph",
             method="POST",
-            json={"data": data, "group_id": group_id, "type": type, "user_id": user_id},
+            json={
+                "created_at": created_at,
+                "data": data,
+                "group_id": group_id,
+                "source_description": source_description,
+                "type": type,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def add_batch(
+        self,
+        *,
+        episodes: typing.Sequence[EpisodeData],
+        group_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[Episode]:
+        """
+        Add data to the graph in batch mode (each episode processed concurrently). Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+
+        Parameters
+        ----------
+        episodes : typing.Sequence[EpisodeData]
+
+        group_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Episode]
+            Added episodes
+
+        Examples
+        --------
+        from zep_cloud import EpisodeData
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.add_batch(
+            episodes=[
+                EpisodeData(
+                    data="data",
+                    type="text",
+                )
+            ],
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph-batch",
+            method="POST",
+            json={"episodes": episodes, "group_id": group_id, "user_id": user_id},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[Episode], _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -493,14 +572,17 @@ class AsyncGraphClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def set_entity_types_internal(
-        self, *, entity_types: typing.Sequence[EntityType], request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
 
         Parameters
         ----------
-        entity_types : typing.Sequence[EntityType]
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -514,7 +596,6 @@ class AsyncGraphClient:
         --------
         import asyncio
 
-        from zep_cloud import EntityType
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -523,14 +604,7 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            await client.graph.set_entity_types_internal(
-                entity_types=[
-                    EntityType(
-                        description="description",
-                        name="name",
-                    )
-                ],
-            )
+            await client.graph.set_entity_types_internal()
 
 
         asyncio.run(main())
@@ -561,9 +635,11 @@ class AsyncGraphClient:
     async def add(
         self,
         *,
-        data: typing.Optional[str] = OMIT,
+        data: str,
+        type: GraphDataType,
+        created_at: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
-        type: typing.Optional[GraphDataType] = OMIT,
+        source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> Episode:
@@ -572,11 +648,15 @@ class AsyncGraphClient:
 
         Parameters
         ----------
-        data : typing.Optional[str]
+        data : str
+
+        type : GraphDataType
+
+        created_at : typing.Optional[str]
 
         group_id : typing.Optional[str]
 
-        type : typing.Optional[GraphDataType]
+        source_description : typing.Optional[str]
 
         user_id : typing.Optional[str]
 
@@ -600,7 +680,10 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            await client.graph.add()
+            await client.graph.add(
+                data="data",
+                type="text",
+            )
 
 
         asyncio.run(main())
@@ -608,13 +691,95 @@ class AsyncGraphClient:
         _response = await self._client_wrapper.httpx_client.request(
             "graph",
             method="POST",
-            json={"data": data, "group_id": group_id, "type": type, "user_id": user_id},
+            json={
+                "created_at": created_at,
+                "data": data,
+                "group_id": group_id,
+                "source_description": source_description,
+                "type": type,
+                "user_id": user_id,
+            },
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(Episode, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def add_batch(
+        self,
+        *,
+        episodes: typing.Sequence[EpisodeData],
+        group_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[Episode]:
+        """
+        Add data to the graph in batch mode (each episode processed concurrently). Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+
+        Parameters
+        ----------
+        episodes : typing.Sequence[EpisodeData]
+
+        group_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Episode]
+            Added episodes
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import EpisodeData
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.add_batch(
+                episodes=[
+                    EpisodeData(
+                        data="data",
+                        type="text",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph-batch",
+            method="POST",
+            json={"episodes": episodes, "group_id": group_id, "user_id": user_id},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(typing.List[Episode], _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

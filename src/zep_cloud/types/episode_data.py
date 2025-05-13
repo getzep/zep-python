@@ -5,10 +5,14 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .graph_data_type import GraphDataType
 
 
-class NewFact(pydantic_v1.BaseModel):
-    fact: str
+class EpisodeData(pydantic_v1.BaseModel):
+    created_at: typing.Optional[str] = None
+    data: str
+    source_description: typing.Optional[str] = None
+    type: GraphDataType
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -1164,20 +1164,12 @@ Sets the entity types for a project, replacing any existing ones.
 <dd>
 
 ```python
-from zep_cloud import EntityType
 from zep_cloud.client import Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.set_entity_types_internal(
-    entity_types=[
-        EntityType(
-            description="description",
-            name="name",
-        )
-    ],
-)
+client.graph.set_entity_types_internal()
 
 ```
 </dd>
@@ -1193,7 +1185,7 @@ client.graph.set_entity_types_internal(
 <dl>
 <dd>
 
-**entity_types:** `typing.Sequence[EntityType]` 
+**entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
     
 </dd>
 </dl>
@@ -1245,7 +1237,10 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.add()
+client.graph.add(
+    data="data",
+    type="text",
+)
 
 ```
 </dd>
@@ -1261,7 +1256,23 @@ client.graph.add()
 <dl>
 <dd>
 
-**data:** `typing.Optional[str]` 
+**data:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `GraphDataType` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**created_at:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -1277,7 +1288,99 @@ client.graph.add()
 <dl>
 <dd>
 
-**type:** `typing.Optional[GraphDataType]` 
+**source_description:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">add_batch</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add data to the graph in batch mode (each episode processed concurrently). Note: each subscription tier has different limits on the amount of data that can be added to the graph please refer to the pricing page for more information.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import EpisodeData
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.add_batch(
+    episodes=[
+        EpisodeData(
+            data="data",
+            type="text",
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**episodes:** `typing.Sequence[EpisodeData]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -2757,6 +2860,7 @@ Deprecated API: Adds facts to a session
 <dd>
 
 ```python
+from zep_cloud import NewFact
 from zep_cloud.client import Zep
 
 client = Zep(
@@ -2764,6 +2868,11 @@ client = Zep(
 )
 client.memory.add_session_facts(
     session_id="sessionId",
+    facts=[
+        NewFact(
+            fact="fact",
+        )
+    ],
 )
 
 ```
@@ -2788,7 +2897,7 @@ client.memory.add_session_facts(
 <dl>
 <dd>
 
-**facts:** `typing.Optional[typing.Sequence[NewFact]]` 
+**facts:** `typing.Sequence[NewFact]` 
     
 </dd>
 </dl>
@@ -3183,7 +3292,7 @@ client.memory.get_session_messages(
 <dl>
 <dd>
 
-Returns a specific message from a session.
+Deprecated: Use graph.episodes.get instead. Returns a specific message from a session.
 </dd>
 </dl>
 </dd>
@@ -4114,7 +4223,9 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.user.add()
+client.user.add(
+    user_id="user_id",
+)
 
 ```
 </dd>
@@ -4126,6 +4237,14 @@ client.user.add()
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — The unique identifier of the user.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -4163,14 +4282,6 @@ client.user.add()
 <dd>
 
 **metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — The metadata associated with the user.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `typing.Optional[str]` — The unique identifier of the user.
     
 </dd>
 </dl>
@@ -5560,6 +5671,146 @@ client.graph.node.get_by_user_id(
 <dd>
 
 **uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_edges</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns all edges for a node
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.node.get_edges(
+    node_uuid="node_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**node_uuid:** `str` — Node UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_episodes</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns all episodes that mentioned a given node
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.node.get_episodes(
+    node_uuid="node_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**node_uuid:** `str` — Node UUID
     
 </dd>
 </dl>
