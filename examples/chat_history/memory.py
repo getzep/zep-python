@@ -20,7 +20,7 @@ from dotenv import find_dotenv, load_dotenv
 from chat_history_shoe_purchase import history
 
 from zep_cloud.client import AsyncZep
-from zep_cloud.types import Message
+from zep_cloud.types import Message, FactRatingInstruction, FactRatingExamples
 
 load_dotenv(
     dotenv_path=find_dotenv()
@@ -36,7 +36,15 @@ async def main() -> None:
 
     # Create a user
     user_id = uuid.uuid4().hex  # unique user id. can be any alphanum string
-
+    fact_rating_instruction = """Rate the facts by poignancy. Highly poignant 
+    facts have a significant emotional impact or relevance to the user. 
+    Facts with low poignancy are minimally relevant or of little emotional
+    significance."""
+    fact_rating_examples = FactRatingExamples(
+        high="The user received news of a family member's serious illness.",
+        medium="The user completed a challenging marathon.",
+        low="The user bought a new brand of toothpaste.",
+    )
     await client.user.add(
         user_id=user_id,
         email="user@example.com",
@@ -44,9 +52,10 @@ async def main() -> None:
         last_name="Smith",
         metadata={"vip": "true"},
     )
+    
     # await asyncio.sleep(1)
     print(f"User added: {user_id}")
-
+    return
     session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
 
     # Create session associated with the above user
