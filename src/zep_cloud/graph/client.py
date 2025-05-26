@@ -12,6 +12,7 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
@@ -82,6 +83,7 @@ class GraphClient:
     def set_entity_types_internal(
         self,
         *,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
@@ -90,6 +92,8 @@ class GraphClient:
 
         Parameters
         ----------
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
+
         entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         request_options : typing.Optional[RequestOptions]
@@ -112,7 +116,7 @@ class GraphClient:
         _response = self._client_wrapper.httpx_client.request(
             "entity-types",
             method="PUT",
-            json={"entity_types": entity_types},
+            json={"edge_types": edge_types, "entity_types": entity_types},
             request_options=request_options,
             omit=OMIT,
         )
@@ -574,6 +578,7 @@ class AsyncGraphClient:
     async def set_entity_types_internal(
         self,
         *,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
@@ -582,6 +587,8 @@ class AsyncGraphClient:
 
         Parameters
         ----------
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
+
         entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         request_options : typing.Optional[RequestOptions]
@@ -612,7 +619,7 @@ class AsyncGraphClient:
         _response = await self._client_wrapper.httpx_client.request(
             "entity-types",
             method="PUT",
-            json={"entity_types": entity_types},
+            json={"edge_types": edge_types, "entity_types": entity_types},
             request_options=request_options,
             omit=OMIT,
         )

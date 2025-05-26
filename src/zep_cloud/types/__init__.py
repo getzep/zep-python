@@ -7,8 +7,10 @@ from .apidata_document import ApidataDocument
 from .apidata_document_collection import ApidataDocumentCollection
 from .apidata_document_search_response import ApidataDocumentSearchResponse
 from .apidata_document_with_score import ApidataDocumentWithScore
+from .apidata_entity_edge_source_target import ApidataEntityEdgeSourceTarget
 from .classify_session_request import ClassifySessionRequest
 from .create_document_request import CreateDocumentRequest
+from .edge_type import EdgeType
 from .end_session_response import EndSessionResponse
 from .end_sessions_response import EndSessionsResponse
 from .entity_edge import EntityEdge
@@ -64,8 +66,10 @@ __all__ = [
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",
     "ApidataDocumentWithScore",
+    "ApidataEntityEdgeSourceTarget",
     "ClassifySessionRequest",
     "CreateDocumentRequest",
+    "EdgeType",
     "EndSessionResponse",
     "EndSessionsResponse",
     "EntityEdge",

@@ -5,13 +5,15 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .edge_type import EdgeType
-from .entity_type import EntityType
+from .apidata_entity_edge_source_target import ApidataEntityEdgeSourceTarget
+from .entity_property import EntityProperty
 
 
-class EntityTypeResponse(pydantic_v1.BaseModel):
-    edge_types: typing.Optional[typing.List[EdgeType]] = None
-    entity_types: typing.Optional[typing.List[EntityType]] = None
+class EdgeType(pydantic_v1.BaseModel):
+    description: str
+    name: str
+    properties: typing.Optional[typing.List[EntityProperty]] = None
+    source_targets: typing.Optional[typing.List[ApidataEntityEdgeSourceTarget]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -5,13 +5,18 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .edge_type import EdgeType
-from .entity_type import EntityType
 
 
-class EntityTypeResponse(pydantic_v1.BaseModel):
-    edge_types: typing.Optional[typing.List[EdgeType]] = None
-    entity_types: typing.Optional[typing.List[EntityType]] = None
+class ApidataEntityEdgeSourceTarget(pydantic_v1.BaseModel):
+    source: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Source represents the originating node identifier in the edge type relationship. (optional)
+    """
+
+    target: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Target represents the target node identifier in the edge type relationship. (optional)
+    """
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

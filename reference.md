@@ -1185,6 +1185,14 @@ client.graph.set_entity_types_internal()
 <dl>
 <dd>
 
+**edge_types:** `typing.Optional[typing.Sequence[EdgeType]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
     
 </dd>
