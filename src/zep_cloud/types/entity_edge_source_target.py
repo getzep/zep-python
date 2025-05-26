@@ -7,7 +7,7 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class ApidataEntityEdgeSourceTarget(pydantic_v1.BaseModel):
+class EntityEdgeSourceTarget(pydantic_v1.BaseModel):
     source: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
     Source represents the originating node identifier in the edge type relationship. (optional)
