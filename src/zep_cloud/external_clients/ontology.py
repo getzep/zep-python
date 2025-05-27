@@ -5,9 +5,6 @@ from typing_extensions import Annotated
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaValue
 from pydantic_core import core_schema
 
-from zep_cloud import EntityEdgeSourceTarget, EntityType
-
-
 class EntityPropertyType(Enum):
     Text = "Text"
     Int = "Int"
@@ -147,61 +144,3 @@ def edge_model_to_api_schema(model_class: "EdgeModel", name: str) -> dict[str, t
     """Convert a Pydantic EdgeModel to a JSON schema for API EntityEdge"""
     return _model_to_api_schema_common(model_class, name, is_edge=True)
 
-
-def convert_edge_schema_to_model(edge_schema: EntityType) -> (typing.Type[EdgeModel], list[EntityEdgeSourceTarget]):
-    """
-    Convert a JSON schema from Go EntityType back to a Pydantic EdgeModel class
-
-    This function takes an EntityType object (which can represent an edge type in the API)
-    and converts it to a Pydantic EdgeModel class. It maps the properties from the EntityType
-    to the appropriate Pydantic field types (EntityText, EntityInt, etc.) and creates a new
-    model class dynamically using create_model.
-
-    Args:
-        edge_schema: The EntityType object representing an edge type
-
-    Returns:
-        A tuple containing:
-        - The dynamically created EdgeModel class
-        - The list of source_targets from the edge_schema
-    """
-
-    edge_name = edge_schema.name
-    properties = edge_schema.properties
-    edge_description = edge_schema.description
-
-    field_definitions: dict[str, typing.Any] = {}
-
-    type_mapping = {
-        'Text': EntityText,
-        'Int': EntityInt,
-        'Float': EntityFloat,
-        'Boolean': EntityBoolean,
-    }
-
-    for prop in properties:
-        prop_name = prop.name
-        prop_type = prop.type
-        prop_description = prop.description
-
-        if not prop_name or not prop_type:
-            continue
-
-        field_type = type_mapping.get(prop_type)
-        if not field_type:
-            continue
-
-        field_definitions[prop_name] = (
-            field_type,
-            Field(description=prop_description, default=None),
-        )
-
-    model_class = create_model(
-        edge_name,
-        __base__=EntityModel,
-        __module__=EntityModel.__module__,
-        __doc__=edge_description,
-        **field_definitions,
-    )
-
-    return model_class, edge_schema.source_targets
