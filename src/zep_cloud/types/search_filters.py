@@ -8,6 +8,11 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class SearchFilters(pydantic_v1.BaseModel):
+    edge_types: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    """
+    List of edge types to filter on
+    """
+
     node_labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     List of node labels to filter on
