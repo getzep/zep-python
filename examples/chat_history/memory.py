@@ -52,7 +52,7 @@ async def main() -> None:
         last_name="Smith",
         metadata={"vip": "true"},
     )
-    
+
     # await asyncio.sleep(1)
     print(f"User added: {user_id}")
     session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string

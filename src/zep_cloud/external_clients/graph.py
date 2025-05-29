@@ -1,4 +1,6 @@
+from zep_cloud import EntityEdgeSourceTarget, EdgeType
 from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from zep_cloud.external_clients.ontology import EdgeModel, edge_model_to_api_schema
 from zep_cloud.graph.client import GraphClient as BaseGraphClient, AsyncGraphClient as AsyncBaseGraphClient
 from zep_cloud.types import EntityType
 import typing
@@ -28,11 +30,37 @@ class AsyncGraphClient(AsyncBaseGraphClient):
             client_wrapper=client_wrapper
         )
 
-    async def set_entity_types(self, entities: dict[str, "EntityModel"], request_options: typing.Optional[RequestOptions] = None):
+    async def set_entity_types(
+            self,
+            entities: dict[str, "EntityModel"],
+            edges: typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]] = None,
+            request_options: typing.Optional[RequestOptions] = None,
+    ):
         api_entity_types: list[EntityType] = []
+        api_edge_types: list[EdgeType] = []
+
         for name, entity in entities.items():
             entity_dict = entity_model_to_api_schema(entity, name)
             api_entity_types.append(EntityType(**entity_dict))
-        res = await self.set_entity_types_internal(entity_types=api_entity_types, request_options=request_options)
+
+        if edges:
+            for name, edge_data in edges.items():
+                # Handle both EdgeModel directly and tuple of (model, source_targets)
+                if isinstance(edge_data, tuple):
+                    edge_model, source_targets = edge_data
+                else:
+                    edge_model = edge_data
+                    source_targets = None
+
+                edge_dict = edge_model_to_api_schema(edge_model, name)
+                if source_targets:
+                    edge_dict["source_targets"] = [st.dict() for st in source_targets]
+                api_edge_types.append(EdgeType(**edge_dict))
+
+        res = await self.set_entity_types_internal(
+            entity_types=api_entity_types,
+            edge_types=api_edge_types,
+            request_options=request_options
+        )
         return res
    

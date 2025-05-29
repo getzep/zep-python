@@ -5,10 +5,12 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .edge_type import EdgeType
 from .entity_type import EntityType
 
 
 class EntityTypeResponse(pydantic_v1.BaseModel):
+    edge_types: typing.Optional[typing.List[EdgeType]] = None
     entity_types: typing.Optional[typing.List[EntityType]] = None
 
     def json(self, **kwargs: typing.Any) -> str:

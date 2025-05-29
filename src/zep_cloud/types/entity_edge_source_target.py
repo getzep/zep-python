@@ -7,15 +7,15 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
-class SearchFilters(pydantic_v1.BaseModel):
-    edge_types: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+class EntityEdgeSourceTarget(pydantic_v1.BaseModel):
+    source: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    List of edge types to filter on
+    Source represents the originating node identifier in the edge type relationship. (optional)
     """
 
-    node_labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    target: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    List of node labels to filter on
+    Target represents the target node identifier in the edge type relationship. (optional)
     """
 
     def json(self, **kwargs: typing.Any) -> str:
