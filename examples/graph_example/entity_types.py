@@ -3,7 +3,7 @@ import os
 
 from dotenv import find_dotenv, load_dotenv
 
-from zep_cloud import EntityEdgeSourceTarget
+from zep_cloud import EntityEdgeSourceTarget, SearchFilters
 from zep_cloud.client import AsyncZep
 from pydantic import Field
 from zep_cloud.external_clients.ontology import EntityModel, EntityText, EdgeModel
@@ -53,7 +53,6 @@ async def main() -> None:
             description="The purpose of travel (Business, Leisure, etc.)",
             default=None
         )
-
     await client.graph.set_entity_types(
         entities={
             "Destination": Destination,
@@ -70,6 +69,26 @@ async def main() -> None:
             ),
         }
     )
+
+    results = await client.graph.search(
+        user_id="<user-id>",
+        query="travel",
+        # scope="nodes",
+        scope="edges",
+        search_filters=SearchFilters(
+            edge_types=["TRAVELING_TO"]
+            # node_labels=["Destination"]
+        )
+    )
+
+    if results.nodes:
+        for node in results.nodes:
+            print(Destination(**node.attributes))
+    if results.edges:
+        for edge in results.edges:
+            print(TravelingTo(**edge.attributes))
+
+
     enntl = await client.graph.list_entity_types()
     print(enntl)
 

@@ -36,6 +36,71 @@ class AsyncGraphClient(AsyncBaseGraphClient):
             edges: typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]] = None,
             request_options: typing.Optional[RequestOptions] = None,
     ):
+        """
+        Sets the entity and edge types for a project, replacing any existing ones.
+
+        Parameters
+        ----------
+        entities : dict[str, "EntityModel"]
+
+        edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Examples
+        --------
+
+        class Destination(EntityModel):
+
+        \"""A destination is a place that travelers visit.\"""
+            destination_name: EntityText = Field(
+                description="The name of the destination",
+                default=None
+            )
+            country: EntityText = Field(
+                description="The country of the destination",
+                default=None
+            )
+            region: EntityText = Field(
+                description="The region of the destination",
+                default=None
+            )
+            description: EntityText = Field(
+                description="A description of the destination",
+                default=None
+            )
+
+
+        class TravelingTo(EdgeModel):
+
+        \"""An edge representing a traveler going to a destination.\"""
+            travel_date: EntityText = Field(
+                description="The date of travel to this destination",
+                default=None
+            )
+            purpose: EntityText = Field(
+                description="The purpose of travel (Business, Leisure, etc.)",
+                default=None
+            )
+
+        await client.graph.set_entity_types(
+            entities={
+                "Destination": Destination,
+            },
+            edges={
+                "TRAVELING_TO": (
+                    TravelingTo,
+                    [
+                        EntityEdgeSourceTarget(
+                            source="User",
+                            target="Destination"
+                        )
+                    ]
+                ),
+            }
+        )
+        """
         api_entity_types: list[EntityType] = []
         api_edge_types: list[EdgeType] = []
 
