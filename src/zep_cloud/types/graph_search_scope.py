@@ -2,4 +2,4 @@
 
 import typing
 
-GraphSearchScope = typing.Union[typing.Literal["edges", "nodes"], typing.Any]
+GraphSearchScope = typing.Union[typing.Literal["edges", "nodes", "episodes"], typing.Any]
