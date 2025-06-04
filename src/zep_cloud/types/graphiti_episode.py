@@ -5,15 +5,17 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .entity_edge import EntityEdge
-from .entity_node import EntityNode
-from .graphiti_episode import GraphitiEpisode
+from .episode_type import EpisodeType
 
 
-class GraphSearchResults(pydantic_v1.BaseModel):
-    edges: typing.Optional[typing.List[EntityEdge]] = None
-    episodes: typing.Optional[typing.List[GraphitiEpisode]] = None
-    nodes: typing.Optional[typing.List[EntityNode]] = None
+class GraphitiEpisode(pydantic_v1.BaseModel):
+    content: str
+    created_at: str
+    name: str
+    source: EpisodeType
+    source_description: str
+    uuid_: str = pydantic_v1.Field(alias="uuid")
+    valid_at: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -30,5 +32,7 @@ class GraphSearchResults(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
+        allow_population_by_field_name = True
+        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}
