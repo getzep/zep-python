@@ -7,12 +7,10 @@ from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .entity_edge import EntityEdge
 from .entity_node import EntityNode
-from .episode import Episode
 
 
-class GraphSearchResults(pydantic_v1.BaseModel):
+class EpisodeMentions(pydantic_v1.BaseModel):
     edges: typing.Optional[typing.List[EntityEdge]] = None
-    episodes: typing.Optional[typing.List[Episode]] = None
     nodes: typing.Optional[typing.List[EntityNode]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
