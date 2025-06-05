@@ -14,7 +14,7 @@ from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.episode import Episode
 from ...types.episode_response import EpisodeResponse
-from ...types.graph_search_results import GraphSearchResults
+from ...types.graphiti_graph_search_results import GraphitiGraphSearchResults
 from ...types.success_response import SuccessResponse
 
 
@@ -240,7 +240,7 @@ class EpisodeClient:
 
     def get_nodes_and_edges(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> GraphSearchResults:
+    ) -> GraphitiGraphSearchResults:
         """
         Returns nodes and edges mentioned in an episode
 
@@ -254,7 +254,7 @@ class EpisodeClient:
 
         Returns
         -------
-        GraphSearchResults
+        GraphitiGraphSearchResults
             Graph search results
 
         Examples
@@ -273,7 +273,7 @@ class EpisodeClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(GraphSearchResults, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(GraphitiGraphSearchResults, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -542,7 +542,7 @@ class AsyncEpisodeClient:
 
     async def get_nodes_and_edges(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> GraphSearchResults:
+    ) -> GraphitiGraphSearchResults:
         """
         Returns nodes and edges mentioned in an episode
 
@@ -556,7 +556,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        GraphSearchResults
+        GraphitiGraphSearchResults
             Graph search results
 
         Examples
@@ -583,7 +583,7 @@ class AsyncEpisodeClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(GraphSearchResults, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(GraphitiGraphSearchResults, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

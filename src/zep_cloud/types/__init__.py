@@ -34,6 +34,7 @@ from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
 from .graphiti_episode import GraphitiEpisode
+from .graphiti_graph_search_results import GraphitiGraphSearchResults
 from .group import Group
 from .group_list_response import GroupListResponse
 from .memory import Memory
@@ -95,6 +96,7 @@ __all__ = [
     "GraphSearchResults",
     "GraphSearchScope",
     "GraphitiEpisode",
+    "GraphitiGraphSearchResults",
     "Group",
     "GroupListResponse",
     "Memory",
