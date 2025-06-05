@@ -6,7 +6,7 @@ import typing
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .graph_data_type import GraphDataType
-from .models_role_type import ModelsRoleType
+from .role_type import RoleType
 
 
 class Episode(pydantic_v1.BaseModel):
@@ -18,7 +18,7 @@ class Episode(pydantic_v1.BaseModel):
     Optional role, will only be present if the episode was created using memory.add API
     """
 
-    role_type: typing.Optional[ModelsRoleType] = pydantic_v1.Field(default=None)
+    role_type: typing.Optional[RoleType] = pydantic_v1.Field(default=None)
     """
     Optional role_type, will only be present if the episode was created using memory.add API
     """
