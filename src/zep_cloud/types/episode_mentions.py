@@ -9,7 +9,7 @@ from .entity_edge import EntityEdge
 from .entity_node import EntityNode
 
 
-class GraphitiGraphSearchResults(pydantic_v1.BaseModel):
+class EpisodeMentions(pydantic_v1.BaseModel):
     edges: typing.Optional[typing.List[EntityEdge]] = None
     nodes: typing.Optional[typing.List[EntityNode]] = None
 
