@@ -41,6 +41,7 @@ from .memory import Memory
 from .memory_search_result import MemorySearchResult
 from .message import Message
 from .message_list_response import MessageListResponse
+from .models_role_type import ModelsRoleType
 from .new_fact import NewFact
 from .question import Question
 from .reranker import Reranker
@@ -103,6 +104,7 @@ __all__ = [
     "MemorySearchResult",
     "Message",
     "MessageListResponse",
+    "ModelsRoleType",
     "NewFact",
     "Question",
     "Reranker",
