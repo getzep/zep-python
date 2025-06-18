@@ -1658,6 +1658,14 @@ client.graph.search(
 <dl>
 <dd>
 
+**bfs_origin_node_uuids:** `typing.Optional[typing.Sequence[str]]` — Nodes that are the origins of the BFS searches
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **center_node_uuid:** `typing.Optional[str]` — Node to rerank around for node distance reranking
     
 </dd>
