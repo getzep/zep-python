@@ -413,6 +413,7 @@ class GraphClient:
         self,
         *,
         query: str,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
@@ -432,6 +433,9 @@ class GraphClient:
         ----------
         query : str
             The string to search for (required)
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes that are the origins of the BFS searches
 
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
@@ -486,6 +490,7 @@ class GraphClient:
             "graph/search",
             method="POST",
             json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
                 "group_id": group_id,
                 "limit": limit,
@@ -940,6 +945,7 @@ class AsyncGraphClient:
         self,
         *,
         query: str,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
@@ -959,6 +965,9 @@ class AsyncGraphClient:
         ----------
         query : str
             The string to search for (required)
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes that are the origins of the BFS searches
 
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
@@ -1021,6 +1030,7 @@ class AsyncGraphClient:
             "graph/search",
             method="POST",
             json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
                 "group_id": group_id,
                 "limit": limit,
