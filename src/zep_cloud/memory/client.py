@@ -573,7 +573,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionClassification:
         """
-        Classifies a session.
+        Deprecated: Classifies a session.
 
         Parameters
         ----------
@@ -716,7 +716,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Dict[str, str]:
         """
-        extract data from a session by session id
+        Deprecated: extract data from a session by session id
 
         Parameters
         ----------
@@ -2091,7 +2091,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionClassification:
         """
-        Classifies a session.
+        Deprecated: Classifies a session.
 
         Parameters
         ----------
@@ -2250,7 +2250,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Dict[str, str]:
         """
-        extract data from a session by session id
+        Deprecated: extract data from a session by session id
 
         Parameters
         ----------

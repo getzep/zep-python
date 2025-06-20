@@ -25,7 +25,7 @@ class MemoryClient(BaseMemoryClient):
         last_n: int = 4,
         validate: bool = False,
     ):
-        """Extracts structured data from a session based on a ZepModel schema.
+        """Deprecated: Extracts structured data from a session based on a ZepModel schema.
         This method retrieves data based on a given model and session details.
         It then returns the extracted and validated data as an instance of the given ZepModel.
 
@@ -94,7 +94,7 @@ class AsyncMemoryClient(AsyncBaseMemoryClient):
         last_n: int = 4,
         validate: bool = False,
     ):
-        """Extracts structured data from a session based on a ZepModel schema.
+        """Deprecated: Extracts structured data from a session based on a ZepModel schema.
         This method retrieves data based on a given model and session details.
         It then returns the extracted and validated data as an instance of the given ZepModel.
 
