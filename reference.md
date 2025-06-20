@@ -2570,7 +2570,7 @@ Fact rating instructions can not be unset.
 <dl>
 <dd>
 
-Classifies a session.
+Deprecated: Classifies a session.
 </dd>
 </dl>
 </dd>
@@ -2768,7 +2768,7 @@ client.memory.end_session(
 <dl>
 <dd>
 
-extract data from a session by session id
+Deprecated: extract data from a session by session id
 </dd>
 </dl>
 </dd>
