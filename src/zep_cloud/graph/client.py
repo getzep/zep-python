@@ -431,10 +431,10 @@ class GraphClient:
             user_id of the user whose graph is being cloned. Required if group_id is not provided
 
         target_group_id : typing.Optional[str]
-            Optional group_id to be set on the cloned group
+            group_id to be set on the cloned group. Must not point to an existing group. Required if target_user_id is not provided.
 
         target_user_id : typing.Optional[str]
-            Optional user_id to be set on the cloned user
+            user_id to be set on the cloned user. Must not point to an existing user. Required if target_group_id is not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1034,10 +1034,10 @@ class AsyncGraphClient:
             user_id of the user whose graph is being cloned. Required if group_id is not provided
 
         target_group_id : typing.Optional[str]
-            Optional group_id to be set on the cloned group
+            group_id to be set on the cloned group. Must not point to an existing group. Required if target_user_id is not provided.
 
         target_user_id : typing.Optional[str]
-            Optional user_id to be set on the cloned user
+            user_id to be set on the cloned user. Must not point to an existing user. Required if target_group_id is not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

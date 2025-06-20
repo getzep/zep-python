@@ -1664,7 +1664,7 @@ client.graph.clone()
 <dl>
 <dd>
 
-**target_group_id:** `typing.Optional[str]` — Optional group_id to be set on the cloned group
+**target_group_id:** `typing.Optional[str]` — group_id to be set on the cloned group. Must not point to an existing group. Required if target_user_id is not provided.
     
 </dd>
 </dl>
@@ -1672,7 +1672,7 @@ client.graph.clone()
 <dl>
 <dd>
 
-**target_user_id:** `typing.Optional[str]` — Optional user_id to be set on the cloned user
+**target_user_id:** `typing.Optional[str]` — user_id to be set on the cloned user. Must not point to an existing user. Required if target_group_id is not provided.
     
 </dd>
 </dl>
