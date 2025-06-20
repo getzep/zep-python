@@ -1600,6 +1600,98 @@ client.graph.add_fact_triple(
 </dl>
 </details>
 
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">clone</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Clone a user or group graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.clone()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**source_group_id:** `typing.Optional[str]` — group_id of the group whose graph is being cloned. Required if user_id is not provided
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_user_id:** `typing.Optional[str]` — user_id of the user whose graph is being cloned. Required if group_id is not provided
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_group_id:** `typing.Optional[str]` — Optional group_id to be set on the cloned group
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_user_id:** `typing.Optional[str]` — Optional user_id to be set on the cloned user
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">search</a>(...)</code></summary>
 <dl>
 <dd>
