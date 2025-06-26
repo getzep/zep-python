@@ -1,5 +1,6 @@
 # Specify files that shouldn't be modified by Fern
 src/zep_cloud/client.py
+src/zep_cloud/graph/utils.py
 src/zep_cloud/external_clients/
 src/zep_cloud/extractor/
 examples/
