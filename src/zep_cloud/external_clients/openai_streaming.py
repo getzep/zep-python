@@ -1,0 +1,279 @@
+"""
+Streaming support for Zep OpenAI integration.
+"""
+
+import logging
+from typing import Any, AsyncIterator, Callable, Iterator, List, Optional
+
+from zep_cloud.client import AsyncZep, Zep
+from zep_cloud.types import Message
+
+from .openai_utils import safe_zep_operation
+
+logger = logging.getLogger(__name__)
+
+
+class ZepStreamWrapper:
+    """
+    Wrapper around OpenAI streaming responses that collects content for Zep.
+
+    This class wraps the OpenAI streaming response and collects the complete
+    assistant response as it streams, then adds it to Zep when the stream completes.
+    """
+
+    def __init__(
+        self,
+        stream: Iterator[Any],
+        session_id: str,
+        zep_client: Zep,
+        extract_content_func: Callable[[Any], Optional[str]],
+        skip_zep_on_error: bool = True,
+    ):
+        """
+        Initialize the stream wrapper.
+
+        Args:
+            stream: The original OpenAI stream iterator
+            session_id: Session ID for Zep memory
+            zep_client: Zep client instance
+            extract_content_func: Function to extract content from stream chunks
+            skip_zep_on_error: Whether to skip/log errors or raise them
+        """
+        self.stream = stream
+        self.session_id = session_id
+        self.zep_client = zep_client
+        self.extract_content_func = extract_content_func
+        self.skip_zep_on_error = skip_zep_on_error
+        self._collected_content: List[str] = []
+
+    def __iter__(self) -> Iterator[Any]:
+        """Make the wrapper iterable."""
+        return self
+
+    def __next__(self) -> Any:
+        """Get the next chunk from the stream and collect content."""
+        try:
+            chunk = next(self.stream)
+
+            # Extract and collect content from this chunk
+            content = self._extract_chunk_content(chunk)
+            if content:
+                self._collected_content.append(content)
+
+            return chunk
+
+        except StopIteration:
+            # Stream is complete, add collected content to Zep
+            self._finalize_stream()
+            raise
+
+    def _extract_chunk_content(self, chunk: Any) -> Optional[str]:
+        """
+        Extract content from a streaming chunk.
+
+        Args:
+            chunk: A streaming response chunk
+
+        Returns:
+            Content string from the chunk or None
+        """
+        try:
+            # For Chat Completions streaming
+            if hasattr(chunk, "choices") and chunk.choices:
+                choice = chunk.choices[0]
+                if hasattr(choice, "delta") and hasattr(choice.delta, "content"):
+                    return choice.delta.content
+
+            # For Responses API streaming - this may need adjustment based on actual API
+            elif hasattr(chunk, "delta") and hasattr(chunk.delta, "content"):
+                return chunk.delta.content
+
+            return None
+
+        except Exception as e:
+            logger.debug(f"Failed to extract content from chunk: {e}")
+            return None
+
+    def _finalize_stream(self) -> None:
+        """
+        Finalize the stream by adding collected content to Zep.
+        """
+        if not self._collected_content:
+            return
+
+        # Combine all collected content
+        full_content = "".join(filter(None, self._collected_content))
+
+        if full_content.strip():
+
+            def add_to_zep():
+                zep_message = Message(
+                    role="assistant", role_type="assistant", content=full_content
+                )
+                self.zep_client.memory.add(self.session_id, messages=[zep_message])
+                logger.debug(
+                    f"Added streamed assistant response to Zep session {self.session_id}"
+                )
+
+            safe_zep_operation(
+                add_to_zep,
+                self.skip_zep_on_error,
+                "Add streamed assistant response to Zep",
+            )
+
+    def __enter__(self):
+        """Support for context manager protocol."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Support for context manager protocol."""
+        # Ensure content is added to Zep even if stream is not fully consumed
+        self._finalize_stream()
+
+
+class AsyncZepStreamWrapper:
+    """
+    Async wrapper around OpenAI streaming responses that collects content for Zep.
+
+    This class wraps the OpenAI async streaming response and collects the complete
+    assistant response as it streams, then adds it to Zep when the stream completes.
+    """
+
+    def __init__(
+        self,
+        stream: AsyncIterator[Any],
+        session_id: str,
+        zep_client: AsyncZep,
+        extract_content_func: Callable[[Any], Optional[str]],
+        skip_zep_on_error: bool = True,
+    ):
+        """
+        Initialize the async stream wrapper.
+
+        Args:
+            stream: The original OpenAI async stream iterator
+            session_id: Session ID for Zep memory
+            zep_client: Async Zep client instance
+            extract_content_func: Function to extract content from stream chunks
+            skip_zep_on_error: Whether to skip/log errors or raise them
+        """
+        self.stream = stream
+        self.session_id = session_id
+        self.zep_client = zep_client
+        self.extract_content_func = extract_content_func
+        self.skip_zep_on_error = skip_zep_on_error
+        self._collected_content: List[str] = []
+
+    def __aiter__(self) -> AsyncIterator[Any]:
+        """Make the wrapper async iterable."""
+        return self
+
+    async def __anext__(self) -> Any:
+        """Get the next chunk from the stream and collect content."""
+        try:
+            chunk = await self.stream.__anext__()
+
+            # Extract and collect content from this chunk
+            content = self._extract_chunk_content(chunk)
+            if content:
+                self._collected_content.append(content)
+
+            return chunk
+
+        except StopAsyncIteration:
+            # Stream is complete, add collected content to Zep
+            await self._finalize_stream()
+            raise
+
+    def _extract_chunk_content(self, chunk: Any) -> Optional[str]:
+        """
+        Extract content from a streaming chunk.
+
+        Args:
+            chunk: A streaming response chunk
+
+        Returns:
+            Content string from the chunk or None
+        """
+        try:
+            # For Chat Completions streaming
+            if hasattr(chunk, "choices") and chunk.choices:
+                choice = chunk.choices[0]
+                if hasattr(choice, "delta") and hasattr(choice.delta, "content"):
+                    return choice.delta.content
+
+            # For Responses API streaming - this may need adjustment based on actual API
+            elif hasattr(chunk, "delta") and hasattr(chunk.delta, "content"):
+                return chunk.delta.content
+
+            return None
+
+        except Exception as e:
+            logger.debug(f"Failed to extract content from chunk: {e}")
+            return None
+
+    async def _finalize_stream(self) -> None:
+        """
+        Finalize the stream by adding collected content to Zep.
+        """
+        if not self._collected_content:
+            return
+
+        # Combine all collected content
+        full_content = "".join(filter(None, self._collected_content))
+
+        if full_content.strip():
+
+            async def add_to_zep():
+                zep_message = Message(
+                    role="assistant", role_type="assistant", content=full_content
+                )
+                await self.zep_client.memory.add(
+                    self.session_id, messages=[zep_message]
+                )
+                logger.debug(
+                    f"Added streamed assistant response to Zep session {self.session_id}"
+                )
+
+            await self._asafe_zep_operation(
+                add_to_zep,
+                self.skip_zep_on_error,
+                "Add streamed assistant response to Zep",
+            )
+
+    async def _asafe_zep_operation(
+        self,
+        operation_func,
+        skip_on_error: bool = True,
+        operation_name: str = "Zep operation",
+    ) -> Any:
+        """
+        Async version of safe Zep operation.
+
+        Args:
+            operation_func: Async function to execute
+            skip_on_error: Whether to skip/log errors or raise them
+            operation_name: Name of the operation for logging
+
+        Returns:
+            Result of operation_func or None if error occurred
+        """
+        try:
+            return await operation_func()
+        except Exception as e:
+            if skip_on_error:
+                logger.warning(f"{operation_name} failed: {e}")
+                return None
+            else:
+                from .openai_utils import ZepOpenAIError
+
+                raise ZepOpenAIError(f"{operation_name} failed: {e}") from e
+
+    async def __aenter__(self):
+        """Support for async context manager protocol."""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Support for async context manager protocol."""
+        # Ensure content is added to Zep even if stream is not fully consumed
+        await self._finalize_stream()
