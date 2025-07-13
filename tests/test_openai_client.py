@@ -225,7 +225,7 @@ class TestResponsesWrapper:
         
         # Should call OpenAI directly
         mock_openai_client.responses.create.assert_called_once_with(
-            messages=sample_messages_no_context,
+            input=sample_messages_no_context,
             model="gpt-4.1-mini"
         )
         
@@ -253,8 +253,8 @@ class TestResponsesWrapper:
         
         # Should call OpenAI with context-injected messages
         call_args = mock_openai_client.responses.create.call_args
-        injected_messages = call_args[1]['messages']
-        assert "Test context" in injected_messages[0]['content']
+        injected_input = call_args[1]['input']
+        assert "Test context" in injected_input[0]['content']
     
     def test_passthrough_methods(self, mock_zep_client, mock_openai_client):
         """Test that other responses methods are passed through."""
@@ -288,7 +288,10 @@ class TestResponsesWrapper:
         # Mock complex response structure
         response = MagicMock()
         response.output = [MagicMock()]
+        response.output[0].type = "message"
+        response.output[0].role = "assistant"
         response.output[0].content = [MagicMock()]
+        response.output[0].content[0].type = "output_text"
         response.output[0].content[0].text = "Complex content"
         
         content = wrapper._extract_assistant_content(response)

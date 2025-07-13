@@ -202,6 +202,32 @@ class TestMessageConversion:
         assert len(result) == 1
         assert result[0].content == "Valid message"
     
+    def test_extract_conversation_messages_user_only(self):
+        """Test extraction with user_only=True to prevent assistant message duplication."""
+        messages = [
+            {"role": "system", "content": "System message"},
+            {"role": "user", "content": "User message 1"},
+            {"role": "assistant", "content": "Assistant response 1"},
+            {"role": "user", "content": "User message 2"},
+        ]
+        
+        # With user_only=True, should only extract user messages
+        result = extract_conversation_messages(messages, user_only=True)
+        
+        assert len(result) == 2
+        assert all(msg.role == "user" for msg in result)
+        assert all(msg.role_type == "user" for msg in result)
+        assert result[0].content == "User message 1"
+        assert result[1].content == "User message 2"
+        
+        # With user_only=False (default), should extract both user and assistant
+        result_all = extract_conversation_messages(messages, user_only=False)
+        
+        assert len(result_all) == 3
+        assert result_all[0].role == "user"
+        assert result_all[1].role == "assistant"
+        assert result_all[2].role == "user"
+    
     def test_normalize_messages_for_zep_chat(self):
         """Test message normalization for chat API."""
         messages = [
@@ -327,3 +353,42 @@ class TestEdgeCases:
         long_placeholder = "{" + "x" * 1000 + "}"
         messages = [{"role": "system", "content": f"Test {long_placeholder}"}]
         assert has_context_placeholder(messages, long_placeholder) is True
+    
+    def test_context_placeholder_optimization_large_list(self):
+        """Test context placeholder optimization with large message lists."""
+        # Create a large message list
+        messages = []
+        
+        # Add system message with placeholder (should be found quickly)
+        messages.append({"role": "system", "content": "You are helpful. Context: {context}"})
+        
+        # Add many user/assistant messages without placeholders
+        for i in range(100):
+            messages.append({"role": "user", "content": f"User message {i}"})
+            messages.append({"role": "assistant", "content": f"Assistant response {i}"})
+        
+        # Should find the placeholder in system message efficiently
+        assert has_context_placeholder(messages, "{context}")
+        
+        # Test with placeholder in early non-system message
+        messages_early = []
+        messages_early.append({"role": "user", "content": "Hello with {context}"})
+        for i in range(100):
+            messages_early.append({"role": "user", "content": f"User message {i}"})
+        
+        assert has_context_placeholder(messages_early, "{context}")
+        
+        # Test with placeholder in later message (should still be found)
+        messages_late = []
+        for i in range(10):
+            messages_late.append({"role": "user", "content": f"User message {i}"})
+        messages_late.append({"role": "user", "content": "Message with {context}"})
+        
+        assert has_context_placeholder(messages_late, "{context}")
+        
+        # Test with no placeholder in large list
+        messages_no_placeholder = []
+        for i in range(100):
+            messages_no_placeholder.append({"role": "user", "content": f"User message {i}"})
+        
+        assert not has_context_placeholder(messages_no_placeholder, "{context}")

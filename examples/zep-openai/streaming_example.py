@@ -177,6 +177,36 @@ def streaming_with_context_manager():
     
     print("\n✅ Stream automatically cleaned up!")
 
+async def async_streaming_with_context_manager():
+    """Demonstrate async streaming with context manager for automatic cleanup."""
+    print("\n🔧 Async Streaming with Context Manager")
+    print("=" * 40)
+    
+    zep_client = AsyncZep(api_key=os.getenv("ZEP_API_KEY"))
+    client = AsyncZepOpenAI(
+        zep_client=zep_client,
+        api_key=os.getenv("OPENAI_API_KEY")
+    )
+    
+    session_id = "async-context-manager-demo"
+    
+    # Using async context manager ensures proper cleanup
+    async with await client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[
+            {"role": "system", "content": "You are helpful. Context: {context}"},
+            {"role": "user", "content": "Tell me about async context managers in Python"}
+        ],
+        session_id=session_id,
+        stream=True
+    ) as stream:
+        print("Async context manager explanation: ", end="", flush=True)
+        async for chunk in stream:
+            if chunk.choices[0].delta.content:
+                print(chunk.choices[0].delta.content, end="", flush=True)
+    
+    print("\n✅ Async stream automatically cleaned up!")
+
 async def main():
     """Run all streaming examples."""
     print("🌊 ZepOpenAI Streaming Examples")
@@ -191,12 +221,15 @@ async def main():
     # Run context manager example
     streaming_with_context_manager()
     
+    # Run async context manager example
+    await async_streaming_with_context_manager()
+    
     print("\n✅ All streaming examples completed!")
     print("\nKey streaming features demonstrated:")
     print("- Sync and async streaming")
     print("- Automatic content collection during streaming")
     print("- Memory integration with streaming responses")
-    print("- Context manager support for cleanup")
+    print("- Context manager support for cleanup (sync and async)")
     print("- Conversation continuity across streaming calls")
     print("\nNote: Streamed content is automatically added to Zep memory")
     print("      when the stream completes, enabling conversation continuity.")

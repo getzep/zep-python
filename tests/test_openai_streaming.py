@@ -41,7 +41,7 @@ class TestZepStreamWrapper:
         assert wrapper.zep_client == mock_zep_client
         assert wrapper.extract_content_func == extract_func
         assert wrapper.skip_zep_on_error is True
-        assert wrapper._collected_content == []
+        assert wrapper._content_buffer.getvalue() == ""
     
     def test_stream_iteration(self, mock_zep_client, mock_stream_chunks):
         """Test streaming through wrapper with content collection."""
@@ -94,7 +94,7 @@ class TestZepStreamWrapper:
         list(wrapper)
         
         # Should have collected all content
-        assert wrapper._collected_content == chunks
+        assert wrapper._content_buffer.getvalue() == "".join(chunks)
     
     def test_stream_content_extraction_with_none_values(self, mock_zep_client):
         """Test content extraction handling None values."""
@@ -113,7 +113,7 @@ class TestZepStreamWrapper:
         list(wrapper)
         
         # Should have collected non-None content
-        assert wrapper._collected_content == ["Hello", "world", "!"]
+        assert wrapper._content_buffer.getvalue() == "Hello" + "world" + "!"
         
         # Final content should exclude None and empty values
         mock_zep_client.memory.add.assert_called_once()
@@ -240,7 +240,7 @@ class TestZepStreamWrapper:
         list(wrapper)
         
         # Should only collect content that was successfully extracted
-        assert wrapper._collected_content == ["Hello"]
+        assert wrapper._content_buffer.getvalue() == "Hello"
 
 
 class TestAsyncZepStreamWrapper:
@@ -265,7 +265,7 @@ class TestAsyncZepStreamWrapper:
         assert wrapper.zep_client == mock_async_zep_client
         assert wrapper.extract_content_func == extract_func
         assert wrapper.skip_zep_on_error is True
-        assert wrapper._collected_content == []
+        assert wrapper._content_buffer.getvalue() == ""
     
     @pytest.mark.asyncio
     async def test_async_stream_iteration(self, mock_async_zep_client, mock_stream_chunks):
@@ -314,7 +314,7 @@ class TestAsyncZepStreamWrapper:
             pass
         
         # Should have collected all content
-        assert wrapper._collected_content == chunks
+        assert wrapper._content_buffer.getvalue() == "".join(chunks)
     
     @pytest.mark.asyncio
     async def test_async_stream_finalization_empty_content(self, mock_async_zep_client):
@@ -558,7 +558,7 @@ class TestStreamingEdgeCases:
         list(wrapper)
         
         # Should only collect valid content
-        assert "valid" in wrapper._collected_content
+        assert "valid" in wrapper._content_buffer.getvalue()
     
     def test_stream_extraction_function_none_return(self, mock_zep_client, mock_stream_chunks):
         """Test streaming with extraction function that returns None."""
@@ -596,7 +596,7 @@ class TestStreamingEdgeCases:
         list(wrapper)
         
         # Should collect all content
-        assert len(wrapper._collected_content) == 1000
+        assert wrapper._content_buffer.getvalue() == "".join(f"chunk{i}" for i in range(1000))
         
         # Should add complete content to Zep
         mock_zep_client.memory.add.assert_called_once()

@@ -60,7 +60,11 @@ class MockOpenAIResponsesAPI:
         self.id = "resp_test123"
         self.model = "gpt-4.1-mini"
         self.output = [MagicMock()]
-        self.output[0].content = content
+        self.output[0].type = "message"
+        self.output[0].role = "assistant"
+        self.output[0].content = [MagicMock()]
+        self.output[0].content[0].type = "output_text"
+        self.output[0].content[0].text = content
 
 
 class MockZepMemory:

@@ -61,11 +61,37 @@ def has_context_placeholder(
     """
     if not placeholder:  # Empty placeholder doesn't make sense
         return False
-        
+    
+    # Optimization: Context placeholders are typically in system messages or early messages
+    # Search system messages first, then limit search to first few messages for performance
+    system_messages = []
+    other_messages = []
+    
     for message in messages:
+        if message.get("role") == "system":
+            system_messages.append(message)
+        else:
+            other_messages.append(message)
+    
+    # Check system messages first (most likely to contain placeholders)
+    for message in system_messages:
         content = message.get("content", "")
         if isinstance(content, str) and placeholder in content:
             return True
+    
+    # Check first 3 non-system messages (context placeholders are usually early in conversation)
+    for message in other_messages[:3]:
+        content = message.get("content", "")
+        if isinstance(content, str) and placeholder in content:
+            return True
+    
+    # If we have more than 3 non-system messages, check the rest (for completeness)
+    if len(other_messages) > 3:
+        for message in other_messages[3:]:
+            content = message.get("content", "")
+            if isinstance(content, str) and placeholder in content:
+                return True
+    
     return False
 
 
@@ -101,12 +127,13 @@ def inject_context(
     return processed_messages
 
 
-def extract_conversation_messages(messages: List[Dict[str, Any]]) -> List[Message]:
+def extract_conversation_messages(messages: List[Dict[str, Any]], user_only: bool = False) -> List[Message]:
     """
-    Extract conversation messages (user/assistant) from OpenAI format and convert to Zep format.
+    Extract conversation messages from OpenAI format and convert to Zep format.
 
     Args:
         messages: List of OpenAI format messages
+        user_only: If True, only extract user messages (to avoid duplicating assistant messages)
 
     Returns:
         List of Zep Message objects for conversation messages only
@@ -117,16 +144,25 @@ def extract_conversation_messages(messages: List[Dict[str, Any]]) -> List[Messag
         role = message.get("role", "")
         content = message.get("content", "")
 
-        # Only process user and assistant messages for conversation history
-        if role in ["user", "assistant"] and content:
-            # Map OpenAI roles to Zep roles
-            zep_role = role
-            zep_role_type = "user" if role == "user" else "assistant"
+        # Filter based on user_only flag
+        if user_only:
+            # Only process user messages to avoid duplicating assistant messages
+            if role == "user" and content:
+                zep_message = Message(
+                    role=role, role_type="user", content=content
+                )
+                conversation_messages.append(zep_message)
+        else:
+            # Process both user and assistant messages for conversation history
+            if role in ["user", "assistant"] and content:
+                # Map OpenAI roles to Zep roles
+                zep_role = role
+                zep_role_type = "user" if role == "user" else "assistant"
 
-            zep_message = Message(
-                role=zep_role, role_type=zep_role_type, content=content
-            )
-            conversation_messages.append(zep_message)
+                zep_message = Message(
+                    role=zep_role, role_type=zep_role_type, content=content
+                )
+                conversation_messages.append(zep_message)
 
     return conversation_messages
 

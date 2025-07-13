@@ -2,8 +2,9 @@
 Streaming support for Zep OpenAI integration.
 """
 
+import io
 import logging
-from typing import Any, AsyncIterator, Callable, Iterator, List, Optional
+from typing import Any, AsyncIterator, Callable, Iterator, Optional
 
 from zep_cloud.client import AsyncZep, Zep
 from zep_cloud.types import Message
@@ -44,7 +45,7 @@ class ZepStreamWrapper:
         self.zep_client = zep_client
         self.extract_content_func = extract_content_func
         self.skip_zep_on_error = skip_zep_on_error
-        self._collected_content: List[str] = []
+        self._content_buffer = io.StringIO()
 
     def __iter__(self) -> Iterator[Any]:
         """Make the wrapper iterable."""
@@ -57,8 +58,8 @@ class ZepStreamWrapper:
 
             # Extract and collect content from this chunk
             content = self._extract_chunk_content(chunk)
-            if content:
-                self._collected_content.append(content)
+            if content and isinstance(content, str):
+                self._content_buffer.write(content)
 
             return chunk
 
@@ -78,6 +79,11 @@ class ZepStreamWrapper:
             Content string from the chunk or None
         """
         try:
+            # Use the custom extraction function if provided
+            if self.extract_content_func is not None:
+                return self.extract_content_func(chunk)
+                
+            # Default extraction logic
             # For Chat Completions streaming
             if hasattr(chunk, "choices") and chunk.choices:
                 choice = chunk.choices[0]
@@ -98,11 +104,8 @@ class ZepStreamWrapper:
         """
         Finalize the stream by adding collected content to Zep.
         """
-        if not self._collected_content:
-            return
-
-        # Combine all collected content
-        full_content = "".join(filter(None, self._collected_content))
+        # Get the collected content from the buffer
+        full_content = self._content_buffer.getvalue()
 
         if full_content.strip():
 
@@ -162,7 +165,7 @@ class AsyncZepStreamWrapper:
         self.zep_client = zep_client
         self.extract_content_func = extract_content_func
         self.skip_zep_on_error = skip_zep_on_error
-        self._collected_content: List[str] = []
+        self._content_buffer = io.StringIO()
 
     def __aiter__(self) -> AsyncIterator[Any]:
         """Make the wrapper async iterable."""
@@ -175,8 +178,8 @@ class AsyncZepStreamWrapper:
 
             # Extract and collect content from this chunk
             content = self._extract_chunk_content(chunk)
-            if content:
-                self._collected_content.append(content)
+            if content and isinstance(content, str):
+                self._content_buffer.write(content)
 
             return chunk
 
@@ -196,6 +199,11 @@ class AsyncZepStreamWrapper:
             Content string from the chunk or None
         """
         try:
+            # Use the custom extraction function if provided
+            if self.extract_content_func is not None:
+                return self.extract_content_func(chunk)
+                
+            # Default extraction logic
             # For Chat Completions streaming
             if hasattr(chunk, "choices") and chunk.choices:
                 choice = chunk.choices[0]
@@ -216,11 +224,8 @@ class AsyncZepStreamWrapper:
         """
         Finalize the stream by adding collected content to Zep.
         """
-        if not self._collected_content:
-            return
-
-        # Combine all collected content
-        full_content = "".join(filter(None, self._collected_content))
+        # Get the collected content from the buffer
+        full_content = self._content_buffer.getvalue()
 
         if full_content.strip():
 

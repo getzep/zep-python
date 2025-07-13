@@ -1,7 +1,7 @@
 import typing
 from enum import Enum
 
-from pydantic import BaseModel, Field, WithJsonSchema, create_model
+from pydantic import BaseModel, Field, WithJsonSchema
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaValue
 from pydantic_core import core_schema
 from typing_extensions import Annotated

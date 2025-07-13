@@ -128,7 +128,7 @@ class BaseZepWrapper:
         Returns:
             Context string from Zep or None if error occurred
         """
-        conversation_messages = extract_conversation_messages(messages)
+        conversation_messages = extract_conversation_messages(messages, user_only=True)
 
         if conversation_messages:
             # Optimized: Add messages AND get context in one call
@@ -391,7 +391,7 @@ class AsyncBaseZepWrapper:
         Returns:
             Context string from Zep or None if error occurred
         """
-        conversation_messages = extract_conversation_messages(messages)
+        conversation_messages = extract_conversation_messages(messages, user_only=True)
 
         if conversation_messages:
             # Optimized: Add messages AND get context in one call
