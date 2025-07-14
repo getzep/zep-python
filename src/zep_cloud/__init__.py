@@ -4,7 +4,6 @@ from .types import (
     AddMemoryResponse,
     AddTripleResponse,
     ApiError,
-    ApidataAddThreadMessagesResponse,
     ApidataDocument,
     ApidataDocumentCollection,
     ApidataDocumentSearchResponse,
@@ -59,16 +58,13 @@ from .types import (
     SuccessResponse,
     Summary,
     SummaryListResponse,
-    Thread,
-    ThreadContextResponse,
-    ThreadListResponse,
     UpdateDocumentListRequest,
     User,
     UserListResponse,
     UserNodeResponse,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
-from . import document, graph, group, memory, thread, user
+from . import document, graph, group, memory, user
 from .environment import ZepEnvironment
 from .version import __version__
 
@@ -76,7 +72,6 @@ __all__ = [
     "AddMemoryResponse",
     "AddTripleResponse",
     "ApiError",
-    "ApidataAddThreadMessagesResponse",
     "ApidataDocument",
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",
@@ -135,9 +130,6 @@ __all__ = [
     "SuccessResponse",
     "Summary",
     "SummaryListResponse",
-    "Thread",
-    "ThreadContextResponse",
-    "ThreadListResponse",
     "UnauthorizedError",
     "UpdateDocumentListRequest",
     "User",
@@ -149,6 +141,5 @@ __all__ = [
     "graph",
     "group",
     "memory",
-    "thread",
     "user",
 ]
