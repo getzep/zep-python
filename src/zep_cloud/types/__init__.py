@@ -9,7 +9,9 @@ from .apidata_document_search_response import ApidataDocumentSearchResponse
 from .apidata_document_with_score import ApidataDocumentWithScore
 from .classify_session_request import ClassifySessionRequest
 from .clone_graph_response import CloneGraphResponse
+from .comparison_operator import ComparisonOperator
 from .create_document_request import CreateDocumentRequest
+from .date_filter import DateFilter
 from .edge_type import EdgeType
 from .end_session_response import EndSessionResponse
 from .end_sessions_response import EndSessionsResponse
@@ -70,7 +72,9 @@ __all__ = [
     "ApidataDocumentWithScore",
     "ClassifySessionRequest",
     "CloneGraphResponse",
+    "ComparisonOperator",
     "CreateDocumentRequest",
+    "DateFilter",
     "EdgeType",
     "EndSessionResponse",
     "EndSessionsResponse",
