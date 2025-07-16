@@ -3,15 +3,15 @@ Example of using the Zep Python SDK asynchronously with Graph functionality.
 
 This script demonstrates the following functionality:
 - Creating a user.
-- Creating a session associated with the created user.
-- Adding messages to the session.
+- Creating a thread associated with the created user.
+- Adding messages to the thread.
 - Retrieving episodes, edges, and nodes for a user.
 - Searching the user's graph memory.
 - Adding text and JSON episodes to the graph.
 - Performing a centered search on a specific node.
 
 The script showcases various operations using the Zep Graph API, including
-user and session management, adding different types of episodes, and querying
+user and thread management, adding different types of episodes, and querying
 the graph structure.
 """
 
@@ -37,14 +37,14 @@ async def main() -> None:
         api_key=API_KEY,
     )
     user_id = uuid.uuid4().hex
-    session_id = uuid.uuid4().hex
+    thread_id = uuid.uuid4().hex
     await client.user.add(user_id=user_id, first_name="Paul")
     print(f"User {user_id} created")
-    await client.memory.add_session(session_id=session_id, user_id=user_id)
-    print(f"Session {session_id} created")
+    await client.thread.create(thread_id=thread_id, user_id=user_id)
+    print(f"thread {thread_id} created")
     for message in history[2]:
         await client.memory.add(
-            session_id,
+            thread_id,
             messages=[
                 Message(
                     role_type=message["role_type"],
@@ -55,19 +55,9 @@ async def main() -> None:
 
     print("Waiting for the graph to be updated...")
     await asyncio.sleep(30)
-    print("Getting memory for session")
-    session_memory = await client.memory.get(session_id)
-    print(session_memory)
-    print("Searching user memory...")
-    search_results = await client.memory.search_sessions(
-        text="What is the weather in San Francisco?",
-        user_id=user_id,
-        search_scope="facts",
-    )
-    print(search_results)
-    sessions = await client.user.get_sessions(user_id)
-    print(sessions)
-    print("Getting episodes for user")
+    print("Getting user context for thread")
+    thread_context = await client.thread.get_user_context(thread_id)
+    print(thread_context)
     episode_result = await client.graph.episode.get_by_user_id(user_id, lastn=3)
     episodes = episode_result.episodes
     print(f"Episodes for user {user_id}:")
@@ -154,15 +144,6 @@ async def main() -> None:
         scope="nodes",
     )
     print(search_results.nodes)
-    print("Getting all user facts")
-    result = await client.user.get_facts(user_id)
-    print(result.facts)
-
-    for fact in result.facts:
-        if fact.valid_at or fact.invalid_at:
-            print(
-                f"Fact {fact.fact} is valid at {fact.valid_at} and invalid at {fact.invalid_at}\n "
-            )
 
     # Uncomment to delete the user
     # await client.user.delete(user_id)
