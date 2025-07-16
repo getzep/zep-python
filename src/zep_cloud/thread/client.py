@@ -11,8 +11,8 @@ from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
+from ..types.add_thread_messages_response import AddThreadMessagesResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_add_thread_messages_response import ApidataAddThreadMessagesResponse
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.role_type import RoleType
@@ -332,7 +332,7 @@ class ThreadClient:
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataAddThreadMessagesResponse:
+    ) -> AddThreadMessagesResponse:
         """
         Add messages to a thread.
 
@@ -357,7 +357,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataAddThreadMessagesResponse
+        AddThreadMessagesResponse
             An object, optionally containing user context retrieved for the last thread message
 
         Examples
@@ -387,7 +387,7 @@ class ThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataAddThreadMessagesResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(AddThreadMessagesResponse, _response.json())  # type: ignore
             if _response.status_code == 500:
                 raise InternalServerError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -747,7 +747,7 @@ class AsyncThreadClient:
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataAddThreadMessagesResponse:
+    ) -> AddThreadMessagesResponse:
         """
         Add messages to a thread.
 
@@ -772,7 +772,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataAddThreadMessagesResponse
+        AddThreadMessagesResponse
             An object, optionally containing user context retrieved for the last thread message
 
         Examples
@@ -810,7 +810,7 @@ class AsyncThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataAddThreadMessagesResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(AddThreadMessagesResponse, _response.json())  # type: ignore
             if _response.status_code == 500:
                 raise InternalServerError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

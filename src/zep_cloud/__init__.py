@@ -2,9 +2,9 @@
 
 from .types import (
     AddMemoryResponse,
+    AddThreadMessagesResponse,
     AddTripleResponse,
     ApiError,
-    ApidataAddThreadMessagesResponse,
     ApidataDocument,
     ApidataDocumentCollection,
     ApidataDocumentSearchResponse,
@@ -74,9 +74,9 @@ from .version import __version__
 
 __all__ = [
     "AddMemoryResponse",
+    "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
-    "ApidataAddThreadMessagesResponse",
     "ApidataDocument",
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",
