@@ -150,7 +150,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Creates a new session.
+        Deprecated: Creates a new session. Use thread.create instead.
 
         Parameters
         ----------
@@ -224,7 +224,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionListResponse:
         """
-        Returns all sessions.
+        Deprecated: Returns all sessions. Use GET /threads instead.
 
         Parameters
         ----------
@@ -573,7 +573,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionClassification:
         """
-        Classifies a session.
+        Deprecated: Classifies a session.
 
         Parameters
         ----------
@@ -716,7 +716,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Dict[str, str]:
         """
-        extract data from a session by session id
+        Deprecated: extract data from a session by session id
 
         Parameters
         ----------
@@ -922,7 +922,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
-        Returns a memory for a given session.
+        Deprecated: Returns a memory for a given session. Use thread.get_user_context instead.
 
         Parameters
         ----------
@@ -988,7 +988,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddMemoryResponse:
         """
-        Add memory to the specified session.
+        Deprecated: Add memory to the specified session. Use thread.add_messages instead.
 
         Parameters
         ----------
@@ -1003,7 +1003,7 @@ class MemoryClient:
 
         ignore_roles : typing.Optional[typing.Sequence[RoleType]]
             Optional list of role types to ignore when adding messages to graph memory.
-            The message itself will still be added retained and used as context for messages
+            The message itself will still be added, retained and used as context for messages
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
@@ -1065,7 +1065,7 @@ class MemoryClient:
 
     def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Deletes a session.
+        Deprecated: Deletes a session. Use thread.delete instead.
 
         Parameters
         ----------
@@ -1119,7 +1119,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
-        Returns messages for a session.
+        Deprecated: Returns messages for a session. Use thread.get instead.
 
         Parameters
         ----------
@@ -1620,7 +1620,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Creates a new session.
+        Deprecated: Creates a new session. Use thread.create instead.
 
         Parameters
         ----------
@@ -1702,7 +1702,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionListResponse:
         """
-        Returns all sessions.
+        Deprecated: Returns all sessions. Use GET /threads instead.
 
         Parameters
         ----------
@@ -2091,7 +2091,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionClassification:
         """
-        Classifies a session.
+        Deprecated: Classifies a session.
 
         Parameters
         ----------
@@ -2250,7 +2250,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Dict[str, str]:
         """
-        extract data from a session by session id
+        Deprecated: extract data from a session by session id
 
         Parameters
         ----------
@@ -2480,7 +2480,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
-        Returns a memory for a given session.
+        Deprecated: Returns a memory for a given session. Use thread.get_user_context instead.
 
         Parameters
         ----------
@@ -2554,7 +2554,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddMemoryResponse:
         """
-        Add memory to the specified session.
+        Deprecated: Add memory to the specified session. Use thread.add_messages instead.
 
         Parameters
         ----------
@@ -2569,7 +2569,7 @@ class AsyncMemoryClient:
 
         ignore_roles : typing.Optional[typing.Sequence[RoleType]]
             Optional list of role types to ignore when adding messages to graph memory.
-            The message itself will still be added retained and used as context for messages
+            The message itself will still be added, retained and used as context for messages
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
@@ -2641,7 +2641,7 @@ class AsyncMemoryClient:
         self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Deletes a session.
+        Deprecated: Deletes a session. Use thread.delete instead.
 
         Parameters
         ----------
@@ -2703,7 +2703,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
-        Returns messages for a session.
+        Deprecated: Returns messages for a session. Use thread.get instead.
 
         Parameters
         ----------

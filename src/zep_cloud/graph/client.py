@@ -12,6 +12,8 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.clone_graph_response import CloneGraphResponse
+from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
@@ -82,6 +84,7 @@ class GraphClient:
     def set_entity_types_internal(
         self,
         *,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
@@ -90,6 +93,8 @@ class GraphClient:
 
         Parameters
         ----------
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
+
         entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         request_options : typing.Optional[RequestOptions]
@@ -112,7 +117,7 @@ class GraphClient:
         _response = self._client_wrapper.httpx_client.request(
             "entity-types",
             method="PUT",
-            json={"entity_types": entity_types},
+            json={"edge_types": edge_types, "entity_types": entity_types},
             request_options=request_options,
             omit=OMIT,
         )
@@ -405,10 +410,82 @@ class GraphClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    def clone(
+        self,
+        *,
+        source_group_id: typing.Optional[str] = OMIT,
+        source_user_id: typing.Optional[str] = OMIT,
+        target_group_id: typing.Optional[str] = OMIT,
+        target_user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> CloneGraphResponse:
+        """
+        Clone a user or group graph.
+
+        Parameters
+        ----------
+        source_group_id : typing.Optional[str]
+            group_id of the group whose graph is being cloned. Required if user_id is not provided
+
+        source_user_id : typing.Optional[str]
+            user_id of the user whose graph is being cloned. Required if group_id is not provided
+
+        target_group_id : typing.Optional[str]
+            group_id to be set on the cloned group. Must not point to an existing group. Required if target_user_id is not provided.
+
+        target_user_id : typing.Optional[str]
+            user_id to be set on the cloned user. Must not point to an existing user. Required if target_group_id is not provided.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        CloneGraphResponse
+            Response object containing group_id or user_id pointing to the new graph
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.clone()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph/clone",
+            method="POST",
+            json={
+                "source_group_id": source_group_id,
+                "source_user_id": source_user_id,
+                "target_group_id": target_group_id,
+                "target_user_id": target_user_id,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(CloneGraphResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     def search(
         self,
         *,
         query: str,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
@@ -428,6 +505,9 @@ class GraphClient:
         ----------
         query : str
             The string to search for (required)
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes that are the origins of the BFS searches
 
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
@@ -482,6 +562,7 @@ class GraphClient:
             "graph/search",
             method="POST",
             json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
                 "group_id": group_id,
                 "limit": limit,
@@ -574,6 +655,7 @@ class AsyncGraphClient:
     async def set_entity_types_internal(
         self,
         *,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
@@ -582,6 +664,8 @@ class AsyncGraphClient:
 
         Parameters
         ----------
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
+
         entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         request_options : typing.Optional[RequestOptions]
@@ -612,7 +696,7 @@ class AsyncGraphClient:
         _response = await self._client_wrapper.httpx_client.request(
             "entity-types",
             method="PUT",
-            json={"entity_types": entity_types},
+            json={"edge_types": edge_types, "entity_types": entity_types},
             request_options=request_options,
             omit=OMIT,
         )
@@ -929,10 +1013,90 @@ class AsyncGraphClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
+    async def clone(
+        self,
+        *,
+        source_group_id: typing.Optional[str] = OMIT,
+        source_user_id: typing.Optional[str] = OMIT,
+        target_group_id: typing.Optional[str] = OMIT,
+        target_user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None
+    ) -> CloneGraphResponse:
+        """
+        Clone a user or group graph.
+
+        Parameters
+        ----------
+        source_group_id : typing.Optional[str]
+            group_id of the group whose graph is being cloned. Required if user_id is not provided
+
+        source_user_id : typing.Optional[str]
+            user_id of the user whose graph is being cloned. Required if group_id is not provided
+
+        target_group_id : typing.Optional[str]
+            group_id to be set on the cloned group. Must not point to an existing group. Required if target_user_id is not provided.
+
+        target_user_id : typing.Optional[str]
+            user_id to be set on the cloned user. Must not point to an existing user. Required if target_group_id is not provided.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        CloneGraphResponse
+            Response object containing group_id or user_id pointing to the new graph
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.clone()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph/clone",
+            method="POST",
+            json={
+                "source_group_id": source_group_id,
+                "source_user_id": source_user_id,
+                "target_group_id": target_group_id,
+                "target_user_id": target_user_id,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(CloneGraphResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
     async def search(
         self,
         *,
         query: str,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
@@ -952,6 +1116,9 @@ class AsyncGraphClient:
         ----------
         query : str
             The string to search for (required)
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes that are the origins of the BFS searches
 
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
@@ -1014,6 +1181,7 @@ class AsyncGraphClient:
             "graph/search",
             method="POST",
             json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
                 "group_id": group_id,
                 "limit": limit,

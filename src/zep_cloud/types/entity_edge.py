@@ -8,6 +8,11 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class EntityEdge(pydantic_v1.BaseModel):
+    attributes: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
+    """
+    Additional attributes of the edge. Dependent on edge types
+    """
+
     created_at: str = pydantic_v1.Field()
     """
     Creation time of the edge

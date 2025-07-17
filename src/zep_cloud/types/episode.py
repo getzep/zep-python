@@ -6,19 +6,35 @@ import typing
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .graph_data_type import GraphDataType
+from .role_type import RoleType
 
 
 class Episode(pydantic_v1.BaseModel):
     content: str
     created_at: str
     processed: typing.Optional[bool] = None
+    role: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Optional role, will only be present if the episode was created using memory.add API
+    """
+
+    role_type: typing.Optional[RoleType] = pydantic_v1.Field(default=None)
+    """
+    Optional role_type, will only be present if the episode was created using memory.add API
+    """
+
     session_id: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Optional session ID. Will be present only if the episode corresponds to the messages added using memory.add API
+    Deprecated - use thread_id instead. Optional session ID. Will be present only if the episode corresponds to the messages added using memory.add API
     """
 
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
+    thread_id: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Optional thread ID, will be present if the episode is part of a thread
+    """
+
     uuid_: str = pydantic_v1.Field(alias="uuid")
 
     def json(self, **kwargs: typing.Any) -> str:

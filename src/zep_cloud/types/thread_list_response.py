@@ -5,15 +5,13 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .entity_edge import EntityEdge
-from .entity_node import EntityNode
-from .episode import Episode
+from .thread import Thread
 
 
-class GraphSearchResults(pydantic_v1.BaseModel):
-    edges: typing.Optional[typing.List[EntityEdge]] = None
-    episodes: typing.Optional[typing.List[Episode]] = None
-    nodes: typing.Optional[typing.List[EntityNode]] = None
+class ThreadListResponse(pydantic_v1.BaseModel):
+    response_count: typing.Optional[int] = None
+    thread: typing.Optional[typing.List[Thread]] = None
+    total_count: typing.Optional[int] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

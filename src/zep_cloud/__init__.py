@@ -2,6 +2,7 @@
 
 from .types import (
     AddMemoryResponse,
+    AddThreadMessagesResponse,
     AddTripleResponse,
     ApiError,
     ApidataDocument,
@@ -9,10 +10,15 @@ from .types import (
     ApidataDocumentSearchResponse,
     ApidataDocumentWithScore,
     ClassifySessionRequest,
+    CloneGraphResponse,
+    ComparisonOperator,
     CreateDocumentRequest,
+    DateFilter,
+    EdgeType,
     EndSessionResponse,
     EndSessionsResponse,
     EntityEdge,
+    EntityEdgeSourceTarget,
     EntityNode,
     EntityProperty,
     EntityPropertyType,
@@ -20,6 +26,7 @@ from .types import (
     EntityTypeResponse,
     Episode,
     EpisodeData,
+    EpisodeMentions,
     EpisodeResponse,
     Fact,
     FactRatingExamples,
@@ -52,18 +59,22 @@ from .types import (
     SuccessResponse,
     Summary,
     SummaryListResponse,
+    Thread,
+    ThreadContextResponse,
+    ThreadListResponse,
     UpdateDocumentListRequest,
     User,
     UserListResponse,
     UserNodeResponse,
 )
 from .errors import BadRequestError, ConflictError, InternalServerError, NotFoundError, UnauthorizedError
-from . import document, graph, group, memory, user
+from . import document, graph, group, memory, thread, user
 from .environment import ZepEnvironment
 from .version import __version__
 
 __all__ = [
     "AddMemoryResponse",
+    "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
     "ApidataDocument",
@@ -72,11 +83,16 @@ __all__ = [
     "ApidataDocumentWithScore",
     "BadRequestError",
     "ClassifySessionRequest",
+    "CloneGraphResponse",
+    "ComparisonOperator",
     "ConflictError",
     "CreateDocumentRequest",
+    "DateFilter",
+    "EdgeType",
     "EndSessionResponse",
     "EndSessionsResponse",
     "EntityEdge",
+    "EntityEdgeSourceTarget",
     "EntityNode",
     "EntityProperty",
     "EntityPropertyType",
@@ -84,6 +100,7 @@ __all__ = [
     "EntityTypeResponse",
     "Episode",
     "EpisodeData",
+    "EpisodeMentions",
     "EpisodeResponse",
     "Fact",
     "FactRatingExamples",
@@ -118,6 +135,9 @@ __all__ = [
     "SuccessResponse",
     "Summary",
     "SummaryListResponse",
+    "Thread",
+    "ThreadContextResponse",
+    "ThreadListResponse",
     "UnauthorizedError",
     "UpdateDocumentListRequest",
     "User",
@@ -129,5 +149,6 @@ __all__ = [
     "graph",
     "group",
     "memory",
+    "thread",
     "user",
 ]

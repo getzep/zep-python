@@ -5,15 +5,25 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .entity_edge import EntityEdge
-from .entity_node import EntityNode
-from .episode import Episode
+from .fact import Fact
+from .message import Message
 
 
-class GraphSearchResults(pydantic_v1.BaseModel):
-    edges: typing.Optional[typing.List[EntityEdge]] = None
-    episodes: typing.Optional[typing.List[Episode]] = None
-    nodes: typing.Optional[typing.List[EntityNode]] = None
+class ThreadContextResponse(pydantic_v1.BaseModel):
+    context: typing.Optional[str] = pydantic_v1.Field(default=None)
+    """
+    Memory context containing relevant facts and entities for the session. Can be put into the prompt directly.
+    """
+
+    messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
+    """
+    A list of message objects, where each message contains a role and content. Only last_n messages will be returned
+    """
+
+    relevant_facts: typing.Optional[typing.List[Fact]] = pydantic_v1.Field(default=None)
+    """
+    Most relevant facts to the recent messages in the session.
+    """
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

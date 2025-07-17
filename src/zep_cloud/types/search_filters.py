@@ -5,12 +5,54 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .date_filter import DateFilter
 
 
 class SearchFilters(pydantic_v1.BaseModel):
+    created_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic_v1.Field(default=None)
+    """
+    2D array of date filters for the created_at field.
+    The outer array elements are combined with OR logic.
+    The inner array elements are combined with AND logic.
+    Example: [[{">", date1}, {"<", date2}], [{"=", date3}]]
+    This translates to: (created_at > date1 AND created_at < date2) OR (created_at = date3)
+    """
+
+    edge_types: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    """
+    List of edge types to filter on
+    """
+
+    expired_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic_v1.Field(default=None)
+    """
+    2D array of date filters for the expired_at field.
+    The outer array elements are combined with OR logic.
+    The inner array elements are combined with AND logic.
+    Example: [[{">", date1}, {"<", date2}], [{"=", date3}]]
+    This translates to: (expired_at > date1 AND expired_at < date2) OR (expired_at = date3)
+    """
+
+    invalid_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic_v1.Field(default=None)
+    """
+    2D array of date filters for the invalid_at field.
+    The outer array elements are combined with OR logic.
+    The inner array elements are combined with AND logic.
+    Example: [[{">", date1}, {"<", date2}], [{"=", date3}]]
+    This translates to: (invalid_at > date1 AND invalid_at < date2) OR (invalid_at = date3)
+    """
+
     node_labels: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
     """
     List of node labels to filter on
+    """
+
+    valid_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic_v1.Field(default=None)
+    """
+    2D array of date filters for the valid_at field.
+    The outer array elements are combined with OR logic.
+    The inner array elements are combined with AND logic.
+    Example: [[{">", date1}, {"<", date2}], [{"=", date3}]]
+    This translates to: (valid_at > date1 AND valid_at < date2) OR (valid_at = date3)
     """
 
     def json(self, **kwargs: typing.Any) -> str:
