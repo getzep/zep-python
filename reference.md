@@ -1288,7 +1288,15 @@ client.graph.add(
 <dl>
 <dd>
 
-**group_id:** `typing.Optional[str]` 
+**graph_id:** `typing.Optional[str]` — graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group_id:** `typing.Optional[str]` — Deprecated: Use graph_id instead
     
 </dd>
 </dl>
@@ -1304,7 +1312,7 @@ client.graph.add(
 <dl>
 <dd>
 
-**user_id:** `typing.Optional[str]` 
+**user_id:** `typing.Optional[str]` — User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
     
 </dd>
 </dl>
@@ -1388,7 +1396,7 @@ client.graph.add_batch(
 <dl>
 <dd>
 
-**group_id:** `typing.Optional[str]` 
+**graph_id:** `typing.Optional[str]` — graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
     
 </dd>
 </dl>
@@ -1396,7 +1404,15 @@ client.graph.add_batch(
 <dl>
 <dd>
 
-**user_id:** `typing.Optional[str]` 
+**group_id:** `typing.Optional[str]` — Deprecated: Use graph_id instead
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` — User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
     
 </dd>
 </dl>
@@ -1648,7 +1664,7 @@ client.graph.clone()
 <dl>
 <dd>
 
-**source_group_id:** `typing.Optional[str]` — group_id of the group whose graph is being cloned. Required if user_id is not provided
+**source_graph_id:** `typing.Optional[str]` — source_graph_id is the ID of the graph to be cloned. Required if user_id is not provided
     
 </dd>
 </dl>
@@ -1656,7 +1672,7 @@ client.graph.clone()
 <dl>
 <dd>
 
-**source_user_id:** `typing.Optional[str]` — user_id of the user whose graph is being cloned. Required if group_id is not provided
+**source_group_id:** `typing.Optional[str]` — Deprecated: Use source_graph_id instead
     
 </dd>
 </dl>
@@ -1664,7 +1680,7 @@ client.graph.clone()
 <dl>
 <dd>
 
-**target_group_id:** `typing.Optional[str]` — group_id to be set on the cloned group. Must not point to an existing group. Required if target_user_id is not provided.
+**source_user_id:** `typing.Optional[str]` — user_id of the user whose graph is being cloned. Required if graph_id is not provided
     
 </dd>
 </dl>
@@ -1672,7 +1688,23 @@ client.graph.clone()
 <dl>
 <dd>
 
-**target_user_id:** `typing.Optional[str]` — user_id to be set on the cloned user. Must not point to an existing user. Required if target_group_id is not provided.
+**target_graph_id:** `typing.Optional[str]` — target_graph_id is the ID to be set on the cloned graph. Must not point to an existing graph. Required if user_id is not provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_group_id:** `typing.Optional[str]` — Deprecated: Use target_graph_id instead
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_user_id:** `typing.Optional[str]` — user_id to be set on the cloned user. Must not point to an existing user. Required if target_graph_id is not provided.
     
 </dd>
 </dl>
@@ -1831,6 +1863,240 @@ client.graph.search(
 <dd>
 
 **user_id:** `typing.Optional[str]` — one of user_id or group_id must be provided
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">create</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.create(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">get</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.get(
+    graph_id="graphId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — The graph_id of the graph to get.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a graph. If you would like to delete a user graph, make sure to use user.delete instead.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.delete(
+    graph_id="graphId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
     
 </dd>
 </dl>
@@ -2410,7 +2676,7 @@ client.memory.search_sessions(
 <dl>
 <dd>
 
-Returns a session.
+Returns a session. Deprecated: use thread.get instead.
 </dd>
 </dl>
 </dd>
@@ -2480,7 +2746,7 @@ client.memory.get_session(
 <dl>
 <dd>
 
-Update Session Metadata
+Update Session Metadata. Deprecated: This endpoint is no longer supported and will be removed in a future release.
 </dd>
 </dl>
 </dd>
@@ -3836,7 +4102,7 @@ client.memory.synthesize_question(
 <dl>
 <dd>
 
-Creates a new group.
+Creates a new group. Deprecated, use graph.create instead.
 </dd>
 </dl>
 </dd>
@@ -3994,7 +4260,7 @@ client.group.get_all_groups()
 </dl>
 </details>
 
-<details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">get_group</a>(...)</code></summary>
+<details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">get_group_deprecated_use_graph_get_instead</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -4006,7 +4272,7 @@ client.group.get_all_groups()
 <dl>
 <dd>
 
-Returns a group.
+Returns a group. Deprecated - use graph.get instead.
 </dd>
 </dl>
 </dd>
@@ -4026,7 +4292,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.group.get_group(
+client.group.get_group_deprecated_use_graph_get_instead(
     group_id="groupId",
 )
 
@@ -4076,7 +4342,7 @@ client.group.get_group(
 <dl>
 <dd>
 
-Deletes a group.
+Deletes a group. Deprecated - use graph.delete instead.
 </dd>
 </dl>
 </dd>
@@ -4146,7 +4412,7 @@ client.group.delete(
 <dl>
 <dd>
 
-Updates information about a group.
+Updates information about a group. Deprecated.
 </dd>
 </dl>
 </dd>
@@ -5465,6 +5731,92 @@ client.user.get_sessions(
 </details>
 
 ## Graph Edge
+<details><summary><code>client.graph.edge.<a href="src/zep_cloud/graph/edge/client.py">get_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns all edges for a graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.edge.get_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.graph.edge.<a href="src/zep_cloud/graph/edge/client.py">get_by_group_id</a>(...)</code></summary>
 <dl>
 <dd>
@@ -5477,7 +5829,7 @@ client.user.get_sessions(
 <dl>
 <dd>
 
-Returns all edges for a group.
+Returns all edges for a group. Deprecated, please use graph.edge.get_by_graph_id instead.
 </dd>
 </dl>
 </dd>
@@ -5778,6 +6130,84 @@ client.graph.edge.delete(
 </details>
 
 ## Graph Episode
+<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns episodes by graph id.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.episode.get_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**lastn:** `typing.Optional[int]` — The number of most recent episodes to retrieve.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_by_group_id</a>(...)</code></summary>
 <dl>
 <dd>
@@ -5790,7 +6220,7 @@ client.graph.edge.delete(
 <dl>
 <dd>
 
-Returns episodes by group id.
+Returns episodes by group id. Deprecated, please use graph.episode.get_by_graph_id instead.
 </dd>
 </dl>
 </dd>
@@ -6145,6 +6575,92 @@ client.graph.episode.get_nodes_and_edges(
 </details>
 
 ## Graph Node
+<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns all nodes for a graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud.client import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.node.get_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_by_group_id</a>(...)</code></summary>
 <dl>
 <dd>
@@ -6157,7 +6673,7 @@ client.graph.episode.get_nodes_and_edges(
 <dl>
 <dd>
 
-Returns all nodes for a group.
+Returns all nodes for a group. Deprecated, please use graph.node.get_by_graph_id instead.
 </dd>
 </dl>
 </dd>

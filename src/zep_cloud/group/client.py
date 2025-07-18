@@ -36,7 +36,7 @@ class GroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
         """
-        Creates a new group.
+        Creates a new group. Deprecated, use graph.create instead.
 
         Parameters
         ----------
@@ -152,9 +152,11 @@ class GroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
+    def get_group_deprecated_use_graph_get_instead(
+        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> Group:
         """
-        Returns a group.
+        Returns a group. Deprecated - use graph.get instead.
 
         Parameters
         ----------
@@ -176,7 +178,7 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.get_group(
+        client.group.get_group_deprecated_use_graph_get_instead(
             group_id="groupId",
         )
         """
@@ -201,7 +203,7 @@ class GroupClient:
 
     def delete(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Deletes a group.
+        Deletes a group. Deprecated - use graph.delete instead.
 
         Parameters
         ----------
@@ -260,7 +262,7 @@ class GroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
         """
-        Updates information about a group.
+        Updates information about a group. Deprecated.
 
         Parameters
         ----------
@@ -381,7 +383,7 @@ class AsyncGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
         """
-        Creates a new group.
+        Creates a new group. Deprecated, use graph.create instead.
 
         Parameters
         ----------
@@ -513,9 +515,11 @@ class AsyncGroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
+    async def get_group_deprecated_use_graph_get_instead(
+        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> Group:
         """
-        Returns a group.
+        Returns a group. Deprecated - use graph.get instead.
 
         Parameters
         ----------
@@ -542,7 +546,7 @@ class AsyncGroupClient:
 
 
         async def main() -> None:
-            await client.group.get_group(
+            await client.group.get_group_deprecated_use_graph_get_instead(
                 group_id="groupId",
             )
 
@@ -572,7 +576,7 @@ class AsyncGroupClient:
         self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Deletes a group.
+        Deletes a group. Deprecated - use graph.delete instead.
 
         Parameters
         ----------
@@ -639,7 +643,7 @@ class AsyncGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Group:
         """
-        Updates information about a group.
+        Updates information about a group. Deprecated.
 
         Parameters
         ----------

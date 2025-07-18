@@ -442,7 +442,7 @@ class MemoryClient:
 
     def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
-        Returns a session.
+        Returns a session. Deprecated: use thread.get instead.
 
         Parameters
         ----------
@@ -496,7 +496,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Update Session Metadata
+        Update Session Metadata. Deprecated: This endpoint is no longer supported and will be removed in a future release.
 
         Parameters
         ----------
@@ -1944,7 +1944,7 @@ class AsyncMemoryClient:
 
     async def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
-        Returns a session.
+        Returns a session. Deprecated: use thread.get instead.
 
         Parameters
         ----------
@@ -2006,7 +2006,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Update Session Metadata
+        Update Session Metadata. Deprecated: This endpoint is no longer supported and will be removed in a future release.
 
         Parameters
         ----------

@@ -8,6 +8,7 @@ from .apidata_document import ApidataDocument
 from .apidata_document_collection import ApidataDocumentCollection
 from .apidata_document_search_response import ApidataDocumentSearchResponse
 from .apidata_document_with_score import ApidataDocumentWithScore
+from .apidata_graph import ApidataGraph
 from .classify_session_request import ClassifySessionRequest
 from .clone_graph_response import CloneGraphResponse
 from .comparison_operator import ComparisonOperator
@@ -75,6 +76,7 @@ __all__ = [
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",
     "ApidataDocumentWithScore",
+    "ApidataGraph",
     "ClassifySessionRequest",
     "CloneGraphResponse",
     "ComparisonOperator",
