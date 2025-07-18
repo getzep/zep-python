@@ -8,7 +8,6 @@ from .apidata_document import ApidataDocument
 from .apidata_document_collection import ApidataDocumentCollection
 from .apidata_document_search_response import ApidataDocumentSearchResponse
 from .apidata_document_with_score import ApidataDocumentWithScore
-from .apidata_graph import ApidataGraph
 from .classify_session_request import ClassifySessionRequest
 from .clone_graph_response import CloneGraphResponse
 from .comparison_operator import ComparisonOperator
@@ -33,6 +32,7 @@ from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
 from .fact_response import FactResponse
 from .facts_response import FactsResponse
+from .graph import Graph
 from .graph_data_type import GraphDataType
 from .graph_edges_request import GraphEdgesRequest
 from .graph_nodes_request import GraphNodesRequest
@@ -76,7 +76,6 @@ __all__ = [
     "ApidataDocumentCollection",
     "ApidataDocumentSearchResponse",
     "ApidataDocumentWithScore",
-    "ApidataGraph",
     "ClassifySessionRequest",
     "CloneGraphResponse",
     "ComparisonOperator",
@@ -101,6 +100,7 @@ __all__ = [
     "FactRatingInstruction",
     "FactResponse",
     "FactsResponse",
+    "Graph",
     "GraphDataType",
     "GraphEdgesRequest",
     "GraphNodesRequest",

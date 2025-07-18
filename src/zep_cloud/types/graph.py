@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .fact_rating_instruction import FactRatingInstruction
 
 
-class ApidataGraph(pydantic_v1.BaseModel):
+class Graph(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = None
     description: typing.Optional[str] = None
     fact_rating_instruction: typing.Optional[FactRatingInstruction] = None

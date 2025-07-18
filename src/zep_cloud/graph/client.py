@@ -13,7 +13,6 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_graph import ApidataGraph
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
@@ -21,6 +20,7 @@ from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.episode_data import EpisodeData
 from ..types.fact_rating_instruction import FactRatingInstruction
+from ..types.graph import Graph
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
@@ -628,7 +628,7 @@ class GraphClient:
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraph:
+    ) -> Graph:
         """
         Creates a new graph.
 
@@ -647,7 +647,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The added graph
 
         Examples
@@ -675,7 +675,7 @@ class GraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataGraph, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(Graph, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -689,7 +689,7 @@ class GraphClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataGraph:
+    def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Graph:
         """
         Returns a graph.
 
@@ -703,7 +703,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The graph that was retrieved.
 
         Examples
@@ -722,7 +722,7 @@ class GraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataGraph, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(Graph, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -1437,7 +1437,7 @@ class AsyncGraphClient:
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraph:
+    ) -> Graph:
         """
         Creates a new graph.
 
@@ -1456,7 +1456,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The added graph
 
         Examples
@@ -1492,7 +1492,7 @@ class AsyncGraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataGraph, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(Graph, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -1506,7 +1506,7 @@ class AsyncGraphClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataGraph:
+    async def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Graph:
         """
         Returns a graph.
 
@@ -1520,7 +1520,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The graph that was retrieved.
 
         Examples
@@ -1547,7 +1547,7 @@ class AsyncGraphClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataGraph, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(Graph, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
