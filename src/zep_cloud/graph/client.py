@@ -513,6 +513,7 @@ class GraphClient:
         query: str,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_fact_rating: typing.Optional[float] = OMIT,
@@ -538,8 +539,11 @@ class GraphClient:
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
 
+        graph_id : typing.Optional[str]
+            one of user_id, group_id, or graph_id must be provided
+
         group_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            Deprecated: Use graph_id instead
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
@@ -563,7 +567,7 @@ class GraphClient:
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            one of user_id, group_id, or graph_id must be provided
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -590,6 +594,7 @@ class GraphClient:
             json={
                 "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
+                "graph_id": graph_id,
                 "group_id": group_id,
                 "limit": limit,
                 "min_fact_rating": min_fact_rating,
@@ -1314,6 +1319,7 @@ class AsyncGraphClient:
         query: str,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         group_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_fact_rating: typing.Optional[float] = OMIT,
@@ -1339,8 +1345,11 @@ class AsyncGraphClient:
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
 
+        graph_id : typing.Optional[str]
+            one of user_id, group_id, or graph_id must be provided
+
         group_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            Deprecated: Use graph_id instead
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
@@ -1364,7 +1373,7 @@ class AsyncGraphClient:
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            one of user_id, group_id, or graph_id must be provided
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1399,6 +1408,7 @@ class AsyncGraphClient:
             json={
                 "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
+                "graph_id": graph_id,
                 "group_id": group_id,
                 "limit": limit,
                 "min_fact_rating": min_fact_rating,

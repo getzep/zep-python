@@ -152,9 +152,7 @@ class GroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_group_deprecated_use_graph_get_instead(
-        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> Group:
+    def get(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
         """
         Returns a group. Deprecated - use graph.get instead.
 
@@ -178,7 +176,7 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.get_group_deprecated_use_graph_get_instead(
+        client.group.get(
             group_id="groupId",
         )
         """
@@ -515,9 +513,7 @@ class AsyncGroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_group_deprecated_use_graph_get_instead(
-        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> Group:
+    async def get(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
         """
         Returns a group. Deprecated - use graph.get instead.
 
@@ -546,7 +542,7 @@ class AsyncGroupClient:
 
 
         async def main() -> None:
-            await client.group.get_group_deprecated_use_graph_get_instead(
+            await client.group.get(
                 group_id="groupId",
             )
 

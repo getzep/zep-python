@@ -1798,7 +1798,15 @@ client.graph.search(
 <dl>
 <dd>
 
-**group_id:** `typing.Optional[str]` — one of user_id or group_id must be provided
+**graph_id:** `typing.Optional[str]` — one of user_id, group_id, or graph_id must be provided
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group_id:** `typing.Optional[str]` — Deprecated: Use graph_id instead
     
 </dd>
 </dl>
@@ -1862,7 +1870,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**user_id:** `typing.Optional[str]` — one of user_id or group_id must be provided
+**user_id:** `typing.Optional[str]` — one of user_id, group_id, or graph_id must be provided
     
 </dd>
 </dl>
@@ -4260,7 +4268,7 @@ client.group.get_all_groups()
 </dl>
 </details>
 
-<details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">get_group_deprecated_use_graph_get_instead</a>(...)</code></summary>
+<details><summary><code>client.group.<a href="src/zep_cloud/group/client.py">get</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -4292,7 +4300,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.group.get_group_deprecated_use_graph_get_instead(
+client.group.get(
     group_id="groupId",
 )
 
