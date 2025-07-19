@@ -540,7 +540,7 @@ class GraphClient:
             Node to rerank around for node distance reranking
 
         graph_id : typing.Optional[str]
-            one of user_id, group_id, or graph_id must be provided
+            The graph_id to search in. When searching user graph, please use user_id instead.
 
         group_id : typing.Optional[str]
             Deprecated: Use graph_id instead
@@ -567,7 +567,7 @@ class GraphClient:
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
-            one of user_id, group_id, or graph_id must be provided
+            The user_id when searching user graph. If not searching user graph, please use graph_id instead.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1346,7 +1346,7 @@ class AsyncGraphClient:
             Node to rerank around for node distance reranking
 
         graph_id : typing.Optional[str]
-            one of user_id, group_id, or graph_id must be provided
+            The graph_id to search in. When searching user graph, please use user_id instead.
 
         group_id : typing.Optional[str]
             Deprecated: Use graph_id instead
@@ -1373,7 +1373,7 @@ class AsyncGraphClient:
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
-            one of user_id, group_id, or graph_id must be provided
+            The user_id when searching user graph. If not searching user graph, please use graph_id instead.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

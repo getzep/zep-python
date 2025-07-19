@@ -1798,7 +1798,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**graph_id:** `typing.Optional[str]` — one of user_id, group_id, or graph_id must be provided
+**graph_id:** `typing.Optional[str]` — The graph_id to search in. When searching user graph, please use user_id instead.
     
 </dd>
 </dl>
@@ -1870,7 +1870,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**user_id:** `typing.Optional[str]` — one of user_id, group_id, or graph_id must be provided
+**user_id:** `typing.Optional[str]` — The user_id when searching user graph. If not searching user graph, please use graph_id instead.
     
 </dd>
 </dl>
