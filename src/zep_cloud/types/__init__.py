@@ -32,6 +32,7 @@ from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
 from .fact_response import FactResponse
 from .facts_response import FactsResponse
+from .graph import Graph
 from .graph_data_type import GraphDataType
 from .graph_edges_request import GraphEdgesRequest
 from .graph_nodes_request import GraphNodesRequest
@@ -99,6 +100,7 @@ __all__ = [
     "FactRatingInstruction",
     "FactResponse",
     "FactsResponse",
+    "Graph",
     "GraphDataType",
     "GraphEdgesRequest",
     "GraphNodesRequest",
