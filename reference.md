@@ -1664,7 +1664,7 @@ client.graph.clone()
 <dl>
 <dd>
 
-**source_graph_id:** `typing.Optional[str]` — source_graph_id is the ID of the graph to be cloned. Required if user_id is not provided
+**source_graph_id:** `typing.Optional[str]` — source_graph_id is the ID of the graph to be cloned. Required if source_user_id is not provided
     
 </dd>
 </dl>
@@ -1680,7 +1680,7 @@ client.graph.clone()
 <dl>
 <dd>
 
-**source_user_id:** `typing.Optional[str]` — user_id of the user whose graph is being cloned. Required if graph_id is not provided
+**source_user_id:** `typing.Optional[str]` — user_id of the user whose graph is being cloned. Required if source_graph_id is not provided
     
 </dd>
 </dl>
@@ -1688,7 +1688,7 @@ client.graph.clone()
 <dl>
 <dd>
 
-**target_graph_id:** `typing.Optional[str]` — target_graph_id is the ID to be set on the cloned graph. Must not point to an existing graph. Required if user_id is not provided.
+**target_graph_id:** `typing.Optional[str]` — target_graph_id is the ID to be set on the cloned graph. Must not point to an existing graph. Required if target_user_id is not provided.
     
 </dd>
 </dl>
