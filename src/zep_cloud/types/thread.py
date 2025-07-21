@@ -5,25 +5,14 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .fact import Fact
-from .message import Message
 
 
-class ApidataThreadContextResponse(pydantic_v1.BaseModel):
-    context: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Memory context containing relevant facts and entities for the session. Can be put into the prompt directly.
-    """
-
-    messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
-    """
-    A list of message objects, where each message contains a role and content. Only last_n messages will be returned
-    """
-
-    relevant_facts: typing.Optional[typing.List[Fact]] = pydantic_v1.Field(default=None)
-    """
-    Most relevant facts to the recent messages in the session.
-    """
+class Thread(pydantic_v1.BaseModel):
+    created_at: typing.Optional[str] = None
+    project_uuid: typing.Optional[str] = None
+    thread_id: typing.Optional[str] = None
+    user_id: typing.Optional[str] = None
+    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -40,5 +29,7 @@ class ApidataThreadContextResponse(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
+        allow_population_by_field_name = True
+        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

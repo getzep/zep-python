@@ -5,14 +5,13 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
+from .thread import Thread
 
 
-class ApidataThread(pydantic_v1.BaseModel):
-    created_at: typing.Optional[str] = None
-    project_uuid: typing.Optional[str] = None
-    thread_id: typing.Optional[str] = None
-    user_id: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
+class ThreadListResponse(pydantic_v1.BaseModel):
+    response_count: typing.Optional[int] = None
+    thread: typing.Optional[typing.List[Thread]] = None
+    total_count: typing.Optional[int] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -29,7 +28,5 @@ class ApidataThread(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

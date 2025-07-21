@@ -5,13 +5,10 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .apidata_thread import ApidataThread
 
 
-class ApidataThreadListResponse(pydantic_v1.BaseModel):
-    response_count: typing.Optional[int] = None
-    thread: typing.Optional[typing.List[ApidataThread]] = None
-    total_count: typing.Optional[int] = None
+class AddThreadMessagesResponse(pydantic_v1.BaseModel):
+    context: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

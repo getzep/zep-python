@@ -14,7 +14,6 @@ from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.apidata_document import ApidataDocument
-from ..types.apidata_document_collection import ApidataDocumentCollection
 from ..types.apidata_document_search_response import ApidataDocumentSearchResponse
 from ..types.create_document_request import CreateDocumentRequest
 from ..types.search_type import SearchType
@@ -29,305 +28,7 @@ class DocumentClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_collections(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[ApidataDocumentCollection]]:
-        """
-        Returns a list of all DocumentCollections.
-
-        Parameters
-        ----------
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[typing.List[ApidataDocumentCollection]]
-            OK
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.document.list_collections()
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "collections", method="GET", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def get_collection(
-        self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataDocumentCollection:
-        """
-        Returns a DocumentCollection if it exists.
-
-        Parameters
-        ----------
-        collection_name : str
-            Name of the Document Collection
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        ApidataDocumentCollection
-            OK
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.document.get_collection(
-            collection_name="collectionName",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"collections/{jsonable_encoder(collection_name)}", method="GET", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def add_collection(
-        self,
-        collection_name: str,
-        *,
-        description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
-        """
-        If a collection with the same name already exists, an error will be returned.
-
-        Parameters
-        ----------
-        collection_name : str
-            Name of the Document Collection
-
-        description : typing.Optional[str]
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            OK
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.document.add_collection(
-            collection_name="collectionName",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"collections/{jsonable_encoder(collection_name)}",
-            method="POST",
-            json={"description": description, "metadata": metadata},
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def delete_collection(
-        self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
-        """
-        If a collection with the same name already exists, it will be overwritten.
-
-        Parameters
-        ----------
-        collection_name : str
-            Name of the Document Collection
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            OK
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.document.delete_collection(
-            collection_name="collectionName",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"collections/{jsonable_encoder(collection_name)}", method="DELETE", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def update_collection(
-        self,
-        collection_name: str,
-        *,
-        description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
-        """
-        Updates a DocumentCollection
-
-        Parameters
-        ----------
-        collection_name : str
-            Name of the Document Collection
-
-        description : typing.Optional[str]
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            OK
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.document.update_collection(
-            collection_name="collectionName",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"collections/{jsonable_encoder(collection_name)}",
-            method="PATCH",
-            json={"description": description, "metadata": metadata},
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def add_documents(
+    def creates_multiple_documents_in_a_document_collection(
         self,
         collection_name: str,
         *,
@@ -360,7 +61,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.add_documents(
+        client.document.creates_multiple_documents_in_a_document_collection(
             collection_name="collectionName",
             request=[
                 CreateDocumentRequest(
@@ -396,7 +97,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def batch_delete_documents(
+    def batch_deletes_documents_from_a_document_collection_by_uuid(
         self,
         collection_name: str,
         *,
@@ -428,7 +129,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.batch_delete_documents(
+        client.document.batch_deletes_documents_from_a_document_collection_by_uuid(
             collection_name="collectionName",
             request=["string"],
         )
@@ -460,7 +161,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def batch_get_documents(
+    def batch_gets_documents_from_a_document_collection(
         self,
         collection_name: str,
         *,
@@ -495,7 +196,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.batch_get_documents(
+        client.document.batch_gets_documents_from_a_document_collection(
             collection_name="collectionName",
         )
         """
@@ -526,7 +227,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def batch_update_documents(
+    def batch_updates_documents_in_a_document_collection(
         self,
         collection_name: str,
         *,
@@ -559,7 +260,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.batch_update_documents(
+        client.document.batch_updates_documents_in_a_document_collection(
             collection_name="collectionName",
             request=[
                 UpdateDocumentListRequest(
@@ -654,7 +355,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_document(
+    def delete_document_from_a_document_collection_by_uuid(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
@@ -683,7 +384,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.delete_document(
+        client.document.delete_document_from_a_document_collection_by_uuid(
             collection_name="collectionName",
             document_uuid="documentUUID",
         )
@@ -792,7 +493,7 @@ class DocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def search(
+    def searches_documents_in_a_document_collection(
         self,
         collection_name: str,
         *,
@@ -844,7 +545,7 @@ class DocumentClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.document.search(
+        client.document.searches_documents_in_a_document_collection(
             collection_name="collectionName",
         )
         """
@@ -887,345 +588,7 @@ class AsyncDocumentClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_collections(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[typing.List[ApidataDocumentCollection]]:
-        """
-        Returns a list of all DocumentCollections.
-
-        Parameters
-        ----------
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[typing.List[ApidataDocumentCollection]]
-            OK
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.document.list_collections()
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "collections", method="GET", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def get_collection(
-        self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataDocumentCollection:
-        """
-        Returns a DocumentCollection if it exists.
-
-        Parameters
-        ----------
-        collection_name : str
-            Name of the Document Collection
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        ApidataDocumentCollection
-            OK
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.document.get_collection(
-                collection_name="collectionName",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"collections/{jsonable_encoder(collection_name)}", method="GET", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def add_collection(
-        self,
-        collection_name: str,
-        *,
-        description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
-        """
-        If a collection with the same name already exists, an error will be returned.
-
-        Parameters
-        ----------
-        collection_name : str
-            Name of the Document Collection
-
-        description : typing.Optional[str]
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            OK
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.document.add_collection(
-                collection_name="collectionName",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"collections/{jsonable_encoder(collection_name)}",
-            method="POST",
-            json={"description": description, "metadata": metadata},
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def delete_collection(
-        self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
-        """
-        If a collection with the same name already exists, it will be overwritten.
-
-        Parameters
-        ----------
-        collection_name : str
-            Name of the Document Collection
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            OK
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.document.delete_collection(
-                collection_name="collectionName",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"collections/{jsonable_encoder(collection_name)}", method="DELETE", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def update_collection(
-        self,
-        collection_name: str,
-        *,
-        description: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
-        """
-        Updates a DocumentCollection
-
-        Parameters
-        ----------
-        collection_name : str
-            Name of the Document Collection
-
-        description : typing.Optional[str]
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            OK
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.document.update_collection(
-                collection_name="collectionName",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"collections/{jsonable_encoder(collection_name)}",
-            method="PATCH",
-            json={"description": description, "metadata": metadata},
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def add_documents(
+    async def creates_multiple_documents_in_a_document_collection(
         self,
         collection_name: str,
         *,
@@ -1263,7 +626,7 @@ class AsyncDocumentClient:
 
 
         async def main() -> None:
-            await client.document.add_documents(
+            await client.document.creates_multiple_documents_in_a_document_collection(
                 collection_name="collectionName",
                 request=[
                     CreateDocumentRequest(
@@ -1302,7 +665,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def batch_delete_documents(
+    async def batch_deletes_documents_from_a_document_collection_by_uuid(
         self,
         collection_name: str,
         *,
@@ -1339,7 +702,7 @@ class AsyncDocumentClient:
 
 
         async def main() -> None:
-            await client.document.batch_delete_documents(
+            await client.document.batch_deletes_documents_from_a_document_collection_by_uuid(
                 collection_name="collectionName",
                 request=["string"],
             )
@@ -1374,7 +737,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def batch_get_documents(
+    async def batch_gets_documents_from_a_document_collection(
         self,
         collection_name: str,
         *,
@@ -1414,7 +777,7 @@ class AsyncDocumentClient:
 
 
         async def main() -> None:
-            await client.document.batch_get_documents(
+            await client.document.batch_gets_documents_from_a_document_collection(
                 collection_name="collectionName",
             )
 
@@ -1448,7 +811,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def batch_update_documents(
+    async def batch_updates_documents_in_a_document_collection(
         self,
         collection_name: str,
         *,
@@ -1486,7 +849,7 @@ class AsyncDocumentClient:
 
 
         async def main() -> None:
-            await client.document.batch_update_documents(
+            await client.document.batch_updates_documents_in_a_document_collection(
                 collection_name="collectionName",
                 request=[
                     UpdateDocumentListRequest(
@@ -1592,7 +955,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_document(
+    async def delete_document_from_a_document_collection_by_uuid(
         self, collection_name: str, document_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
@@ -1626,7 +989,7 @@ class AsyncDocumentClient:
 
 
         async def main() -> None:
-            await client.document.delete_document(
+            await client.document.delete_document_from_a_document_collection_by_uuid(
                 collection_name="collectionName",
                 document_uuid="documentUUID",
             )
@@ -1746,7 +1109,7 @@ class AsyncDocumentClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def search(
+    async def searches_documents_in_a_document_collection(
         self,
         collection_name: str,
         *,
@@ -1803,7 +1166,7 @@ class AsyncDocumentClient:
 
 
         async def main() -> None:
-            await client.document.search(
+            await client.document.searches_documents_in_a_document_collection(
                 collection_name="collectionName",
             )
 

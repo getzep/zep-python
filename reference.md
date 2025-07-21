@@ -1,6 +1,6 @@
 # Reference
-## Document
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">list_collections</a>()</code></summary>
+## Collection
+<details><summary><code>client.collection.<a href="src/zep_cloud/collection/client.py">gets_a_list_of_document_collections</a>()</code></summary>
 <dl>
 <dd>
 
@@ -32,7 +32,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.list_collections()
+client.collection.gets_a_list_of_document_collections()
 
 ```
 </dd>
@@ -60,7 +60,7 @@ client.document.list_collections()
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">get_collection</a>(...)</code></summary>
+<details><summary><code>client.collection.<a href="src/zep_cloud/collection/client.py">gets_a_document_collection</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -92,7 +92,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.get_collection(
+client.collection.gets_a_document_collection(
     collection_name="collectionName",
 )
 
@@ -130,7 +130,7 @@ client.document.get_collection(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">add_collection</a>(...)</code></summary>
+<details><summary><code>client.collection.<a href="src/zep_cloud/collection/client.py">creates_a_new_document_collection</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -162,7 +162,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.add_collection(
+client.collection.creates_a_new_document_collection(
     collection_name="collectionName",
 )
 
@@ -216,7 +216,7 @@ client.document.add_collection(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">delete_collection</a>(...)</code></summary>
+<details><summary><code>client.collection.<a href="src/zep_cloud/collection/client.py">deletes_a_document_collection</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -248,7 +248,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.delete_collection(
+client.collection.deletes_a_document_collection(
     collection_name="collectionName",
 )
 
@@ -286,7 +286,7 @@ client.document.delete_collection(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">update_collection</a>(...)</code></summary>
+<details><summary><code>client.collection.<a href="src/zep_cloud/collection/client.py">updates_a_document_collection</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -318,7 +318,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.update_collection(
+client.collection.updates_a_document_collection(
     collection_name="collectionName",
 )
 
@@ -372,7 +372,8 @@ client.document.update_collection(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">add_documents</a>(...)</code></summary>
+## Document
+<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">creates_multiple_documents_in_a_document_collection</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -405,7 +406,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.add_documents(
+client.document.creates_multiple_documents_in_a_document_collection(
     collection_name="collectionName",
     request=[
         CreateDocumentRequest(
@@ -456,7 +457,7 @@ client.document.add_documents(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">batch_delete_documents</a>(...)</code></summary>
+<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">batch_deletes_documents_from_a_document_collection_by_uuid</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -488,7 +489,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.batch_delete_documents(
+client.document.batch_deletes_documents_from_a_document_collection_by_uuid(
     collection_name="collectionName",
     request=["string"],
 )
@@ -535,7 +536,7 @@ client.document.batch_delete_documents(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">batch_get_documents</a>(...)</code></summary>
+<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">batch_gets_documents_from_a_document_collection</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -567,7 +568,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.batch_get_documents(
+client.document.batch_gets_documents_from_a_document_collection(
     collection_name="collectionName",
 )
 
@@ -621,7 +622,7 @@ client.document.batch_get_documents(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">batch_update_documents</a>(...)</code></summary>
+<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">batch_updates_documents_in_a_document_collection</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -654,7 +655,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.batch_update_documents(
+client.document.batch_updates_documents_in_a_document_collection(
     collection_name="collectionName",
     request=[
         UpdateDocumentListRequest(
@@ -784,7 +785,7 @@ client.document.gets_a_document_from_a_document_collection_by_uuid(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">delete_document</a>(...)</code></summary>
+<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">delete_document_from_a_document_collection_by_uuid</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -816,7 +817,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.delete_document(
+client.document.delete_document_from_a_document_collection_by_uuid(
     collection_name="collectionName",
     document_uuid="documentUUID",
 )
@@ -958,7 +959,7 @@ client.document.updates_a_document(
 </dl>
 </details>
 
-<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">search</a>(...)</code></summary>
+<details><summary><code>client.document.<a href="src/zep_cloud/document/client.py">searches_documents_in_a_document_collection</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -990,7 +991,7 @@ from zep_cloud.client import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.document.search(
+client.document.searches_documents_in_a_document_collection(
     collection_name="collectionName",
 )
 
@@ -2065,379 +2066,6 @@ client.graph.delete(
 <dd>
 
 **graph_id:** `str` — Graph ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Memory
-<details><summary><code>client.memory.<a href="src/zep_cloud/memory/client.py">get_fact</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Deprecated API: get fact by uuid
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.memory.get_fact(
-    fact_uuid="factUUID",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**fact_uuid:** `str` — Fact UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.memory.<a href="src/zep_cloud/memory/client.py">delete_fact</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Deprecated API: delete a fact
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.memory.delete_fact(
-    fact_uuid="factUUID",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**fact_uuid:** `str` — Fact UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.memory.<a href="src/zep_cloud/memory/client.py">get_session_facts</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Deprecated API: get facts for a session
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.memory.get_session_facts(
-    session_id="sessionId",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**session_id:** `str` — Session ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**min_rating:** `typing.Optional[float]` — Minimum rating by which to filter facts
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.memory.<a href="src/zep_cloud/memory/client.py">add_session_facts</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Deprecated API: Adds facts to a session
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import NewFact
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.memory.add_session_facts(
-    session_id="sessionId",
-    facts=[
-        NewFact(
-            fact="fact",
-        )
-    ],
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**session_id:** `str` — Session ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**facts:** `typing.Sequence[NewFact]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.memory.<a href="src/zep_cloud/memory/client.py">get_summaries</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Deprecated API: Get session summaries by ID
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.memory.get_summaries(
-    session_id="sessionId",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**session_id:** `str` — Session ID
     
 </dd>
 </dl>

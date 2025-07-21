@@ -11,15 +11,15 @@ from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
+from ..types.add_thread_messages_response import AddThreadMessagesResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_add_thread_messages_response import ApidataAddThreadMessagesResponse
-from ..types.apidata_thread import ApidataThread
-from ..types.apidata_thread_context_response import ApidataThreadContextResponse
-from ..types.apidata_thread_list_response import ApidataThreadListResponse
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.role_type import RoleType
 from ..types.success_response import SuccessResponse
+from ..types.thread import Thread
+from ..types.thread_context_response import ThreadContextResponse
+from ..types.thread_list_response import ThreadListResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -37,7 +37,7 @@ class ThreadClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadListResponse:
+    ) -> ThreadListResponse:
         """
         Returns all threads.
 
@@ -60,7 +60,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataThreadListResponse
+        ThreadListResponse
             List of threads
 
         Examples
@@ -80,7 +80,7 @@ class ThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataThreadListResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ThreadListResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -96,7 +96,7 @@ class ThreadClient:
 
     def create(
         self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataThread:
+    ) -> Thread:
         """
         Start a new thread.
 
@@ -113,7 +113,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataThread
+        Thread
             The thread object.
 
         Examples
@@ -137,7 +137,7 @@ class ThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataThread, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(Thread, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -205,7 +205,7 @@ class ThreadClient:
         lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadContextResponse:
+    ) -> ThreadContextResponse:
         """
         Returns most relevant context for a given thread.
 
@@ -225,7 +225,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataThreadContextResponse
+        ThreadContextResponse
             OK
 
         Examples
@@ -247,7 +247,7 @@ class ThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataThreadContextResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ThreadContextResponse, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -332,7 +332,7 @@ class ThreadClient:
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataAddThreadMessagesResponse:
+    ) -> AddThreadMessagesResponse:
         """
         Add messages to a thread.
 
@@ -357,7 +357,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataAddThreadMessagesResponse
+        AddThreadMessagesResponse
             An object, optionally containing user context retrieved for the last thread message
 
         Examples
@@ -387,7 +387,7 @@ class ThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataAddThreadMessagesResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(AddThreadMessagesResponse, _response.json())  # type: ignore
             if _response.status_code == 500:
                 raise InternalServerError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -410,7 +410,7 @@ class AsyncThreadClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadListResponse:
+    ) -> ThreadListResponse:
         """
         Returns all threads.
 
@@ -433,7 +433,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataThreadListResponse
+        ThreadListResponse
             List of threads
 
         Examples
@@ -461,7 +461,7 @@ class AsyncThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataThreadListResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ThreadListResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -477,7 +477,7 @@ class AsyncThreadClient:
 
     async def create(
         self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataThread:
+    ) -> Thread:
         """
         Start a new thread.
 
@@ -494,7 +494,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataThread
+        Thread
             The thread object.
 
         Examples
@@ -526,7 +526,7 @@ class AsyncThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataThread, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(Thread, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -604,7 +604,7 @@ class AsyncThreadClient:
         lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadContextResponse:
+    ) -> ThreadContextResponse:
         """
         Returns most relevant context for a given thread.
 
@@ -624,7 +624,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataThreadContextResponse
+        ThreadContextResponse
             OK
 
         Examples
@@ -654,7 +654,7 @@ class AsyncThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataThreadContextResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ThreadContextResponse, _response.json())  # type: ignore
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -747,7 +747,7 @@ class AsyncThreadClient:
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataAddThreadMessagesResponse:
+    ) -> AddThreadMessagesResponse:
         """
         Add messages to a thread.
 
@@ -772,7 +772,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataAddThreadMessagesResponse
+        AddThreadMessagesResponse
             An object, optionally containing user context retrieved for the last thread message
 
         Examples
@@ -810,7 +810,7 @@ class AsyncThreadClient:
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(ApidataAddThreadMessagesResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(AddThreadMessagesResponse, _response.json())  # type: ignore
             if _response.status_code == 500:
                 raise InternalServerError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

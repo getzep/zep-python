@@ -8,39 +8,37 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import pydantic_v1
 from ..core.request_options import RequestOptions
+from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
+from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.fact_response import FactResponse
-from ..types.facts_response import FactsResponse
-from ..types.new_fact import NewFact
+from ..types.apidata_document_collection import ApidataDocumentCollection
 from ..types.success_response import SuccessResponse
-from ..types.summary_list_response import SummaryListResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class MemoryClient:
+class CollectionClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_fact(self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactResponse:
+    def gets_a_list_of_document_collections(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[typing.List[ApidataDocumentCollection]]:
         """
-        Deprecated API: get fact by uuid
+        Returns a list of all DocumentCollections.
 
         Parameters
         ----------
-        fact_uuid : str
-            Fact UUID
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        FactResponse
-            The fact with the specified UUID.
+        typing.List[typing.List[ApidataDocumentCollection]]
+            OK
 
         Examples
         --------
@@ -49,16 +47,71 @@ class MemoryClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.memory.get_fact(
-            fact_uuid="factUUID",
-        )
+        client.collection.gets_a_list_of_document_collections()
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"facts/{jsonable_encoder(fact_uuid)}", method="GET", request_options=request_options
+            "collections", method="GET", request_options=request_options
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def gets_a_document_collection(
+        self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataDocumentCollection:
+        """
+        Returns a DocumentCollection if it exists.
+
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataDocumentCollection
+            OK
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.collection.gets_a_document_collection(
+            collection_name="collectionName",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"collections/{jsonable_encoder(collection_name)}", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -72,130 +125,25 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_fact(
-        self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
-        """
-        Deprecated API: delete a fact
-
-        Parameters
-        ----------
-        fact_uuid : str
-            Fact UUID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            Deleted
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.memory.delete_fact(
-            fact_uuid="factUUID",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"facts/{jsonable_encoder(fact_uuid)}", method="DELETE", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def get_session_facts(
+    def creates_a_new_document_collection(
         self,
-        session_id: str,
+        collection_name: str,
         *,
-        min_rating: typing.Optional[float] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> FactsResponse:
-        """
-        Deprecated API: get facts for a session
-
-        Parameters
-        ----------
-        session_id : str
-            Session ID
-
-        min_rating : typing.Optional[float]
-            Minimum rating by which to filter facts
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        FactsResponse
-            The facts for the session.
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.memory.get_session_facts(
-            session_id="sessionId",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"sessions/{jsonable_encoder(session_id)}/facts",
-            method="GET",
-            params={"minRating": min_rating},
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def add_session_facts(
-        self,
-        session_id: str,
-        *,
-        facts: typing.Sequence[NewFact],
+        description: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Deprecated API: Adds facts to a session
+        If a collection with the same name already exists, an error will be returned.
 
         Parameters
         ----------
-        session_id : str
-            Session ID
+        collection_name : str
+            Name of the Document Collection
 
-        facts : typing.Sequence[NewFact]
+        description : typing.Optional[str]
+
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -207,31 +155,33 @@ class MemoryClient:
 
         Examples
         --------
-        from zep_cloud import NewFact
         from zep_cloud.client import Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.memory.add_session_facts(
-            session_id="sessionId",
-            facts=[
-                NewFact(
-                    fact="fact",
-                )
-            ],
+        client.collection.creates_a_new_document_collection(
+            collection_name="collectionName",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"sessions/{jsonable_encoder(session_id)}/facts",
+            f"collections/{jsonable_encoder(collection_name)}",
             method="POST",
-            json={"facts": facts},
+            json={"description": description, "metadata": metadata},
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -245,23 +195,23 @@ class MemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_summaries(
-        self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SummaryListResponse:
+    def deletes_a_document_collection(
+        self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
         """
-        Deprecated API: Get session summaries by ID
+        If a collection with the same name already exists, it will be overwritten.
 
         Parameters
         ----------
-        session_id : str
-            Session ID
+        collection_name : str
+            Name of the Document Collection
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SummaryListResponse
+        SuccessResponse
             OK
 
         Examples
@@ -271,16 +221,94 @@ class MemoryClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.memory.get_summaries(
-            session_id="sessionId",
+        client.collection.deletes_a_document_collection(
+            collection_name="collectionName",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"sessions/{jsonable_encoder(session_id)}/summary", method="GET", request_options=request_options
+            f"collections/{jsonable_encoder(collection_name)}", method="DELETE", request_options=request_options
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SummaryListResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def updates_a_document_collection(
+        self,
+        collection_name: str,
+        *,
+        description: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Updates a DocumentCollection
+
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
+
+        description : typing.Optional[str]
+
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.collection.updates_a_document_collection(
+            collection_name="collectionName",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"collections/{jsonable_encoder(collection_name)}",
+            method="PATCH",
+            json={"description": description, "metadata": metadata},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -295,28 +323,25 @@ class MemoryClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncMemoryClient:
+class AsyncCollectionClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get_fact(
-        self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> FactResponse:
+    async def gets_a_list_of_document_collections(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[typing.List[ApidataDocumentCollection]]:
         """
-        Deprecated API: get fact by uuid
+        Returns a list of all DocumentCollections.
 
         Parameters
         ----------
-        fact_uuid : str
-            Fact UUID
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        FactResponse
-            The fact with the specified UUID.
+        typing.List[typing.List[ApidataDocumentCollection]]
+            OK
 
         Examples
         --------
@@ -330,21 +355,19 @@ class AsyncMemoryClient:
 
 
         async def main() -> None:
-            await client.memory.get_fact(
-                fact_uuid="factUUID",
-            )
+            await client.collection.gets_a_list_of_document_collections()
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"facts/{jsonable_encoder(fact_uuid)}", method="GET", request_options=request_options
+            "collections", method="GET", request_options=request_options
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactResponse, _response.json())  # type: ignore
-            if _response.status_code == 404:
-                raise NotFoundError(
+                return pydantic_v1.parse_obj_as(typing.List[typing.List[ApidataDocumentCollection]], _response.json())  # type: ignore
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
                 )
             if _response.status_code == 500:
@@ -356,24 +379,24 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_fact(
-        self, fact_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
+    async def gets_a_document_collection(
+        self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataDocumentCollection:
         """
-        Deprecated API: delete a fact
+        Returns a DocumentCollection if it exists.
 
         Parameters
         ----------
-        fact_uuid : str
-            Fact UUID
+        collection_name : str
+            Name of the Document Collection
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
-            Deleted
+        ApidataDocumentCollection
+            OK
 
         Examples
         --------
@@ -387,19 +410,27 @@ class AsyncMemoryClient:
 
 
         async def main() -> None:
-            await client.memory.delete_fact(
-                fact_uuid="factUUID",
+            await client.collection.gets_a_document_collection(
+                collection_name="collectionName",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"facts/{jsonable_encoder(fact_uuid)}", method="DELETE", request_options=request_options
+            f"collections/{jsonable_encoder(collection_name)}", method="GET", request_options=request_options
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ApidataDocumentCollection, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -413,89 +444,25 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_session_facts(
+    async def creates_a_new_document_collection(
         self,
-        session_id: str,
+        collection_name: str,
         *,
-        min_rating: typing.Optional[float] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> FactsResponse:
-        """
-        Deprecated API: get facts for a session
-
-        Parameters
-        ----------
-        session_id : str
-            Session ID
-
-        min_rating : typing.Optional[float]
-            Minimum rating by which to filter facts
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        FactsResponse
-            The facts for the session.
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.memory.get_session_facts(
-                session_id="sessionId",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"sessions/{jsonable_encoder(session_id)}/facts",
-            method="GET",
-            params={"minRating": min_rating},
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def add_session_facts(
-        self,
-        session_id: str,
-        *,
-        facts: typing.Sequence[NewFact],
+        description: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Deprecated API: Adds facts to a session
+        If a collection with the same name already exists, an error will be returned.
 
         Parameters
         ----------
-        session_id : str
-            Session ID
+        collection_name : str
+            Name of the Document Collection
 
-        facts : typing.Sequence[NewFact]
+        description : typing.Optional[str]
+
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -509,7 +476,6 @@ class AsyncMemoryClient:
         --------
         import asyncio
 
-        from zep_cloud import NewFact
         from zep_cloud.client import AsyncZep
 
         client = AsyncZep(
@@ -518,28 +484,31 @@ class AsyncMemoryClient:
 
 
         async def main() -> None:
-            await client.memory.add_session_facts(
-                session_id="sessionId",
-                facts=[
-                    NewFact(
-                        fact="fact",
-                    )
-                ],
+            await client.collection.creates_a_new_document_collection(
+                collection_name="collectionName",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"sessions/{jsonable_encoder(session_id)}/facts",
+            f"collections/{jsonable_encoder(collection_name)}",
             method="POST",
-            json={"facts": facts},
+            json={"description": description, "metadata": metadata},
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -553,23 +522,23 @@ class AsyncMemoryClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_summaries(
-        self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SummaryListResponse:
+    async def deletes_a_document_collection(
+        self, collection_name: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
         """
-        Deprecated API: Get session summaries by ID
+        If a collection with the same name already exists, it will be overwritten.
 
         Parameters
         ----------
-        session_id : str
-            Session ID
+        collection_name : str
+            Name of the Document Collection
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SummaryListResponse
+        SuccessResponse
             OK
 
         Examples
@@ -584,19 +553,105 @@ class AsyncMemoryClient:
 
 
         async def main() -> None:
-            await client.memory.get_summaries(
-                session_id="sessionId",
+            await client.collection.deletes_a_document_collection(
+                collection_name="collectionName",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"sessions/{jsonable_encoder(session_id)}/summary", method="GET", request_options=request_options
+            f"collections/{jsonable_encoder(collection_name)}", method="DELETE", request_options=request_options
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(SummaryListResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def updates_a_document_collection(
+        self,
+        collection_name: str,
+        *,
+        description: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Updates a DocumentCollection
+
+        Parameters
+        ----------
+        collection_name : str
+            Name of the Document Collection
+
+        description : typing.Optional[str]
+
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.collection.updates_a_document_collection(
+                collection_name="collectionName",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"collections/{jsonable_encoder(collection_name)}",
+            method="PATCH",
+            json={"description": description, "metadata": metadata},
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
