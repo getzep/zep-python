@@ -2,15 +2,15 @@
 Example of using the Zep Python SDK asynchronously with Graph functionality.
 
 This script demonstrates the following functionality:
-- Creating a group.
-- Updating a group.
-- Adding episodes to the group (text and JSON).
-- Retrieving nodes from the group.
-- Retrieving edges from the group.
-- Searching the group for specific content.
+- Creating a graph.
+- Updating a graph.
+- Adding episodes to the graph (text and JSON).
+- Retrieving nodes from the graph.
+- Retrieving edges from the graph.
+- Searching the graph for specific content.
 
 The script showcases various operations using the Zep Graph API, including
-group management, adding different types of episodes, and querying the graph structure.
+graph management, adding different types of episodes, and querying the graph structure.
 """
 
 import asyncio
@@ -33,68 +33,68 @@ async def main() -> None:
         api_key=API_KEY,
     )
 
-    group_id = f"slack:{uuid.uuid4().hex}"
-    print(f"Creating group {group_id}...")
-    group = await client.group.add(
-        group_id=group_id,
-        name="My Group",
-        description="This is my group",
+    graph_id = f"slack:{uuid.uuid4().hex}"
+    print(f"Creating graph {graph_id}...")
+    graph = await client.graph.create(
+        graph_id=graph_id,
+        name="My Graph",
+        description="This is my graph",
     )
     await asyncio.sleep(2)
-    print(f"Group {group_id} created {group}")
+    print(f"graph {graph_id} created {graph}")
 
-    print(f"Adding episode to group {group_id}...")
+    print(f"Adding episode to graph {graph_id}...")
     await client.graph.add(
-        group_id=group_id,
+        graph_id=graph_id,
         data="This is a test episode",
         type="text",
     )
     await asyncio.sleep(2)
-    print(f"Adding more meaningful episode to group {group_id}...")
+    print(f"Adding more meaningful episode to graph {graph_id}...")
     await client.graph.add(
-        group_id=group_id,
+        graph_id=graph_id,
         data="Eric Clapton is a rock star",
         type="text",
     )
     await asyncio.sleep(2)
-    print(f"Adding a JSON episode to group {group_id}...")
+    print(f"Adding a JSON episode to graph {graph_id}...")
     json_string = '{"name": "Eric Clapton", "age": 78, "genre": "Rock"}'
     await client.graph.add(
-        group_id=group_id,
+        graph_id=graph_id,
         data=json_string,
         type="json",
     )
     await asyncio.sleep(20)
 
     # TODO: Need to enable non-message episodic content retrieval
-    print(f"Getting episodes from group {group_id}...")
-    results = await client.graph.episode.get_by_group_id(group_id, lastn=2)
+    print(f"Getting episodes from graph {graph_id}...")
+    results = await client.graph.episode.get_by_graph_id(graph_id, lastn=2)
     await asyncio.sleep(2)
-    print(f"Episodes from group {group_id} {results.episodes}")
+    print(f"Episodes from graph {graph_id} {results.episodes}")
     episode = await client.graph.episode.get(results.episodes[0].uuid_)
     await asyncio.sleep(2)
-    print(f"Episode {episode.uuid_} from group {group_id} {episode}")
+    print(f"Episode {episode.uuid_} from graph {graph_id} {episode}")
 
-    print(f"Getting nodes from group {group_id}...")
-    nodes = await client.graph.node.get_by_group_id(group_id)
+    print(f"Getting nodes from graph {graph_id}...")
+    nodes = await client.graph.node.get_by_graph_id(graph_id)
     await asyncio.sleep(2)
-    print(f"Nodes from group {group_id} {nodes}")
+    print(f"Nodes from graph {graph_id} {nodes}")
 
-    print(f"Getting edges from group {group_id}...")
-    edges = await client.graph.edge.get_by_group_id(group_id)
+    print(f"Getting edges from graph {graph_id}...")
+    edges = await client.graph.edge.get_by_graph_id(graph_id)
     await asyncio.sleep(2)
-    print(f"Edges from group {group_id} {edges}")
+    print(f"Edges from graph {graph_id} {edges}")
 
-    print(f"Searching group {group_id}...")
+    print(f"Searching graph {graph_id}...")
     search_results = await client.graph.search(
-        group_id=group_id,
+        graph_id=graph_id,
         query="Eric Clapton",
     )
     await asyncio.sleep(2)
-    print(f"Search results from group {group_id} {search_results}")
+    print(f"Search results from graph {graph_id} {search_results}")
 
-    # await client.group.delete(group_id)
-    print(f"Group {group_id} deleted")
+    # await client.graph.delete(graph_id)
+    # print(f"graph {graph_id} deleted")
 
 
 if __name__ == "__main__":
