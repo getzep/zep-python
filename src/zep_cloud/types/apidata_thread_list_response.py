@@ -5,12 +5,12 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .group import Group
+from .apidata_thread import ApidataThread
 
 
-class GroupListResponse(pydantic_v1.BaseModel):
-    groups: typing.Optional[typing.List[Group]] = None
-    row_count: typing.Optional[int] = None
+class ApidataThreadListResponse(pydantic_v1.BaseModel):
+    response_count: typing.Optional[int] = None
+    thread: typing.Optional[typing.List[ApidataThread]] = None
     total_count: typing.Optional[int] = None
 
     def json(self, **kwargs: typing.Any) -> str:

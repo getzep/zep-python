@@ -5,39 +5,25 @@ import typing
 
 from ..core.datetime_utils import serialize_datetime
 from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
-from .fact_rating_instruction import FactRatingInstruction
+from .fact import Fact
+from .message import Message
 
 
-class Session(pydantic_v1.BaseModel):
-    classifications: typing.Optional[typing.Dict[str, str]] = None
-    created_at: typing.Optional[str] = None
-    deleted_at: typing.Optional[str] = None
-    ended_at: typing.Optional[str] = None
-    fact_rating_instruction: typing.Optional[FactRatingInstruction] = pydantic_v1.Field(default=None)
+class ApidataThreadContextResponse(pydantic_v1.BaseModel):
+    context: typing.Optional[str] = pydantic_v1.Field(default=None)
     """
-    Deprecated
+    Memory context containing relevant facts and entities for the session. Can be put into the prompt directly.
     """
 
-    facts: typing.Optional[typing.List[str]] = pydantic_v1.Field(default=None)
+    messages: typing.Optional[typing.List[Message]] = pydantic_v1.Field(default=None)
     """
-    Deprecated
-    """
-
-    id: typing.Optional[int] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic_v1.Field(default=None)
-    """
-    Deprecated
+    A list of message objects, where each message contains a role and content. Only last_n messages will be returned
     """
 
-    project_uuid: typing.Optional[str] = None
-    session_id: typing.Optional[str] = None
-    updated_at: typing.Optional[str] = pydantic_v1.Field(default=None)
+    relevant_facts: typing.Optional[typing.List[Fact]] = pydantic_v1.Field(default=None)
     """
-    Deprecated
+    Most relevant facts to the recent messages in the session.
     """
-
-    user_id: typing.Optional[str] = None
-    uuid_: typing.Optional[str] = pydantic_v1.Field(alias="uuid", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -54,7 +40,5 @@ class Session(pydantic_v1.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
-        populate_by_name = True
         extra = pydantic_v1.Extra.allow
         json_encoders = {dt.datetime: serialize_datetime}

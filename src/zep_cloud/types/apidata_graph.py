@@ -8,16 +8,11 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 from .fact_rating_instruction import FactRatingInstruction
 
 
-class Group(pydantic_v1.BaseModel):
+class ApidataGraph(pydantic_v1.BaseModel):
     created_at: typing.Optional[str] = None
     description: typing.Optional[str] = None
-    external_id: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Deprecated
-    """
-
     fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
-    group_id: typing.Optional[str] = None
+    graph_id: typing.Optional[str] = None
     id: typing.Optional[int] = None
     name: typing.Optional[str] = None
     project_uuid: typing.Optional[str] = None

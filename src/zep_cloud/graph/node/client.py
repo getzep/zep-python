@@ -24,21 +24,21 @@ class NodeClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_by_group_id(
+    def get_by_graph_id(
         self,
-        group_id: str,
+        graph_id: str,
         *,
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
-        Returns all nodes for a group.
+        Returns all nodes for a graph.
 
         Parameters
         ----------
-        group_id : str
-            Group ID
+        graph_id : str
+            Graph ID
 
         limit : typing.Optional[int]
             Maximum number of items to return
@@ -61,12 +61,12 @@ class NodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.node.get_by_group_id(
-            group_id="group_id",
+        client.graph.node.get_by_graph_id(
+            graph_id="graph_id",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/node/group/{jsonable_encoder(group_id)}",
+            f"graph/node/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
@@ -306,21 +306,21 @@ class AsyncNodeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get_by_group_id(
+    async def get_by_graph_id(
         self,
-        group_id: str,
+        graph_id: str,
         *,
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityNode]:
         """
-        Returns all nodes for a group.
+        Returns all nodes for a graph.
 
         Parameters
         ----------
-        group_id : str
-            Group ID
+        graph_id : str
+            Graph ID
 
         limit : typing.Optional[int]
             Maximum number of items to return
@@ -348,15 +348,15 @@ class AsyncNodeClient:
 
 
         async def main() -> None:
-            await client.graph.node.get_by_group_id(
-                group_id="group_id",
+            await client.graph.node.get_by_graph_id(
+                graph_id="graph_id",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/node/group/{jsonable_encoder(group_id)}",
+            f"graph/node/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,

@@ -12,49 +12,56 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.fact_rating_instruction import FactRatingInstruction
-from ..types.facts_response import FactsResponse
-from ..types.group import Group
-from ..types.group_list_response import GroupListResponse
+from ..types.apidata_add_thread_messages_response import ApidataAddThreadMessagesResponse
+from ..types.apidata_thread import ApidataThread
+from ..types.apidata_thread_context_response import ApidataThreadContextResponse
+from ..types.apidata_thread_list_response import ApidataThreadListResponse
+from ..types.message import Message
+from ..types.message_list_response import MessageListResponse
+from ..types.role_type import RoleType
 from ..types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class GroupClient:
+class ThreadClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def add(
+    def list_all(
         self,
         *,
-        group_id: str,
-        description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        name: typing.Optional[str] = OMIT,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Group:
+    ) -> ApidataThreadListResponse:
         """
-        Creates a new group.
+        Returns all threads.
 
         Parameters
         ----------
-        group_id : str
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1
 
-        description : typing.Optional[str]
+        page_size : typing.Optional[int]
+            Number of threads to retrieve per page.
 
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+        order_by : typing.Optional[str]
+            Field to order the results by: created_at, updated_at, user_id, thread_id.
 
-        name : typing.Optional[str]
+        asc : typing.Optional[bool]
+            Order direction: true for ascending, false for descending.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        Group
-            The added group
+        ApidataThreadListResponse
+            List of threads
 
         Examples
         --------
@@ -63,25 +70,74 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.add(
-            group_id="group_id",
+        client.thread.list_all()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "threads",
+            method="GET",
+            params={"page_number": page_number, "page_size": page_size, "order_by": order_by, "asc": asc},
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataThreadListResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def create(
+        self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataThread:
+        """
+        Start a new thread.
+
+        Parameters
+        ----------
+        thread_id : str
+            The unique identifier of the thread.
+
+        user_id : str
+            The unique identifier of the user associated with the thread
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataThread
+            The thread object.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.thread.create(
+            thread_id="thread_id",
+            user_id="user_id",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            "groups",
+            "threads",
             method="POST",
-            json={
-                "description": description,
-                "fact_rating_instruction": fact_rating_instruction,
-                "group_id": group_id,
-                "name": name,
-            },
+            json={"thread_id": thread_id, "user_id": user_id},
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ApidataThread, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -95,118 +151,14 @@ class GroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_all_groups(
-        self,
-        *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> GroupListResponse:
+    def delete(self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Returns all groups.
+        Deletes a thread.
 
         Parameters
         ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1.
-
-        page_size : typing.Optional[int]
-            Number of groups to retrieve per page.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        GroupListResponse
-            Successfully retrieved list of groups.
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.group.get_all_groups()
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "groups-ordered",
-            method="GET",
-            params={"pageNumber": page_number, "pageSize": page_size},
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(GroupListResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def get_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
-        """
-        Returns a group.
-
-        Parameters
-        ----------
-        group_id : str
-            The group_id of the group to get.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        Group
-            The group that was retrieved.
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.group.get_group(
-            group_id="groupId",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def delete(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
-        """
-        Deletes a group.
-
-        Parameters
-        ----------
-        group_id : str
-            Group ID
+        thread_id : str
+            The ID of the thread for which memory should be deleted.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -214,7 +166,7 @@ class GroupClient:
         Returns
         -------
         SuccessResponse
-            Deleted
+            OK
 
         Examples
         --------
@@ -223,20 +175,16 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.delete(
-            group_id="groupId",
+        client.thread.delete(
+            thread_id="threadId",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}", method="DELETE", request_options=request_options
+            f"threads/{jsonable_encoder(thread_id)}", method="DELETE", request_options=request_options
         )
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -250,36 +198,35 @@ class GroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(
+    def get_user_context(
         self,
-        group_id: str,
+        thread_id: str,
         *,
-        description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        name: typing.Optional[str] = OMIT,
+        lastn: typing.Optional[int] = None,
+        min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Group:
+    ) -> ApidataThreadContextResponse:
         """
-        Updates information about a group.
+        Returns most relevant context for a given thread.
 
         Parameters
         ----------
-        group_id : str
-            Group ID
+        thread_id : str
+            The ID of the thread for which to retrieve context.
 
-        description : typing.Optional[str]
+        lastn : typing.Optional[int]
+            The number of most recent memory entries to retrieve.
 
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-
-        name : typing.Optional[str]
+        min_rating : typing.Optional[float]
+            The minimum rating by which to filter relevant facts.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        Group
-            The added group
+        ApidataThreadContextResponse
+            OK
 
         Examples
         --------
@@ -288,75 +235,159 @@ class GroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.group.update(
-            group_id="groupId",
+        client.thread.get_user_context(
+            thread_id="threadId",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}",
-            method="PATCH",
-            json={"description": description, "fact_rating_instruction": fact_rating_instruction, "name": name},
+            f"threads/{jsonable_encoder(thread_id)}/context",
+            method="GET",
+            params={"lastn": lastn, "minRating": min_rating},
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataThreadContextResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get(
+        self,
+        thread_id: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> MessageListResponse:
+        """
+        Returns messages for a thread.
+
+        Parameters
+        ----------
+        thread_id : str
+            Thread ID
+
+        limit : typing.Optional[int]
+            Limit the number of results returned
+
+        cursor : typing.Optional[int]
+            Cursor for pagination
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        MessageListResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.thread.get(
+            thread_id="threadId",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"threads/{jsonable_encoder(thread_id)}/messages",
+            method="GET",
+            params={"limit": limit, "cursor": cursor},
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(MessageListResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def add_messages(
+        self,
+        thread_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataAddThreadMessagesResponse:
+        """
+        Add messages to a thread.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread to which messages should be added.
+
+        messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added, retained and used as context for messages
+            that are added to a user's graph.
+
+        return_context : typing.Optional[bool]
+            Optionally return memory context relevant to the most recent messages.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataAddThreadMessagesResponse
+            An object, optionally containing user context retrieved for the last thread message
+
+        Examples
+        --------
+        from zep_cloud import Message
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.thread.add_messages(
+            thread_id="threadId",
+            messages=[
+                Message(
+                    content="content",
+                    role_type="norole",
+                )
+            ],
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"threads/{jsonable_encoder(thread_id)}/messages",
+            method="POST",
+            json={"ignore_roles": ignore_roles, "messages": messages, "return_context": return_context},
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    def get_facts(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactsResponse:
-        """
-        Deprecated: Use Get Group Edges instead.
-
-        Parameters
-        ----------
-        group_id : str
-            The group_id of the group to get.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        FactsResponse
-            The group facts.
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.group.get_facts(
-            group_id="groupId",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}/facts", method="GET", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
+                return pydantic_v1.parse_obj_as(ApidataAddThreadMessagesResponse, _response.json())  # type: ignore
             if _response.status_code == 500:
                 raise InternalServerError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -367,112 +398,43 @@ class GroupClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
 
-class AsyncGroupClient:
+class AsyncThreadClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def add(
-        self,
-        *,
-        group_id: str,
-        description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> Group:
-        """
-        Creates a new group.
-
-        Parameters
-        ----------
-        group_id : str
-
-        description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-
-        name : typing.Optional[str]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        Group
-            The added group
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.group.add(
-                group_id="group_id",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "groups",
-            method="POST",
-            json={
-                "description": description,
-                "fact_rating_instruction": fact_rating_instruction,
-                "group_id": group_id,
-                "name": name,
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def get_all_groups(
+    async def list_all(
         self,
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> GroupListResponse:
+    ) -> ApidataThreadListResponse:
         """
-        Returns all groups.
+        Returns all threads.
 
         Parameters
         ----------
         page_number : typing.Optional[int]
-            Page number for pagination, starting from 1.
+            Page number for pagination, starting from 1
 
         page_size : typing.Optional[int]
-            Number of groups to retrieve per page.
+            Number of threads to retrieve per page.
+
+        order_by : typing.Optional[str]
+            Field to order the results by: created_at, updated_at, user_id, thread_id.
+
+        asc : typing.Optional[bool]
+            Order direction: true for ascending, false for descending.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        GroupListResponse
-            Successfully retrieved list of groups.
+        ApidataThreadListResponse
+            List of threads
 
         Examples
         --------
@@ -486,20 +448,20 @@ class AsyncGroupClient:
 
 
         async def main() -> None:
-            await client.group.get_all_groups()
+            await client.thread.list_all()
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "groups-ordered",
+            "threads",
             method="GET",
-            params={"pageNumber": page_number, "pageSize": page_size},
+            params={"page_number": page_number, "page_size": page_size, "order_by": order_by, "asc": asc},
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(GroupListResponse, _response.json())  # type: ignore
+                return pydantic_v1.parse_obj_as(ApidataThreadListResponse, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -513,22 +475,27 @@ class AsyncGroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_group(self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Group:
+    async def create(
+        self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataThread:
         """
-        Returns a group.
+        Start a new thread.
 
         Parameters
         ----------
-        group_id : str
-            The group_id of the group to get.
+        thread_id : str
+            The unique identifier of the thread.
+
+        user_id : str
+            The unique identifier of the user associated with the thread
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        Group
-            The group that was retrieved.
+        ApidataThread
+            The thread object.
 
         Examples
         --------
@@ -542,21 +509,26 @@ class AsyncGroupClient:
 
 
         async def main() -> None:
-            await client.group.get_group(
-                group_id="groupId",
+            await client.thread.create(
+                thread_id="thread_id",
+                user_id="user_id",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}", method="GET", request_options=request_options
+            "threads",
+            method="POST",
+            json={"thread_id": thread_id, "user_id": user_id},
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
-            if _response.status_code == 404:
-                raise NotFoundError(
+                return pydantic_v1.parse_obj_as(ApidataThread, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
                 )
             if _response.status_code == 500:
@@ -569,15 +541,15 @@ class AsyncGroupClient:
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete(
-        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Deletes a group.
+        Deletes a thread.
 
         Parameters
         ----------
-        group_id : str
-            Group ID
+        thread_id : str
+            The ID of the thread for which memory should be deleted.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -585,7 +557,7 @@ class AsyncGroupClient:
         Returns
         -------
         SuccessResponse
-            Deleted
+            OK
 
         Examples
         --------
@@ -599,23 +571,19 @@ class AsyncGroupClient:
 
 
         async def main() -> None:
-            await client.group.delete(
-                group_id="groupId",
+            await client.thread.delete(
+                thread_id="threadId",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}", method="DELETE", request_options=request_options
+            f"threads/{jsonable_encoder(thread_id)}", method="DELETE", request_options=request_options
         )
         try:
             if 200 <= _response.status_code < 300:
                 return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
@@ -629,36 +597,35 @@ class AsyncGroupClient:
             raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
         raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(
+    async def get_user_context(
         self,
-        group_id: str,
+        thread_id: str,
         *,
-        description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        name: typing.Optional[str] = OMIT,
+        lastn: typing.Optional[int] = None,
+        min_rating: typing.Optional[float] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> Group:
+    ) -> ApidataThreadContextResponse:
         """
-        Updates information about a group.
+        Returns most relevant context for a given thread.
 
         Parameters
         ----------
-        group_id : str
-            Group ID
+        thread_id : str
+            The ID of the thread for which to retrieve context.
 
-        description : typing.Optional[str]
+        lastn : typing.Optional[int]
+            The number of most recent memory entries to retrieve.
 
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-
-        name : typing.Optional[str]
+        min_rating : typing.Optional[float]
+            The minimum rating by which to filter relevant facts.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        Group
-            The added group
+        ApidataThreadContextResponse
+            OK
 
         Examples
         --------
@@ -672,88 +639,178 @@ class AsyncGroupClient:
 
 
         async def main() -> None:
-            await client.group.update(
-                group_id="groupId",
+            await client.thread.get_user_context(
+                thread_id="threadId",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}",
-            method="PATCH",
-            json={"description": description, "fact_rating_instruction": fact_rating_instruction, "name": name},
+            f"threads/{jsonable_encoder(thread_id)}/context",
+            method="GET",
+            params={"lastn": lastn, "minRating": min_rating},
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataThreadContextResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get(
+        self,
+        thread_id: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> MessageListResponse:
+        """
+        Returns messages for a thread.
+
+        Parameters
+        ----------
+        thread_id : str
+            Thread ID
+
+        limit : typing.Optional[int]
+            Limit the number of results returned
+
+        cursor : typing.Optional[int]
+            Cursor for pagination
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        MessageListResponse
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.thread.get(
+                thread_id="threadId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"threads/{jsonable_encoder(thread_id)}/messages",
+            method="GET",
+            params={"limit": limit, "cursor": cursor},
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(MessageListResponse, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def add_messages(
+        self,
+        thread_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataAddThreadMessagesResponse:
+        """
+        Add messages to a thread.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread to which messages should be added.
+
+        messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added, retained and used as context for messages
+            that are added to a user's graph.
+
+        return_context : typing.Optional[bool]
+            Optionally return memory context relevant to the most recent messages.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataAddThreadMessagesResponse
+            An object, optionally containing user context retrieved for the last thread message
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import Message
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.thread.add_messages(
+                thread_id="threadId",
+                messages=[
+                    Message(
+                        content="content",
+                        role_type="norole",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"threads/{jsonable_encoder(thread_id)}/messages",
+            method="POST",
+            json={"ignore_roles": ignore_roles, "messages": messages, "return_context": return_context},
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(Group, _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def get_facts(
-        self, group_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> FactsResponse:
-        """
-        Deprecated: Use Get Group Edges instead.
-
-        Parameters
-        ----------
-        group_id : str
-            The group_id of the group to get.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        FactsResponse
-            The group facts.
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.group.get_facts(
-                group_id="groupId",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"groups/{jsonable_encoder(group_id)}/facts", method="GET", request_options=request_options
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(FactsResponse, _response.json())  # type: ignore
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
+                return pydantic_v1.parse_obj_as(ApidataAddThreadMessagesResponse, _response.json())  # type: ignore
             if _response.status_code == 500:
                 raise InternalServerError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore

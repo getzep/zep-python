@@ -5,6 +5,7 @@ from json.decoder import JSONDecodeError
 
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import pydantic_v1
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
@@ -12,12 +13,14 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_graph import ApidataGraph
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.episode_data import EpisodeData
+from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
@@ -86,7 +89,7 @@ class GraphClient:
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
@@ -143,10 +146,10 @@ class GraphClient:
         data: str,
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> Episode:
         """
         Add data to the graph.
@@ -159,11 +162,13 @@ class GraphClient:
 
         created_at : typing.Optional[str]
 
-        group_id : typing.Optional[str]
+        graph_id : typing.Optional[str]
+            graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
 
         source_description : typing.Optional[str]
 
         user_id : typing.Optional[str]
+            User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -191,7 +196,7 @@ class GraphClient:
             json={
                 "created_at": created_at,
                 "data": data,
-                "group_id": group_id,
+                "graph_id": graph_id,
                 "source_description": source_description,
                 "type": type,
                 "user_id": user_id,
@@ -219,9 +224,9 @@ class GraphClient:
         self,
         *,
         episodes: typing.Sequence[EpisodeData],
-        group_id: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
         """
         Add data to the graph in batch mode, processing episodes concurrently. Use only for data that is insensitive to processing order.
@@ -230,9 +235,11 @@ class GraphClient:
         ----------
         episodes : typing.Sequence[EpisodeData]
 
-        group_id : typing.Optional[str]
+        graph_id : typing.Optional[str]
+            graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
 
         user_id : typing.Optional[str]
+            User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -262,7 +269,7 @@ class GraphClient:
         _response = self._client_wrapper.httpx_client.request(
             "graph-batch",
             method="POST",
-            json={"episodes": episodes, "group_id": group_id, "user_id": user_id},
+            json={"episodes": episodes, "graph_id": graph_id, "user_id": user_id},
             request_options=request_options,
             omit=OMIT,
         )
@@ -291,7 +298,7 @@ class GraphClient:
         created_at: typing.Optional[str] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
@@ -300,7 +307,7 @@ class GraphClient:
         target_node_uuid: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         valid_at: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AddTripleResponse:
         """
         Add a fact triple for a user or group
@@ -325,7 +332,7 @@ class GraphClient:
         fact_uuid : typing.Optional[str]
             The uuid of the edge to add
 
-        group_id : typing.Optional[str]
+        graph_id : typing.Optional[str]
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
@@ -380,7 +387,7 @@ class GraphClient:
                 "fact": fact,
                 "fact_name": fact_name,
                 "fact_uuid": fact_uuid,
-                "group_id": group_id,
+                "graph_id": graph_id,
                 "invalid_at": invalid_at,
                 "source_node_name": source_node_name,
                 "source_node_summary": source_node_summary,
@@ -413,28 +420,28 @@ class GraphClient:
     def clone(
         self,
         *,
-        source_group_id: typing.Optional[str] = OMIT,
+        source_graph_id: typing.Optional[str] = OMIT,
         source_user_id: typing.Optional[str] = OMIT,
-        target_group_id: typing.Optional[str] = OMIT,
+        target_graph_id: typing.Optional[str] = OMIT,
         target_user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> CloneGraphResponse:
         """
         Clone a user or group graph.
 
         Parameters
         ----------
-        source_group_id : typing.Optional[str]
-            group_id of the group whose graph is being cloned. Required if user_id is not provided
+        source_graph_id : typing.Optional[str]
+            source_graph_id is the ID of the graph to be cloned. Required if source_user_id is not provided
 
         source_user_id : typing.Optional[str]
-            user_id of the user whose graph is being cloned. Required if group_id is not provided
+            user_id of the user whose graph is being cloned. Required if source_graph_id is not provided
 
-        target_group_id : typing.Optional[str]
-            group_id to be set on the cloned group. Must not point to an existing group. Required if target_user_id is not provided.
+        target_graph_id : typing.Optional[str]
+            target_graph_id is the ID to be set on the cloned graph. Must not point to an existing graph. Required if target_user_id is not provided.
 
         target_user_id : typing.Optional[str]
-            user_id to be set on the cloned user. Must not point to an existing user. Required if target_group_id is not provided.
+            user_id to be set on the cloned user. Must not point to an existing user. Required if target_graph_id is not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -457,9 +464,9 @@ class GraphClient:
             "graph/clone",
             method="POST",
             json={
-                "source_group_id": source_group_id,
+                "source_graph_id": source_graph_id,
                 "source_user_id": source_user_id,
-                "target_group_id": target_group_id,
+                "target_graph_id": target_graph_id,
                 "target_user_id": target_user_id,
             },
             request_options=request_options,
@@ -487,7 +494,7 @@ class GraphClient:
         query: str,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
@@ -496,7 +503,7 @@ class GraphClient:
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphSearchResults:
         """
         Perform a graph search query.
@@ -512,8 +519,8 @@ class GraphClient:
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
 
-        group_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+        graph_id : typing.Optional[str]
+            The graph_id to search in. When searching user graph, please use user_id instead.
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
@@ -537,7 +544,7 @@ class GraphClient:
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            The user_id when searching user graph. If not searching user graph, please use graph_id instead.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -564,7 +571,7 @@ class GraphClient:
             json={
                 "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
-                "group_id": group_id,
+                "graph_id": graph_id,
                 "limit": limit,
                 "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
@@ -583,6 +590,173 @@ class GraphClient:
                 return pydantic_v1.parse_obj_as(GraphSearchResults, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def create(
+        self,
+        *,
+        graph_id: str,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataGraph:
+        """
+        Creates a new graph.
+
+        Parameters
+        ----------
+        graph_id : str
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGraph
+            The added graph
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.create(
+            graph_id="graph_id",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graphs",
+            method="POST",
+            json={
+                "description": description,
+                "fact_rating_instruction": fact_rating_instruction,
+                "graph_id": graph_id,
+                "name": name,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataGraph, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataGraph:
+        """
+        Returns a graph.
+
+        Parameters
+        ----------
+        graph_id : str
+            The graph_id of the graph to get.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGraph
+            The graph that was retrieved.
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.get(
+            graph_id="graphId",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_id)}", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataGraph, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    def delete(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+        """
+        Deletes a graph. If you would like to delete a user graph, make sure to use user.delete instead.
+
+        Parameters
+        ----------
+        graph_id : str
+            Graph ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Deleted
+
+        Examples
+        --------
+        from zep_cloud.client import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.delete(
+            graph_id="graphId",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_id)}", method="DELETE", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
                 )
             if _response.status_code == 500:
@@ -657,7 +831,7 @@ class AsyncGraphClient:
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
         Sets the entity types for a project, replacing any existing ones.
@@ -722,10 +896,10 @@ class AsyncGraphClient:
         data: str,
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> Episode:
         """
         Add data to the graph.
@@ -738,11 +912,13 @@ class AsyncGraphClient:
 
         created_at : typing.Optional[str]
 
-        group_id : typing.Optional[str]
+        graph_id : typing.Optional[str]
+            graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
 
         source_description : typing.Optional[str]
 
         user_id : typing.Optional[str]
+            User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -778,7 +954,7 @@ class AsyncGraphClient:
             json={
                 "created_at": created_at,
                 "data": data,
-                "group_id": group_id,
+                "graph_id": graph_id,
                 "source_description": source_description,
                 "type": type,
                 "user_id": user_id,
@@ -806,9 +982,9 @@ class AsyncGraphClient:
         self,
         *,
         episodes: typing.Sequence[EpisodeData],
-        group_id: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
         """
         Add data to the graph in batch mode, processing episodes concurrently. Use only for data that is insensitive to processing order.
@@ -817,9 +993,11 @@ class AsyncGraphClient:
         ----------
         episodes : typing.Sequence[EpisodeData]
 
-        group_id : typing.Optional[str]
+        graph_id : typing.Optional[str]
+            graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
 
         user_id : typing.Optional[str]
+            User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -857,7 +1035,7 @@ class AsyncGraphClient:
         _response = await self._client_wrapper.httpx_client.request(
             "graph-batch",
             method="POST",
-            json={"episodes": episodes, "group_id": group_id, "user_id": user_id},
+            json={"episodes": episodes, "graph_id": graph_id, "user_id": user_id},
             request_options=request_options,
             omit=OMIT,
         )
@@ -886,7 +1064,7 @@ class AsyncGraphClient:
         created_at: typing.Optional[str] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
@@ -895,7 +1073,7 @@ class AsyncGraphClient:
         target_node_uuid: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         valid_at: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AddTripleResponse:
         """
         Add a fact triple for a user or group
@@ -920,7 +1098,7 @@ class AsyncGraphClient:
         fact_uuid : typing.Optional[str]
             The uuid of the edge to add
 
-        group_id : typing.Optional[str]
+        graph_id : typing.Optional[str]
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
@@ -983,7 +1161,7 @@ class AsyncGraphClient:
                 "fact": fact,
                 "fact_name": fact_name,
                 "fact_uuid": fact_uuid,
-                "group_id": group_id,
+                "graph_id": graph_id,
                 "invalid_at": invalid_at,
                 "source_node_name": source_node_name,
                 "source_node_summary": source_node_summary,
@@ -1016,28 +1194,28 @@ class AsyncGraphClient:
     async def clone(
         self,
         *,
-        source_group_id: typing.Optional[str] = OMIT,
+        source_graph_id: typing.Optional[str] = OMIT,
         source_user_id: typing.Optional[str] = OMIT,
-        target_group_id: typing.Optional[str] = OMIT,
+        target_graph_id: typing.Optional[str] = OMIT,
         target_user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> CloneGraphResponse:
         """
         Clone a user or group graph.
 
         Parameters
         ----------
-        source_group_id : typing.Optional[str]
-            group_id of the group whose graph is being cloned. Required if user_id is not provided
+        source_graph_id : typing.Optional[str]
+            source_graph_id is the ID of the graph to be cloned. Required if source_user_id is not provided
 
         source_user_id : typing.Optional[str]
-            user_id of the user whose graph is being cloned. Required if group_id is not provided
+            user_id of the user whose graph is being cloned. Required if source_graph_id is not provided
 
-        target_group_id : typing.Optional[str]
-            group_id to be set on the cloned group. Must not point to an existing group. Required if target_user_id is not provided.
+        target_graph_id : typing.Optional[str]
+            target_graph_id is the ID to be set on the cloned graph. Must not point to an existing graph. Required if target_user_id is not provided.
 
         target_user_id : typing.Optional[str]
-            user_id to be set on the cloned user. Must not point to an existing user. Required if target_group_id is not provided.
+            user_id to be set on the cloned user. Must not point to an existing user. Required if target_graph_id is not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1068,9 +1246,9 @@ class AsyncGraphClient:
             "graph/clone",
             method="POST",
             json={
-                "source_group_id": source_group_id,
+                "source_graph_id": source_graph_id,
                 "source_user_id": source_user_id,
-                "target_group_id": target_group_id,
+                "target_graph_id": target_graph_id,
                 "target_user_id": target_user_id,
             },
             request_options=request_options,
@@ -1098,7 +1276,7 @@ class AsyncGraphClient:
         query: str,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        group_id: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_fact_rating: typing.Optional[float] = OMIT,
         min_score: typing.Optional[float] = OMIT,
@@ -1107,7 +1285,7 @@ class AsyncGraphClient:
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphSearchResults:
         """
         Perform a graph search query.
@@ -1123,8 +1301,8 @@ class AsyncGraphClient:
         center_node_uuid : typing.Optional[str]
             Node to rerank around for node distance reranking
 
-        group_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+        graph_id : typing.Optional[str]
+            The graph_id to search in. When searching user graph, please use user_id instead.
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
@@ -1148,7 +1326,7 @@ class AsyncGraphClient:
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
-            one of user_id or group_id must be provided
+            The user_id when searching user graph. If not searching user graph, please use graph_id instead.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1183,7 +1361,7 @@ class AsyncGraphClient:
             json={
                 "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
-                "group_id": group_id,
+                "graph_id": graph_id,
                 "limit": limit,
                 "min_fact_rating": min_fact_rating,
                 "min_score": min_score,
@@ -1202,6 +1380,199 @@ class AsyncGraphClient:
                 return pydantic_v1.parse_obj_as(GraphSearchResults, _response.json())  # type: ignore
             if _response.status_code == 400:
                 raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def create(
+        self,
+        *,
+        graph_id: str,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataGraph:
+        """
+        Creates a new graph.
+
+        Parameters
+        ----------
+        graph_id : str
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGraph
+            The added graph
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.create(
+                graph_id="graph_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graphs",
+            method="POST",
+            json={
+                "description": description,
+                "fact_rating_instruction": fact_rating_instruction,
+                "graph_id": graph_id,
+                "name": name,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataGraph, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataGraph:
+        """
+        Returns a graph.
+
+        Parameters
+        ----------
+        graph_id : str
+            The graph_id of the graph to get.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGraph
+            The graph that was retrieved.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.get(
+                graph_id="graphId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_id)}", method="GET", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(ApidataGraph, _response.json())  # type: ignore
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
+        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def delete(
+        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
+        """
+        Deletes a graph. If you would like to delete a user graph, make sure to use user.delete instead.
+
+        Parameters
+        ----------
+        graph_id : str
+            Graph ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Deleted
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud.client import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.delete(
+                graph_id="graphId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_id)}", method="DELETE", request_options=request_options
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return pydantic_v1.parse_obj_as(SuccessResponse, _response.json())  # type: ignore
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
                 )
             if _response.status_code == 500:

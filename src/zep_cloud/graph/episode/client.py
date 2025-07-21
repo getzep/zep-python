@@ -22,20 +22,20 @@ class EpisodeClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_by_group_id(
+    def get_by_graph_id(
         self,
-        group_id: str,
+        graph_id: str,
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EpisodeResponse:
         """
-        Returns episodes by group id.
+        Returns episodes by graph id.
 
         Parameters
         ----------
-        group_id : str
-            Group ID
+        graph_id : str
+            Graph ID
 
         lastn : typing.Optional[int]
             The number of most recent episodes to retrieve.
@@ -55,12 +55,12 @@ class EpisodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.episode.get_by_group_id(
-            group_id="group_id",
+        client.graph.episode.get_by_graph_id(
+            graph_id="graph_id",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/episodes/group/{jsonable_encoder(group_id)}",
+            f"graph/episodes/graph/{jsonable_encoder(graph_id)}",
             method="GET",
             params={"lastn": lastn},
             request_options=request_options,
@@ -292,20 +292,20 @@ class AsyncEpisodeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get_by_group_id(
+    async def get_by_graph_id(
         self,
-        group_id: str,
+        graph_id: str,
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EpisodeResponse:
         """
-        Returns episodes by group id.
+        Returns episodes by graph id.
 
         Parameters
         ----------
-        group_id : str
-            Group ID
+        graph_id : str
+            Graph ID
 
         lastn : typing.Optional[int]
             The number of most recent episodes to retrieve.
@@ -330,15 +330,15 @@ class AsyncEpisodeClient:
 
 
         async def main() -> None:
-            await client.graph.episode.get_by_group_id(
-                group_id="group_id",
+            await client.graph.episode.get_by_graph_id(
+                graph_id="graph_id",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/episodes/group/{jsonable_encoder(group_id)}",
+            f"graph/episodes/graph/{jsonable_encoder(graph_id)}",
             method="GET",
             params={"lastn": lastn},
             request_options=request_options,

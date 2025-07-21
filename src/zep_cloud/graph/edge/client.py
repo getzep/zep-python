@@ -23,21 +23,21 @@ class EdgeClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_by_group_id(
+    def get_by_graph_id(
         self,
-        group_id: str,
+        graph_id: str,
         *,
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityEdge]:
         """
-        Returns all edges for a group.
+        Returns all edges for a graph.
 
         Parameters
         ----------
-        group_id : str
-            Group ID
+        graph_id : str
+            Graph ID
 
         limit : typing.Optional[int]
             Maximum number of items to return
@@ -60,12 +60,12 @@ class EdgeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.edge.get_by_group_id(
-            group_id="group_id",
+        client.graph.edge.get_by_graph_id(
+            graph_id="graph_id",
         )
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/edge/group/{jsonable_encoder(group_id)}",
+            f"graph/edge/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
@@ -254,21 +254,21 @@ class AsyncEdgeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get_by_group_id(
+    async def get_by_graph_id(
         self,
-        group_id: str,
+        graph_id: str,
         *,
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityEdge]:
         """
-        Returns all edges for a group.
+        Returns all edges for a graph.
 
         Parameters
         ----------
-        group_id : str
-            Group ID
+        graph_id : str
+            Graph ID
 
         limit : typing.Optional[int]
             Maximum number of items to return
@@ -296,15 +296,15 @@ class AsyncEdgeClient:
 
 
         async def main() -> None:
-            await client.graph.edge.get_by_group_id(
-                group_id="group_id",
+            await client.graph.edge.get_by_graph_id(
+                graph_id="graph_id",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/edge/group/{jsonable_encoder(group_id)}",
+            f"graph/edge/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={"limit": limit, "uuid_cursor": uuid_cursor},
             request_options=request_options,
