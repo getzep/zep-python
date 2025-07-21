@@ -2003,7 +2003,7 @@ client.memory.delete_fact(
 <dl>
 <dd>
 
-Deprecated: Creates a new session. Use thread.create instead.
+Creates a new session.
 </dd>
 </dl>
 </dd>
@@ -2098,7 +2098,7 @@ client.memory.add_session(
 <dl>
 <dd>
 
-Deprecated: Returns all sessions. Use GET /threads instead.
+Returns all sessions.
 </dd>
 </dl>
 </dd>
@@ -2480,7 +2480,7 @@ client.memory.get_session(
 <dl>
 <dd>
 
-Update Session Metadata
+Update Session Metadata.
 </dd>
 </dl>
 </dd>
@@ -3037,7 +3037,7 @@ client.memory.add_session_facts(
 <dl>
 <dd>
 
-Deprecated: Returns a memory for a given session. Use thread.get_user_context instead.
+Returns a memory for a given session.
 </dd>
 </dl>
 </dd>
@@ -3123,7 +3123,7 @@ client.memory.get(
 <dl>
 <dd>
 
-Deprecated: Add memory to the specified session. Use thread.add_messages instead.
+Add memory to the specified session.
 </dd>
 </dl>
 </dd>
@@ -3244,7 +3244,7 @@ that are added to a user's graph.
 <dl>
 <dd>
 
-Deprecated: Deletes a session. Use thread.delete instead.
+Deletes a session.
 </dd>
 </dl>
 </dd>
@@ -3314,7 +3314,7 @@ client.memory.delete(
 <dl>
 <dd>
 
-Deprecated: Returns messages for a session. Use thread.get instead.
+Returns messages for a session.
 </dd>
 </dl>
 </dd>
@@ -4279,525 +4279,6 @@ client.group.get_facts(
 <dd>
 
 **group_id:** `str` — The group_id of the group to get.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Thread
-<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">list_all</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns all threads.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.thread.list_all()
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**page_number:** `typing.Optional[int]` — Page number for pagination, starting from 1
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**page_size:** `typing.Optional[int]` — Number of threads to retrieve per page.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**order_by:** `typing.Optional[str]` — Field to order the results by: created_at, updated_at, user_id, thread_id.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**asc:** `typing.Optional[bool]` — Order direction: true for ascending, false for descending.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">create</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Start a new thread.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.thread.create(
-    thread_id="thread_id",
-    user_id="user_id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**thread_id:** `str` — The unique identifier of the thread.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `str` — The unique identifier of the user associated with the thread
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">delete</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Deletes a thread.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.thread.delete(
-    thread_id="threadId",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**thread_id:** `str` — The ID of the thread for which memory should be deleted.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">get_user_context</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns most relevant context for a given thread.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.thread.get_user_context(
-    thread_id="threadId",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**thread_id:** `str` — The ID of the thread for which to retrieve context.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**lastn:** `typing.Optional[int]` — The number of most recent memory entries to retrieve.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**min_rating:** `typing.Optional[float]` — The minimum rating by which to filter relevant facts.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">get</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns messages for a thread.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.thread.get(
-    thread_id="threadId",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**thread_id:** `str` — Thread ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `typing.Optional[int]` — Limit the number of results returned
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cursor:** `typing.Optional[int]` — Cursor for pagination
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">add_messages</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Add messages to a thread.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Message
-from zep_cloud.client import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.thread.add_messages(
-    thread_id="threadId",
-    messages=[
-        Message(
-            content="content",
-            role_type="norole",
-        )
-    ],
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**thread_id:** `str` — The ID of the thread to which messages should be added.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
-
-Optional list of role types to ignore when adding messages to graph memory.
-The message itself will still be added, retained and used as context for messages
-that are added to a user's graph.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**return_context:** `typing.Optional[bool]` — Optionally return memory context relevant to the most recent messages.
     
 </dd>
 </dl>

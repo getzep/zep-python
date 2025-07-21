@@ -20,7 +20,7 @@ from dotenv import find_dotenv, load_dotenv
 from chat_history_shoe_purchase import history
 
 from zep_cloud.client import AsyncZep
-from zep_cloud.types import Message
+from zep_cloud.types import Message, FactRatingInstruction, FactRatingExamples
 
 load_dotenv(
     dotenv_path=find_dotenv()
@@ -36,7 +36,15 @@ async def main() -> None:
 
     # Create a user
     user_id = uuid.uuid4().hex  # unique user id. can be any alphanum string
-
+    fact_rating_instruction = """Rate the facts by poignancy. Highly poignant 
+    facts have a significant emotional impact or relevance to the user. 
+    Facts with low poignancy are minimally relevant or of little emotional
+    significance."""
+    fact_rating_examples = FactRatingExamples(
+        high="The user received news of a family member's serious illness.",
+        medium="The user completed a challenging marathon.",
+        low="The user bought a new brand of toothpaste.",
+    )
     await client.user.add(
         user_id=user_id,
         email="user@example.com",
@@ -47,41 +55,69 @@ async def main() -> None:
 
     # await asyncio.sleep(1)
     print(f"User added: {user_id}")
-    thread_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
+    session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
 
     # Create session associated with the above user
-    print(f"\n---Creating thread: {thread_id}")
+    print(f"\n---Creating session: {session_id}")
 
-    await client.thread.create(
-        thread_id=thread_id,
+    await client.memory.add_session(
+        session_id=session_id,
         user_id=user_id,
+        metadata={"foo": "bar"},
     )
-
+    # await asyncio.sleep(1)
+    # Update session metadata
+    print(f"\n---Updating session: {session_id}")
+    await client.memory.update_session(session_id=session_id, metadata={"bar": "foo"})
+    # await asyncio.sleep(3)
     # Get session
-    print(f"\n---Getting thread: {thread_id}")
-    session = await client.thread.get(thread_id)
-    print(f"Thread details: {session}")
+    print(f"\n---Getting session: {session_id}")
+    session = await client.memory.get_session(session_id)
+    print(f"Session details: {session}")
+    # await asyncio.sleep(3)
 
-    # Add messages to the thread
-    print(f"\n---Add messages to the thread: {thread_id}")
+    # Add Memory for session
+    print(f"\n---Add Memory for Session: {session_id}")
     for m in history:
         print(f"{m['role']}: {m['content']}")
-        await client.thread.add_messages(thread_id=thread_id, messages=[Message(**m)])
+        await client.memory.add(session_id=session_id, messages=[Message(**m)])
         # await asyncio.sleep(0.5)
 
     #  Wait for the messages to be processed
     await asyncio.sleep(50)
 
-    # Get user context for thread
-    print(f"\n---Get user context for thread: {thread_id}")
-    user_context = await client.thread.get_user_context(thread_id)
+    # Synthesize a question from most recent messages.
+    # Useful for RAG apps. This is faster than using an LLM chain.
+    print("\n---Synthesize a question from most recent messages")
+    question = await client.memory.synthesize_question(session_id, last_n_messages=3)
+    print(f"Question: {question}")
 
-    print(f"User context: {user_context.context}")
+    # Classify the session.
+    # Useful for semantic routing, filtering, and many other use cases.
+    print("\n---Classify the session")
+    classes = [
+        "low spender <$50",
+        "medium spender >=$50, <$100",
+        "high spender >=$100",
+        "unknown",
+    ]
+    classification = await client.memory.classify_session(
+        session_id, name="spender_category", classes=classes, persist=True
+    )
+    print(f"Classification: {classification}")
 
-    # Delete thread and clear context
+    # Get Memory for session
+    print(f"\n---Get Perpetual Memory for Session: {session_id}")
+    memory = await client.memory.get(session_id)
+    print(f"Memory: {memory}")
+    print("\n---End of Memory")
+
+    print(f"Memory context: {memory.context}")
+
+    # Delete Memory for session
     # Uncomment to run
-    # print(f"\n6---delete thread memory : {thread_id}")
-    # await client.thread.delete(thread_id)
+    # print(f"\n6---deleteMemory for Session: {session_id}")
+    # await client.memory.delete(session_id)
 
 
 if __name__ == "__main__":
