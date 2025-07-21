@@ -23,18 +23,9 @@ class Episode(pydantic_v1.BaseModel):
     Optional role_type, will only be present if the episode was created using memory.add API
     """
 
-    session_id: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Deprecated - use thread_id instead. Optional session ID. Will be present only if the episode corresponds to the messages added using memory.add API
-    """
-
+    session_id: typing.Optional[str] = None
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
-    thread_id: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Optional thread ID, will be present if the episode is part of a thread
-    """
-
     uuid_: str = pydantic_v1.Field(alias="uuid")
 
     def json(self, **kwargs: typing.Any) -> str:
