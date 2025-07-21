@@ -8,16 +8,7 @@ from ..core.pydantic_utilities import deep_union_pydantic_dicts, pydantic_v1
 
 
 class CloneGraphResponse(pydantic_v1.BaseModel):
-    graph_id: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    graph_id is the ID of the cloned graph
-    """
-
-    group_id: typing.Optional[str] = pydantic_v1.Field(default=None)
-    """
-    Deprecated: Use graph_id instead
-    """
-
+    group_id: typing.Optional[str] = None
     user_id: typing.Optional[str] = None
 
     def json(self, **kwargs: typing.Any) -> str:

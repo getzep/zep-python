@@ -23,70 +23,6 @@ class EdgeClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_by_graph_id(
-        self,
-        graph_id: str,
-        *,
-        limit: typing.Optional[int] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[EntityEdge]:
-        """
-        Returns all edges for a graph.
-
-        Parameters
-        ----------
-        graph_id : str
-            Graph ID
-
-        limit : typing.Optional[int]
-            Maximum number of items to return
-
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[EntityEdge]
-            Edges
-
-        Examples
-        --------
-        from zep_cloud.client import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.graph.edge.get_by_graph_id(
-            graph_id="graph_id",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"graph/edge/graph/{jsonable_encoder(graph_id)}",
-            method="POST",
-            json={"limit": limit, "uuid_cursor": uuid_cursor},
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(typing.List[EntityEdge], _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
     def get_by_group_id(
         self,
         group_id: str,
@@ -96,7 +32,7 @@ class EdgeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityEdge]:
         """
-        Returns all edges for a group. Deprecated, please use graph.edge.get_by_graph_id instead.
+        Returns all edges for a group.
 
         Parameters
         ----------
@@ -318,78 +254,6 @@ class AsyncEdgeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get_by_graph_id(
-        self,
-        graph_id: str,
-        *,
-        limit: typing.Optional[int] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[EntityEdge]:
-        """
-        Returns all edges for a graph.
-
-        Parameters
-        ----------
-        graph_id : str
-            Graph ID
-
-        limit : typing.Optional[int]
-            Maximum number of items to return
-
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[EntityEdge]
-            Edges
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud.client import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.graph.edge.get_by_graph_id(
-                graph_id="graph_id",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"graph/edge/graph/{jsonable_encoder(graph_id)}",
-            method="POST",
-            json={"limit": limit, "uuid_cursor": uuid_cursor},
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return pydantic_v1.parse_obj_as(typing.List[EntityEdge], _response.json())  # type: ignore
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    pydantic_v1.parse_obj_as(types_api_error_ApiError, _response.json())  # type: ignore
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(status_code=_response.status_code, body=_response.text)
-        raise core_api_error_ApiError(status_code=_response.status_code, body=_response_json)
-
     async def get_by_group_id(
         self,
         group_id: str,
@@ -399,7 +263,7 @@ class AsyncEdgeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EntityEdge]:
         """
-        Returns all edges for a group. Deprecated, please use graph.edge.get_by_graph_id instead.
+        Returns all edges for a group.
 
         Parameters
         ----------

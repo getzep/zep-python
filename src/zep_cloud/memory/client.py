@@ -150,7 +150,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Deprecated: Creates a new session. Use thread.create instead.
+        Creates a new session.
 
         Parameters
         ----------
@@ -224,7 +224,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionListResponse:
         """
-        Deprecated: Returns all sessions. Use GET /threads instead.
+        Returns all sessions.
 
         Parameters
         ----------
@@ -442,7 +442,7 @@ class MemoryClient:
 
     def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
-        Returns a session. Deprecated: use thread.get instead.
+        Returns a session.
 
         Parameters
         ----------
@@ -496,7 +496,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Update Session Metadata. Deprecated: This endpoint is no longer supported and will be removed in a future release.
+        Update Session Metadata.
 
         Parameters
         ----------
@@ -922,7 +922,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
-        Deprecated: Returns a memory for a given session. Use thread.get_user_context instead.
+        Returns a memory for a given session.
 
         Parameters
         ----------
@@ -988,7 +988,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddMemoryResponse:
         """
-        Deprecated: Add memory to the specified session. Use thread.add_messages instead.
+        Add memory to the specified session.
 
         Parameters
         ----------
@@ -1065,7 +1065,7 @@ class MemoryClient:
 
     def delete(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Deprecated: Deletes a session. Use thread.delete instead.
+        Deletes a session.
 
         Parameters
         ----------
@@ -1119,7 +1119,7 @@ class MemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
-        Deprecated: Returns messages for a session. Use thread.get instead.
+        Returns messages for a session.
 
         Parameters
         ----------
@@ -1620,7 +1620,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Deprecated: Creates a new session. Use thread.create instead.
+        Creates a new session.
 
         Parameters
         ----------
@@ -1702,7 +1702,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SessionListResponse:
         """
-        Deprecated: Returns all sessions. Use GET /threads instead.
+        Returns all sessions.
 
         Parameters
         ----------
@@ -1944,7 +1944,7 @@ class AsyncMemoryClient:
 
     async def get_session(self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Session:
         """
-        Returns a session. Deprecated: use thread.get instead.
+        Returns a session.
 
         Parameters
         ----------
@@ -2006,7 +2006,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Session:
         """
-        Update Session Metadata. Deprecated: This endpoint is no longer supported and will be removed in a future release.
+        Update Session Metadata.
 
         Parameters
         ----------
@@ -2480,7 +2480,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Memory:
         """
-        Deprecated: Returns a memory for a given session. Use thread.get_user_context instead.
+        Returns a memory for a given session.
 
         Parameters
         ----------
@@ -2554,7 +2554,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddMemoryResponse:
         """
-        Deprecated: Add memory to the specified session. Use thread.add_messages instead.
+        Add memory to the specified session.
 
         Parameters
         ----------
@@ -2641,7 +2641,7 @@ class AsyncMemoryClient:
         self, session_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> SuccessResponse:
         """
-        Deprecated: Deletes a session. Use thread.delete instead.
+        Deletes a session.
 
         Parameters
         ----------
@@ -2703,7 +2703,7 @@ class AsyncMemoryClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
-        Deprecated: Returns messages for a session. Use thread.get instead.
+        Returns messages for a session.
 
         Parameters
         ----------
