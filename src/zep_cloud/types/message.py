@@ -9,7 +9,7 @@ from ..core.serialization import FieldMetadata
 from .role_type import RoleType
 
 
-class ApidataMessage(UniversalBaseModel):
+class Message(UniversalBaseModel):
     content: str = pydantic.Field()
     """
     The content of the message.
@@ -25,19 +25,19 @@ class ApidataMessage(UniversalBaseModel):
     The metadata associated with the message.
     """
 
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Customizable name of the sender of the message (e.g., "john", "sales_agent").
+    """
+
     processed: typing.Optional[bool] = pydantic.Field(default=None)
     """
     Whether the message has been processed.
     """
 
-    role: typing.Optional[str] = pydantic.Field(default=None)
+    role: RoleType = pydantic.Field()
     """
-    Customizable role of the sender of the message (e.g., "john", "sales_agent").
-    """
-
-    role_type: RoleType = pydantic.Field()
-    """
-    The type of the role (e.g., "user", "system").
+    The role of message sender (e.g., "user", "system").
     """
 
     token_count: typing.Optional[int] = pydantic.Field(default=None)

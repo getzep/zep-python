@@ -4,12 +4,12 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.apidata_fact_rating_instruction import ApidataFactRatingInstruction
-from ..types.apidata_facts_response import ApidataFactsResponse
-from ..types.apidata_success_response import ApidataSuccessResponse
-from ..types.apidata_user import ApidataUser
-from ..types.apidata_user_list_response import ApidataUserListResponse
-from ..types.apidata_user_node_response import ApidataUserNodeResponse
+from ..types.fact_rating_instruction import FactRatingInstruction
+from ..types.facts_response import FactsResponse
+from ..types.success_response import SuccessResponse
+from ..types.user import User
+from ..types.user_list_response import UserListResponse
+from ..types.user_node_response import UserNodeResponse
 from .raw_client import AsyncRawUserClient, RawUserClient
 
 # this is used as the default value for optional parameters
@@ -36,12 +36,12 @@ class UserClient:
         *,
         user_id: str,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Adds a user.
 
@@ -53,7 +53,7 @@ class UserClient:
         email : typing.Optional[str]
             The email address of the user.
 
-        fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
@@ -70,7 +70,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was added.
 
         Examples
@@ -101,7 +101,7 @@ class UserClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUserListResponse:
+    ) -> UserListResponse:
         """
         Returns all users.
 
@@ -118,7 +118,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUserListResponse
+        UserListResponse
             Successfully retrieved list of users
 
         Examples
@@ -135,7 +135,7 @@ class UserClient:
         )
         return _response.data
 
-    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataUser:
+    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
         Returns a user.
 
@@ -149,7 +149,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was retrieved.
 
         Examples
@@ -166,9 +166,7 @@ class UserClient:
         _response = self._raw_client.get(user_id, request_options=request_options)
         return _response.data
 
-    def delete(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes a user.
 
@@ -182,7 +180,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             OK
 
         Examples
@@ -204,12 +202,12 @@ class UserClient:
         user_id: str,
         *,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Updates a user.
 
@@ -221,7 +219,7 @@ class UserClient:
         email : typing.Optional[str]
             The email address of the user.
 
-        fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
@@ -238,7 +236,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was updated.
 
         Examples
@@ -263,9 +261,7 @@ class UserClient:
         )
         return _response.data
 
-    def get_facts(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataFactsResponse:
+    def get_facts(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactsResponse:
         """
         Deprecated: Use Get User Edges instead.
 
@@ -279,7 +275,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataFactsResponse
+        FactsResponse
             The user facts.
 
         Examples
@@ -296,9 +292,7 @@ class UserClient:
         _response = self._raw_client.get_facts(user_id, request_options=request_options)
         return _response.data
 
-    def get_node(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataUserNodeResponse:
+    def get_node(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> UserNodeResponse:
         """
         Returns a user's node.
 
@@ -312,7 +306,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUserNodeResponse
+        UserNodeResponse
             Response object containing the User node.
 
         Examples
@@ -350,12 +344,12 @@ class AsyncUserClient:
         *,
         user_id: str,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Adds a user.
 
@@ -367,7 +361,7 @@ class AsyncUserClient:
         email : typing.Optional[str]
             The email address of the user.
 
-        fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
@@ -384,7 +378,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was added.
 
         Examples
@@ -423,7 +417,7 @@ class AsyncUserClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUserListResponse:
+    ) -> UserListResponse:
         """
         Returns all users.
 
@@ -440,7 +434,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUserListResponse
+        UserListResponse
             Successfully retrieved list of users
 
         Examples
@@ -465,7 +459,7 @@ class AsyncUserClient:
         )
         return _response.data
 
-    async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataUser:
+    async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
         Returns a user.
 
@@ -479,7 +473,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was retrieved.
 
         Examples
@@ -504,9 +498,7 @@ class AsyncUserClient:
         _response = await self._raw_client.get(user_id, request_options=request_options)
         return _response.data
 
-    async def delete(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    async def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes a user.
 
@@ -520,7 +512,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             OK
 
         Examples
@@ -550,12 +542,12 @@ class AsyncUserClient:
         user_id: str,
         *,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[ApidataFactRatingInstruction] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Updates a user.
 
@@ -567,7 +559,7 @@ class AsyncUserClient:
         email : typing.Optional[str]
             The email address of the user.
 
-        fact_rating_instruction : typing.Optional[ApidataFactRatingInstruction]
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
             Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
@@ -584,7 +576,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was updated.
 
         Examples
@@ -619,7 +611,7 @@ class AsyncUserClient:
 
     async def get_facts(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataFactsResponse:
+    ) -> FactsResponse:
         """
         Deprecated: Use Get User Edges instead.
 
@@ -633,7 +625,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataFactsResponse
+        FactsResponse
             The user facts.
 
         Examples
@@ -660,7 +652,7 @@ class AsyncUserClient:
 
     async def get_node(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataUserNodeResponse:
+    ) -> UserNodeResponse:
         """
         Returns a user's node.
 
@@ -674,7 +666,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUserNodeResponse
+        UserNodeResponse
             Response object containing the User node.
 
         Examples

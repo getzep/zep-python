@@ -4,8 +4,8 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.apidata_success_response import ApidataSuccessResponse
-from ...types.graphiti_entity_edge import GraphitiEntityEdge
+from ...types.entity_edge import EntityEdge
+from ...types.success_response import SuccessResponse
 from .raw_client import AsyncRawEdgeClient, RawEdgeClient
 
 # this is used as the default value for optional parameters
@@ -34,7 +34,7 @@ class EdgeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Returns all edges for a graph.
 
@@ -54,7 +54,7 @@ class EdgeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -80,7 +80,7 @@ class EdgeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Returns all edges for a user.
 
@@ -100,7 +100,7 @@ class EdgeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -119,7 +119,7 @@ class EdgeClient:
         )
         return _response.data
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiEntityEdge:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
         """
         Returns a specific edge by its UUID.
 
@@ -133,7 +133,7 @@ class EdgeClient:
 
         Returns
         -------
-        GraphitiEntityEdge
+        EntityEdge
             Edge
 
         Examples
@@ -150,7 +150,7 @@ class EdgeClient:
         _response = self._raw_client.get(uuid_, request_options=request_options)
         return _response.data
 
-    def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataSuccessResponse:
+    def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes an edge by UUID.
 
@@ -164,7 +164,7 @@ class EdgeClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Edge deleted
 
         Examples
@@ -204,7 +204,7 @@ class AsyncEdgeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Returns all edges for a graph.
 
@@ -224,7 +224,7 @@ class AsyncEdgeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -258,7 +258,7 @@ class AsyncEdgeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Returns all edges for a user.
 
@@ -278,7 +278,7 @@ class AsyncEdgeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -305,7 +305,7 @@ class AsyncEdgeClient:
         )
         return _response.data
 
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiEntityEdge:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
         """
         Returns a specific edge by its UUID.
 
@@ -319,7 +319,7 @@ class AsyncEdgeClient:
 
         Returns
         -------
-        GraphitiEntityEdge
+        EntityEdge
             Edge
 
         Examples
@@ -344,9 +344,7 @@ class AsyncEdgeClient:
         _response = await self._raw_client.get(uuid_, request_options=request_options)
         return _response.data
 
-    async def delete(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    async def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes an edge by UUID.
 
@@ -360,7 +358,7 @@ class AsyncEdgeClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Edge deleted
 
         Examples

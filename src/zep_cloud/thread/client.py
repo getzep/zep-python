@@ -4,14 +4,14 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.apidata_add_thread_messages_response import ApidataAddThreadMessagesResponse
-from ..types.apidata_message import ApidataMessage
-from ..types.apidata_message_list_response import ApidataMessageListResponse
-from ..types.apidata_role_type import ApidataRoleType
-from ..types.apidata_success_response import ApidataSuccessResponse
-from ..types.apidata_thread import ApidataThread
-from ..types.apidata_thread_context_response import ApidataThreadContextResponse
-from ..types.apidata_thread_list_response import ApidataThreadListResponse
+from ..types.add_thread_messages_response import AddThreadMessagesResponse
+from ..types.message import Message
+from ..types.message_list_response import MessageListResponse
+from ..types.role_type import RoleType
+from ..types.success_response import SuccessResponse
+from ..types.thread import Thread
+from ..types.thread_context_response import ThreadContextResponse
+from ..types.thread_list_response import ThreadListResponse
 from .raw_client import AsyncRawThreadClient, RawThreadClient
 
 # this is used as the default value for optional parameters
@@ -41,7 +41,7 @@ class ThreadClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadListResponse:
+    ) -> ThreadListResponse:
         """
         Returns all threads.
 
@@ -64,7 +64,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataThreadListResponse
+        ThreadListResponse
             List of threads
 
         Examples
@@ -83,7 +83,7 @@ class ThreadClient:
 
     def create(
         self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataThread:
+    ) -> Thread:
         """
         Start a new thread.
 
@@ -100,7 +100,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataThread
+        Thread
             The thread object.
 
         Examples
@@ -118,9 +118,7 @@ class ThreadClient:
         _response = self._raw_client.create(thread_id=thread_id, user_id=user_id, request_options=request_options)
         return _response.data
 
-    def delete(
-        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    def delete(self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes a thread.
 
@@ -134,7 +132,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             OK
 
         Examples
@@ -159,7 +157,7 @@ class ThreadClient:
         min_rating: typing.Optional[float] = None,
         fast: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadContextResponse:
+    ) -> ThreadContextResponse:
         """
         Returns most relevant context for a given thread.
 
@@ -182,7 +180,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataThreadContextResponse
+        ThreadContextResponse
             OK
 
         Examples
@@ -208,7 +206,7 @@ class ThreadClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataMessageListResponse:
+    ) -> MessageListResponse:
         """
         Returns messages for a thread.
 
@@ -228,7 +226,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataMessageListResponse
+        MessageListResponse
             OK
 
         Examples
@@ -249,11 +247,11 @@ class ThreadClient:
         self,
         thread_id: str,
         *,
-        messages: typing.Sequence[ApidataMessage],
-        ignore_roles: typing.Optional[typing.Sequence[ApidataRoleType]] = OMIT,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataAddThreadMessagesResponse:
+    ) -> AddThreadMessagesResponse:
         """
         Add messages to a thread.
 
@@ -262,10 +260,10 @@ class ThreadClient:
         thread_id : str
             The ID of the thread to which messages should be added.
 
-        messages : typing.Sequence[ApidataMessage]
+        messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
-        ignore_roles : typing.Optional[typing.Sequence[ApidataRoleType]]
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
             Optional list of role types to ignore when adding messages to graph memory.
             The message itself will still be added, retained and used as context for messages
             that are added to a user's graph.
@@ -278,12 +276,12 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataAddThreadMessagesResponse
+        AddThreadMessagesResponse
             An object, optionally containing user context retrieved for the last thread message
 
         Examples
         --------
-        from zep_cloud import ApidataMessage, Zep
+        from zep_cloud import Message, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -291,9 +289,9 @@ class ThreadClient:
         client.thread.add_messages(
             thread_id="threadId",
             messages=[
-                ApidataMessage(
+                Message(
                     content="content",
-                    role_type="norole",
+                    role="norole",
                 )
             ],
         )
@@ -331,7 +329,7 @@ class AsyncThreadClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadListResponse:
+    ) -> ThreadListResponse:
         """
         Returns all threads.
 
@@ -354,7 +352,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataThreadListResponse
+        ThreadListResponse
             List of threads
 
         Examples
@@ -381,7 +379,7 @@ class AsyncThreadClient:
 
     async def create(
         self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataThread:
+    ) -> Thread:
         """
         Start a new thread.
 
@@ -398,7 +396,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataThread
+        Thread
             The thread object.
 
         Examples
@@ -426,7 +424,7 @@ class AsyncThreadClient:
 
     async def delete(
         self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Deletes a thread.
 
@@ -440,7 +438,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             OK
 
         Examples
@@ -473,7 +471,7 @@ class AsyncThreadClient:
         min_rating: typing.Optional[float] = None,
         fast: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadContextResponse:
+    ) -> ThreadContextResponse:
         """
         Returns most relevant context for a given thread.
 
@@ -496,7 +494,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataThreadContextResponse
+        ThreadContextResponse
             OK
 
         Examples
@@ -530,7 +528,7 @@ class AsyncThreadClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataMessageListResponse:
+    ) -> MessageListResponse:
         """
         Returns messages for a thread.
 
@@ -550,7 +548,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataMessageListResponse
+        MessageListResponse
             OK
 
         Examples
@@ -579,11 +577,11 @@ class AsyncThreadClient:
         self,
         thread_id: str,
         *,
-        messages: typing.Sequence[ApidataMessage],
-        ignore_roles: typing.Optional[typing.Sequence[ApidataRoleType]] = OMIT,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataAddThreadMessagesResponse:
+    ) -> AddThreadMessagesResponse:
         """
         Add messages to a thread.
 
@@ -592,10 +590,10 @@ class AsyncThreadClient:
         thread_id : str
             The ID of the thread to which messages should be added.
 
-        messages : typing.Sequence[ApidataMessage]
+        messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
-        ignore_roles : typing.Optional[typing.Sequence[ApidataRoleType]]
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
             Optional list of role types to ignore when adding messages to graph memory.
             The message itself will still be added, retained and used as context for messages
             that are added to a user's graph.
@@ -608,14 +606,14 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataAddThreadMessagesResponse
+        AddThreadMessagesResponse
             An object, optionally containing user context retrieved for the last thread message
 
         Examples
         --------
         import asyncio
 
-        from zep_cloud import ApidataMessage, AsyncZep
+        from zep_cloud import AsyncZep, Message
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -626,9 +624,9 @@ class AsyncThreadClient:
             await client.thread.add_messages(
                 thread_id="threadId",
                 messages=[
-                    ApidataMessage(
+                    Message(
                         content="content",
-                        role_type="norole",
+                        role="norole",
                     )
                 ],
             )
