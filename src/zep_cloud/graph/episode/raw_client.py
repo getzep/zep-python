@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ...core.api_error import ApiError as core_api_error_ApiError
+from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
 from ...core.jsonable_encoder import jsonable_encoder
@@ -12,11 +12,11 @@ from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
-from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.episode import Episode
-from ...types.episode_mentions import EpisodeMentions
-from ...types.episode_response import EpisodeResponse
-from ...types.success_response import SuccessResponse
+from ...types.apidata_api_error import ApidataApiError
+from ...types.apidata_episode_mentions import ApidataEpisodeMentions
+from ...types.apidata_graph_episode import ApidataGraphEpisode
+from ...types.apidata_graph_episode_response import ApidataGraphEpisodeResponse
+from ...types.apidata_success_response import ApidataSuccessResponse
 
 
 class RawEpisodeClient:
@@ -29,7 +29,7 @@ class RawEpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[EpisodeResponse]:
+    ) -> HttpResponse[ApidataGraphEpisodeResponse]:
         """
         Returns episodes by graph id.
 
@@ -46,7 +46,7 @@ class RawEpisodeClient:
 
         Returns
         -------
-        HttpResponse[EpisodeResponse]
+        HttpResponse[ApidataGraphEpisodeResponse]
             Episodes
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -60,9 +60,9 @@ class RawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    EpisodeResponse,
+                    ApidataGraphEpisodeResponse,
                     parse_obj_as(
-                        type_=EpisodeResponse,  # type: ignore
+                        type_=ApidataGraphEpisodeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -71,9 +71,9 @@ class RawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -82,21 +82,17 @@ class RawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get_by_user_id(
         self,
@@ -104,7 +100,7 @@ class RawEpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[EpisodeResponse]:
+    ) -> HttpResponse[ApidataGraphEpisodeResponse]:
         """
         Returns episodes by user id.
 
@@ -121,7 +117,7 @@ class RawEpisodeClient:
 
         Returns
         -------
-        HttpResponse[EpisodeResponse]
+        HttpResponse[ApidataGraphEpisodeResponse]
             Episodes
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -135,9 +131,9 @@ class RawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    EpisodeResponse,
+                    ApidataGraphEpisodeResponse,
                     parse_obj_as(
-                        type_=EpisodeResponse,  # type: ignore
+                        type_=ApidataGraphEpisodeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -146,9 +142,9 @@ class RawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -157,23 +153,21 @@ class RawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[Episode]:
+    def get(
+        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[ApidataGraphEpisode]:
         """
         Returns episodes by UUID
 
@@ -187,7 +181,7 @@ class RawEpisodeClient:
 
         Returns
         -------
-        HttpResponse[Episode]
+        HttpResponse[ApidataGraphEpisode]
             Episode
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -198,9 +192,9 @@ class RawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    Episode,
+                    ApidataGraphEpisode,
                     parse_obj_as(
-                        type_=Episode,  # type: ignore
+                        type_=ApidataGraphEpisode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -209,9 +203,9 @@ class RawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -220,25 +214,21 @@ class RawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[SuccessResponse]:
+    ) -> HttpResponse[ApidataSuccessResponse]:
         """
         Deletes an episode by its UUID.
 
@@ -252,7 +242,7 @@ class RawEpisodeClient:
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
+        HttpResponse[ApidataSuccessResponse]
             Episode deleted
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -263,9 +253,9 @@ class RawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -274,9 +264,9 @@ class RawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -285,9 +275,9 @@ class RawEpisodeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -296,25 +286,21 @@ class RawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get_nodes_and_edges(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[EpisodeMentions]:
+    ) -> HttpResponse[ApidataEpisodeMentions]:
         """
         Returns nodes and edges mentioned in an episode
 
@@ -328,7 +314,7 @@ class RawEpisodeClient:
 
         Returns
         -------
-        HttpResponse[EpisodeMentions]
+        HttpResponse[ApidataEpisodeMentions]
             Edges and nodes mentioned in an episode
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -339,9 +325,9 @@ class RawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    EpisodeMentions,
+                    ApidataEpisodeMentions,
                     parse_obj_as(
-                        type_=EpisodeMentions,  # type: ignore
+                        type_=ApidataEpisodeMentions,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -350,9 +336,9 @@ class RawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -361,21 +347,17 @@ class RawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
 class AsyncRawEpisodeClient:
@@ -388,7 +370,7 @@ class AsyncRawEpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[EpisodeResponse]:
+    ) -> AsyncHttpResponse[ApidataGraphEpisodeResponse]:
         """
         Returns episodes by graph id.
 
@@ -405,7 +387,7 @@ class AsyncRawEpisodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[EpisodeResponse]
+        AsyncHttpResponse[ApidataGraphEpisodeResponse]
             Episodes
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -419,9 +401,9 @@ class AsyncRawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    EpisodeResponse,
+                    ApidataGraphEpisodeResponse,
                     parse_obj_as(
-                        type_=EpisodeResponse,  # type: ignore
+                        type_=ApidataGraphEpisodeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -430,9 +412,9 @@ class AsyncRawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -441,21 +423,17 @@ class AsyncRawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get_by_user_id(
         self,
@@ -463,7 +441,7 @@ class AsyncRawEpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[EpisodeResponse]:
+    ) -> AsyncHttpResponse[ApidataGraphEpisodeResponse]:
         """
         Returns episodes by user id.
 
@@ -480,7 +458,7 @@ class AsyncRawEpisodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[EpisodeResponse]
+        AsyncHttpResponse[ApidataGraphEpisodeResponse]
             Episodes
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -494,9 +472,9 @@ class AsyncRawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    EpisodeResponse,
+                    ApidataGraphEpisodeResponse,
                     parse_obj_as(
-                        type_=EpisodeResponse,  # type: ignore
+                        type_=ApidataGraphEpisodeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -505,9 +483,9 @@ class AsyncRawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -516,25 +494,21 @@ class AsyncRawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[Episode]:
+    ) -> AsyncHttpResponse[ApidataGraphEpisode]:
         """
         Returns episodes by UUID
 
@@ -548,7 +522,7 @@ class AsyncRawEpisodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[Episode]
+        AsyncHttpResponse[ApidataGraphEpisode]
             Episode
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -559,9 +533,9 @@ class AsyncRawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    Episode,
+                    ApidataGraphEpisode,
                     parse_obj_as(
-                        type_=Episode,  # type: ignore
+                        type_=ApidataGraphEpisode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -570,9 +544,9 @@ class AsyncRawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -581,25 +555,21 @@ class AsyncRawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
         """
         Deletes an episode by its UUID.
 
@@ -613,7 +583,7 @@ class AsyncRawEpisodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
+        AsyncHttpResponse[ApidataSuccessResponse]
             Episode deleted
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -624,9 +594,9 @@ class AsyncRawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -635,9 +605,9 @@ class AsyncRawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -646,9 +616,9 @@ class AsyncRawEpisodeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -657,25 +627,21 @@ class AsyncRawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get_nodes_and_edges(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[EpisodeMentions]:
+    ) -> AsyncHttpResponse[ApidataEpisodeMentions]:
         """
         Returns nodes and edges mentioned in an episode
 
@@ -689,7 +655,7 @@ class AsyncRawEpisodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[EpisodeMentions]
+        AsyncHttpResponse[ApidataEpisodeMentions]
             Edges and nodes mentioned in an episode
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -700,9 +666,9 @@ class AsyncRawEpisodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    EpisodeMentions,
+                    ApidataEpisodeMentions,
                     parse_obj_as(
-                        type_=EpisodeMentions,  # type: ignore
+                        type_=ApidataEpisodeMentions,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -711,9 +677,9 @@ class AsyncRawEpisodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -722,18 +688,14 @@ class AsyncRawEpisodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

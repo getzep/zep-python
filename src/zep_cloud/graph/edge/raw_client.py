@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ...core.api_error import ApiError as core_api_error_ApiError
+from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
 from ...core.jsonable_encoder import jsonable_encoder
@@ -12,9 +12,9 @@ from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
-from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.entity_edge import EntityEdge
-from ...types.success_response import SuccessResponse
+from ...types.apidata_api_error import ApidataApiError
+from ...types.apidata_success_response import ApidataSuccessResponse
+from ...types.graphiti_entity_edge import GraphitiEntityEdge
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -31,7 +31,7 @@ class RawEdgeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[EntityEdge]]:
+    ) -> HttpResponse[typing.List[GraphitiEntityEdge]]:
         """
         Returns all edges for a graph.
 
@@ -51,7 +51,7 @@ class RawEdgeClient:
 
         Returns
         -------
-        HttpResponse[typing.List[EntityEdge]]
+        HttpResponse[typing.List[GraphitiEntityEdge]]
             Edges
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -70,9 +70,9 @@ class RawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[EntityEdge],
+                    typing.List[GraphitiEntityEdge],
                     parse_obj_as(
-                        type_=typing.List[EntityEdge],  # type: ignore
+                        type_=typing.List[GraphitiEntityEdge],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -81,9 +81,9 @@ class RawEdgeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -92,21 +92,17 @@ class RawEdgeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get_by_user_id(
         self,
@@ -115,7 +111,7 @@ class RawEdgeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[EntityEdge]]:
+    ) -> HttpResponse[typing.List[GraphitiEntityEdge]]:
         """
         Returns all edges for a user.
 
@@ -135,7 +131,7 @@ class RawEdgeClient:
 
         Returns
         -------
-        HttpResponse[typing.List[EntityEdge]]
+        HttpResponse[typing.List[GraphitiEntityEdge]]
             Edges
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -154,9 +150,9 @@ class RawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[EntityEdge],
+                    typing.List[GraphitiEntityEdge],
                     parse_obj_as(
-                        type_=typing.List[EntityEdge],  # type: ignore
+                        type_=typing.List[GraphitiEntityEdge],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -165,9 +161,9 @@ class RawEdgeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -176,23 +172,21 @@ class RawEdgeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[EntityEdge]:
+    def get(
+        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[GraphitiEntityEdge]:
         """
         Returns a specific edge by its UUID.
 
@@ -206,7 +200,7 @@ class RawEdgeClient:
 
         Returns
         -------
-        HttpResponse[EntityEdge]
+        HttpResponse[GraphitiEntityEdge]
             Edge
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -217,9 +211,9 @@ class RawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    EntityEdge,
+                    GraphitiEntityEdge,
                     parse_obj_as(
-                        type_=EntityEdge,  # type: ignore
+                        type_=GraphitiEntityEdge,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -228,9 +222,9 @@ class RawEdgeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -239,9 +233,9 @@ class RawEdgeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -250,25 +244,21 @@ class RawEdgeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[SuccessResponse]:
+    ) -> HttpResponse[ApidataSuccessResponse]:
         """
         Deletes an edge by UUID.
 
@@ -282,7 +272,7 @@ class RawEdgeClient:
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
+        HttpResponse[ApidataSuccessResponse]
             Edge deleted
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -293,9 +283,9 @@ class RawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -304,9 +294,9 @@ class RawEdgeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -315,21 +305,17 @@ class RawEdgeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
 class AsyncRawEdgeClient:
@@ -343,7 +329,7 @@ class AsyncRawEdgeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[EntityEdge]]:
+    ) -> AsyncHttpResponse[typing.List[GraphitiEntityEdge]]:
         """
         Returns all edges for a graph.
 
@@ -363,7 +349,7 @@ class AsyncRawEdgeClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[EntityEdge]]
+        AsyncHttpResponse[typing.List[GraphitiEntityEdge]]
             Edges
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -382,9 +368,9 @@ class AsyncRawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[EntityEdge],
+                    typing.List[GraphitiEntityEdge],
                     parse_obj_as(
-                        type_=typing.List[EntityEdge],  # type: ignore
+                        type_=typing.List[GraphitiEntityEdge],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -393,9 +379,9 @@ class AsyncRawEdgeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -404,21 +390,17 @@ class AsyncRawEdgeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get_by_user_id(
         self,
@@ -427,7 +409,7 @@ class AsyncRawEdgeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[EntityEdge]]:
+    ) -> AsyncHttpResponse[typing.List[GraphitiEntityEdge]]:
         """
         Returns all edges for a user.
 
@@ -447,7 +429,7 @@ class AsyncRawEdgeClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[EntityEdge]]
+        AsyncHttpResponse[typing.List[GraphitiEntityEdge]]
             Edges
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -466,9 +448,9 @@ class AsyncRawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[EntityEdge],
+                    typing.List[GraphitiEntityEdge],
                     parse_obj_as(
-                        type_=typing.List[EntityEdge],  # type: ignore
+                        type_=typing.List[GraphitiEntityEdge],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -477,9 +459,9 @@ class AsyncRawEdgeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -488,25 +470,21 @@ class AsyncRawEdgeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[EntityEdge]:
+    ) -> AsyncHttpResponse[GraphitiEntityEdge]:
         """
         Returns a specific edge by its UUID.
 
@@ -520,7 +498,7 @@ class AsyncRawEdgeClient:
 
         Returns
         -------
-        AsyncHttpResponse[EntityEdge]
+        AsyncHttpResponse[GraphitiEntityEdge]
             Edge
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -531,9 +509,9 @@ class AsyncRawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    EntityEdge,
+                    GraphitiEntityEdge,
                     parse_obj_as(
-                        type_=EntityEdge,  # type: ignore
+                        type_=GraphitiEntityEdge,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -542,9 +520,9 @@ class AsyncRawEdgeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -553,9 +531,9 @@ class AsyncRawEdgeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -564,25 +542,21 @@ class AsyncRawEdgeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
         """
         Deletes an edge by UUID.
 
@@ -596,7 +570,7 @@ class AsyncRawEdgeClient:
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
+        AsyncHttpResponse[ApidataSuccessResponse]
             Edge deleted
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -607,9 +581,9 @@ class AsyncRawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -618,9 +592,9 @@ class AsyncRawEdgeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -629,18 +603,14 @@ class AsyncRawEdgeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

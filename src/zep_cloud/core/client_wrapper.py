@@ -28,7 +28,7 @@ class BaseClientWrapper:
             "X-Fern-SDK-Version": "3.0.0-rc.1",
             **(self.get_custom_headers() or {}),
         }
-        headers["Authorization"] = f"Api-Key {self.api_key}"
+        headers["Authorization"] = self.api_key
         return headers
 
     def get_custom_headers(self) -> typing.Optional[typing.Dict[str, str]]:

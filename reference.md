@@ -108,7 +108,7 @@ client.graph.set_entity_types_internal()
 <dl>
 <dd>
 
-**edge_types:** `typing.Optional[typing.Sequence[EdgeType]]` 
+**edge_types:** `typing.Optional[typing.Sequence[ApidataEdgeType]]` 
     
 </dd>
 </dl>
@@ -116,7 +116,7 @@ client.graph.set_entity_types_internal()
 <dl>
 <dd>
 
-**entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
+**entity_types:** `typing.Optional[typing.Sequence[ApidataEntityType]]` 
     
 </dd>
 </dl>
@@ -195,7 +195,7 @@ client.graph.add(
 <dl>
 <dd>
 
-**type:** `GraphDataType` 
+**type:** `ModelsGraphDataType` 
     
 </dd>
 </dl>
@@ -274,14 +274,14 @@ Add data to the graph in batch mode, processing episodes concurrently. Use only 
 <dd>
 
 ```python
-from zep_cloud import EpisodeData, Zep
+from zep_cloud import ApidataEpisodeData, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.graph.add_batch(
     episodes=[
-        EpisodeData(
+        ApidataEpisodeData(
             data="data",
             type="text",
         )
@@ -302,7 +302,7 @@ client.graph.add_batch(
 <dl>
 <dd>
 
-**episodes:** `typing.Sequence[EpisodeData]` 
+**episodes:** `typing.Sequence[ApidataEpisodeData]` 
     
 </dd>
 </dl>
@@ -728,7 +728,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**reranker:** `typing.Optional[Reranker]` — Defaults to RRF
+**reranker:** `typing.Optional[GraphitiReranker]` — Defaults to RRF
     
 </dd>
 </dl>
@@ -736,7 +736,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges. Communities will be added in the future.
+**scope:** `typing.Optional[GraphitiGraphSearchScope]` — Defaults to Edges. Communities will be added in the future.
     
 </dd>
 </dl>
@@ -744,7 +744,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**search_filters:** `typing.Optional[SearchFilters]` — Search filters to apply to the search
+**search_filters:** `typing.Optional[GraphitiSearchFilters]` — Search filters to apply to the search
     
 </dd>
 </dl>
@@ -838,7 +838,7 @@ client.graph.create(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` 
+**fact_rating_instruction:** `typing.Optional[ApidataFactRatingInstruction]` 
     
 </dd>
 </dl>
@@ -1322,6 +1322,14 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
+**fast:** `typing.Optional[bool]` — If true, bypasses context summarization and returns raw search results.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -1447,7 +1455,7 @@ Add messages to a thread.
 <dd>
 
 ```python
-from zep_cloud import Message, Zep
+from zep_cloud import ApidataMessage, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
@@ -1455,7 +1463,7 @@ client = Zep(
 client.thread.add_messages(
     thread_id="threadId",
     messages=[
-        Message(
+        ApidataMessage(
             content="content",
             role_type="norole",
         )
@@ -1484,7 +1492,7 @@ client.thread.add_messages(
 <dl>
 <dd>
 
-**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content.
+**messages:** `typing.Sequence[ApidataMessage]` — A list of message objects, where each message contains a role and content.
     
 </dd>
 </dl>
@@ -1492,7 +1500,7 @@ client.thread.add_messages(
 <dl>
 <dd>
 
-**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
+**ignore_roles:** `typing.Optional[typing.Sequence[ApidataRoleType]]` 
 
 Optional list of role types to ignore when adding messages to graph memory.
 The message itself will still be added, retained and used as context for messages
@@ -1591,7 +1599,7 @@ client.user.add(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Optional instruction to use for fact rating.
+**fact_rating_instruction:** `typing.Optional[ApidataFactRatingInstruction]` — Optional instruction to use for fact rating.
     
 </dd>
 </dl>
@@ -1917,7 +1925,7 @@ client.user.update(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Optional instruction to use for fact rating.
+**fact_rating_instruction:** `typing.Optional[ApidataFactRatingInstruction]` — Optional instruction to use for fact rating.
     
 </dd>
 </dl>
