@@ -7,7 +7,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .graph import Graph
 
 
-class ApidataGraphListResponse(UniversalBaseModel):
+class GraphListResponse(UniversalBaseModel):
     graphs: typing.Optional[typing.List[Graph]] = None
     row_count: typing.Optional[int] = None
     total_count: typing.Optional[int] = None

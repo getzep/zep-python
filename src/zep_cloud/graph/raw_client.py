@@ -15,7 +15,6 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_graph_list_response import ApidataGraphListResponse
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
@@ -25,6 +24,7 @@ from ..types.episode_data import EpisodeData
 from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.graph import Graph
 from ..types.graph_data_type import GraphDataType
+from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
 from ..types.reranker import Reranker
@@ -824,7 +824,7 @@ class RawGraphClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataGraphListResponse]:
+    ) -> HttpResponse[GraphListResponse]:
         """
         Returns all graphs.
 
@@ -841,7 +841,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataGraphListResponse]
+        HttpResponse[GraphListResponse]
             Successfully retrieved list of graphs.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -856,9 +856,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphListResponse,
+                    GraphListResponse,
                     parse_obj_as(
-                        type_=ApidataGraphListResponse,  # type: ignore
+                        type_=GraphListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1922,7 +1922,7 @@ class AsyncRawGraphClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataGraphListResponse]:
+    ) -> AsyncHttpResponse[GraphListResponse]:
         """
         Returns all graphs.
 
@@ -1939,7 +1939,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGraphListResponse]
+        AsyncHttpResponse[GraphListResponse]
             Successfully retrieved list of graphs.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1954,9 +1954,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphListResponse,
+                    GraphListResponse,
                     parse_obj_as(
-                        type_=ApidataGraphListResponse,  # type: ignore
+                        type_=GraphListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

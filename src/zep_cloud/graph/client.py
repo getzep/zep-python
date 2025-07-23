@@ -5,7 +5,6 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_triple_response import AddTripleResponse
-from ..types.apidata_graph_list_response import ApidataGraphListResponse
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
@@ -15,6 +14,7 @@ from ..types.episode_data import EpisodeData
 from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.graph import Graph
 from ..types.graph_data_type import GraphDataType
+from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
 from ..types.reranker import Reranker
@@ -535,7 +535,7 @@ class GraphClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphListResponse:
+    ) -> GraphListResponse:
         """
         Returns all graphs.
 
@@ -552,7 +552,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataGraphListResponse
+        GraphListResponse
             Successfully retrieved list of graphs.
 
         Examples
@@ -1253,7 +1253,7 @@ class AsyncGraphClient:
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphListResponse:
+    ) -> GraphListResponse:
         """
         Returns all graphs.
 
@@ -1270,7 +1270,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataGraphListResponse
+        GraphListResponse
             Successfully retrieved list of graphs.
 
         Examples

@@ -5,7 +5,6 @@
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
-from .apidata_graph_list_response import ApidataGraphListResponse
 from .clone_graph_response import CloneGraphResponse
 from .comparison_operator import ComparisonOperator
 from .date_filter import DateFilter
@@ -28,6 +27,7 @@ from .facts_response import FactsResponse
 from .graph import Graph
 from .graph_data_type import GraphDataType
 from .graph_edges_request import GraphEdgesRequest
+from .graph_list_response import GraphListResponse
 from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
@@ -50,7 +50,6 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
-    "ApidataGraphListResponse",
     "CloneGraphResponse",
     "ComparisonOperator",
     "DateFilter",
@@ -73,6 +72,7 @@ __all__ = [
     "Graph",
     "GraphDataType",
     "GraphEdgesRequest",
+    "GraphListResponse",
     "GraphNodesRequest",
     "GraphSearchResults",
     "GraphSearchScope",
