@@ -23,7 +23,11 @@ class Episode(pydantic_v1.BaseModel):
     Optional role_type, will only be present if the episode was created using memory.add API
     """
 
-    score: typing.Optional[float] = None
+    score: typing.Optional[float] = pydantic_v1.Field(default=None)
+    """
+    Reranker score
+    """
+
     session_id: typing.Optional[str] = None
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
