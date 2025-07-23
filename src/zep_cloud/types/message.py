@@ -20,11 +20,6 @@ class Message(UniversalBaseModel):
     The timestamp of when the message was created.
     """
 
-    metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
-    """
-    The metadata associated with the message.
-    """
-
     name: typing.Optional[str] = pydantic.Field(default=None)
     """
     Customizable name of the sender of the message (e.g., "john", "sales_agent").
@@ -38,16 +33,6 @@ class Message(UniversalBaseModel):
     role: RoleType = pydantic.Field()
     """
     The role of message sender (e.g., "user", "system").
-    """
-
-    token_count: typing.Optional[int] = pydantic.Field(default=None)
-    """
-    Deprecated
-    """
-
-    updated_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Deprecated
     """
 
     uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = pydantic.Field(default=None)

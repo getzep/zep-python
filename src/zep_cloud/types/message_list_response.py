@@ -4,11 +4,11 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .apidata_message import ApidataMessage
+from .message import Message
 
 
 class MessageListResponse(UniversalBaseModel):
-    messages: typing.Optional[typing.List[ApidataMessage]] = pydantic.Field(default=None)
+    messages: typing.Optional[typing.List[Message]] = pydantic.Field(default=None)
     """
     A list of message objects.
     """

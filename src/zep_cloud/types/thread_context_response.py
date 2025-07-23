@@ -4,8 +4,8 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .apidata_message import ApidataMessage
 from .fact import Fact
+from .message import Message
 
 
 class ThreadContextResponse(UniversalBaseModel):
@@ -14,7 +14,7 @@ class ThreadContextResponse(UniversalBaseModel):
     Memory context containing relevant facts and entities for the session. Can be put into the prompt directly.
     """
 
-    messages: typing.Optional[typing.List[ApidataMessage]] = pydantic.Field(default=None)
+    messages: typing.Optional[typing.List[Message]] = pydantic.Field(default=None)
     """
     A list of message objects, where each message contains a role and content. Only last_n messages will be returned
     """
