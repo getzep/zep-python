@@ -21,7 +21,6 @@ from .episode_data import EpisodeData
 from .episode_mentions import EpisodeMentions
 from .episode_response import EpisodeResponse
 from .fact import Fact
-from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
 from .facts_response import FactsResponse
 from .graph import Graph
@@ -32,6 +31,7 @@ from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
 from .message import Message
 from .message_list_response import MessageListResponse
+from .models_fact_rating_examples import ModelsFactRatingExamples
 from .reranker import Reranker
 from .role_type import RoleType
 from .search_filters import SearchFilters
@@ -63,7 +63,6 @@ __all__ = [
     "EpisodeMentions",
     "EpisodeResponse",
     "Fact",
-    "FactRatingExamples",
     "FactRatingInstruction",
     "FactsResponse",
     "Graph",
@@ -74,6 +73,7 @@ __all__ = [
     "GraphSearchScope",
     "Message",
     "MessageListResponse",
+    "ModelsFactRatingExamples",
     "Reranker",
     "RoleType",
     "SearchFilters",

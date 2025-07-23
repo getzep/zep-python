@@ -6,7 +6,7 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class FactRatingExamples(UniversalBaseModel):
+class ModelsFactRatingExamples(UniversalBaseModel):
     high: typing.Optional[str] = None
     low: typing.Optional[str] = None
     medium: typing.Optional[str] = None

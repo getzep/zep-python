@@ -4,11 +4,11 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .fact_rating_examples import FactRatingExamples
+from .models_fact_rating_examples import ModelsFactRatingExamples
 
 
 class FactRatingInstruction(UniversalBaseModel):
-    examples: typing.Optional[FactRatingExamples] = pydantic.Field(default=None)
+    examples: typing.Optional[ModelsFactRatingExamples] = pydantic.Field(default=None)
     """
     Examples is a list of examples that demonstrate how facts might be rated based on your instruction. You should provide
     an example of a highly rated example, a low rated example, and a medium (or in between example). For example, if you are rating

@@ -4,7 +4,6 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .fact import Fact
 from .message import Message
 
 
@@ -17,11 +16,6 @@ class ThreadContextResponse(UniversalBaseModel):
     messages: typing.Optional[typing.List[Message]] = pydantic.Field(default=None)
     """
     A list of message objects, where each message contains a role and content. Only last_n messages will be returned
-    """
-
-    relevant_facts: typing.Optional[typing.List[Fact]] = pydantic.Field(default=None)
-    """
-    Most relevant facts to the recent messages in the session.
     """
 
     if IS_PYDANTIC_V2:
