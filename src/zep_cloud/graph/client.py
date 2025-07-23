@@ -5,6 +5,7 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_triple_response import AddTripleResponse
+from ..types.apidata_graph_list_response import ApidataGraphListResponse
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
@@ -528,6 +529,46 @@ class GraphClient:
         )
         return _response.data
 
+    def list_all(
+        self,
+        *,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataGraphListResponse:
+        """
+        Returns all graphs.
+
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1.
+
+        page_size : typing.Optional[int]
+            Number of graphs to retrieve per page.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGraphListResponse
+            Successfully retrieved list of graphs.
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.list_all()
+        """
+        _response = self._raw_client.list_all(
+            page_number=page_number, page_size=page_size, request_options=request_options
+        )
+        return _response.data
+
     def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Graph:
         """
         Returns a graph.
@@ -588,6 +629,57 @@ class GraphClient:
         )
         """
         _response = self._raw_client.delete(graph_id, request_options=request_options)
+        return _response.data
+
+    def update(
+        self,
+        graph_id: str,
+        *,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Graph:
+        """
+        Updates information about a graph.
+
+        Parameters
+        ----------
+        graph_id : str
+            Graph ID
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Graph
+            The updated graph object
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.update(
+            graph_id="graphId",
+        )
+        """
+        _response = self._raw_client.update(
+            graph_id,
+            description=description,
+            fact_rating_instruction=fact_rating_instruction,
+            name=name,
+            request_options=request_options,
+        )
         return _response.data
 
 
@@ -1155,6 +1247,54 @@ class AsyncGraphClient:
         )
         return _response.data
 
+    async def list_all(
+        self,
+        *,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataGraphListResponse:
+        """
+        Returns all graphs.
+
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1.
+
+        page_size : typing.Optional[int]
+            Number of graphs to retrieve per page.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataGraphListResponse
+            Successfully retrieved list of graphs.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.list_all()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_all(
+            page_number=page_number, page_size=page_size, request_options=request_options
+        )
+        return _response.data
+
     async def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Graph:
         """
         Returns a graph.
@@ -1233,4 +1373,63 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(graph_id, request_options=request_options)
+        return _response.data
+
+    async def update(
+        self,
+        graph_id: str,
+        *,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Graph:
+        """
+        Updates information about a graph.
+
+        Parameters
+        ----------
+        graph_id : str
+            Graph ID
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Graph
+            The updated graph object
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.update(
+                graph_id="graphId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.update(
+            graph_id,
+            description=description,
+            fact_rating_instruction=fact_rating_instruction,
+            name=name,
+            request_options=request_options,
+        )
         return _response.data
