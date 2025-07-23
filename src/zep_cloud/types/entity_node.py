@@ -29,8 +29,12 @@ class EntityNode(UniversalBaseModel):
     Name of the node
     """
 
-    score: typing.Optional[float] = None
-    summary: str = pydantic.Field()
+    score: typing.Optional[float] = pydantic_v1.Field(default=None)
+    """
+    Reranker score
+    """
+
+    summary: str = pydantic_v1.Field()
     """
     Regional summary of surrounding edges
     """
