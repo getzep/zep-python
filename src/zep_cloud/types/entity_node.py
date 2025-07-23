@@ -28,6 +28,7 @@ class EntityNode(pydantic_v1.BaseModel):
     Name of the node
     """
 
+    score: typing.Optional[float] = None
     summary: str = pydantic_v1.Field()
     """
     Regional summary of surrounding edges
