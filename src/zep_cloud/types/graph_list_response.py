@@ -4,12 +4,12 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .thread import Thread
+from .graph import Graph
 
 
-class ThreadListResponse(UniversalBaseModel):
-    response_count: typing.Optional[int] = None
-    threads: typing.Optional[typing.List[Thread]] = None
+class GraphListResponse(UniversalBaseModel):
+    graphs: typing.Optional[typing.List[Graph]] = None
+    row_count: typing.Optional[int] = None
     total_count: typing.Optional[int] = None
 
     if IS_PYDANTIC_V2:

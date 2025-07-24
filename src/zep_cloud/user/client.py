@@ -6,6 +6,7 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.success_response import SuccessResponse
+from ..types.thread import Thread
 from ..types.user import User
 from ..types.user_list_response import UserListResponse
 from ..types.user_node_response import UserNodeResponse
@@ -289,6 +290,39 @@ class UserClient:
         )
         """
         _response = self._raw_client.get_node(user_id, request_options=request_options)
+        return _response.data
+
+    def get_threads(
+        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[Thread]:
+        """
+        Returns all threads for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Thread]
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.get_threads(
+            user_id="userId",
+        )
+        """
+        _response = self._raw_client.get_threads(user_id, request_options=request_options)
         return _response.data
 
 
@@ -616,4 +650,45 @@ class AsyncUserClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_node(user_id, request_options=request_options)
+        return _response.data
+
+    async def get_threads(
+        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[Thread]:
+        """
+        Returns all threads for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Thread]
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.get_threads(
+                user_id="userId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_threads(user_id, request_options=request_options)
         return _response.data

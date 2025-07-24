@@ -16,6 +16,7 @@ from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.success_response import SuccessResponse
+from ..types.thread import Thread
 from ..types.user import User
 from ..types.user_list_response import UserListResponse
 from ..types.user_node_response import UserNodeResponse
@@ -511,6 +512,60 @@ class RawUserClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def get_threads(
+        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[typing.List[Thread]]:
+        """
+        Returns all threads for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[typing.List[Thread]]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"users/{jsonable_encoder(user_id)}/threads",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[Thread],
+                    parse_obj_as(
+                        type_=typing.List[Thread],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
 
 class AsyncRawUserClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -981,6 +1036,60 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_threads(
+        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[typing.List[Thread]]:
+        """
+        Returns all threads for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[typing.List[Thread]]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"users/{jsonable_encoder(user_id)}/threads",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[Thread],
+                    parse_obj_as(
+                        type_=typing.List[Thread],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
