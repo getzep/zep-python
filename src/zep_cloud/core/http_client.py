@@ -2,7 +2,6 @@
 
 import asyncio
 import email.utils
-import json
 import re
 import time
 import typing
@@ -11,12 +10,13 @@ from contextlib import asynccontextmanager, contextmanager
 from random import random
 
 import httpx
-
 from .file import File, convert_file_dict_to_httpx_tuples
+from .force_multipart import FORCE_MULTIPART
 from .jsonable_encoder import jsonable_encoder
 from .query_encoder import encode_query
 from .remove_none_from_dict import remove_none_from_dict
 from .request_options import RequestOptions
+from httpx._types import RequestFiles
 
 INITIAL_RETRY_DELAY_SECONDS = 0.5
 MAX_RETRY_DELAY_SECONDS = 10
@@ -85,12 +85,13 @@ def _retry_timeout(response: httpx.Response, retries: int) -> float:
 
 
 def _should_retry(response: httpx.Response) -> bool:
-    retriable_400s = [429, 408, 409]
-    return response.status_code >= 500 or response.status_code in retriable_400s
+    retryable_400s = [429, 408, 409]
+    return response.status_code >= 500 or response.status_code in retryable_400s
 
 
 def remove_omit_from_dict(
-    original: typing.Dict[str, typing.Optional[typing.Any]], omit: typing.Optional[typing.Any]
+    original: typing.Dict[str, typing.Optional[typing.Any]],
+    omit: typing.Optional[typing.Any],
 ) -> typing.Dict[str, typing.Any]:
     if omit is None:
         return original
@@ -142,7 +143,8 @@ def get_request_body(
         # If both data and json are None, we send json data in the event extra properties are specified
         json_body = maybe_filter_request_body(json, request_options, omit)
 
-    return json_body, data_body
+    # If you have an empty JSON body, you should just send None
+    return (json_body if json_body != {} else None), data_body if data_body != {} else None
 
 
 class HttpClient:
@@ -150,9 +152,9 @@ class HttpClient:
         self,
         *,
         httpx_client: httpx.Client,
-        base_timeout: typing.Optional[float],
-        base_headers: typing.Dict[str, str],
-        base_url: typing.Optional[str] = None,
+        base_timeout: typing.Callable[[], typing.Optional[float]],
+        base_headers: typing.Callable[[], typing.Dict[str, str]],
+        base_url: typing.Optional[typing.Callable[[], str]] = None,
     ):
         self.base_url = base_url
         self.base_timeout = base_timeout
@@ -160,7 +162,10 @@ class HttpClient:
         self.httpx_client = httpx_client
 
     def get_base_url(self, maybe_base_url: typing.Optional[str]) -> str:
-        base_url = self.base_url if maybe_base_url is None else maybe_base_url
+        base_url = maybe_base_url
+        if self.base_url is not None and base_url is None:
+            base_url = self.base_url()
+
         if base_url is None:
             raise ValueError("A base_url is required to make this request, please provide one and try again.")
         return base_url
@@ -175,20 +180,35 @@ class HttpClient:
         json: typing.Optional[typing.Any] = None,
         data: typing.Optional[typing.Any] = None,
         content: typing.Optional[typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]] = None,
-        files: typing.Optional[typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]]] = None,
+        files: typing.Optional[
+            typing.Union[
+                typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]],
+                typing.List[typing.Tuple[str, File]],
+            ]
+        ] = None,
         headers: typing.Optional[typing.Dict[str, typing.Any]] = None,
         request_options: typing.Optional[RequestOptions] = None,
-        retries: int = 0,
+        retries: int = 2,
         omit: typing.Optional[typing.Any] = None,
+        force_multipart: typing.Optional[bool] = None,
     ) -> httpx.Response:
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
             if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self.base_timeout
+            else self.base_timeout()
         )
 
         json_body, data_body = get_request_body(json=json, data=data, request_options=request_options, omit=omit)
+
+        request_files: typing.Optional[RequestFiles] = (
+            convert_file_dict_to_httpx_tuples(remove_omit_from_dict(remove_none_from_dict(files), omit))
+            if (files is not None and files is not omit and isinstance(files, dict))
+            else None
+        )
+
+        if (request_files is None or len(request_files) == 0) and force_multipart:
+            request_files = FORCE_MULTIPART
 
         response = self.httpx_client.request(
             method=method,
@@ -196,7 +216,7 @@ class HttpClient:
             headers=jsonable_encoder(
                 remove_none_from_dict(
                     {
-                        **self.base_headers,
+                        **self.base_headers(),
                         **(headers if headers is not None else {}),
                         **(request_options.get("additional_headers", {}) or {} if request_options is not None else {}),
                     }
@@ -222,7 +242,7 @@ class HttpClient:
             json=json_body,
             data=data_body,
             content=content,
-            files=convert_file_dict_to_httpx_tuples(remove_none_from_dict(files)) if files is not None else None,
+            files=request_files,
             timeout=timeout,
         )
 
@@ -257,18 +277,33 @@ class HttpClient:
         json: typing.Optional[typing.Any] = None,
         data: typing.Optional[typing.Any] = None,
         content: typing.Optional[typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]] = None,
-        files: typing.Optional[typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]]] = None,
+        files: typing.Optional[
+            typing.Union[
+                typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]],
+                typing.List[typing.Tuple[str, File]],
+            ]
+        ] = None,
         headers: typing.Optional[typing.Dict[str, typing.Any]] = None,
         request_options: typing.Optional[RequestOptions] = None,
-        retries: int = 0,
+        retries: int = 2,
         omit: typing.Optional[typing.Any] = None,
+        force_multipart: typing.Optional[bool] = None,
     ) -> typing.Iterator[httpx.Response]:
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
             if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self.base_timeout
+            else self.base_timeout()
         )
+
+        request_files: typing.Optional[RequestFiles] = (
+            convert_file_dict_to_httpx_tuples(remove_omit_from_dict(remove_none_from_dict(files), omit))
+            if (files is not None and files is not omit and isinstance(files, dict))
+            else None
+        )
+
+        if (request_files is None or len(request_files) == 0) and force_multipart:
+            request_files = FORCE_MULTIPART
 
         json_body, data_body = get_request_body(json=json, data=data, request_options=request_options, omit=omit)
 
@@ -278,7 +313,7 @@ class HttpClient:
             headers=jsonable_encoder(
                 remove_none_from_dict(
                     {
-                        **self.base_headers,
+                        **self.base_headers(),
                         **(headers if headers is not None else {}),
                         **(request_options.get("additional_headers", {}) if request_options is not None else {}),
                     }
@@ -304,7 +339,7 @@ class HttpClient:
             json=json_body,
             data=data_body,
             content=content,
-            files=convert_file_dict_to_httpx_tuples(remove_none_from_dict(files)) if files is not None else None,
+            files=request_files,
             timeout=timeout,
         ) as stream:
             yield stream
@@ -315,9 +350,9 @@ class AsyncHttpClient:
         self,
         *,
         httpx_client: httpx.AsyncClient,
-        base_timeout: typing.Optional[float],
-        base_headers: typing.Dict[str, str],
-        base_url: typing.Optional[str] = None,
+        base_timeout: typing.Callable[[], typing.Optional[float]],
+        base_headers: typing.Callable[[], typing.Dict[str, str]],
+        base_url: typing.Optional[typing.Callable[[], str]] = None,
     ):
         self.base_url = base_url
         self.base_timeout = base_timeout
@@ -325,7 +360,10 @@ class AsyncHttpClient:
         self.httpx_client = httpx_client
 
     def get_base_url(self, maybe_base_url: typing.Optional[str]) -> str:
-        base_url = self.base_url if maybe_base_url is None else maybe_base_url
+        base_url = maybe_base_url
+        if self.base_url is not None and base_url is None:
+            base_url = self.base_url()
+
         if base_url is None:
             raise ValueError("A base_url is required to make this request, please provide one and try again.")
         return base_url
@@ -340,18 +378,33 @@ class AsyncHttpClient:
         json: typing.Optional[typing.Any] = None,
         data: typing.Optional[typing.Any] = None,
         content: typing.Optional[typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]] = None,
-        files: typing.Optional[typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]]] = None,
+        files: typing.Optional[
+            typing.Union[
+                typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]],
+                typing.List[typing.Tuple[str, File]],
+            ]
+        ] = None,
         headers: typing.Optional[typing.Dict[str, typing.Any]] = None,
         request_options: typing.Optional[RequestOptions] = None,
-        retries: int = 0,
+        retries: int = 2,
         omit: typing.Optional[typing.Any] = None,
+        force_multipart: typing.Optional[bool] = None,
     ) -> httpx.Response:
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
             if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self.base_timeout
+            else self.base_timeout()
         )
+
+        request_files: typing.Optional[RequestFiles] = (
+            convert_file_dict_to_httpx_tuples(remove_omit_from_dict(remove_none_from_dict(files), omit))
+            if (files is not None and files is not omit and isinstance(files, dict))
+            else None
+        )
+
+        if (request_files is None or len(request_files) == 0) and force_multipart:
+            request_files = FORCE_MULTIPART
 
         json_body, data_body = get_request_body(json=json, data=data, request_options=request_options, omit=omit)
 
@@ -362,7 +415,7 @@ class AsyncHttpClient:
             headers=jsonable_encoder(
                 remove_none_from_dict(
                     {
-                        **self.base_headers,
+                        **self.base_headers(),
                         **(headers if headers is not None else {}),
                         **(request_options.get("additional_headers", {}) or {} if request_options is not None else {}),
                     }
@@ -388,7 +441,7 @@ class AsyncHttpClient:
             json=json_body,
             data=data_body,
             content=content,
-            files=convert_file_dict_to_httpx_tuples(remove_none_from_dict(files)) if files is not None else None,
+            files=request_files,
             timeout=timeout,
         )
 
@@ -422,18 +475,33 @@ class AsyncHttpClient:
         json: typing.Optional[typing.Any] = None,
         data: typing.Optional[typing.Any] = None,
         content: typing.Optional[typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]] = None,
-        files: typing.Optional[typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]]] = None,
+        files: typing.Optional[
+            typing.Union[
+                typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]],
+                typing.List[typing.Tuple[str, File]],
+            ]
+        ] = None,
         headers: typing.Optional[typing.Dict[str, typing.Any]] = None,
         request_options: typing.Optional[RequestOptions] = None,
-        retries: int = 0,
+        retries: int = 2,
         omit: typing.Optional[typing.Any] = None,
+        force_multipart: typing.Optional[bool] = None,
     ) -> typing.AsyncIterator[httpx.Response]:
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
             if request_options is not None and request_options.get("timeout_in_seconds") is not None
-            else self.base_timeout
+            else self.base_timeout()
         )
+
+        request_files: typing.Optional[RequestFiles] = (
+            convert_file_dict_to_httpx_tuples(remove_omit_from_dict(remove_none_from_dict(files), omit))
+            if (files is not None and files is not omit and isinstance(files, dict))
+            else None
+        )
+
+        if (request_files is None or len(request_files) == 0) and force_multipart:
+            request_files = FORCE_MULTIPART
 
         json_body, data_body = get_request_body(json=json, data=data, request_options=request_options, omit=omit)
 
@@ -443,7 +511,7 @@ class AsyncHttpClient:
             headers=jsonable_encoder(
                 remove_none_from_dict(
                     {
-                        **self.base_headers,
+                        **self.base_headers(),
                         **(headers if headers is not None else {}),
                         **(request_options.get("additional_headers", {}) if request_options is not None else {}),
                     }
@@ -469,7 +537,7 @@ class AsyncHttpClient:
             json=json_body,
             data=data_body,
             content=content,
-            files=convert_file_dict_to_httpx_tuples(remove_none_from_dict(files)) if files is not None else None,
+            files=request_files,
             timeout=timeout,
         ) as stream:
             yield stream
