@@ -44,6 +44,7 @@ class EntityEdge(UniversalBaseModel):
     Name of the edge, relation name
     """
 
+    score: typing.Optional[float] = None
     source_node_uuid: str = pydantic.Field()
     """
     UUID of the source node

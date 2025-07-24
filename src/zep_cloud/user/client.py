@@ -5,7 +5,6 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.fact_rating_instruction import FactRatingInstruction
-from ..types.facts_response import FactsResponse
 from ..types.success_response import SuccessResponse
 from ..types.user import User
 from ..types.user_list_response import UserListResponse
@@ -259,37 +258,6 @@ class UserClient:
             metadata=metadata,
             request_options=request_options,
         )
-        return _response.data
-
-    def get_facts(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FactsResponse:
-        """
-        Deprecated: Use Get User Edges instead.
-
-        Parameters
-        ----------
-        user_id : str
-            The user_id of the user to get.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        FactsResponse
-            The user facts.
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.user.get_facts(
-            user_id="userId",
-        )
-        """
-        _response = self._raw_client.get_facts(user_id, request_options=request_options)
         return _response.data
 
     def get_node(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> UserNodeResponse:
@@ -607,47 +575,6 @@ class AsyncUserClient:
             metadata=metadata,
             request_options=request_options,
         )
-        return _response.data
-
-    async def get_facts(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> FactsResponse:
-        """
-        Deprecated: Use Get User Edges instead.
-
-        Parameters
-        ----------
-        user_id : str
-            The user_id of the user to get.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        FactsResponse
-            The user facts.
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.user.get_facts(
-                user_id="userId",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get_facts(user_id, request_options=request_options)
         return _response.data
 
     async def get_node(

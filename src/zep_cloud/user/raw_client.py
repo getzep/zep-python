@@ -15,7 +15,6 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.fact_rating_instruction import FactRatingInstruction
-from ..types.facts_response import FactsResponse
 from ..types.success_response import SuccessResponse
 from ..types.user import User
 from ..types.user_list_response import UserListResponse
@@ -416,71 +415,6 @@ class RawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def get_facts(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[FactsResponse]:
-        """
-        Deprecated: Use Get User Edges instead.
-
-        Parameters
-        ----------
-        user_id : str
-            The user_id of the user to get.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[FactsResponse]
-            The user facts.
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}/facts",
-            method="GET",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    FactsResponse,
-                    parse_obj_as(
-                        type_=FactsResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
@@ -971,71 +905,6 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def get_facts(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[FactsResponse]:
-        """
-        Deprecated: Use Get User Edges instead.
-
-        Parameters
-        ----------
-        user_id : str
-            The user_id of the user to get.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[FactsResponse]
-            The user facts.
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}/facts",
-            method="GET",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    FactsResponse,
-                    parse_obj_as(
-                        type_=FactsResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
