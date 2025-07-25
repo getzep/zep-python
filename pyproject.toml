@@ -27,9 +27,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed"
 ]
-packages = [
-    { include = "zep_cloud", from = "src"}
-]
 
 [project.urls]
 Repository = 'https://github.com/getzep/zep-python'
