@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "zep-cloud"
-version = "2.21.0"
+version = "2.22.0"
 description = ""
 readme = "README.md"
 authors = []
