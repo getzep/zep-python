@@ -7,7 +7,7 @@ from typing import List
 from unittest.mock import MagicMock
 
 import pytest
-from zep_cloud.types import AddMemoryResponse, Message, Summary
+from zep_cloud.types import AddThreadMessagesResponse, Message
 
 
 class MockOpenAIChoice:
@@ -72,12 +72,11 @@ class MockZepMemory:
     def __init__(self, context: str = "Test context"):
         self.context = context
         self.messages = [
-            Message(role="user", role_type="user", content="Hello", created_at=datetime.now().isoformat()),
+            Message(name="user", role="user", content="Hello", created_at=datetime.now().isoformat()),
             Message(
-                role="assistant", role_type="assistant", content="Hi there!", created_at=datetime.now().isoformat()
+                name="assistant", role="assistant", content="Hi there!", created_at=datetime.now().isoformat()
             ),
         ]
-        self.summary = Summary(content="Test summary", created_at=datetime.now().isoformat())
 
 
 class MockStream:
@@ -137,7 +136,7 @@ def mock_zep_memory():
 @pytest.fixture
 def mock_zep_add_response():
     """Mock Zep add memory response."""
-    return AddMemoryResponse(context="Updated context with new message")
+    return AddThreadMessagesResponse(context="Updated context with new message")
 
 
 @pytest.fixture
@@ -165,10 +164,10 @@ def sample_messages_no_context():
 def conversation_messages():
     """Sample conversation messages for Zep."""
     return [
-        Message(role="user", role_type="user", content="My name is Alice", created_at=datetime.now().isoformat()),
+        Message(name="user", role="user", content="My name is Alice", created_at=datetime.now().isoformat()),
         Message(
+            name="assistant",
             role="assistant",
-            role_type="assistant",
             content="Nice to meet you, Alice!",
             created_at=datetime.now().isoformat(),
         ),
@@ -239,7 +238,7 @@ def mock_zep_client():
 
     # Mock memory operations
     client.memory.get.return_value = MockZepMemory()
-    client.memory.add.return_value = AddMemoryResponse(context="Test context")
+    client.memory.add.return_value = AddThreadMessagesResponse(context="Test context")
 
     return client
 
@@ -256,7 +255,7 @@ def mock_async_zep_client():
     client.memory.get = mock_get
 
     async def mock_add(*args, **kwargs):
-        return AddMemoryResponse(context="Test context")
+        return AddThreadMessagesResponse(context="Test context")
 
     client.memory.add = mock_add
 

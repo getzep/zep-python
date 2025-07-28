@@ -188,7 +188,7 @@ class BaseZepWrapper:
                 response_created_at = datetime.utcnow()  # New response being created now
                 
                 if not cache.is_message_seen(thread_id, "assistant", assistant_content, response_created_at):
-                    zep_message = Message(role="assistant", role_type="assistant", content=assistant_content)
+                    zep_message = Message(role="assistant", name="assistant", content=assistant_content)
                     self.zep_client.thread.add_messages(thread_id, messages=[zep_message])
                     logger.debug(f"Added assistant response to Zep thread {thread_id}")
                 else:
@@ -489,7 +489,7 @@ class AsyncBaseZepWrapper:
                 response_created_at = datetime.utcnow()  # New response being created now
                 
                 if not cache.is_message_seen(thread_id, "assistant", assistant_content, response_created_at):
-                    zep_message = Message(role="assistant", role_type="assistant", content=assistant_content)
+                    zep_message = Message(role="assistant", name="assistant", content=assistant_content)
                     await self.zep_client.thread.add_messages(thread_id, messages=[zep_message])
                     logger.debug(f"Added assistant response to Zep thread {thread_id}")
                 else:
