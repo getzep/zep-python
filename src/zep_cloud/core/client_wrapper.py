@@ -25,7 +25,8 @@ class BaseClientWrapper:
             "User-Agent": "zep-cloud/3.0.0-rc.1",
             "X-Fern-Language": "Python",
             "X-Fern-SDK-Name": "zep-cloud",
-            "X-Fern-SDK-Version": "2.22.0",
+            "X-Fern-SDK-Version": "3.0.0-rc.1",
+            **(self.get_custom_headers() or {}),
         }
         headers["Authorization"] = f"Api-Key {self.api_key}"
         return headers

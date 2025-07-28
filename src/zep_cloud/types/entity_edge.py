@@ -44,12 +44,8 @@ class EntityEdge(UniversalBaseModel):
     Name of the edge, relation name
     """
 
-    score: typing.Optional[float] = pydantic_v1.Field(default=None)
-    """
-    Reranker score
-    """
-
-    source_node_uuid: str = pydantic_v1.Field()
+    score: typing.Optional[float] = None
+    source_node_uuid: str = pydantic.Field()
     """
     UUID of the source node
     """
