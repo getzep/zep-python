@@ -441,7 +441,7 @@ class TestAsyncErrorHandling:
         mock_async_zep_client.memory.add = mock_add_fail
 
         # Should raise ZepOpenAIError
-        from zep_cloud.external_clients.openai_utils import ZepOpenAIError
+        from zep_cloud.openai.openai_utils import ZepOpenAIError
 
         with pytest.raises(ZepOpenAIError):
             await wrapper.create(

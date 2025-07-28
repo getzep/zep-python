@@ -3,7 +3,7 @@ Tests for OpenAI wrapper utility functions.
 """
 
 import pytest
-from zep_cloud.external_clients.openai_utils import (
+from zep_cloud.openai.openai_utils import (
     ZepOpenAIError,
     extract_conversation_messages,
     extract_zep_params,
@@ -23,7 +23,7 @@ class TestParameterHandling:
         """Test extraction of Zep-specific parameters."""
         kwargs = {
             "model": "gpt-4.1-mini",
-            "session_id": "test_session",
+            "thread_id": "test_thread",
             "context_placeholder": "{{memory}}",
             "skip_zep_on_error": False,
             "temperature": 0.7,
@@ -33,7 +33,7 @@ class TestParameterHandling:
         zep_params = extract_zep_params(kwargs)
 
         assert zep_params == {
-            "session_id": "test_session",
+            "thread_id": "test_thread",
             "context_placeholder": "{{memory}}",
             "skip_zep_on_error": False,
         }
@@ -53,7 +53,7 @@ class TestParameterHandling:
         """Test removal of Zep-specific parameters."""
         kwargs = {
             "model": "gpt-4.1-mini",
-            "session_id": "test_session",
+            "thread_id": "test_thread",
             "context_placeholder": "{{memory}}",
             "temperature": 0.7,
         }
@@ -62,7 +62,7 @@ class TestParameterHandling:
 
         assert clean_params == {"model": "gpt-4.1-mini", "temperature": 0.7}
         # Original kwargs should not be modified
-        assert "session_id" in kwargs
+        assert "thread_id" in kwargs
 
 
 class TestContextHandling:

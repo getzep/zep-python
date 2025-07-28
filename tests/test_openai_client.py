@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 with patch.dict(
     "sys.modules", {"openai": MagicMock(), "openai.types.chat": MagicMock(), "openai.types.responses": MagicMock()}
 ):
-    from zep_cloud.external_clients.openai_client import (
+    from zep_cloud.openai.openai_client import (
         ChatCompletionsWrapper,
         ChatWrapper,
         ResponsesWrapper,

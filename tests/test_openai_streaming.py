@@ -9,7 +9,7 @@ from .openai_fixtures import (
     MockAsyncStream,
     MockStream,
 )
-from zep_cloud.external_clients.openai_streaming import (
+from zep_cloud.openai.openai_streaming import (
     AsyncZepStreamWrapper,
     ZepStreamWrapper,
 )
@@ -208,7 +208,7 @@ class TestZepStreamWrapper:
         )
 
         # Should raise ZepOpenAIError when stream finishes
-        from zep_cloud.external_clients.openai_utils import ZepOpenAIError
+        from zep_cloud.openai.openai_utils import ZepOpenAIError
 
         with pytest.raises(ZepOpenAIError):
             list(wrapper)
@@ -393,7 +393,7 @@ class TestAsyncZepStreamWrapper:
         )
 
         # Should raise ZepOpenAIError when stream finishes
-        from zep_cloud.external_clients.openai_utils import ZepOpenAIError
+        from zep_cloud.openai.openai_utils import ZepOpenAIError
 
         with pytest.raises(ZepOpenAIError):
             async for _ in wrapper:
@@ -409,7 +409,7 @@ class TestStreamingIntegration:
             "sys.modules",
             {"openai": MagicMock(), "openai.types.chat": MagicMock(), "openai.types.responses": MagicMock()},
         ):
-            from zep_cloud.external_clients.openai_client import ChatCompletionsWrapper
+            from zep_cloud.openai.openai_client import ChatCompletionsWrapper
 
             mock_openai_completions = MagicMock()
             mock_stream = MockStream(["Hello", " there", "!"])
@@ -444,7 +444,7 @@ class TestStreamingIntegration:
             "sys.modules",
             {"openai": MagicMock(), "openai.types.chat": MagicMock(), "openai.types.responses": MagicMock()},
         ):
-            from zep_cloud.external_clients.openai_async import AsyncChatCompletionsWrapper
+            from zep_cloud.openai.openai_async import AsyncChatCompletionsWrapper
 
             mock_openai_completions = MagicMock()
             mock_stream = MockAsyncStream(["Hello", " there", "!"])
@@ -490,7 +490,7 @@ class TestStreamingIntegration:
             "sys.modules",
             {"openai": MagicMock(), "openai.types.chat": MagicMock(), "openai.types.responses": MagicMock()},
         ):
-            from zep_cloud.external_clients.openai_client import ChatCompletionsWrapper
+            from zep_cloud.openai.openai_client import ChatCompletionsWrapper
 
             mock_openai_completions = MagicMock()
             mock_stream = MockStream(["Hello", " world"])
