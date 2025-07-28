@@ -6,10 +6,11 @@ import io
 import logging
 from typing import Any, AsyncIterator, Callable, Iterator, Optional
 
+from .message_cache import get_message_cache
+from .openai_utils import safe_zep_operation
+
 from zep_cloud.client import AsyncZep, Zep
 from zep_cloud.types import Message
-
-from .openai_utils import safe_zep_operation
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class ZepStreamWrapper:
     def __init__(
         self,
         stream: Iterator[Any],
-        session_id: str,
+        thread_id: str,
         zep_client: Zep,
         extract_content_func: Callable[[Any], Optional[str]],
         skip_zep_on_error: bool = True,
@@ -35,13 +36,13 @@ class ZepStreamWrapper:
 
         Args:
             stream: The original OpenAI stream iterator
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             zep_client: Zep client instance
             extract_content_func: Function to extract content from stream chunks
             skip_zep_on_error: Whether to skip/log errors or raise them
         """
         self.stream = stream
-        self.session_id = session_id
+        self.thread_id = thread_id
         self.zep_client = zep_client
         self.extract_content_func = extract_content_func
         self.skip_zep_on_error = skip_zep_on_error
@@ -82,7 +83,7 @@ class ZepStreamWrapper:
             # Use the custom extraction function if provided
             if self.extract_content_func is not None:
                 return self.extract_content_func(chunk)
-                
+
             # Default extraction logic
             # For Chat Completions streaming
             if hasattr(chunk, "choices") and chunk.choices:
@@ -108,21 +109,25 @@ class ZepStreamWrapper:
         full_content = self._content_buffer.getvalue()
 
         if full_content.strip():
+            # Check if this streamed assistant response is a duplicate
+            cache = get_message_cache()
+            from datetime import datetime
+            response_created_at = datetime.utcnow()  # Streamed response being created now
+            
+            if not cache.is_message_seen(self.thread_id, "assistant", full_content, response_created_at):
 
-            def add_to_zep():
-                zep_message = Message(
-                    role="assistant", role_type="assistant", content=full_content
-                )
-                self.zep_client.memory.add(self.session_id, messages=[zep_message])
-                logger.debug(
-                    f"Added streamed assistant response to Zep session {self.session_id}"
-                )
+                def add_to_zep():
+                    zep_message = Message(role="assistant", role_type="assistant", content=full_content)
+                    self.zep_client.thread.add_messages(self.thread_id, messages=[zep_message])
+                    logger.debug(f"Added streamed assistant response to Zep thread {self.thread_id}")
 
-            safe_zep_operation(
-                add_to_zep,
-                self.skip_zep_on_error,
-                "Add streamed assistant response to Zep",
-            )
+                safe_zep_operation(
+                    add_to_zep,
+                    self.skip_zep_on_error,
+                    "Add streamed assistant response to Zep thread",
+                )
+            else:
+                logger.debug(f"Skipped duplicate streamed assistant response for thread {self.thread_id}")
 
     def __enter__(self):
         """Support for context manager protocol."""
@@ -145,7 +150,7 @@ class AsyncZepStreamWrapper:
     def __init__(
         self,
         stream: AsyncIterator[Any],
-        session_id: str,
+        thread_id: str,
         zep_client: AsyncZep,
         extract_content_func: Callable[[Any], Optional[str]],
         skip_zep_on_error: bool = True,
@@ -155,13 +160,13 @@ class AsyncZepStreamWrapper:
 
         Args:
             stream: The original OpenAI async stream iterator
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             zep_client: Async Zep client instance
             extract_content_func: Function to extract content from stream chunks
             skip_zep_on_error: Whether to skip/log errors or raise them
         """
         self.stream = stream
-        self.session_id = session_id
+        self.thread_id = thread_id
         self.zep_client = zep_client
         self.extract_content_func = extract_content_func
         self.skip_zep_on_error = skip_zep_on_error
@@ -202,7 +207,7 @@ class AsyncZepStreamWrapper:
             # Use the custom extraction function if provided
             if self.extract_content_func is not None:
                 return self.extract_content_func(chunk)
-                
+
             # Default extraction logic
             # For Chat Completions streaming
             if hasattr(chunk, "choices") and chunk.choices:
@@ -228,23 +233,25 @@ class AsyncZepStreamWrapper:
         full_content = self._content_buffer.getvalue()
 
         if full_content.strip():
+            # Check if this streamed assistant response is a duplicate
+            cache = get_message_cache()
+            from datetime import datetime
+            response_created_at = datetime.utcnow()  # Streamed response being created now
+            
+            if not cache.is_message_seen(self.thread_id, "assistant", full_content, response_created_at):
 
-            async def add_to_zep():
-                zep_message = Message(
-                    role="assistant", role_type="assistant", content=full_content
-                )
-                await self.zep_client.memory.add(
-                    self.session_id, messages=[zep_message]
-                )
-                logger.debug(
-                    f"Added streamed assistant response to Zep session {self.session_id}"
-                )
+                async def add_to_zep():
+                    zep_message = Message(role="assistant", role_type="assistant", content=full_content)
+                    await self.zep_client.thread.add_messages(self.thread_id, messages=[zep_message])
+                    logger.debug(f"Added streamed assistant response to Zep thread {self.thread_id}")
 
-            await self._asafe_zep_operation(
-                add_to_zep,
-                self.skip_zep_on_error,
-                "Add streamed assistant response to Zep",
-            )
+                await self._asafe_zep_operation(
+                    add_to_zep,
+                    self.skip_zep_on_error,
+                    "Add streamed assistant response to Zep thread",
+                )
+            else:
+                logger.debug(f"Skipped duplicate streamed assistant response for thread {self.thread_id}")
 
     async def _asafe_zep_operation(
         self,

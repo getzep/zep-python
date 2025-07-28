@@ -17,7 +17,7 @@ class ZepOpenAIError(Exception):
 
 
 # Zep-specific parameters that should be filtered out before OpenAI calls
-ZEP_PARAMS = {"session_id", "context_placeholder", "skip_zep_on_error"}
+ZEP_PARAMS = {"thread_id", "context_placeholder", "skip_zep_on_error"}
 
 
 def extract_zep_params(kwargs: Dict[str, Any]) -> Dict[str, Any]:
@@ -46,9 +46,7 @@ def remove_zep_params(kwargs: Dict[str, Any]) -> Dict[str, Any]:
     return {k: v for k, v in kwargs.items() if k not in ZEP_PARAMS}
 
 
-def has_context_placeholder(
-    messages: List[Dict[str, Any]], placeholder: str = "{context}"
-) -> bool:
+def has_context_placeholder(messages: List[Dict[str, Any]], placeholder: str = "{context}") -> bool:
     """
     Check if any message contains the context placeholder.
 
@@ -61,37 +59,37 @@ def has_context_placeholder(
     """
     if not placeholder:  # Empty placeholder doesn't make sense
         return False
-    
+
     # Optimization: Context placeholders are typically in system messages or early messages
     # Search system messages first, then limit search to first few messages for performance
     system_messages = []
     other_messages = []
-    
+
     for message in messages:
         if message.get("role") == "system":
             system_messages.append(message)
         else:
             other_messages.append(message)
-    
+
     # Check system messages first (most likely to contain placeholders)
     for message in system_messages:
         content = message.get("content", "")
         if isinstance(content, str) and placeholder in content:
             return True
-    
+
     # Check first 3 non-system messages (context placeholders are usually early in conversation)
     for message in other_messages[:3]:
         content = message.get("content", "")
         if isinstance(content, str) and placeholder in content:
             return True
-    
+
     # If we have more than 3 non-system messages, check the rest (for completeness)
     if len(other_messages) > 3:
         for message in other_messages[3:]:
             content = message.get("content", "")
             if isinstance(content, str) and placeholder in content:
                 return True
-    
+
     return False
 
 
@@ -148,9 +146,7 @@ def extract_conversation_messages(messages: List[Dict[str, Any]], user_only: boo
         if user_only:
             # Only process user messages to avoid duplicating assistant messages
             if role == "user" and content:
-                zep_message = Message(
-                    role=role, role_type="user", content=content
-                )
+                zep_message = Message(role=role, role_type="user", content=content)
                 conversation_messages.append(zep_message)
         else:
             # Process both user and assistant messages for conversation history
@@ -159,17 +155,13 @@ def extract_conversation_messages(messages: List[Dict[str, Any]], user_only: boo
                 zep_role = role
                 zep_role_type = "user" if role == "user" else "assistant"
 
-                zep_message = Message(
-                    role=zep_role, role_type=zep_role_type, content=content
-                )
+                zep_message = Message(role=zep_role, role_type=zep_role_type, content=content)
                 conversation_messages.append(zep_message)
 
     return conversation_messages
 
 
-def safe_zep_operation(
-    operation_func, skip_on_error: bool = True, operation_name: str = "Zep operation"
-) -> Any:
+def safe_zep_operation(operation_func, skip_on_error: bool = True, operation_name: str = "Zep operation") -> Any:
     """
     Safely execute a Zep operation with error handling.
 
@@ -194,9 +186,7 @@ def safe_zep_operation(
             raise ZepOpenAIError(f"{operation_name} failed: {e}") from e
 
 
-def normalize_messages_for_zep(
-    messages: List[Dict[str, Any]], api_type: str = "chat"
-) -> List[Message]:
+def normalize_messages_for_zep(messages: List[Dict[str, Any]], api_type: str = "chat") -> List[Message]:
     """
     Normalize different API message formats to Zep format.
 

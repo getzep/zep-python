@@ -5,9 +5,7 @@ Base wrapper class with unified Zep integration logic.
 import logging
 from typing import Any, Dict, List, Optional
 
-from zep_cloud.client import AsyncZep, Zep
-from zep_cloud.types import Message
-
+from .message_cache import get_message_cache
 from .openai_utils import (
     extract_conversation_messages,
     extract_zep_params,
@@ -16,6 +14,9 @@ from .openai_utils import (
     remove_zep_params,
     safe_zep_operation,
 )
+
+from zep_cloud.client import AsyncZep, Zep
+from zep_cloud.types import Message
 
 logger = logging.getLogger(__name__)
 
@@ -37,15 +38,13 @@ class BaseZepWrapper:
         """
         self.zep_client = zep_client
 
-    def _unified_create(
-        self, messages: List[Dict[str, Any]], session_id: Optional[str] = None, **kwargs
-    ) -> Any:
+    def _unified_create(self, messages: List[Dict[str, Any]], thread_id: Optional[str] = None, **kwargs) -> Any:
         """
         Unified logic for both Chat Completions and Responses APIs.
 
         Args:
             messages: List of messages in the conversation
-            session_id: Optional session ID to enable Zep integration
+            thread_id: Optional thread ID to enable Zep integration
             **kwargs: Additional arguments including Zep and OpenAI parameters
 
         Returns:
@@ -57,21 +56,17 @@ class BaseZepWrapper:
 
         # Handle streaming
         stream = openai_params.get("stream", False)
-        if session_id and stream:
-            return self._create_stream_with_zep(
-                messages, session_id, zep_params, openai_params
-            )
-        elif session_id:
-            return self._create_with_zep(
-                messages, session_id, zep_params, openai_params
-            )
+        if thread_id and stream:
+            return self._create_stream_with_zep(messages, thread_id, zep_params, openai_params)
+        elif thread_id:
+            return self._create_with_zep(messages, thread_id, zep_params, openai_params)
         else:
             return self._create_openai_direct(messages, openai_params)
 
     def _create_with_zep(
         self,
         messages: List[Dict[str, Any]],
-        session_id: str,
+        thread_id: str,
         zep_params: Dict[str, Any],
         openai_params: Dict[str, Any],
     ) -> Any:
@@ -80,7 +75,7 @@ class BaseZepWrapper:
 
         Args:
             messages: List of messages in the conversation
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             zep_params: Zep-specific parameters
             openai_params: Parameters for OpenAI API
 
@@ -90,14 +85,15 @@ class BaseZepWrapper:
         context_placeholder = zep_params.get("context_placeholder", "{context}")
         skip_zep_on_error = zep_params.get("skip_zep_on_error", True)
 
+        # Ensure thread exists before operations
+        self._ensure_thread_exists(thread_id, skip_zep_on_error)
+
         # Check if context injection is needed
         needs_context = has_context_placeholder(messages, context_placeholder)
 
         if needs_context:
             # Add new messages to Zep and get context in one optimized call
-            context = self._get_context_with_optimization(
-                session_id, messages, skip_zep_on_error
-            )
+            context = self._get_context_with_optimization(thread_id, messages, skip_zep_on_error)
 
             if context is not None:
                 messages = inject_context(messages, context, context_placeholder)
@@ -107,13 +103,13 @@ class BaseZepWrapper:
 
         # Add assistant response to Zep
         if needs_context:
-            self._add_assistant_response_to_zep(session_id, response, skip_zep_on_error)
+            self._add_assistant_response_to_zep(thread_id, response, skip_zep_on_error)
 
         return response
 
     def _get_context_with_optimization(
         self,
-        session_id: str,
+        thread_id: str,
         messages: List[Dict[str, Any]],
         skip_zep_on_error: bool = True,
     ) -> Optional[str]:
@@ -121,7 +117,7 @@ class BaseZepWrapper:
         Get context from Zep with optimization using return_context=True.
 
         Args:
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             messages: List of messages in the conversation
             skip_zep_on_error: Whether to skip/log errors or raise them
 
@@ -131,38 +127,54 @@ class BaseZepWrapper:
         conversation_messages = extract_conversation_messages(messages, user_only=True)
 
         if conversation_messages:
-            # Optimized: Add messages AND get context in one call
-            def add_with_context():
-                memory_response = self.zep_client.memory.add(
-                    session_id=session_id,
-                    messages=conversation_messages,
-                    return_context=True,
-                )
-                return memory_response.context
+            # Filter out duplicate messages using cache
+            cache = get_message_cache()
+            filtered_messages = []
 
-            return safe_zep_operation(
-                add_with_context,
-                skip_zep_on_error,
-                "Add messages and get context from Zep",
-            )
+            for msg in conversation_messages:
+                # Parse the message creation timestamp
+                from datetime import datetime
+                created_at = datetime.fromisoformat(msg.created_at) if msg.created_at else datetime.utcnow()
+                
+                if not cache.is_message_seen(thread_id, msg.role, msg.content, created_at):
+                    filtered_messages.append(msg)
+
+            if filtered_messages:
+                # Optimized: Add new messages AND get context in one call
+                def add_with_context():
+                    response = self.zep_client.thread.add_messages(
+                        thread_id=thread_id,
+                        messages=filtered_messages,
+                        return_context=True,
+                    )
+                    return response.context
+
+                return safe_zep_operation(
+                    add_with_context,
+                    skip_zep_on_error,
+                    "Add messages and get context from Zep thread",
+                )
+            else:
+                # All messages were duplicates, just get context
+                def get_context():
+                    response = self.zep_client.thread.get_user_context(thread_id)
+                    return response.context
+
+                return safe_zep_operation(get_context, skip_zep_on_error, "Get context from Zep thread")
         else:
             # Fallback: Only get context if no new messages
             def get_context():
-                memory = self.zep_client.memory.get(session_id)
-                return memory.context
+                response = self.zep_client.thread.get_user_context(thread_id)
+                return response.context
 
-            return safe_zep_operation(
-                get_context, skip_zep_on_error, "Get context from Zep"
-            )
+            return safe_zep_operation(get_context, skip_zep_on_error, "Get context from Zep thread")
 
-    def _add_assistant_response_to_zep(
-        self, session_id: str, response: Any, skip_zep_on_error: bool = True
-    ) -> None:
+    def _add_assistant_response_to_zep(self, thread_id: str, response: Any, skip_zep_on_error: bool = True) -> None:
         """
-        Add assistant response to Zep memory.
+        Add assistant response to Zep thread.
 
         Args:
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             response: OpenAI API response
             skip_zep_on_error: Whether to skip/log errors or raise them
         """
@@ -170,20 +182,24 @@ class BaseZepWrapper:
         def add_assistant_response():
             assistant_content = self._extract_assistant_content(response)
             if assistant_content:
-                zep_message = Message(
-                    role="assistant", role_type="assistant", content=assistant_content
-                )
-                self.zep_client.memory.add(session_id, messages=[zep_message])
-                logger.debug(f"Added assistant response to Zep session {session_id}")
+                # Check if this assistant response is a duplicate
+                cache = get_message_cache()
+                from datetime import datetime
+                response_created_at = datetime.utcnow()  # New response being created now
+                
+                if not cache.is_message_seen(thread_id, "assistant", assistant_content, response_created_at):
+                    zep_message = Message(role="assistant", role_type="assistant", content=assistant_content)
+                    self.zep_client.thread.add_messages(thread_id, messages=[zep_message])
+                    logger.debug(f"Added assistant response to Zep thread {thread_id}")
+                else:
+                    logger.debug(f"Skipped duplicate assistant response for thread {thread_id}")
 
-        safe_zep_operation(
-            add_assistant_response, skip_zep_on_error, "Add assistant response to Zep"
-        )
+        safe_zep_operation(add_assistant_response, skip_zep_on_error, "Add assistant response to Zep thread")
 
     def _create_stream_with_zep(
         self,
         messages: List[Dict[str, Any]],
-        session_id: str,
+        thread_id: str,
         zep_params: Dict[str, Any],
         openai_params: Dict[str, Any],
     ) -> Any:
@@ -192,7 +208,7 @@ class BaseZepWrapper:
 
         Args:
             messages: List of messages in the conversation
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             zep_params: Zep-specific parameters
             openai_params: Parameters for OpenAI API
 
@@ -203,9 +219,7 @@ class BaseZepWrapper:
         skip_zep_on_error = zep_params.get("skip_zep_on_error", True)
 
         # Pre-process for context injection
-        processed_messages = self._preprocess_for_zep(
-            messages, session_id, context_placeholder, skip_zep_on_error
-        )
+        processed_messages = self._preprocess_for_zep(messages, thread_id, context_placeholder, skip_zep_on_error)
 
         # Create streaming response
         stream = self._create_openai_direct(processed_messages, openai_params)
@@ -215,7 +229,7 @@ class BaseZepWrapper:
 
         return ZepStreamWrapper(
             stream=stream,
-            session_id=session_id,
+            thread_id=thread_id,
             zep_client=self.zep_client,
             extract_content_func=self._extract_assistant_content,
             skip_zep_on_error=skip_zep_on_error,
@@ -224,7 +238,7 @@ class BaseZepWrapper:
     def _preprocess_for_zep(
         self,
         messages: List[Dict[str, Any]],
-        session_id: str,
+        thread_id: str,
         context_placeholder: str = "{context}",
         skip_zep_on_error: bool = True,
     ) -> List[Dict[str, Any]]:
@@ -233,26 +247,53 @@ class BaseZepWrapper:
 
         Args:
             messages: List of messages in the conversation
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             context_placeholder: Placeholder string for context injection
             skip_zep_on_error: Whether to skip/log errors or raise them
 
         Returns:
             Processed messages with context injected
         """
+        # Ensure thread exists before operations
+        self._ensure_thread_exists(thread_id, skip_zep_on_error)
+
         # Check if context injection is needed
         needs_context = has_context_placeholder(messages, context_placeholder)
 
         if needs_context:
             # Add new messages to Zep and get context in one optimized call
-            context = self._get_context_with_optimization(
-                session_id, messages, skip_zep_on_error
-            )
+            context = self._get_context_with_optimization(thread_id, messages, skip_zep_on_error)
 
             if context is not None:
                 messages = inject_context(messages, context, context_placeholder)
 
         return messages
+
+    def _ensure_thread_exists(self, thread_id: str, skip_on_error: bool = True) -> None:
+        """
+        Ensure thread exists, create if it doesn't.
+
+        Args:
+            thread_id: Thread ID to check/create
+            skip_on_error: Whether to skip/log errors or raise them
+        """
+
+        def ensure_thread():
+            try:
+                # Try a lightweight operation to check if thread exists
+                self.zep_client.thread.get_user_context(thread_id)
+            except Exception as e:
+                # Check if it's a "not found" type error
+                error_str = str(e).lower()
+                if "not found" in error_str or "404" in error_str:
+                    # Thread doesn't exist, create it (use thread_id as user_id)
+                    self.zep_client.thread.create(thread_id=thread_id, user_id=thread_id)
+                    logger.debug(f"Created thread {thread_id}")
+                else:
+                    # Some other error, re-raise
+                    raise
+
+        safe_zep_operation(ensure_thread, skip_on_error, f"Ensure thread {thread_id} exists")
 
     def _create_openai_direct(self, messages: List[Dict], openai_params: Dict) -> Any:
         """
@@ -279,9 +320,7 @@ class BaseZepWrapper:
         Returns:
             Assistant content string or None
         """
-        raise NotImplementedError(
-            "Subclasses must implement _extract_assistant_content"
-        )
+        raise NotImplementedError("Subclasses must implement _extract_assistant_content")
 
 
 class AsyncBaseZepWrapper:
@@ -298,15 +337,13 @@ class AsyncBaseZepWrapper:
         """
         self.zep_client = zep_client
 
-    async def _aunified_create(
-        self, messages: List[Dict[str, Any]], session_id: Optional[str] = None, **kwargs
-    ) -> Any:
+    async def _aunified_create(self, messages: List[Dict[str, Any]], thread_id: Optional[str] = None, **kwargs) -> Any:
         """
         Async version of unified create logic.
 
         Args:
             messages: List of messages in the conversation
-            session_id: Optional session ID to enable Zep integration
+            thread_id: Optional thread ID to enable Zep integration
             **kwargs: Additional arguments including Zep and OpenAI parameters
 
         Returns:
@@ -318,21 +355,17 @@ class AsyncBaseZepWrapper:
 
         # Handle streaming
         stream = openai_params.get("stream", False)
-        if session_id and stream:
-            return await self._acreate_stream_with_zep(
-                messages, session_id, zep_params, openai_params
-            )
-        elif session_id:
-            return await self._acreate_with_zep(
-                messages, session_id, zep_params, openai_params
-            )
+        if thread_id and stream:
+            return await self._acreate_stream_with_zep(messages, thread_id, zep_params, openai_params)
+        elif thread_id:
+            return await self._acreate_with_zep(messages, thread_id, zep_params, openai_params)
         else:
             return await self._acreate_openai_direct(messages, openai_params)
 
     async def _acreate_with_zep(
         self,
         messages: List[Dict[str, Any]],
-        session_id: str,
+        thread_id: str,
         zep_params: Dict[str, Any],
         openai_params: Dict[str, Any],
     ) -> Any:
@@ -341,7 +374,7 @@ class AsyncBaseZepWrapper:
 
         Args:
             messages: List of messages in the conversation
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             zep_params: Zep-specific parameters
             openai_params: Parameters for OpenAI API
 
@@ -351,14 +384,15 @@ class AsyncBaseZepWrapper:
         context_placeholder = zep_params.get("context_placeholder", "{context}")
         skip_zep_on_error = zep_params.get("skip_zep_on_error", True)
 
+        # Ensure thread exists before operations
+        await self._aensure_thread_exists(thread_id, skip_zep_on_error)
+
         # Check if context injection is needed
         needs_context = has_context_placeholder(messages, context_placeholder)
 
         if needs_context:
             # Add new messages to Zep and get context in one optimized call
-            context = await self._aget_context_with_optimization(
-                session_id, messages, skip_zep_on_error
-            )
+            context = await self._aget_context_with_optimization(thread_id, messages, skip_zep_on_error)
 
             if context is not None:
                 messages = inject_context(messages, context, context_placeholder)
@@ -368,15 +402,13 @@ class AsyncBaseZepWrapper:
 
         # Add assistant response to Zep
         if needs_context:
-            await self._aadd_assistant_response_to_zep(
-                session_id, response, skip_zep_on_error
-            )
+            await self._aadd_assistant_response_to_zep(thread_id, response, skip_zep_on_error)
 
         return response
 
     async def _aget_context_with_optimization(
         self,
-        session_id: str,
+        thread_id: str,
         messages: List[Dict[str, Any]],
         skip_zep_on_error: bool = True,
     ) -> Optional[str]:
@@ -384,7 +416,7 @@ class AsyncBaseZepWrapper:
         Async version of get context with optimization.
 
         Args:
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             messages: List of messages in the conversation
             skip_zep_on_error: Whether to skip/log errors or raise them
 
@@ -394,38 +426,56 @@ class AsyncBaseZepWrapper:
         conversation_messages = extract_conversation_messages(messages, user_only=True)
 
         if conversation_messages:
-            # Optimized: Add messages AND get context in one call
-            async def add_with_context():
-                memory_response = await self.zep_client.memory.add(
-                    session_id=session_id,
-                    messages=conversation_messages,
-                    return_context=True,
-                )
-                return memory_response.context
+            # Filter out duplicate messages using cache
+            cache = get_message_cache()
+            filtered_messages = []
 
-            return await self._asafe_zep_operation(
-                add_with_context,
-                skip_zep_on_error,
-                "Add messages and get context from Zep",
-            )
+            for msg in conversation_messages:
+                # Parse the message creation timestamp
+                from datetime import datetime
+                created_at = datetime.fromisoformat(msg.created_at) if msg.created_at else datetime.utcnow()
+                
+                if not cache.is_message_seen(thread_id, msg.role, msg.content, created_at):
+                    filtered_messages.append(msg)
+
+            if filtered_messages:
+                # Optimized: Add new messages AND get context in one call
+                async def add_with_context():
+                    response = await self.zep_client.thread.add_messages(
+                        thread_id=thread_id,
+                        messages=filtered_messages,
+                        return_context=True,
+                    )
+                    return response.context
+
+                return await self._asafe_zep_operation(
+                    add_with_context,
+                    skip_zep_on_error,
+                    "Add messages and get context from Zep thread",
+                )
+            else:
+                # All messages were duplicates, just get context
+                async def get_context():
+                    response = await self.zep_client.thread.get_user_context(thread_id)
+                    return response.context
+
+                return await self._asafe_zep_operation(get_context, skip_zep_on_error, "Get context from Zep thread")
         else:
             # Fallback: Only get context if no new messages
             async def get_context():
-                memory = await self.zep_client.memory.get(session_id)
-                return memory.context
+                response = await self.zep_client.thread.get_user_context(thread_id)
+                return response.context
 
-            return await self._asafe_zep_operation(
-                get_context, skip_zep_on_error, "Get context from Zep"
-            )
+            return await self._asafe_zep_operation(get_context, skip_zep_on_error, "Get context from Zep thread")
 
     async def _aadd_assistant_response_to_zep(
-        self, session_id: str, response: Any, skip_zep_on_error: bool = True
+        self, thread_id: str, response: Any, skip_zep_on_error: bool = True
     ) -> None:
         """
         Async version of add assistant response to Zep.
 
         Args:
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             response: OpenAI API response
             skip_zep_on_error: Whether to skip/log errors or raise them
         """
@@ -433,20 +483,26 @@ class AsyncBaseZepWrapper:
         async def add_assistant_response():
             assistant_content = self._extract_assistant_content(response)
             if assistant_content:
-                zep_message = Message(
-                    role="assistant", role_type="assistant", content=assistant_content
-                )
-                await self.zep_client.memory.add(session_id, messages=[zep_message])
-                logger.debug(f"Added assistant response to Zep session {session_id}")
+                # Check if this assistant response is a duplicate
+                cache = get_message_cache()
+                from datetime import datetime
+                response_created_at = datetime.utcnow()  # New response being created now
+                
+                if not cache.is_message_seen(thread_id, "assistant", assistant_content, response_created_at):
+                    zep_message = Message(role="assistant", role_type="assistant", content=assistant_content)
+                    await self.zep_client.thread.add_messages(thread_id, messages=[zep_message])
+                    logger.debug(f"Added assistant response to Zep thread {thread_id}")
+                else:
+                    logger.debug(f"Skipped duplicate assistant response for thread {thread_id}")
 
         await self._asafe_zep_operation(
-            add_assistant_response, skip_zep_on_error, "Add assistant response to Zep"
+            add_assistant_response, skip_zep_on_error, "Add assistant response to Zep thread"
         )
 
     async def _acreate_stream_with_zep(
         self,
         messages: List[Dict[str, Any]],
-        session_id: str,
+        thread_id: str,
         zep_params: Dict[str, Any],
         openai_params: Dict[str, Any],
     ) -> Any:
@@ -455,7 +511,7 @@ class AsyncBaseZepWrapper:
 
         Args:
             messages: List of messages in the conversation
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             zep_params: Zep-specific parameters
             openai_params: Parameters for OpenAI API
 
@@ -467,7 +523,7 @@ class AsyncBaseZepWrapper:
 
         # Pre-process for context injection
         processed_messages = await self._apreprocess_for_zep(
-            messages, session_id, context_placeholder, skip_zep_on_error
+            messages, thread_id, context_placeholder, skip_zep_on_error
         )
 
         # Create streaming response
@@ -478,7 +534,7 @@ class AsyncBaseZepWrapper:
 
         return AsyncZepStreamWrapper(
             stream=stream,
-            session_id=session_id,
+            thread_id=thread_id,
             zep_client=self.zep_client,
             extract_content_func=self._extract_assistant_content,
             skip_zep_on_error=skip_zep_on_error,
@@ -487,7 +543,7 @@ class AsyncBaseZepWrapper:
     async def _apreprocess_for_zep(
         self,
         messages: List[Dict[str, Any]],
-        session_id: str,
+        thread_id: str,
         context_placeholder: str = "{context}",
         skip_zep_on_error: bool = True,
     ) -> List[Dict[str, Any]]:
@@ -496,30 +552,55 @@ class AsyncBaseZepWrapper:
 
         Args:
             messages: List of messages in the conversation
-            session_id: Session ID for Zep memory
+            thread_id: Thread ID for Zep thread
             context_placeholder: Placeholder string for context injection
             skip_zep_on_error: Whether to skip/log errors or raise them
 
         Returns:
             Processed messages with context injected
         """
+        # Ensure thread exists before operations
+        await self._aensure_thread_exists(thread_id, skip_zep_on_error)
+
         # Check if context injection is needed
         needs_context = has_context_placeholder(messages, context_placeholder)
 
         if needs_context:
             # Add new messages to Zep and get context in one optimized call
-            context = await self._aget_context_with_optimization(
-                session_id, messages, skip_zep_on_error
-            )
+            context = await self._aget_context_with_optimization(thread_id, messages, skip_zep_on_error)
 
             if context is not None:
                 messages = inject_context(messages, context, context_placeholder)
 
         return messages
 
-    async def _acreate_openai_direct(
-        self, messages: List[Dict], openai_params: Dict
-    ) -> Any:
+    async def _aensure_thread_exists(self, thread_id: str, skip_on_error: bool = True) -> None:
+        """
+        Async version of ensure thread exists, create if it doesn't.
+
+        Args:
+            thread_id: Thread ID to check/create
+            skip_on_error: Whether to skip/log errors or raise them
+        """
+
+        async def ensure_thread():
+            try:
+                # Try a lightweight operation to check if thread exists
+                await self.zep_client.thread.get_user_context(thread_id)
+            except Exception as e:
+                # Check if it's a "not found" type error
+                error_str = str(e).lower()
+                if "not found" in error_str or "404" in error_str:
+                    # Thread doesn't exist, create it (use thread_id as user_id)
+                    await self.zep_client.thread.create(thread_id=thread_id, user_id=thread_id)
+                    logger.debug(f"Created thread {thread_id}")
+                else:
+                    # Some other error, re-raise
+                    raise
+
+        await self._asafe_zep_operation(ensure_thread, skip_on_error, f"Ensure thread {thread_id} exists")
+
+    async def _acreate_openai_direct(self, messages: List[Dict], openai_params: Dict) -> Any:
         """
         Async version of create OpenAI direct.
         Must be implemented by subclasses.
@@ -544,9 +625,7 @@ class AsyncBaseZepWrapper:
         Returns:
             Assistant content string or None
         """
-        raise NotImplementedError(
-            "Subclasses must implement _extract_assistant_content"
-        )
+        raise NotImplementedError("Subclasses must implement _extract_assistant_content")
 
     async def _asafe_zep_operation(
         self,

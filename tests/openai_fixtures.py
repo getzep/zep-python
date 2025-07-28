@@ -3,17 +3,16 @@ Test fixtures for OpenAI wrapper tests.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import List
 from unittest.mock import MagicMock
 
 import pytest
-
-from zep_cloud.types import AddMemoryResponse, Memory, Message, Summary
+from zep_cloud.types import AddMemoryResponse, Message, Summary
 
 
 class MockOpenAIChoice:
     """Mock OpenAI chat completion choice."""
-    
+
     def __init__(self, content: str, role: str = "assistant"):
         self.message = MagicMock()
         self.message.content = content
@@ -24,7 +23,7 @@ class MockOpenAIChoice:
 
 class MockOpenAIDelta:
     """Mock OpenAI streaming delta."""
-    
+
     def __init__(self, content: str = None):
         self.content = content
         self.role = None
@@ -32,7 +31,7 @@ class MockOpenAIDelta:
 
 class MockOpenAIStreamChunk:
     """Mock OpenAI streaming chunk."""
-    
+
     def __init__(self, content: str = None):
         self.choices = [MagicMock()]
         self.choices[0].delta = MockOpenAIDelta(content)
@@ -42,7 +41,7 @@ class MockOpenAIStreamChunk:
 
 class MockOpenAIResponse:
     """Mock OpenAI chat completion response."""
-    
+
     def __init__(self, content: str = "Test response"):
         self.choices = [MockOpenAIChoice(content)]
         self.id = "chatcmpl-test123"
@@ -55,7 +54,7 @@ class MockOpenAIResponse:
 
 class MockOpenAIResponsesAPI:
     """Mock OpenAI Responses API response."""
-    
+
     def __init__(self, content: str = "Test response"):
         self.id = "resp_test123"
         self.model = "gpt-4.1-mini"
@@ -69,39 +68,28 @@ class MockOpenAIResponsesAPI:
 
 class MockZepMemory:
     """Mock Zep memory response."""
-    
+
     def __init__(self, context: str = "Test context"):
         self.context = context
         self.messages = [
+            Message(role="user", role_type="user", content="Hello", created_at=datetime.now().isoformat()),
             Message(
-                role="user",
-                role_type="user", 
-                content="Hello",
-                created_at=datetime.now().isoformat()
+                role="assistant", role_type="assistant", content="Hi there!", created_at=datetime.now().isoformat()
             ),
-            Message(
-                role="assistant",
-                role_type="assistant",
-                content="Hi there!",
-                created_at=datetime.now().isoformat()
-            )
         ]
-        self.summary = Summary(
-            content="Test summary",
-            created_at=datetime.now().isoformat()
-        )
+        self.summary = Summary(content="Test summary", created_at=datetime.now().isoformat())
 
 
 class MockStream:
     """Mock streaming iterator."""
-    
+
     def __init__(self, chunks: List[str]):
         self.chunks = chunks
         self._index = 0
-    
+
     def __iter__(self):
         return self
-    
+
     def __next__(self):
         if self._index >= len(self.chunks):
             raise StopIteration
@@ -112,14 +100,14 @@ class MockStream:
 
 class MockAsyncStream:
     """Mock async streaming iterator."""
-    
+
     def __init__(self, chunks: List[str]):
         self.chunks = chunks
         self._index = 0
-    
+
     def __aiter__(self):
         return self
-    
+
     async def __anext__(self):
         if self._index >= len(self.chunks):
             raise StopAsyncIteration
@@ -163,17 +151,14 @@ def sample_messages():
     """Sample message list for testing."""
     return [
         {"role": "system", "content": "You are helpful. Context: {context}"},
-        {"role": "user", "content": "What's my name?"}
+        {"role": "user", "content": "What's my name?"},
     ]
 
 
 @pytest.fixture
 def sample_messages_no_context():
     """Sample message list without context placeholder."""
-    return [
-        {"role": "system", "content": "You are helpful."},
-        {"role": "user", "content": "Hello!"}
-    ]
+    return [{"role": "system", "content": "You are helpful."}, {"role": "user", "content": "Hello!"}]
 
 
 @pytest.fixture
@@ -181,23 +166,28 @@ def conversation_messages():
     """Sample conversation messages for Zep."""
     return [
         Message(role="user", role_type="user", content="My name is Alice", created_at=datetime.now().isoformat()),
-        Message(role="assistant", role_type="assistant", content="Nice to meet you, Alice!", created_at=datetime.now().isoformat())
+        Message(
+            role="assistant",
+            role_type="assistant",
+            content="Nice to meet you, Alice!",
+            created_at=datetime.now().isoformat(),
+        ),
     ]
 
 
 def create_mock_openai_client():
     """Create a mock OpenAI client."""
     client = MagicMock()
-    
+
     # Mock chat completions
     client.chat.completions.create.return_value = MockOpenAIResponse()
-    
+
     # Mock responses API
     client.responses.create.return_value = MockOpenAIResponsesAPI()
     client.responses.retrieve.return_value = MockOpenAIResponsesAPI()
     client.responses.delete.return_value = {"deleted": True}
     client.responses.cancel.return_value = {"cancelled": True}
-    
+
     return client
 
 
@@ -211,29 +201,34 @@ def mock_openai_client():
 def mock_async_openai_client():
     """Mock async OpenAI client."""
     client = MagicMock()
-    
+
     # Mock async chat completions
     async def mock_create(*args, **kwargs):
         return MockOpenAIResponse()
+
     client.chat.completions.create = mock_create
-    
+
     # Mock async responses API
     async def mock_responses_create(*args, **kwargs):
         return MockOpenAIResponsesAPI()
+
     client.responses.create = mock_responses_create
-    
+
     async def mock_retrieve(*args, **kwargs):
         return MockOpenAIResponsesAPI()
+
     client.responses.retrieve = mock_retrieve
-    
+
     async def mock_delete(*args, **kwargs):
         return {"deleted": True}
+
     client.responses.delete = mock_delete
-    
+
     async def mock_cancel(*args, **kwargs):
         return {"cancelled": True}
+
     client.responses.cancel = mock_cancel
-    
+
     return client
 
 
@@ -241,11 +236,11 @@ def mock_async_openai_client():
 def mock_zep_client():
     """Mock Zep client."""
     client = MagicMock()
-    
+
     # Mock memory operations
     client.memory.get.return_value = MockZepMemory()
     client.memory.add.return_value = AddMemoryResponse(context="Test context")
-    
+
     return client
 
 
@@ -253,16 +248,18 @@ def mock_zep_client():
 def mock_async_zep_client():
     """Mock async Zep client."""
     client = MagicMock()
-    
+
     # Mock async memory operations
     async def mock_get(*args, **kwargs):
         return MockZepMemory()
+
     client.memory.get = mock_get
-    
+
     async def mock_add(*args, **kwargs):
         return AddMemoryResponse(context="Test context")
+
     client.memory.add = mock_add
-    
+
     return client
 
 
@@ -272,5 +269,5 @@ def error_responses():
     return {
         "openai_error": Exception("OpenAI API error"),
         "zep_error": Exception("Zep API error"),
-        "network_error": ConnectionError("Network connection failed")
+        "network_error": ConnectionError("Network connection failed"),
     }

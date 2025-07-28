@@ -14,18 +14,16 @@ try:
 except ImportError:
     HAS_OPENAI = False
 
-from zep_cloud.client import Zep
-
 from .openai_base import BaseZepWrapper
 from .openai_streaming import ZepStreamWrapper
+
+from zep_cloud.client import Zep
 
 logger = logging.getLogger(__name__)
 
 
 if not HAS_OPENAI:
-    raise ImportError(
-        "OpenAI is required for ZepOpenAI. Install it with: pip install openai"
-    )
+    raise ImportError("OpenAI is required for ZepOpenAI. Install it with: pip install openai")
 
 
 class ChatCompletionsWrapper(BaseZepWrapper):
@@ -39,7 +37,7 @@ class ChatCompletionsWrapper(BaseZepWrapper):
         self,
         model: str,
         messages: List[Dict[str, Any]],
-        session_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
         context_placeholder: str = "{context}",
         skip_zep_on_error: bool = True,
         **kwargs,
@@ -50,7 +48,7 @@ class ChatCompletionsWrapper(BaseZepWrapper):
         Args:
             model: The model to use for completion
             messages: List of messages in the conversation
-            session_id: Optional session ID to enable Zep integration
+            thread_id: Optional thread ID to enable Zep integration
             context_placeholder: Placeholder string for context injection
             skip_zep_on_error: Whether to continue if Zep operations fail
             **kwargs: Additional arguments to pass to OpenAI API
@@ -61,7 +59,7 @@ class ChatCompletionsWrapper(BaseZepWrapper):
         result = self._unified_create(
             model=model,
             messages=messages,
-            session_id=session_id,
+            thread_id=thread_id,
             context_placeholder=context_placeholder,
             skip_zep_on_error=skip_zep_on_error,
             **kwargs,
@@ -71,35 +69,34 @@ class ChatCompletionsWrapper(BaseZepWrapper):
         # Type checking is only done when OpenAI is available and we're not using mocks
         if HAS_OPENAI and not self._is_test_environment(result):
             from zep_cloud.external_clients.openai_streaming import ZepStreamWrapper
+
             if isinstance(result, (ChatCompletion, Stream, ZepStreamWrapper)):
                 return result
             else:
                 # This should not happen for chat completions with real OpenAI
-                raise TypeError(
-                    f"Unexpected return type from unified create: {type(result)}"
-                )
+                raise TypeError(f"Unexpected return type from unified create: {type(result)}")
         else:
             # In test environments or when OpenAI is not available, return directly
             return result
-    
+
     def _is_test_environment(self, result: Any) -> bool:
         """
         Check if we're in a test environment by examining the result type.
-        
+
         Args:
             result: The result object to check
-            
+
         Returns:
             True if we're likely in a test environment
         """
         # Check if it's a mock object (common test pattern)
-        if hasattr(result, '_mock_name') or hasattr(result, '_spec_class'):
+        if hasattr(result, "_mock_name") or hasattr(result, "_spec_class"):
             return True
-        
+
         # Check if the type name suggests it's from tests
         type_name = str(type(result))
-        return 'tests.' in type_name or 'mock' in type_name.lower()
-        
+        return "tests." in type_name or "mock" in type_name.lower()
+
     # Pass through other completions methods
 
     def _create_openai_direct(
@@ -131,7 +128,7 @@ class ResponsesWrapper(BaseZepWrapper):
         self,
         model: str,
         messages: List[Dict[str, Any]],
-        session_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
         context_placeholder: str = "{context}",
         skip_zep_on_error: bool = True,
         **kwargs,
@@ -142,7 +139,7 @@ class ResponsesWrapper(BaseZepWrapper):
         Args:
             model: The model to use for the response
             messages: List of messages in the conversation
-            session_id: Optional session ID to enable Zep integration
+            thread_id: Optional thread ID to enable Zep integration
             context_placeholder: Placeholder string for context injection
             skip_zep_on_error: Whether to continue if Zep operations fail
             **kwargs: Additional arguments to pass to OpenAI API
@@ -153,25 +150,21 @@ class ResponsesWrapper(BaseZepWrapper):
         return self._unified_create(
             model=model,
             messages=messages,
-            session_id=session_id,
+            thread_id=thread_id,
             context_placeholder=context_placeholder,
             skip_zep_on_error=skip_zep_on_error,
             **kwargs,
         )
 
-    def _create_openai_direct(
-        self, messages: List[Dict], openai_params: Dict
-    ) -> Response:
+    def _create_openai_direct(self, messages: List[Dict], openai_params: Dict) -> Response:
         """Make direct OpenAI API call for responses."""
         processed_input = self._convert_to_responses_format(messages)
-        return self.openai_responses.create(
-            input=processed_input, **openai_params
-        )
+        return self.openai_responses.create(input=processed_input, **openai_params)
 
     def _extract_assistant_content(self, response: Response) -> Optional[str]:
         """
         Extract assistant content from Response.
-        
+
         Response structure:
         {
           "output": [
@@ -190,48 +183,49 @@ class ResponsesWrapper(BaseZepWrapper):
         """
         if not (hasattr(response, "output") and response.output):
             return None
-            
+
         # Find first message-type output item from assistant
         for output_item in response.output:
-            if (hasattr(output_item, "type") and 
-                output_item.type == "message" and
-                hasattr(output_item, "role") and 
-                output_item.role == "assistant"):
-                
+            if (
+                hasattr(output_item, "type")
+                and output_item.type == "message"
+                and hasattr(output_item, "role")
+                and output_item.role == "assistant"
+            ):
                 # Extract text from content array
                 if hasattr(output_item, "content") and output_item.content:
                     for content_item in output_item.content:
-                        if (hasattr(content_item, "type") and 
-                            content_item.type == "output_text" and
-                            hasattr(content_item, "text") and
-                            content_item.text):
+                        if (
+                            hasattr(content_item, "type")
+                            and content_item.type == "output_text"
+                            and hasattr(content_item, "text")
+                            and content_item.text
+                        ):
                             return content_item.text
-                            
+
         return None
 
     def _convert_to_responses_format(self, messages: List[Dict]) -> Union[str, List[Dict]]:
         """
         Convert chat messages to Responses API format.
-        
+
         The Responses API accepts either:
         - A string for simple single-turn conversations
         - An array of message objects for multi-turn conversations
-        
+
         Args:
             messages: List of message dictionaries in Chat Completions format
-            
+
         Returns:
             Either a string (for simple cases) or list of messages
         """
         if not messages:
             return []
-            
+
         # For single user message without system context, return as string
-        if (len(messages) == 1 and 
-            messages[0].get("role") == "user" and 
-            isinstance(messages[0].get("content"), str)):
+        if len(messages) == 1 and messages[0].get("role") == "user" and isinstance(messages[0].get("content"), str):
             return messages[0]["content"]
-        
+
         # For multi-turn conversations or complex content, return as message array
         # The Responses API uses the same message format as Chat Completions
         return messages
@@ -271,19 +265,17 @@ class ZepOpenAI:
     """
     ZepOpenAI client that wraps the OpenAI client with Zep memory integration.
 
-    This class provides a drop-in replacement for the OpenAI client. When session_id
+    This class provides a drop-in replacement for the OpenAI client. When thread_id
     is provided to API calls, Zep memory features are automatically enabled. Otherwise,
     it functions as a pure OpenAI passthrough.
     """
 
-    def __init__(
-        self, zep_client: Zep, openai_client: Optional[OpenAI] = None, **openai_kwargs
-    ):
+    def __init__(self, zep_client: Zep, openai_client: Optional[OpenAI] = None, **openai_kwargs):
         """
         Initialize ZepOpenAI client.
 
         Args:
-            zep_client: Zep client instance for memory operations
+            zep_client: Zep client instance for thread operations
             openai_client: Optional OpenAI client instance. If not provided,
                           will be created with openai_kwargs
             **openai_kwargs: Additional arguments to pass to OpenAI client constructor
