@@ -1,11 +1,12 @@
-from .base_client import \
-    BaseClient, AsyncBaseClient
-import typing
 import os
+import typing
+
 import httpx
+from .base_client import AsyncBaseClient, BaseClient
 from .environment import ZepEnvironment
-from .external_clients.user import UserClient, AsyncUserClient
-from .external_clients.graph import GraphClient, AsyncGraphClient
+from .external_clients.graph import AsyncGraphClient, GraphClient
+from .external_clients.user import AsyncUserClient, UserClient
+
 
 class Zep(BaseClient):
     def __init__(

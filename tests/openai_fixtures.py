@@ -3,7 +3,7 @@ Test fixtures for OpenAI wrapper tests.
 """
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from unittest.mock import MagicMock
 
 import pytest
@@ -24,7 +24,7 @@ class MockOpenAIChoice:
 class MockOpenAIDelta:
     """Mock OpenAI streaming delta."""
 
-    def __init__(self, content: str = None):
+    def __init__(self, content: Optional[str] = None):
         self.content = content
         self.role = None
 
@@ -32,7 +32,7 @@ class MockOpenAIDelta:
 class MockOpenAIStreamChunk:
     """Mock OpenAI streaming chunk."""
 
-    def __init__(self, content: str = None):
+    def __init__(self, content: Optional[str] = None):
         self.choices = [MagicMock()]
         self.choices[0].delta = MockOpenAIDelta(content)
         self.choices[0].index = 0
