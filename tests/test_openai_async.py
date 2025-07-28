@@ -10,7 +10,7 @@ import pytest
 with patch.dict(
     "sys.modules", {"openai": MagicMock(), "openai.types.chat": MagicMock(), "openai.types.responses": MagicMock()}
 ):
-    from zep_cloud.external_clients.openai_async import (
+    from zep_cloud.openai.openai_async import (
         AsyncChatCompletionsWrapper,
         AsyncChatWrapper,
         AsyncResponsesWrapper,
@@ -30,7 +30,7 @@ class TestAsyncZepOpenAIInitialization:
 
     def test_init_with_zep_client_only(self, mock_async_zep_client):
         """Test initialization with just async Zep client."""
-        with patch("zep_cloud.external_clients.openai_async.AsyncOpenAI") as mock_async_openai:
+        with patch("zep_cloud.openai.openai_async.AsyncOpenAI") as mock_async_openai:
             mock_async_openai_instance = mock_async_openai_client()
             mock_async_openai.return_value = mock_async_openai_instance
 
@@ -51,7 +51,7 @@ class TestAsyncZepOpenAIInitialization:
 
     def test_init_with_openai_kwargs(self, mock_async_zep_client):
         """Test initialization with OpenAI kwargs."""
-        with patch("zep_cloud.external_clients.openai_async.AsyncOpenAI") as mock_async_openai:
+        with patch("zep_cloud.openai.openai_async.AsyncOpenAI") as mock_async_openai:
             mock_async_openai_instance = mock_async_openai_client()
             mock_async_openai.return_value = mock_async_openai_instance
 

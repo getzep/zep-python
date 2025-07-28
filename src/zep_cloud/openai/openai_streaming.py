@@ -6,7 +6,6 @@ import io
 import logging
 from typing import Any, AsyncIterator, Callable, Iterator, Optional
 
-from .message_cache import get_message_cache
 from .openai_utils import safe_zep_operation
 
 from zep_cloud.client import AsyncZep, Zep
@@ -110,24 +109,19 @@ class ZepStreamWrapper:
 
         if full_content.strip():
             # Check if this streamed assistant response is a duplicate
-            cache = get_message_cache()
             from datetime import datetime
             response_created_at = datetime.utcnow()  # Streamed response being created now
-            
-            if not cache.is_message_seen(self.thread_id, "assistant", full_content, response_created_at):
 
-                def add_to_zep():
-                    zep_message = Message(role="assistant", role_type="assistant", content=full_content)
-                    self.zep_client.thread.add_messages(self.thread_id, messages=[zep_message])
-                    logger.debug(f"Added streamed assistant response to Zep thread {self.thread_id}")
+            def add_to_zep():
+                zep_message = Message(name="assistant", role="assistant", content=full_content)
+                self.zep_client.thread.add_messages(self.thread_id, messages=[zep_message])
+                logger.debug(f"Added streamed assistant response to Zep thread {self.thread_id}")
 
-                safe_zep_operation(
-                    add_to_zep,
-                    self.skip_zep_on_error,
-                    "Add streamed assistant response to Zep thread",
-                )
-            else:
-                logger.debug(f"Skipped duplicate streamed assistant response for thread {self.thread_id}")
+            safe_zep_operation(
+                add_to_zep,
+                self.skip_zep_on_error,
+                "Add streamed assistant response to Zep thread",
+            )
 
     def __enter__(self):
         """Support for context manager protocol."""
@@ -233,25 +227,16 @@ class AsyncZepStreamWrapper:
         full_content = self._content_buffer.getvalue()
 
         if full_content.strip():
-            # Check if this streamed assistant response is a duplicate
-            cache = get_message_cache()
-            from datetime import datetime
-            response_created_at = datetime.utcnow()  # Streamed response being created now
-            
-            if not cache.is_message_seen(self.thread_id, "assistant", full_content, response_created_at):
+            async def add_to_zep():
+                zep_message = Message(name="assistant", role="assistant", content=full_content)
+                await self.zep_client.thread.add_messages(self.thread_id, messages=[zep_message])
+                logger.debug(f"Added streamed assistant response to Zep thread {self.thread_id}")
 
-                async def add_to_zep():
-                    zep_message = Message(role="assistant", role_type="assistant", content=full_content)
-                    await self.zep_client.thread.add_messages(self.thread_id, messages=[zep_message])
-                    logger.debug(f"Added streamed assistant response to Zep thread {self.thread_id}")
-
-                await self._asafe_zep_operation(
-                    add_to_zep,
-                    self.skip_zep_on_error,
-                    "Add streamed assistant response to Zep thread",
-                )
-            else:
-                logger.debug(f"Skipped duplicate streamed assistant response for thread {self.thread_id}")
+            await self._asafe_zep_operation(
+                add_to_zep,
+                self.skip_zep_on_error,
+                "Add streamed assistant response to Zep thread",
+            )
 
     async def _asafe_zep_operation(
         self,

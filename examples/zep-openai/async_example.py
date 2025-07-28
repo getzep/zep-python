@@ -11,7 +11,7 @@ import os
 
 from dotenv import load_dotenv
 from zep_cloud import AsyncZep
-from zep_cloud.external_clients import AsyncZepOpenAI
+from zep_cloud.openai import AsyncZepOpenAI
 
 # Load environment variables
 load_dotenv()
@@ -35,8 +35,8 @@ async def main():
     print(f"Assistant: {response.choices[0].message.content}")
 
     # Example 2: Async with memory integration
-    session_id = "demo-session-async"
-    print(f"\n2. Async with memory (session: {session_id}):")
+    thread_id = "demo-thread-async"
+    print(f"\n2. Async with memory (thread: {thread_id}):")
 
     # Set up a conversation
     response = await client.chat.completions.create(
@@ -45,7 +45,7 @@ async def main():
             {"role": "system", "content": "You are a travel assistant. Context: {context}"},
             {"role": "user", "content": "I'm planning a trip to Japan in spring."},
         ],
-        session_id=session_id,
+        thread_id=thread_id,
     )
     print(f"Assistant: {response.choices[0].message.content}")
 
@@ -56,29 +56,29 @@ async def main():
             {"role": "system", "content": "You are a travel assistant. Context: {context}"},
             {"role": "user", "content": "What should I pack for this trip?"},
         ],
-        session_id=session_id,
+        thread_id=thread_id,
     )
     print(f"Assistant: {response.choices[0].message.content}")
 
     # Example 3: Multiple concurrent requests
     print("\n3. Concurrent async requests:")
 
-    async def ask_question(question: str, session: str):
+    async def ask_question(question: str, thread: str):
         response = await client.chat.completions.create(
             model="gpt-4.1-mini",
             messages=[
                 {"role": "system", "content": "You are helpful. Context: {context}"},
                 {"role": "user", "content": question},
             ],
-            session_id=session,
+            thread_id=thread,
         )
         return f"Q: {question}\nA: {response.choices[0].message.content}"
 
     # Run multiple requests concurrently
     tasks = [
-        ask_question("What's the capital of France?", "session-1"),
-        ask_question("What's 10 * 15?", "session-2"),
-        ask_question("Name a programming language", "session-3"),
+        ask_question("What's the capital of France?", "thread-1"),
+        ask_question("What's 10 * 15?", "thread-2"),
+        ask_question("Name a programming language", "thread-3"),
     ]
 
     results = await asyncio.gather(*tasks)
@@ -94,7 +94,7 @@ async def main():
                 {"role": "system", "content": "Context: {context}"},
                 {"role": "user", "content": "Write a haiku about coding"},
             ],
-            session_id="haiku-session",
+            thread_id="haiku-thread",
         )
         print(f"Haiku response: {response}")
     except Exception as e:
@@ -106,7 +106,7 @@ async def main():
         response = await client.chat.completions.create(
             model="gpt-4.1-mini",
             messages=[{"role": "user", "content": "This should work fine"}],
-            session_id="error-test-session",
+            thread_id="error-test-thread",
             skip_zep_on_error=True,
         )
         print(f"Assistant: {response.choices[0].message.content}")

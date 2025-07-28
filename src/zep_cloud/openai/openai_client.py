@@ -68,7 +68,7 @@ class ChatCompletionsWrapper(BaseZepWrapper):
         # Return the result directly from the unified create method
         # Type checking is only done when OpenAI is available and we're not using mocks
         if HAS_OPENAI and not self._is_test_environment(result):
-            from zep_cloud.external_clients.openai_streaming import ZepStreamWrapper
+            from zep_cloud.openai.openai_streaming import ZepStreamWrapper
 
             if isinstance(result, (ChatCompletion, Stream, ZepStreamWrapper)):
                 return result

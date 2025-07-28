@@ -11,7 +11,7 @@ import os
 
 from dotenv import load_dotenv
 from zep_cloud import AsyncZep, Zep
-from zep_cloud.external_clients import AsyncZepOpenAI, ZepOpenAI
+from zep_cloud.openai import AsyncZepOpenAI, ZepOpenAI
 
 # Load environment variables
 load_dotenv()
@@ -26,7 +26,7 @@ def sync_streaming_example():
     zep_client = Zep(api_key=os.getenv("ZEP_API_KEY"))
     client = ZepOpenAI(zep_client=zep_client, api_key=os.getenv("OPENAI_API_KEY"))
 
-    session_id = "streaming-demo-sync"
+    thread_id = "streaming-demo-sync"
 
     # Example 1: Basic streaming without Zep
     print("\n1. Basic streaming (no memory):")
@@ -41,14 +41,14 @@ def sync_streaming_example():
     print("\n")
 
     # Example 2: Streaming with Zep memory integration
-    print(f"\n2. Streaming with memory (session: {session_id}):")
+    print(f"\n2. Streaming with memory (thread: {thread_id}):")
     stream = client.chat.completions.create(
         model="gpt-4.1-mini",
         messages=[
             {"role": "system", "content": "You are a creative writer. Context: {context}"},
             {"role": "user", "content": "My favorite genre is science fiction."},
         ],
-        session_id=session_id,
+        thread_id=thread_id,
         stream=True,
     )
 
@@ -66,7 +66,7 @@ def sync_streaming_example():
             {"role": "system", "content": "You are a creative writer. Context: {context}"},
             {"role": "user", "content": "Write a short sci-fi story for me."},
         ],
-        session_id=session_id,
+        thread_id=thread_id,
         stream=True,
     )
 
@@ -86,7 +86,7 @@ async def async_streaming_example():
     zep_client = AsyncZep(api_key=os.getenv("ZEP_API_KEY"))
     client = AsyncZepOpenAI(zep_client=zep_client, api_key=os.getenv("OPENAI_API_KEY"))
 
-    session_id = "streaming-demo-async"
+    thread_id = "streaming-demo-async"
 
     # Example 1: Basic async streaming
     print("\n1. Async streaming without memory:")
@@ -103,14 +103,14 @@ async def async_streaming_example():
     print("\n")
 
     # Example 2: Async streaming with memory
-    print(f"\n2. Async streaming with memory (session: {session_id}):")
+    print(f"\n2. Async streaming with memory (thread: {thread_id}):")
     stream = await client.chat.completions.create(
         model="gpt-4.1-mini",
         messages=[
             {"role": "system", "content": "You are a tech expert. Context: {context}"},
             {"role": "user", "content": "I'm interested in learning about AI and machine learning."},
         ],
-        session_id=session_id,
+        thread_id=thread_id,
         stream=True,
     )
 
@@ -128,7 +128,7 @@ async def async_streaming_example():
             {"role": "system", "content": "You are a tech expert. Context: {context}"},
             {"role": "user", "content": "What should I start learning first?"},
         ],
-        session_id=session_id,
+        thread_id=thread_id,
         stream=True,
     )
 
@@ -147,7 +147,7 @@ def streaming_with_context_manager():
     zep_client = Zep(api_key=os.getenv("ZEP_API_KEY"))
     client = ZepOpenAI(zep_client=zep_client, api_key=os.getenv("OPENAI_API_KEY"))
 
-    session_id = "context-manager-demo"
+    thread_id = "context-manager-demo"
 
     # Using context manager ensures proper cleanup
     with client.chat.completions.create(
@@ -156,7 +156,7 @@ def streaming_with_context_manager():
             {"role": "system", "content": "You are helpful. Context: {context}"},
             {"role": "user", "content": "Tell me about context managers in Python"},
         ],
-        session_id=session_id,
+        thread_id=thread_id,
         stream=True,
     ) as stream:
         print("Context manager explanation: ", end="", flush=True)
@@ -175,7 +175,7 @@ async def async_streaming_with_context_manager():
     zep_client = AsyncZep(api_key=os.getenv("ZEP_API_KEY"))
     client = AsyncZepOpenAI(zep_client=zep_client, api_key=os.getenv("OPENAI_API_KEY"))
 
-    session_id = "async-context-manager-demo"
+    thread_id = "async-context-manager-demo"
 
     # Using async context manager ensures proper cleanup
     async with await client.chat.completions.create(
@@ -184,7 +184,7 @@ async def async_streaming_with_context_manager():
             {"role": "system", "content": "You are helpful. Context: {context}"},
             {"role": "user", "content": "Tell me about async context managers in Python"},
         ],
-        session_id=session_id,
+        thread_id=thread_id,
         stream=True,
     ) as stream:
         print("Async context manager explanation: ", end="", flush=True)

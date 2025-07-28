@@ -5,7 +5,6 @@ Base wrapper class with unified Zep integration logic.
 import logging
 from typing import Any, Dict, List, Optional
 
-from .message_cache import get_message_cache
 from .openai_utils import (
     extract_conversation_messages,
     extract_zep_params,
@@ -127,17 +126,10 @@ class BaseZepWrapper:
         conversation_messages = extract_conversation_messages(messages, user_only=True)
 
         if conversation_messages:
-            # Filter out duplicate messages using cache
-            cache = get_message_cache()
             filtered_messages = []
 
             for msg in conversation_messages:
-                # Parse the message creation timestamp
-                from datetime import datetime
-                created_at = datetime.fromisoformat(msg.created_at) if msg.created_at else datetime.utcnow()
-                
-                if not cache.is_message_seen(thread_id, msg.role, msg.content, created_at):
-                    filtered_messages.append(msg)
+                filtered_messages.append(msg)
 
             if filtered_messages:
                 # Optimized: Add new messages AND get context in one call
@@ -182,17 +174,9 @@ class BaseZepWrapper:
         def add_assistant_response():
             assistant_content = self._extract_assistant_content(response)
             if assistant_content:
-                # Check if this assistant response is a duplicate
-                cache = get_message_cache()
-                from datetime import datetime
-                response_created_at = datetime.utcnow()  # New response being created now
-                
-                if not cache.is_message_seen(thread_id, "assistant", assistant_content, response_created_at):
-                    zep_message = Message(role="assistant", name="assistant", content=assistant_content)
-                    self.zep_client.thread.add_messages(thread_id, messages=[zep_message])
-                    logger.debug(f"Added assistant response to Zep thread {thread_id}")
-                else:
-                    logger.debug(f"Skipped duplicate assistant response for thread {thread_id}")
+                zep_message = Message(role="assistant", name="assistant", content=assistant_content)
+                self.zep_client.thread.add_messages(thread_id, messages=[zep_message])
+                logger.debug(f"Added assistant response to Zep thread {thread_id}")
 
         safe_zep_operation(add_assistant_response, skip_zep_on_error, "Add assistant response to Zep thread")
 
@@ -426,17 +410,10 @@ class AsyncBaseZepWrapper:
         conversation_messages = extract_conversation_messages(messages, user_only=True)
 
         if conversation_messages:
-            # Filter out duplicate messages using cache
-            cache = get_message_cache()
             filtered_messages = []
 
             for msg in conversation_messages:
-                # Parse the message creation timestamp
-                from datetime import datetime
-                created_at = datetime.fromisoformat(msg.created_at) if msg.created_at else datetime.utcnow()
-                
-                if not cache.is_message_seen(thread_id, msg.role, msg.content, created_at):
-                    filtered_messages.append(msg)
+                filtered_messages.append(msg)
 
             if filtered_messages:
                 # Optimized: Add new messages AND get context in one call
@@ -483,17 +460,9 @@ class AsyncBaseZepWrapper:
         async def add_assistant_response():
             assistant_content = self._extract_assistant_content(response)
             if assistant_content:
-                # Check if this assistant response is a duplicate
-                cache = get_message_cache()
-                from datetime import datetime
-                response_created_at = datetime.utcnow()  # New response being created now
-                
-                if not cache.is_message_seen(thread_id, "assistant", assistant_content, response_created_at):
-                    zep_message = Message(role="assistant", name="assistant", content=assistant_content)
-                    await self.zep_client.thread.add_messages(thread_id, messages=[zep_message])
-                    logger.debug(f"Added assistant response to Zep thread {thread_id}")
-                else:
-                    logger.debug(f"Skipped duplicate assistant response for thread {thread_id}")
+                zep_message = Message(role="assistant", name="assistant", content=assistant_content)
+                await self.zep_client.thread.add_messages(thread_id, messages=[zep_message])
+                logger.debug(f"Added assistant response to Zep thread {thread_id}")
 
         await self._asafe_zep_operation(
             add_assistant_response, skip_zep_on_error, "Add assistant response to Zep thread"
