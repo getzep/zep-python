@@ -7,6 +7,7 @@ for the OpenAI client with automatic memory integration.
 """
 
 import os
+import uuid
 
 from dotenv import load_dotenv
 from zep_cloud import Zep
@@ -33,8 +34,20 @@ def main():
     )
     print(f"Assistant: {response.choices[0].message.content}")
 
+    user_id = "user-streaming-demo" + uuid.uuid4().hex
+    # Create zep user
+    zep_client.user.add(
+        user_id=user_id,
+        first_name="Alice",
+        email="alice@example.com",
+    )
+
+    thread_id = "demo-thread-basic" + uuid.uuid4().hex
+    # Create the thread for the user
+    zep_client.thread.create(user_id=user_id, thread_id=thread_id)
+
+
     # Example 2: With Zep memory integration
-    thread_id = "demo-thread-basic"
     print(f"\n2. With Zep memory integration (thread: {thread_id}):")
 
     # First message with context placeholder

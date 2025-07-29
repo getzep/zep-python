@@ -5,6 +5,7 @@ Streaming ZepOpenAI Example
 This example demonstrates how to use streaming with the ZepOpenAI wrapper,
 showing both sync and async streaming with automatic memory integration.
 """
+import uuid
 
 import asyncio
 import os
@@ -26,7 +27,19 @@ def sync_streaming_example():
     zep_client = Zep(api_key=os.getenv("ZEP_API_KEY"))
     client = ZepOpenAI(zep_client=zep_client, api_key=os.getenv("OPENAI_API_KEY"))
 
-    thread_id = "streaming-demo-sync"
+
+    user_id = "user-streaming-demo" + uuid.uuid4().hex
+    # Create zep user
+    zep_client.user.add(
+        user_id=user_id,
+        first_name="John",
+        last_name="Doe",
+        email="john@example.com",
+    )
+
+    thread_id = "streaming-demo-sync" + uuid.uuid4().hex
+    # Create the thread for the user
+    zep_client.thread.create(user_id=user_id, thread_id=thread_id)
 
     # Example 1: Basic streaming without Zep
     print("\n1. Basic streaming (no memory):")

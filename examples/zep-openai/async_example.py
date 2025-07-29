@@ -5,6 +5,7 @@ Async ZepOpenAI Example
 This example demonstrates how to use the AsyncZepOpenAI wrapper for asynchronous
 operations with automatic memory integration.
 """
+import uuid
 
 import asyncio
 import os
@@ -34,8 +35,20 @@ async def main():
     )
     print(f"Assistant: {response.choices[0].message.content}")
 
+    user_id = "user-async-demo" + uuid.uuid4().hex
+    # Create zep user
+    await zep_client.user.add(
+        user_id=user_id,
+        first_name="John",
+        last_name="Doe",
+        email="john@example.com",
+    )
+
+    thread_id = "demo-thread-async" + uuid.uuid4().hex
+    # Create the thread for the user
+    await zep_client.thread.create(user_id=user_id, thread_id=thread_id)
+
     # Example 2: Async with memory integration
-    thread_id = "demo-thread-async"
     print(f"\n2. Async with memory (thread: {thread_id}):")
 
     # Set up a conversation
@@ -60,32 +73,7 @@ async def main():
     )
     print(f"Assistant: {response.choices[0].message.content}")
 
-    # Example 3: Multiple concurrent requests
-    print("\n3. Concurrent async requests:")
-
-    async def ask_question(question: str, thread: str):
-        response = await client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {"role": "system", "content": "You are helpful. Context: {context}"},
-                {"role": "user", "content": question},
-            ],
-            thread_id=thread,
-        )
-        return f"Q: {question}\nA: {response.choices[0].message.content}"
-
-    # Run multiple requests concurrently
-    tasks = [
-        ask_question("What's the capital of France?", "thread-1"),
-        ask_question("What's 10 * 15?", "thread-2"),
-        ask_question("Name a programming language", "thread-3"),
-    ]
-
-    results = await asyncio.gather(*tasks)
-    for result in results:
-        print(f"\n{result}")
-
-    # Example 4: Async with Responses API
+    # Example 3: Async with Responses API
     print("\n4. Async Responses API:")
     try:
         response = await client.responses.create(
@@ -100,13 +88,13 @@ async def main():
     except Exception as e:
         print(f"Note: Responses API might not be available: {e}")
 
-    # Example 5: Error handling in async context
+    # Example 4: Error handling in async context
     print("\n5. Async error handling:")
     try:
         response = await client.chat.completions.create(
             model="gpt-4.1-mini",
             messages=[{"role": "user", "content": "This should work fine"}],
-            thread_id="error-test-thread",
+            thread_id="error-test-thread" + uuid.uuid4().hex,
             skip_zep_on_error=True,
         )
         print(f"Assistant: {response.choices[0].message.content}")

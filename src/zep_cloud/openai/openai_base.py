@@ -16,6 +16,7 @@ from .openai_utils import (
 
 from zep_cloud.client import AsyncZep, Zep
 from zep_cloud.types import Message
+from .. import BadRequestError
 
 logger = logging.getLogger(__name__)
 
@@ -202,6 +203,9 @@ class BaseZepWrapper:
         context_placeholder = zep_params.get("context_placeholder", "{context}")
         skip_zep_on_error = zep_params.get("skip_zep_on_error", True)
 
+        # Ensure thread exists before operations
+        self._ensure_thread_exists(thread_id, skip_zep_on_error)
+
         # Pre-process for context injection
         processed_messages = self._preprocess_for_zep(messages, thread_id, context_placeholder, skip_zep_on_error)
 
@@ -270,9 +274,7 @@ class BaseZepWrapper:
                 # Check if it's a "not found" type error
                 error_str = str(e).lower()
                 if "not found" in error_str or "404" in error_str:
-                    # Thread doesn't exist, create it (use thread_id as user_id)
-                    self.zep_client.thread.create(thread_id=thread_id, user_id=thread_id)
-                    logger.debug(f"Created thread {thread_id}")
+                   raise Exception("Thread not found, please ensure you have created the thread before using it.")
                 else:
                     # Some other error, re-raise
                     raise
@@ -560,9 +562,7 @@ class AsyncBaseZepWrapper:
                 # Check if it's a "not found" type error
                 error_str = str(e).lower()
                 if "not found" in error_str or "404" in error_str:
-                    # Thread doesn't exist, create it (use thread_id as user_id)
-                    await self.zep_client.thread.create(thread_id=thread_id, user_id=thread_id)
-                    logger.debug(f"Created thread {thread_id}")
+                    raise Exception("Thread not found, please ensure you have created the thread before using it.")
                 else:
                     # Some other error, re-raise
                     raise
