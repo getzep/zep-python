@@ -4,18 +4,12 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .message import Message
 
 
 class ThreadContextResponse(UniversalBaseModel):
     context: typing.Optional[str] = pydantic.Field(default=None)
     """
     Memory context containing relevant facts and entities for the session. Can be put into the prompt directly.
-    """
-
-    messages: typing.Optional[typing.List[Message]] = pydantic.Field(default=None)
-    """
-    A list of message objects, where each message contains a role and content. Only last_n messages will be returned
     """
 
     if IS_PYDANTIC_V2:

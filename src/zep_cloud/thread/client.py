@@ -153,7 +153,6 @@ class ThreadClient:
         self,
         thread_id: str,
         *,
-        lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         fast: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -165,9 +164,6 @@ class ThreadClient:
         ----------
         thread_id : str
             The ID of the thread for which to retrieve context.
-
-        lastn : typing.Optional[int]
-            The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -195,7 +191,7 @@ class ThreadClient:
         )
         """
         _response = self._raw_client.get_user_context(
-            thread_id, lastn=lastn, min_rating=min_rating, fast=fast, request_options=request_options
+            thread_id, min_rating=min_rating, fast=fast, request_options=request_options
         )
         return _response.data
 
@@ -467,7 +463,6 @@ class AsyncThreadClient:
         self,
         thread_id: str,
         *,
-        lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         fast: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -479,9 +474,6 @@ class AsyncThreadClient:
         ----------
         thread_id : str
             The ID of the thread for which to retrieve context.
-
-        lastn : typing.Optional[int]
-            The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -517,7 +509,7 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_user_context(
-            thread_id, lastn=lastn, min_rating=min_rating, fast=fast, request_options=request_options
+            thread_id, min_rating=min_rating, fast=fast, request_options=request_options
         )
         return _response.data
 

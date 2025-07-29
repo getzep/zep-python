@@ -262,7 +262,6 @@ class RawThreadClient:
         self,
         thread_id: str,
         *,
-        lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         fast: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -274,9 +273,6 @@ class RawThreadClient:
         ----------
         thread_id : str
             The ID of the thread for which to retrieve context.
-
-        lastn : typing.Optional[int]
-            The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -296,7 +292,6 @@ class RawThreadClient:
             f"threads/{jsonable_encoder(thread_id)}/context",
             method="GET",
             params={
-                "lastn": lastn,
                 "minRating": min_rating,
                 "fast": fast,
             },
@@ -741,7 +736,6 @@ class AsyncRawThreadClient:
         self,
         thread_id: str,
         *,
-        lastn: typing.Optional[int] = None,
         min_rating: typing.Optional[float] = None,
         fast: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -753,9 +747,6 @@ class AsyncRawThreadClient:
         ----------
         thread_id : str
             The ID of the thread for which to retrieve context.
-
-        lastn : typing.Optional[int]
-            The number of most recent memory entries to retrieve.
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -775,7 +766,6 @@ class AsyncRawThreadClient:
             f"threads/{jsonable_encoder(thread_id)}/context",
             method="GET",
             params={
-                "lastn": lastn,
                 "minRating": min_rating,
                 "fast": fast,
             },

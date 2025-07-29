@@ -1476,14 +1476,6 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
-**lastn:** `typing.Optional[int]` — The number of most recent memory entries to retrieve.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **min_rating:** `typing.Optional[float]` — The minimum rating by which to filter relevant facts.
     
 </dd>
