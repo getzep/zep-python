@@ -1,0 +1,9 @@
+# ZepOpenAI Examples Requirements
+
+# Core dependencies
+zep-cloud
+openai>=1.0.0
+python-dotenv
+
+# Optional: For enhanced async support
+asyncio
