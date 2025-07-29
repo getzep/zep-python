@@ -236,9 +236,12 @@ def mock_zep_client():
     """Mock Zep client."""
     client = MagicMock()
 
-    # Mock memory operations
-    client.memory.get.return_value = MockZepMemory()
-    client.memory.add.return_value = AddThreadMessagesResponse(context="Test context")
+    # Mock thread operations
+    mock_context_response = MagicMock()
+    mock_context_response.context = "Test context"
+    
+    client.thread.add_messages.return_value = mock_context_response
+    client.thread.get_user_context.return_value = mock_context_response
 
     return client
 
@@ -248,16 +251,20 @@ def mock_async_zep_client():
     """Mock async Zep client."""
     client = MagicMock()
 
-    # Mock async memory operations
-    async def mock_get(*args, **kwargs):
-        return MockZepMemory()
+    # Mock async thread operations with MagicMock support
+    async def mock_add_messages(*args, **kwargs):
+        mock_response = MagicMock()
+        mock_response.context = "Test context"
+        return mock_response
 
-    client.memory.get = mock_get
+    async def mock_get_context(*args, **kwargs):
+        mock_response = MagicMock()
+        mock_response.context = "Test context"
+        return mock_response
 
-    async def mock_add(*args, **kwargs):
-        return AddThreadMessagesResponse(context="Test context")
-
-    client.memory.add = mock_add
+    # Create MagicMock objects that support both async calls and assert methods
+    client.thread.add_messages = MagicMock(side_effect=mock_add_messages)
+    client.thread.get_user_context = MagicMock(side_effect=mock_get_context)
 
     return client
 
