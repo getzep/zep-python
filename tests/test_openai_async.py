@@ -80,10 +80,10 @@ class TestAsyncChatCompletionsWrapper:
     """Test AsyncChatCompletionsWrapper functionality."""
 
     @pytest.mark.asyncio
-    async def test_create_without_session_id(
+    async def test_create_without_thread_id(
         self, mock_async_zep_client, mock_async_openai_client, sample_messages_no_context
     ):
-        """Test async chat completion without session_id."""
+        """Test async chat completion without thread_id."""
         wrapper = AsyncChatCompletionsWrapper(mock_async_openai_client.chat.completions, mock_async_zep_client)
 
         response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages_no_context, temperature=0.7)
@@ -98,14 +98,14 @@ class TestAsyncChatCompletionsWrapper:
         mock_async_zep_client.memory.add.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_create_with_session_id_no_context_placeholder(
+    async def test_create_with_thread_id_no_context_placeholder(
         self, mock_async_zep_client, mock_async_openai_client, sample_messages_no_context
     ):
-        """Test async chat completion with session_id but no context placeholder."""
+        """Test async chat completion with thread_id but no context placeholder."""
         wrapper = AsyncChatCompletionsWrapper(mock_async_openai_client.chat.completions, mock_async_zep_client)
 
         response = await wrapper.create(
-            model="gpt-4.1-mini", messages=sample_messages_no_context, session_id="test_session"
+            model="gpt-4.1-mini", messages=sample_messages_no_context, thread_id="test_session"
         )
 
         # Should call OpenAI with original messages
@@ -116,10 +116,10 @@ class TestAsyncChatCompletionsWrapper:
         mock_async_zep_client.memory.add.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_create_with_session_id_and_context_placeholder(
+    async def test_create_with_thread_id_and_context_placeholder(
         self, mock_async_zep_client, mock_async_openai_client, sample_messages
     ):
-        """Test async chat completion with session_id and context placeholder."""
+        """Test async chat completion with thread_id and context placeholder."""
         wrapper = AsyncChatCompletionsWrapper(mock_async_openai_client.chat.completions, mock_async_zep_client)
 
         # Mock Zep responses
@@ -139,7 +139,7 @@ class TestAsyncChatCompletionsWrapper:
 
         mock_async_openai_client.chat.completions.create = mock_create
 
-        response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages, session_id="test_session")
+        response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session")
 
         assert response is not None
 
@@ -170,7 +170,7 @@ class TestAsyncChatCompletionsWrapper:
         mock_async_openai_client.chat.completions.create = mock_create
 
         response = await wrapper.create(
-            model="gpt-4.1-mini", messages=messages, session_id="test_session", context_placeholder="{{memory}}"
+            model="gpt-4.1-mini", messages=messages, thread_id="test_session", context_placeholder="{{memory}}"
         )
 
         assert response is not None
@@ -199,10 +199,10 @@ class TestAsyncResponsesWrapper:
     """Test AsyncResponsesWrapper functionality."""
 
     @pytest.mark.asyncio
-    async def test_create_without_session_id(
+    async def test_create_without_thread_id(
         self, mock_async_zep_client, mock_async_openai_client, sample_messages_no_context
     ):
-        """Test async responses creation without session_id."""
+        """Test async responses creation without thread_id."""
         wrapper = AsyncResponsesWrapper(mock_async_openai_client.responses, mock_async_zep_client)
 
         response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages_no_context)
@@ -214,10 +214,10 @@ class TestAsyncResponsesWrapper:
         mock_async_zep_client.memory.add.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_create_with_session_id_and_context(
+    async def test_create_with_thread_id_and_context(
         self, mock_async_zep_client, mock_async_openai_client, sample_messages
     ):
-        """Test async responses creation with session_id and context."""
+        """Test async responses creation with thread_id and context."""
         wrapper = AsyncResponsesWrapper(mock_async_openai_client.responses, mock_async_zep_client)
 
         async def mock_add(*args, **kwargs):
@@ -236,7 +236,7 @@ class TestAsyncResponsesWrapper:
 
         mock_async_openai_client.responses.create = mock_create
 
-        response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages, session_id="test_session")
+        response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session")
 
         assert response is not None
 
@@ -309,7 +309,7 @@ class TestAsyncZepIntegrationBehavior:
 
         mock_async_zep_client.memory.add = mock_add
 
-        response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages, session_id="test_session")
+        response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session")
 
         # Should not call get separately
         mock_async_zep_client.memory.get.assert_not_called()
@@ -328,7 +328,7 @@ class TestAsyncZepIntegrationBehavior:
 
         mock_async_zep_client.memory.get = mock_get
 
-        response = await wrapper.create(model="gpt-4.1-mini", messages=messages, session_id="test_session")
+        response = await wrapper.create(model="gpt-4.1-mini", messages=messages, thread_id="test_session")
 
         assert response is not None
 
@@ -364,7 +364,7 @@ class TestAsyncZepIntegrationBehavior:
 
         mock_async_openai_client.chat.completions.create = mock_create
 
-        response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages, session_id="test_session")
+        response = await wrapper.create(model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session")
 
         # Should have two add calls: one for user messages, one for assistant response
         assert add_call_count == 2
@@ -392,7 +392,7 @@ class TestAsyncParameterHandling:
         response = await wrapper.create(
             model="gpt-4.1-mini",
             messages=sample_messages_no_context,
-            session_id="test_session",  # Should be filtered
+            thread_id="test_session",  # Should be filtered
             context_placeholder="{{memory}}",  # Should be filtered
             skip_zep_on_error=False,  # Should be filtered
             temperature=0.7,  # Should be passed through
@@ -403,7 +403,7 @@ class TestAsyncParameterHandling:
         assert "model" in passed_params
         assert "temperature" in passed_params
         assert "max_tokens" in passed_params
-        assert "session_id" not in passed_params
+        assert "thread_id" not in passed_params
         assert "context_placeholder" not in passed_params
         assert "skip_zep_on_error" not in passed_params
 
@@ -424,7 +424,7 @@ class TestAsyncErrorHandling:
 
         # Should not raise error and continue with OpenAI call
         response = await wrapper.create(
-            model="gpt-4.1-mini", messages=sample_messages, session_id="test_session", skip_zep_on_error=True
+            model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session", skip_zep_on_error=True
         )
 
         assert response is not None
@@ -445,5 +445,5 @@ class TestAsyncErrorHandling:
 
         with pytest.raises(ZepOpenAIError):
             await wrapper.create(
-                model="gpt-4.1-mini", messages=sample_messages, session_id="test_session", skip_zep_on_error=False
+                model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session", skip_zep_on_error=False
             )

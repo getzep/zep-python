@@ -16,7 +16,6 @@ from .openai_utils import (
 
 from zep_cloud.client import AsyncZep, Zep
 from zep_cloud.types import Message
-from .. import BadRequestError
 
 logger = logging.getLogger(__name__)
 

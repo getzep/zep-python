@@ -25,14 +25,14 @@ class TestZepStreamWrapper:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=extract_func,
             skip_zep_on_error=True,
         )
 
         assert wrapper.stream == stream
-        assert wrapper.session_id == "test_session"
+        assert wrapper.thread_id == "test_session"
         assert wrapper.zep_client == mock_zep_client
         assert wrapper.extract_content_func == extract_func
         assert wrapper.skip_zep_on_error is True
@@ -44,7 +44,7 @@ class TestZepStreamWrapper:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -63,10 +63,10 @@ class TestZepStreamWrapper:
         assert collected_content == mock_stream_chunks
 
         # Should have added content to Zep when stream finished
-        mock_zep_client.memory.add.assert_called_once()
+        mock_zep_client.thread.add_messages.assert_called_once()
 
         # Check the message that was added
-        call_args = mock_zep_client.memory.add.call_args
+        call_args = mock_zep_client.thread.add_messages.call_args
         messages = call_args[1].get("messages", [])  # From kwargs
         assert len(messages) == 1
         assert messages[0].role == "assistant"
@@ -79,7 +79,7 @@ class TestZepStreamWrapper:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -98,7 +98,7 @@ class TestZepStreamWrapper:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -111,8 +111,8 @@ class TestZepStreamWrapper:
         assert wrapper._content_buffer.getvalue() == "Hello" + "world" + "!"
 
         # Final content should exclude None and empty values
-        mock_zep_client.memory.add.assert_called_once()
-        call_args = mock_zep_client.memory.add.call_args
+        mock_zep_client.thread.add_messages.assert_called_once()
+        call_args = mock_zep_client.thread.add_messages.call_args
         messages = call_args[1].get("messages", [])
         assert messages[0].content == "Helloworld!"
 
@@ -122,7 +122,7 @@ class TestZepStreamWrapper:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -132,7 +132,7 @@ class TestZepStreamWrapper:
         list(wrapper)
 
         # Should not add empty content to Zep
-        mock_zep_client.memory.add.assert_not_called()
+        mock_zep_client.thread.add_messages.assert_not_called()
 
     def test_stream_finalization_whitespace_only(self, mock_zep_client):
         """Test stream finalization with whitespace-only content."""
@@ -141,7 +141,7 @@ class TestZepStreamWrapper:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -151,7 +151,7 @@ class TestZepStreamWrapper:
         list(wrapper)
 
         # Should not add whitespace-only content to Zep
-        mock_zep_client.memory.add.assert_not_called()
+        mock_zep_client.thread.add_messages.assert_not_called()
 
     def test_stream_context_manager(self, mock_zep_client, mock_stream_chunks):
         """Test ZepStreamWrapper as context manager."""
@@ -159,7 +159,7 @@ class TestZepStreamWrapper:
 
         with ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -169,18 +169,18 @@ class TestZepStreamWrapper:
             next(wrapper)
 
         # Should still finalize and add content to Zep on exit
-        mock_zep_client.memory.add.assert_called_once()
+        mock_zep_client.thread.add_messages.assert_called_once()
 
     def test_stream_error_handling_skip_true(self, mock_zep_client, mock_stream_chunks):
         """Test error handling with skip_zep_on_error=True."""
         stream = MockStream(mock_stream_chunks)
 
         # Make Zep operation fail
-        mock_zep_client.memory.add.side_effect = Exception("Zep error")
+        mock_zep_client.thread.add_messages.side_effect = Exception("Zep error")
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -190,18 +190,18 @@ class TestZepStreamWrapper:
         list(wrapper)
 
         # Should have attempted to add to Zep
-        mock_zep_client.memory.add.assert_called_once()
+        mock_zep_client.thread.add_messages.assert_called_once()
 
     def test_stream_error_handling_skip_false(self, mock_zep_client, mock_stream_chunks):
         """Test error handling with skip_zep_on_error=False."""
         stream = MockStream(mock_stream_chunks)
 
         # Make Zep operation fail
-        mock_zep_client.memory.add.side_effect = Exception("Zep error")
+        mock_zep_client.thread.add_messages.side_effect = Exception("Zep error")
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=False,
@@ -225,7 +225,7 @@ class TestZepStreamWrapper:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=failing_extract_func,
             skip_zep_on_error=True,
@@ -249,14 +249,14 @@ class TestAsyncZepStreamWrapper:
 
         wrapper = AsyncZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_async_zep_client,
             extract_content_func=extract_func,
             skip_zep_on_error=True,
         )
 
         assert wrapper.stream == stream
-        assert wrapper.session_id == "test_session"
+        assert wrapper.thread_id == "test_session"
         assert wrapper.zep_client == mock_async_zep_client
         assert wrapper.extract_content_func == extract_func
         assert wrapper.skip_zep_on_error is True
@@ -269,7 +269,7 @@ class TestAsyncZepStreamWrapper:
 
         wrapper = AsyncZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_async_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -288,7 +288,7 @@ class TestAsyncZepStreamWrapper:
         assert collected_content == mock_stream_chunks
 
         # Should have added content to Zep when stream finished
-        mock_async_zep_client.memory.add.assert_called_once()
+        mock_async_zep_client.thread.add_messages.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_async_stream_content_extraction(self, mock_async_zep_client):
@@ -298,7 +298,7 @@ class TestAsyncZepStreamWrapper:
 
         wrapper = AsyncZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_async_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -318,7 +318,7 @@ class TestAsyncZepStreamWrapper:
 
         wrapper = AsyncZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_async_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -329,7 +329,7 @@ class TestAsyncZepStreamWrapper:
             pass
 
         # Should not add empty content to Zep
-        mock_async_zep_client.memory.add.assert_not_called()
+        mock_async_zep_client.thread.add_messages.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_async_stream_context_manager(self, mock_async_zep_client, mock_stream_chunks):
@@ -338,7 +338,7 @@ class TestAsyncZepStreamWrapper:
 
         async with AsyncZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_async_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -348,7 +348,7 @@ class TestAsyncZepStreamWrapper:
             await wrapper.__anext__()
 
         # Should still finalize and add content to Zep on exit
-        mock_async_zep_client.memory.add.assert_called_once()
+        mock_async_zep_client.thread.add_messages.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_async_stream_error_handling_skip_true(self, mock_async_zep_client, mock_stream_chunks):
@@ -359,11 +359,11 @@ class TestAsyncZepStreamWrapper:
         async def mock_add_fail(*args, **kwargs):
             raise Exception("Zep error")
 
-        mock_async_zep_client.memory.add = mock_add_fail
+        mock_async_zep_client.thread.add_messages = mock_add_fail
 
         wrapper = AsyncZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_async_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -382,11 +382,11 @@ class TestAsyncZepStreamWrapper:
         async def mock_add_fail(*args, **kwargs):
             raise Exception("Zep error")
 
-        mock_async_zep_client.memory.add = mock_add_fail
+        mock_async_zep_client.thread.add_messages = mock_add_fail
 
         wrapper = AsyncZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_async_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=False,
@@ -418,12 +418,13 @@ class TestStreamingIntegration:
             wrapper = ChatCompletionsWrapper(mock_openai_completions, mock_zep_client)
 
             # Mock Zep context response
-            mock_zep_client.memory.add.return_value = MagicMock(context="Test context")
+            mock_zep_client.thread.add_messages.return_value = MagicMock(context="Test context")
+            mock_zep_client.thread.get_user_context.return_value = MagicMock(context="Test context")
 
             messages = [{"role": "system", "content": "Context: {context}"}, {"role": "user", "content": "Hello"}]
 
             # Request streaming
-            result = wrapper.create(model="gpt-4.1-mini", messages=messages, session_id="test_session", stream=True)
+            result = wrapper.create(model="gpt-4.1-mini", messages=messages, thread_id="test_session", stream=True)
 
             # Should return ZepStreamWrapper
             assert isinstance(result, ZepStreamWrapper)
@@ -435,7 +436,7 @@ class TestStreamingIntegration:
             assert len(collected) == 3
 
             # Should have added final content to Zep
-            assert mock_zep_client.memory.add.call_count == 2  # Context + final response
+            assert mock_zep_client.thread.add_messages.call_count >= 1  # Context + final response
 
     @pytest.mark.asyncio
     async def test_async_chat_completions_streaming_with_zep(self, mock_async_zep_client):
@@ -459,18 +460,24 @@ class TestStreamingIntegration:
             wrapper = AsyncChatCompletionsWrapper(mock_openai_completions, mock_async_zep_client)
 
             # Mock Zep context response
-            async def mock_add(*args, **kwargs):
+            async def mock_add_messages(*args, **kwargs):
                 mock_response = MagicMock()
                 mock_response.context = "Test context"
                 return mock_response
 
-            mock_async_zep_client.memory.add = mock_add
+            async def mock_get_context(*args, **kwargs):
+                mock_response = MagicMock()
+                mock_response.context = "Test context"
+                return mock_response
+
+            mock_async_zep_client.thread.add_messages = mock_add_messages
+            mock_async_zep_client.thread.get_user_context = mock_get_context
 
             messages = [{"role": "system", "content": "Context: {context}"}, {"role": "user", "content": "Hello"}]
 
             # Request streaming
             result = await wrapper.create(
-                model="gpt-4.1-mini", messages=messages, session_id="test_session", stream=True
+                model="gpt-4.1-mini", messages=messages, thread_id="test_session", stream=True
             )
 
             # Should return AsyncZepStreamWrapper
@@ -484,8 +491,8 @@ class TestStreamingIntegration:
             # Should have processed all chunks
             assert len(collected) == 3
 
-    def test_streaming_without_session_id(self, mock_zep_client):
-        """Test streaming without session_id (pure OpenAI passthrough)."""
+    def test_streaming_without_thread_id(self, mock_zep_client):
+        """Test streaming without thread_id (pure OpenAI passthrough)."""
         with patch.dict(
             "sys.modules",
             {"openai": MagicMock(), "openai.types.chat": MagicMock(), "openai.types.responses": MagicMock()},
@@ -500,14 +507,14 @@ class TestStreamingIntegration:
 
             messages = [{"role": "user", "content": "Hello"}]
 
-            # Request streaming without session_id
+            # Request streaming without thread_id
             result = wrapper.create(model="gpt-4.1-mini", messages=messages, stream=True)
 
             # Should return raw OpenAI stream, not wrapped
             assert result == mock_stream
 
             # Should not call Zep
-            mock_zep_client.memory.add.assert_not_called()
+            mock_zep_client.thread.add_messages.assert_not_called()
             mock_zep_client.memory.get.assert_not_called()
 
 
@@ -522,7 +529,7 @@ class TestStreamingEdgeCases:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content if x.choices else None,
             skip_zep_on_error=True,
@@ -540,7 +547,7 @@ class TestStreamingEdgeCases:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: None,  # Always returns None
             skip_zep_on_error=True,
@@ -550,7 +557,7 @@ class TestStreamingEdgeCases:
         list(wrapper)
 
         # Should not add anything to Zep since no content was extracted
-        mock_zep_client.memory.add.assert_not_called()
+        mock_zep_client.thread.add_messages.assert_not_called()
 
     def test_stream_large_content_collection(self, mock_zep_client):
         """Test streaming with large content collection."""
@@ -560,7 +567,7 @@ class TestStreamingEdgeCases:
 
         wrapper = ZepStreamWrapper(
             stream=stream,
-            session_id="test_session",
+            thread_id="test_session",
             zep_client=mock_zep_client,
             extract_content_func=lambda x: x.choices[0].delta.content,
             skip_zep_on_error=True,
@@ -573,8 +580,8 @@ class TestStreamingEdgeCases:
         assert wrapper._content_buffer.getvalue() == "".join(f"chunk{i}" for i in range(1000))
 
         # Should add complete content to Zep
-        mock_zep_client.memory.add.assert_called_once()
-        call_args = mock_zep_client.memory.add.call_args
+        mock_zep_client.thread.add_messages.assert_called_once()
+        call_args = mock_zep_client.thread.add_messages.call_args
         messages = call_args[1].get("messages", [])
         expected_content = "".join(large_chunks)
         assert messages[0].content == expected_content

@@ -7,6 +7,7 @@ for the OpenAI client with automatic memory integration.
 """
 
 import os
+import time
 import uuid
 
 from dotenv import load_dotenv
@@ -60,6 +61,7 @@ def main():
         thread_id=thread_id,
     )
     print(f"Assistant: {response.choices[0].message.content}")
+    time.sleep(20)  # Wait for Zep to process the memory
 
     # Second message - Zep should remember previous conversation
     response = client.chat.completions.create(
@@ -91,7 +93,7 @@ def main():
         response = client.chat.completions.create(
             model="gpt-4.1-mini",
             messages=[{"role": "user", "content": "This works even if Zep has issues"}],
-            thread_id="invalid-thread",
+            thread_id="invalid-thread" + uuid.uuid4().hex,  # Invalid thread to trigger error
             skip_zep_on_error=True,  # Continue even if Zep fails
         )
         print(f"Assistant: {response.choices[0].message.content}")

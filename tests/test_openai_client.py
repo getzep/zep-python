@@ -77,8 +77,8 @@ class TestZepOpenAIInitialization:
 class TestChatCompletionsWrapper:
     """Test ChatCompletionsWrapper functionality."""
 
-    def test_create_without_session_id(self, mock_zep_client, mock_openai_client, sample_messages_no_context):
-        """Test chat completion without session_id (pure OpenAI passthrough)."""
+    def test_create_without_thread_id(self, mock_zep_client, mock_openai_client, sample_messages_no_context):
+        """Test chat completion without thread_id (pure OpenAI passthrough)."""
         wrapper = ChatCompletionsWrapper(mock_openai_client.chat.completions, mock_zep_client)
 
         response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages_no_context, temperature=0.7)
@@ -92,13 +92,13 @@ class TestChatCompletionsWrapper:
         mock_zep_client.memory.get.assert_not_called()
         mock_zep_client.memory.add.assert_not_called()
 
-    def test_create_with_session_id_no_context_placeholder(
+    def test_create_with_thread_id_no_context_placeholder(
         self, mock_zep_client, mock_openai_client, sample_messages_no_context
     ):
-        """Test chat completion with session_id but no context placeholder."""
+        """Test chat completion with thread_id but no context placeholder."""
         wrapper = ChatCompletionsWrapper(mock_openai_client.chat.completions, mock_zep_client)
 
-        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages_no_context, session_id="test_session")
+        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages_no_context, thread_id="test_session")
 
         # Should call OpenAI with original messages (no context injection needed)
         mock_openai_client.chat.completions.create.assert_called_once_with(
@@ -109,15 +109,15 @@ class TestChatCompletionsWrapper:
         mock_zep_client.memory.get.assert_not_called()
         mock_zep_client.memory.add.assert_not_called()
 
-    def test_create_with_session_id_and_context_placeholder(self, mock_zep_client, mock_openai_client, sample_messages):
-        """Test chat completion with session_id and context placeholder."""
+    def test_create_with_thread_id_and_context_placeholder(self, mock_zep_client, mock_openai_client, sample_messages):
+        """Test chat completion with thread_id and context placeholder."""
         wrapper = ChatCompletionsWrapper(mock_openai_client.chat.completions, mock_zep_client)
 
         # Mock Zep responses
         mock_zep_client.memory.add.return_value = MagicMock(context="Alice loves pizza")
         mock_openai_client.chat.completions.create.return_value = MockOpenAIResponse("Hi Alice!")
 
-        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages, session_id="test_session")
+        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session")
 
         # Should call Zep to add messages and get context
         mock_zep_client.memory.add.assert_called()
@@ -141,7 +141,7 @@ class TestChatCompletionsWrapper:
         mock_zep_client.memory.add.return_value = MagicMock(context="Custom context")
 
         response = wrapper.create(
-            model="gpt-4.1-mini", messages=messages, session_id="test_session", context_placeholder="{{memory}}"
+            model="gpt-4.1-mini", messages=messages, thread_id="test_session", context_placeholder="{{memory}}"
         )
 
         # Should inject context with custom placeholder
@@ -172,8 +172,8 @@ class TestChatCompletionsWrapper:
 class TestResponsesWrapper:
     """Test ResponsesWrapper functionality."""
 
-    def test_create_without_session_id(self, mock_zep_client, mock_openai_client, sample_messages_no_context):
-        """Test responses creation without session_id."""
+    def test_create_without_thread_id(self, mock_zep_client, mock_openai_client, sample_messages_no_context):
+        """Test responses creation without thread_id."""
         wrapper = ResponsesWrapper(mock_openai_client.responses, mock_zep_client)
 
         response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages_no_context)
@@ -187,14 +187,14 @@ class TestResponsesWrapper:
         mock_zep_client.memory.get.assert_not_called()
         mock_zep_client.memory.add.assert_not_called()
 
-    def test_create_with_session_id_and_context(self, mock_zep_client, mock_openai_client, sample_messages):
-        """Test responses creation with session_id and context."""
+    def test_create_with_thread_id_and_context(self, mock_zep_client, mock_openai_client, sample_messages):
+        """Test responses creation with thread_id and context."""
         wrapper = ResponsesWrapper(mock_openai_client.responses, mock_zep_client)
 
         mock_zep_client.memory.add.return_value = MagicMock(context="Test context")
         mock_openai_client.responses.create.return_value = MockOpenAIResponsesAPI("Response content")
 
-        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages, session_id="test_session")
+        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session")
 
         # Should call Zep operations
         mock_zep_client.memory.add.assert_called()
@@ -280,7 +280,7 @@ class TestZepIntegrationBehavior:
         # Mock return_context=True behavior
         mock_zep_client.memory.add.return_value = MagicMock(context="Optimized context")
 
-        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages, session_id="test_session")
+        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session")
 
         # Should call add with return_context=True
         add_call = mock_zep_client.memory.add.call_args_list[0]
@@ -298,7 +298,7 @@ class TestZepIntegrationBehavior:
         wrapper = ChatCompletionsWrapper(mock_openai_client.chat.completions, mock_zep_client)
         mock_zep_client.memory.get.return_value = MockZepMemory("Fallback context")
 
-        response = wrapper.create(model="gpt-4.1-mini", messages=messages, session_id="test_session")
+        response = wrapper.create(model="gpt-4.1-mini", messages=messages, thread_id="test_session")
 
         # Should call get since no conversation messages to add
         mock_zep_client.memory.get.assert_called_once_with("test_session")
@@ -315,7 +315,7 @@ class TestZepIntegrationBehavior:
         mock_zep_client.memory.add.return_value = MagicMock(context="Test context")
         mock_openai_client.chat.completions.create.return_value = MockOpenAIResponse("Assistant reply")
 
-        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages, session_id="test_session")
+        response = wrapper.create(model="gpt-4.1-mini", messages=sample_messages, thread_id="test_session")
 
         # Should have two add calls: one for user messages, one for assistant response
         assert mock_zep_client.memory.add.call_count == 2
@@ -341,7 +341,7 @@ class TestParameterHandling:
         response = wrapper.create(
             model="gpt-4.1-mini",
             messages=sample_messages_no_context,
-            session_id="test_session",  # Should be filtered
+            thread_id="test_session",  # Should be filtered
             context_placeholder="{{memory}}",  # Should be filtered
             skip_zep_on_error=False,  # Should be filtered
             temperature=0.7,  # Should be passed through
@@ -355,7 +355,7 @@ class TestParameterHandling:
         assert "model" in passed_kwargs
         assert "temperature" in passed_kwargs
         assert "max_tokens" in passed_kwargs
-        assert "session_id" not in passed_kwargs
+        assert "thread_id" not in passed_kwargs
         assert "context_placeholder" not in passed_kwargs
         assert "skip_zep_on_error" not in passed_kwargs
 

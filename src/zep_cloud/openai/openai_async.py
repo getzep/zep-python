@@ -74,7 +74,10 @@ class AsyncChatCompletionsWrapper(AsyncBaseZepWrapper):
                 # This should not happen for chat completions with real OpenAI
                 raise TypeError(f"Unexpected return type from unified create: {type(result)}")
         else:
-            # In test environments or when OpenAI is not available, return directly
+            # In test environments, we should still return AsyncZepStreamWrapper if it was created
+            if isinstance(result, AsyncZepStreamWrapper):
+                return result
+            # Otherwise return directly for other test objects
             return result
 
     def _is_test_environment(self, result: Any) -> bool:
