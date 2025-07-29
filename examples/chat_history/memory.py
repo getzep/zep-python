@@ -7,7 +7,6 @@ This script demonstrates the following functionality:
 - Adding messages to the thread.
 - Searching the thread memory for a specific query.
 - Searching the thread memory with MMR reranking.
-- Searching the thread memory with a metadata filter.
 - optionally deleting the thread.
 """
 
@@ -50,7 +49,6 @@ async def main() -> None:
         email="user@example.com",
         first_name="Jane",
         last_name="Smith",
-        metadata={"vip": "true"},
     )
 
     print(f"User added: {user_id}")
@@ -62,7 +60,6 @@ async def main() -> None:
     await client.thread.create(
         thread_id=thread_id,
         user_id=user_id,
-        metadata={"foo": "bar"},
     )
 
     print(f"\n---Getting thread: {thread_id}")
