@@ -4,14 +4,11 @@ import os
 import typing
 
 import httpx
-
 from .core.api_error import ApiError
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from .document.client import AsyncDocumentClient, DocumentClient
 from .environment import ZepEnvironment
 from .graph.client import AsyncGraphClient, GraphClient
-from .group.client import AsyncGroupClient, GroupClient
-from .memory.client import AsyncMemoryClient, MemoryClient
+from .thread.client import AsyncThreadClient, ThreadClient
 from .user.client import AsyncUserClient, UserClient
 
 
@@ -34,6 +31,9 @@ class BaseClient:
 
 
     api_key : typing.Optional[str]
+    headers : typing.Optional[typing.Dict[str, str]]
+        Additional headers to send with every request.
+
     timeout : typing.Optional[float]
         The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
@@ -45,7 +45,7 @@ class BaseClient:
 
     Examples
     --------
-    from zep_cloud.client import Zep
+    from zep_cloud import Zep
 
     client = Zep(
         api_key="YOUR_API_KEY",
@@ -58,16 +58,20 @@ class BaseClient:
         base_url: typing.Optional[str] = None,
         environment: ZepEnvironment = ZepEnvironment.DEFAULT,
         api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
+        headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,
-        httpx_client: typing.Optional[httpx.Client] = None
+        httpx_client: typing.Optional[httpx.Client] = None,
     ):
-        _defaulted_timeout = timeout if timeout is not None else 60 if httpx_client is None else None
+        _defaulted_timeout = (
+            timeout if timeout is not None else 60 if httpx_client is None else httpx_client.timeout.read
+        )
         if api_key is None:
             raise ApiError(body="The client must be instantiated be either passing in api_key or setting ZEP_API_KEY")
         self._client_wrapper = SyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             api_key=api_key,
+            headers=headers,
             httpx_client=httpx_client
             if httpx_client is not None
             else httpx.Client(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
@@ -75,10 +79,8 @@ class BaseClient:
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.document = DocumentClient(client_wrapper=self._client_wrapper)
         self.graph = GraphClient(client_wrapper=self._client_wrapper)
-        self.memory = MemoryClient(client_wrapper=self._client_wrapper)
-        self.group = GroupClient(client_wrapper=self._client_wrapper)
+        self.thread = ThreadClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
 
@@ -101,6 +103,9 @@ class AsyncBaseClient:
 
 
     api_key : typing.Optional[str]
+    headers : typing.Optional[typing.Dict[str, str]]
+        Additional headers to send with every request.
+
     timeout : typing.Optional[float]
         The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
@@ -112,7 +117,7 @@ class AsyncBaseClient:
 
     Examples
     --------
-    from zep_cloud.client import AsyncZep
+    from zep_cloud import AsyncZep
 
     client = AsyncZep(
         api_key="YOUR_API_KEY",
@@ -125,16 +130,20 @@ class AsyncBaseClient:
         base_url: typing.Optional[str] = None,
         environment: ZepEnvironment = ZepEnvironment.DEFAULT,
         api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
+        headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,
-        httpx_client: typing.Optional[httpx.AsyncClient] = None
+        httpx_client: typing.Optional[httpx.AsyncClient] = None,
     ):
-        _defaulted_timeout = timeout if timeout is not None else 60 if httpx_client is None else None
+        _defaulted_timeout = (
+            timeout if timeout is not None else 60 if httpx_client is None else httpx_client.timeout.read
+        )
         if api_key is None:
             raise ApiError(body="The client must be instantiated be either passing in api_key or setting ZEP_API_KEY")
         self._client_wrapper = AsyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             api_key=api_key,
+            headers=headers,
             httpx_client=httpx_client
             if httpx_client is not None
             else httpx.AsyncClient(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
@@ -142,10 +151,8 @@ class AsyncBaseClient:
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.document = AsyncDocumentClient(client_wrapper=self._client_wrapper)
         self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
-        self.memory = AsyncMemoryClient(client_wrapper=self._client_wrapper)
-        self.group = AsyncGroupClient(client_wrapper=self._client_wrapper)
+        self.thread = AsyncThreadClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 
 
