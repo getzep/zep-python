@@ -13,6 +13,7 @@ from ..types.thread import Thread
 from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
 from .raw_client import AsyncRawThreadClient, RawThreadClient
+from .types.thread_get_user_context_request_mode import ThreadGetUserContextRequestMode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -154,7 +155,7 @@ class ThreadClient:
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
-        fast: typing.Optional[bool] = None,
+        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
         """
@@ -168,8 +169,8 @@ class ThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
-        fast : typing.Optional[bool]
-            If true, bypasses context summarization and returns raw search results.
+        mode : typing.Optional[ThreadGetUserContextRequestMode]
+            Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -191,7 +192,7 @@ class ThreadClient:
         )
         """
         _response = self._raw_client.get_user_context(
-            thread_id, min_rating=min_rating, fast=fast, request_options=request_options
+            thread_id, min_rating=min_rating, mode=mode, request_options=request_options
         )
         return _response.data
 
@@ -464,7 +465,7 @@ class AsyncThreadClient:
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
-        fast: typing.Optional[bool] = None,
+        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
         """
@@ -478,8 +479,8 @@ class AsyncThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
-        fast : typing.Optional[bool]
-            If true, bypasses context summarization and returns raw search results.
+        mode : typing.Optional[ThreadGetUserContextRequestMode]
+            Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -509,7 +510,7 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_user_context(
-            thread_id, min_rating=min_rating, fast=fast, request_options=request_options
+            thread_id, min_rating=min_rating, mode=mode, request_options=request_options
         )
         return _response.data
 

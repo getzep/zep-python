@@ -1484,7 +1484,7 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
-**fast:** `typing.Optional[bool]` — If true, bypasses context summarization and returns raw search results.
+**mode:** `typing.Optional[ThreadGetUserContextRequestMode]` — Defaults to summary mode. Use basic for lower latency
     
 </dd>
 </dl>

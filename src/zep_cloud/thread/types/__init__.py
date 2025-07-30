@@ -2,6 +2,6 @@
 
 # isort: skip_file
 
-from .types import ThreadGetUserContextRequestMode
+from .thread_get_user_context_request_mode import ThreadGetUserContextRequestMode
 
 __all__ = ["ThreadGetUserContextRequestMode"]

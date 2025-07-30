@@ -22,6 +22,7 @@ from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
+from .types.thread_get_user_context_request_mode import ThreadGetUserContextRequestMode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -263,7 +264,7 @@ class RawThreadClient:
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
-        fast: typing.Optional[bool] = None,
+        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ThreadContextResponse]:
         """
@@ -277,8 +278,8 @@ class RawThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
-        fast : typing.Optional[bool]
-            If true, bypasses context summarization and returns raw search results.
+        mode : typing.Optional[ThreadGetUserContextRequestMode]
+            Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -293,7 +294,7 @@ class RawThreadClient:
             method="GET",
             params={
                 "minRating": min_rating,
-                "fast": fast,
+                "mode": mode,
             },
             request_options=request_options,
         )
@@ -737,7 +738,7 @@ class AsyncRawThreadClient:
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
-        fast: typing.Optional[bool] = None,
+        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ThreadContextResponse]:
         """
@@ -751,8 +752,8 @@ class AsyncRawThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
-        fast : typing.Optional[bool]
-            If true, bypasses context summarization and returns raw search results.
+        mode : typing.Optional[ThreadGetUserContextRequestMode]
+            Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -767,7 +768,7 @@ class AsyncRawThreadClient:
             method="GET",
             params={
                 "minRating": min_rating,
-                "fast": fast,
+                "mode": mode,
             },
             request_options=request_options,
         )
