@@ -3,12 +3,11 @@ Example of using the Zep Python SDK asynchronously.
 
 This script demonstrates the following functionality:
 - Creating a user.
-- Creating a session associated with the created user.
-- Adding messages to the session.
-- Searching the session memory for a specific query.
-- Searching the session memory with MMR reranking.
-- Searching the session memory with a metadata filter.
-- optionally deleting the session.
+- Creating a thread associated with the created user.
+- Adding messages to the thread.
+- Searching the thread memory for a specific query.
+- Searching the thread memory with MMR reranking.
+- optionally deleting the thread.
 """
 
 import asyncio
@@ -50,74 +49,40 @@ async def main() -> None:
         email="user@example.com",
         first_name="Jane",
         last_name="Smith",
-        metadata={"vip": "true"},
     )
 
-    # await asyncio.sleep(1)
     print(f"User added: {user_id}")
-    session_id = uuid.uuid4().hex  # unique session id. can be any alphanum string
+    thread_id = uuid.uuid4().hex  # unique thread id. can be any alphanum string
 
-    # Create session associated with the above user
-    print(f"\n---Creating session: {session_id}")
+    # Create thread associated with the above user
+    print(f"\n---Creating thread: {thread_id}")
 
-    await client.memory.add_session(
-        session_id=session_id,
+    await client.thread.create(
+        thread_id=thread_id,
         user_id=user_id,
-        metadata={"foo": "bar"},
     )
-    # await asyncio.sleep(1)
-    # Update session metadata
-    print(f"\n---Updating session: {session_id}")
-    await client.memory.update_session(session_id=session_id, metadata={"bar": "foo"})
-    # await asyncio.sleep(3)
-    # Get session
-    print(f"\n---Getting session: {session_id}")
-    session = await client.memory.get_session(session_id)
-    print(f"Session details: {session}")
-    # await asyncio.sleep(3)
 
-    # Add Memory for session
-    print(f"\n---Add Memory for Session: {session_id}")
+    print(f"\n---Getting thread: {thread_id}")
+    thread = await client.thread.get(thread_id)
+    print(f"thread details: {thread}")
+
+    print(f"\n---Add messages to the thread: {thread_id}")
     for m in history:
         print(f"{m['role']}: {m['content']}")
-        await client.memory.add(session_id=session_id, messages=[Message(**m)])
+        await client.thread.add_messages(thread_id=thread_id, messages=[Message(**m)])
         # await asyncio.sleep(0.5)
 
     #  Wait for the messages to be processed
     await asyncio.sleep(50)
 
-    # Synthesize a question from most recent messages.
-    # Useful for RAG apps. This is faster than using an LLM chain.
-    print("\n---Synthesize a question from most recent messages")
-    question = await client.memory.synthesize_question(session_id, last_n_messages=3)
-    print(f"Question: {question}")
 
-    # Classify the session.
-    # Useful for semantic routing, filtering, and many other use cases.
-    print("\n---Classify the session")
-    classes = [
-        "low spender <$50",
-        "medium spender >=$50, <$100",
-        "high spender >=$100",
-        "unknown",
-    ]
-    classification = await client.memory.classify_session(
-        session_id, name="spender_category", classes=classes, persist=True
-    )
-    print(f"Classification: {classification}")
+    print(f"\n---Get user context for thread: {thread_id}")
+    memory = await client.thread.get_user_context(thread_id)
+    print(f"Context: {memory.context}")
 
-    # Get Memory for session
-    print(f"\n---Get Perpetual Memory for Session: {session_id}")
-    memory = await client.memory.get(session_id)
-    print(f"Memory: {memory}")
-    print("\n---End of Memory")
-
-    print(f"Memory context: {memory.context}")
-
-    # Delete Memory for session
+    # Delete thread and wipe thread memory
     # Uncomment to run
-    # print(f"\n6---deleteMemory for Session: {session_id}")
-    # await client.memory.delete(session_id)
+    # await client.thread.delete(thread_id)
 
 
 if __name__ == "__main__":

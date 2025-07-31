@@ -1,25 +1,38 @@
-from zep_cloud import EntityEdgeSourceTarget, EdgeType
-from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from zep_cloud.external_clients.ontology import EdgeModel, edge_model_to_api_schema
-from zep_cloud.graph.client import GraphClient as BaseGraphClient, AsyncGraphClient as AsyncBaseGraphClient
-from zep_cloud.types import EntityType
 import typing
-from zep_cloud.external_clients.ontology import entity_model_to_api_schema
+
+from zep_cloud import EdgeType, EntityEdgeSourceTarget
+from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from zep_cloud.external_clients.ontology import (
+    EdgeModel,
+    edge_model_to_api_schema,
+    entity_model_to_api_schema,
+)
+from zep_cloud.graph.client import AsyncGraphClient as AsyncBaseGraphClient
+from zep_cloud.graph.client import GraphClient as BaseGraphClient
+from zep_cloud.types import EntityType
+
 if typing.TYPE_CHECKING:
     from zep_cloud.external_clients.ontology import EntityModel
 from zep_cloud.core.request_options import RequestOptions
 
+
 class GraphClient(BaseGraphClient):
     def __init__(self, *, client_wrapper: SyncClientWrapper):
-        super().__init__(
-            client_wrapper=client_wrapper
-        )
+        super().__init__(client_wrapper=client_wrapper)
 
     def set_ontology(
-            self,
-            entities: dict[str, "EntityModel"],
-            edges: typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]] = None,
-            request_options: typing.Optional[RequestOptions] = None,
+        self,
+        entities: dict[str, "EntityModel"],
+        edges: typing.Optional[
+            dict[
+                str,
+                typing.Union[
+                    "EdgeModel",
+                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
+                ],
+            ]
+        ] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ):
         """
         Sets the entity and edge types for a project, replacing any existing ones.
@@ -93,10 +106,18 @@ class GraphClient(BaseGraphClient):
         )
 
     def set_entity_types(
-            self,
-            entities: dict[str, "EntityModel"],
-            edges: typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]] = None,
-            request_options: typing.Optional[RequestOptions] = None,
+        self,
+        entities: dict[str, "EntityModel"],
+        edges: typing.Optional[
+            dict[
+                str,
+                typing.Union[
+                    "EdgeModel",
+                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
+                ],
+            ]
+        ] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ):
         """
         Sets the entity and edge types for a project, replacing any existing ones.
@@ -193,15 +214,21 @@ class GraphClient(BaseGraphClient):
 
 class AsyncGraphClient(AsyncBaseGraphClient):
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        super().__init__(
-            client_wrapper=client_wrapper
-        )
+        super().__init__(client_wrapper=client_wrapper)
 
     async def set_ontology(
-            self,
-            entities: dict[str, "EntityModel"],
-            edges: typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]] = None,
-            request_options: typing.Optional[RequestOptions] = None,
+        self,
+        entities: dict[str, "EntityModel"],
+        edges: typing.Optional[
+            dict[
+                str,
+                typing.Union[
+                    "EdgeModel",
+                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
+                ],
+            ]
+        ] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ):
         """
         Sets the entity and edge types for a project, replacing any existing ones.
@@ -269,16 +296,22 @@ class AsyncGraphClient(AsyncBaseGraphClient):
         )
         """
         return await self.set_entity_types(
-            entities=entities,
-            edges=edges,
-            request_options=request_options
+            entities=entities, edges=edges, request_options=request_options
         )
 
     async def set_entity_types(
-            self,
-            entities: dict[str, "EntityModel"],
-            edges: typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]] = None,
-            request_options: typing.Optional[RequestOptions] = None,
+        self,
+        entities: dict[str, "EntityModel"],
+        edges: typing.Optional[
+            dict[
+                str,
+                typing.Union[
+                    "EdgeModel",
+                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
+                ],
+            ]
+        ] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ):
         """
         Sets the entity and edge types for a project, replacing any existing ones.
@@ -369,7 +402,6 @@ class AsyncGraphClient(AsyncBaseGraphClient):
         res = await self.set_entity_types_internal(
             entity_types=api_entity_types,
             edge_types=api_edge_types,
-            request_options=request_options
+            request_options=request_options,
         )
         return res
-   
