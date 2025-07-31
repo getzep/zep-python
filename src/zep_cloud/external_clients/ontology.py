@@ -50,34 +50,29 @@ class EntityBaseBoolean(EntityField):
 # Each type includes:
 # 1. The base Python type (str, int, float, bool)
 # 2. A default value of None
-# 3. Entity type information
-# 4. JSON schema information for serialization
+# 3. JSON schema information for serialization
 
 EntityText = Annotated[
     typing.Optional[str],
     Field(default=None),
-    Field(..., entity_type=EntityPropertyType.Text),
     WithJsonSchema(EntityBaseText.model_json_schema(), mode="serialization"),
 ]
 
 EntityInt = Annotated[
     typing.Optional[int],
     Field(default=None),
-    Field(..., entity_type=EntityPropertyType.Int),
     WithJsonSchema(EntityBaseInt.model_json_schema(), mode="serialization"),
 ]
 
 EntityFloat = Annotated[
     typing.Optional[float],
     Field(default=None),
-    Field(..., entity_type=EntityPropertyType.Float),
     WithJsonSchema(EntityBaseFloat.model_json_schema(), mode="serialization"),
 ]
 
 EntityBoolean = Annotated[
     typing.Optional[bool],
     Field(default=None),
-    Field(..., entity_type=EntityPropertyType.Boolean),
     WithJsonSchema(EntityBaseBoolean.model_json_schema(), mode="serialization"),
 ]
 
