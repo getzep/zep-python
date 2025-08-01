@@ -614,164 +614,6 @@ client.graph.clone()
 </dl>
 </details>
 
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">search</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Perform a graph search query.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.search(
-    query="query",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**query:** `str` — The string to search for (required)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**bfs_origin_node_uuids:** `typing.Optional[typing.Sequence[str]]` — Nodes that are the origins of the BFS searches
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**center_node_uuid:** `typing.Optional[str]` — Node to rerank around for node distance reranking
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**graph_id:** `typing.Optional[str]` — The graph_id to search in. When searching user graph, please use user_id instead.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `typing.Optional[int]` — The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**min_fact_rating:** `typing.Optional[float]` — The minimum rating by which to filter relevant facts
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**min_score:** `typing.Optional[float]` — Deprecated
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**mmr_lambda:** `typing.Optional[float]` — weighting for maximal marginal relevance
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**reranker:** `typing.Optional[Reranker]` — Defaults to RRF
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges. Communities will be added in the future.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**search_filters:** `typing.Optional[SearchFilters]` — Search filters to apply to the search
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `typing.Optional[str]` — The user_id when searching user graph. If not searching user graph, please use graph_id instead.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">create</a>(...)</code></summary>
 <dl>
 <dd>
@@ -923,6 +765,164 @@ client.graph.list_all()
 <dd>
 
 **page_size:** `typing.Optional[int]` — Number of graphs to retrieve per page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">search</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Perform a graph search query.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.search(
+    query="query",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**query:** `str` — The string to search for (required)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bfs_origin_node_uuids:** `typing.Optional[typing.Sequence[str]]` — Nodes that are the origins of the BFS searches
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**center_node_uuid:** `typing.Optional[str]` — Node to rerank around for node distance reranking
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_id:** `typing.Optional[str]` — The graph_id to search in. When searching user graph, please use user_id instead.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**min_fact_rating:** `typing.Optional[float]` — The minimum rating by which to filter relevant facts
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**min_score:** `typing.Optional[float]` — Deprecated
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mmr_lambda:** `typing.Optional[float]` — weighting for maximal marginal relevance
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reranker:** `typing.Optional[Reranker]` — Defaults to RRF
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges. Communities will be added in the future.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search_filters:** `typing.Optional[SearchFilters]` — Search filters to apply to the search
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` — The user_id when searching user graph. If not searching user graph, please use graph_id instead.
     
 </dd>
 </dl>
