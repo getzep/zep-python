@@ -385,6 +385,96 @@ class GraphClient:
         )
         return _response.data
 
+    def create(
+        self,
+        *,
+        graph_id: str,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Graph:
+        """
+        Creates a new graph.
+
+        Parameters
+        ----------
+        graph_id : str
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Graph
+            The added graph
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.create(
+            graph_id="graph_id",
+        )
+        """
+        _response = self._raw_client.create(
+            graph_id=graph_id,
+            description=description,
+            fact_rating_instruction=fact_rating_instruction,
+            name=name,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def list_all(
+        self,
+        *,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GraphListResponse:
+        """
+        Returns all graphs.
+
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1.
+
+        page_size : typing.Optional[int]
+            Number of graphs to retrieve per page.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphListResponse
+            Successfully retrieved list of graphs.
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.list_all()
+        """
+        _response = self._raw_client.list_all(
+            page_number=page_number, page_size=page_size, request_options=request_options
+        )
+        return _response.data
+
     def search(
         self,
         *,
@@ -476,96 +566,6 @@ class GraphClient:
             search_filters=search_filters,
             user_id=user_id,
             request_options=request_options,
-        )
-        return _response.data
-
-    def create(
-        self,
-        *,
-        graph_id: str,
-        description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> Graph:
-        """
-        Creates a new graph.
-
-        Parameters
-        ----------
-        graph_id : str
-
-        description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-
-        name : typing.Optional[str]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        Graph
-            The added graph
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.graph.create(
-            graph_id="graph_id",
-        )
-        """
-        _response = self._raw_client.create(
-            graph_id=graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
-        )
-        return _response.data
-
-    def list_all(
-        self,
-        *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> GraphListResponse:
-        """
-        Returns all graphs.
-
-        Parameters
-        ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1.
-
-        page_size : typing.Optional[int]
-            Number of graphs to retrieve per page.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        GraphListResponse
-            Successfully retrieved list of graphs.
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.graph.list_all()
-        """
-        _response = self._raw_client.list_all(
-            page_number=page_number, page_size=page_size, request_options=request_options
         )
         return _response.data
 
@@ -1087,108 +1087,6 @@ class AsyncGraphClient:
         )
         return _response.data
 
-    async def search(
-        self,
-        *,
-        query: str,
-        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
-        center_node_uuid: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        min_fact_rating: typing.Optional[float] = OMIT,
-        min_score: typing.Optional[float] = OMIT,
-        mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[Reranker] = OMIT,
-        scope: typing.Optional[GraphSearchScope] = OMIT,
-        search_filters: typing.Optional[SearchFilters] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> GraphSearchResults:
-        """
-        Perform a graph search query.
-
-        Parameters
-        ----------
-        query : str
-            The string to search for (required)
-
-        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
-            Nodes that are the origins of the BFS searches
-
-        center_node_uuid : typing.Optional[str]
-            Node to rerank around for node distance reranking
-
-        graph_id : typing.Optional[str]
-            The graph_id to search in. When searching user graph, please use user_id instead.
-
-        limit : typing.Optional[int]
-            The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
-
-        min_fact_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts
-
-        min_score : typing.Optional[float]
-            Deprecated
-
-        mmr_lambda : typing.Optional[float]
-            weighting for maximal marginal relevance
-
-        reranker : typing.Optional[Reranker]
-            Defaults to RRF
-
-        scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Communities will be added in the future.
-
-        search_filters : typing.Optional[SearchFilters]
-            Search filters to apply to the search
-
-        user_id : typing.Optional[str]
-            The user_id when searching user graph. If not searching user graph, please use graph_id instead.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        GraphSearchResults
-            Graph search results
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.graph.search(
-                query="query",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.search(
-            query=query,
-            bfs_origin_node_uuids=bfs_origin_node_uuids,
-            center_node_uuid=center_node_uuid,
-            graph_id=graph_id,
-            limit=limit,
-            min_fact_rating=min_fact_rating,
-            min_score=min_score,
-            mmr_lambda=mmr_lambda,
-            reranker=reranker,
-            scope=scope,
-            search_filters=search_filters,
-            user_id=user_id,
-            request_options=request_options,
-        )
-        return _response.data
-
     async def create(
         self,
         *,
@@ -1292,6 +1190,108 @@ class AsyncGraphClient:
         """
         _response = await self._raw_client.list_all(
             page_number=page_number, page_size=page_size, request_options=request_options
+        )
+        return _response.data
+
+    async def search(
+        self,
+        *,
+        query: str,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        min_fact_rating: typing.Optional[float] = OMIT,
+        min_score: typing.Optional[float] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        reranker: typing.Optional[Reranker] = OMIT,
+        scope: typing.Optional[GraphSearchScope] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GraphSearchResults:
+        """
+        Perform a graph search query.
+
+        Parameters
+        ----------
+        query : str
+            The string to search for (required)
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes that are the origins of the BFS searches
+
+        center_node_uuid : typing.Optional[str]
+            Node to rerank around for node distance reranking
+
+        graph_id : typing.Optional[str]
+            The graph_id to search in. When searching user graph, please use user_id instead.
+
+        limit : typing.Optional[int]
+            The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
+
+        min_fact_rating : typing.Optional[float]
+            The minimum rating by which to filter relevant facts
+
+        min_score : typing.Optional[float]
+            Deprecated
+
+        mmr_lambda : typing.Optional[float]
+            weighting for maximal marginal relevance
+
+        reranker : typing.Optional[Reranker]
+            Defaults to RRF
+
+        scope : typing.Optional[GraphSearchScope]
+            Defaults to Edges. Communities will be added in the future.
+
+        search_filters : typing.Optional[SearchFilters]
+            Search filters to apply to the search
+
+        user_id : typing.Optional[str]
+            The user_id when searching user graph. If not searching user graph, please use graph_id instead.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphSearchResults
+            Graph search results
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.search(
+                query="query",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.search(
+            query=query,
+            bfs_origin_node_uuids=bfs_origin_node_uuids,
+            center_node_uuid=center_node_uuid,
+            graph_id=graph_id,
+            limit=limit,
+            min_fact_rating=min_fact_rating,
+            min_score=min_score,
+            mmr_lambda=mmr_lambda,
+            reranker=reranker,
+            scope=scope,
+            search_filters=search_filters,
+            user_id=user_id,
+            request_options=request_options,
         )
         return _response.data
 
