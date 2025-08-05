@@ -40,13 +40,23 @@ class RawGraphClient:
         self._client_wrapper = client_wrapper
 
     def list_entity_types(
-        self, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EntityTypeResponse]:
         """
-        Returns all entity types for a project.
+        Returns all entity types for a project, user, or graph.
 
         Parameters
         ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific entity types
+
+        graph_id : typing.Optional[str]
+            Graph ID to get group-specific entity types
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -58,6 +68,10 @@ class RawGraphClient:
         _response = self._client_wrapper.httpx_client.request(
             "entity-types",
             method="GET",
+            params={
+                "user_id": user_id,
+                "graph_id": graph_id,
+            },
             request_options=request_options,
         )
         try:
@@ -70,6 +84,17 @@ class RawGraphClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
@@ -106,16 +131,22 @@ class RawGraphClient:
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[SuccessResponse]:
         """
-        Sets the entity types for a project, replacing any existing ones.
+        Sets the entity types for a project, user, or graph, replacing any existing ones.
 
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -135,6 +166,8 @@ class RawGraphClient:
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
+                "graph_id": graph_id,
+                "user_id": user_id,
             },
             headers={
                 "content-type": "application/json",
@@ -1138,13 +1171,23 @@ class AsyncRawGraphClient:
         self._client_wrapper = client_wrapper
 
     async def list_entity_types(
-        self, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EntityTypeResponse]:
         """
-        Returns all entity types for a project.
+        Returns all entity types for a project, user, or graph.
 
         Parameters
         ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific entity types
+
+        graph_id : typing.Optional[str]
+            Graph ID to get group-specific entity types
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -1156,6 +1199,10 @@ class AsyncRawGraphClient:
         _response = await self._client_wrapper.httpx_client.request(
             "entity-types",
             method="GET",
+            params={
+                "user_id": user_id,
+                "graph_id": graph_id,
+            },
             request_options=request_options,
         )
         try:
@@ -1168,6 +1215,17 @@ class AsyncRawGraphClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
@@ -1204,16 +1262,22 @@ class AsyncRawGraphClient:
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[SuccessResponse]:
         """
-        Sets the entity types for a project, replacing any existing ones.
+        Sets the entity types for a project, user, or graph, replacing any existing ones.
 
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1233,6 +1297,8 @@ class AsyncRawGraphClient:
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
+                "graph_id": graph_id,
+                "user_id": user_id,
             },
             headers={
                 "content-type": "application/json",

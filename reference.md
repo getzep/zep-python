@@ -1,6 +1,6 @@
 # Reference
 ## Graph
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_entity_types</a>()</code></summary>
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_entity_types</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -12,7 +12,7 @@
 <dl>
 <dd>
 
-Returns all entity types for a project.
+Returns all entity types for a project, user, or graph.
 </dd>
 </dl>
 </dd>
@@ -48,6 +48,22 @@ client.graph.list_entity_types()
 <dl>
 <dd>
 
+**user_id:** `typing.Optional[str]` — User ID to get user-specific entity types
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_id:** `typing.Optional[str]` — Graph ID to get group-specific entity types
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -72,7 +88,7 @@ client.graph.list_entity_types()
 <dl>
 <dd>
 
-Sets the entity types for a project, replacing any existing ones.
+Sets the entity types for a project, user, or graph, replacing any existing ones.
 </dd>
 </dl>
 </dd>
@@ -117,6 +133,22 @@ client.graph.set_entity_types_internal()
 <dd>
 
 **entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>
