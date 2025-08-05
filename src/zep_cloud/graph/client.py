@@ -92,10 +92,10 @@ class GraphClient:
     def set_entity_types_internal(
         self,
         *,
-        graph_ids: typing.Sequence[str],
-        user_ids: typing.Sequence[str],
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
@@ -103,13 +103,13 @@ class GraphClient:
 
         Parameters
         ----------
-        graph_ids : typing.Sequence[str]
-
-        user_ids : typing.Sequence[str]
-
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -126,16 +126,13 @@ class GraphClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.set_entity_types_internal(
-            graph_ids=["graph_ids"],
-            user_ids=["user_ids"],
-        )
+        client.graph.set_entity_types_internal()
         """
         _response = self._raw_client.set_entity_types_internal(
-            graph_ids=graph_ids,
-            user_ids=user_ids,
             edge_types=edge_types,
             entity_types=entity_types,
+            graph_ids=graph_ids,
+            user_ids=user_ids,
             request_options=request_options,
         )
         return _response.data
@@ -781,10 +778,10 @@ class AsyncGraphClient:
     async def set_entity_types_internal(
         self,
         *,
-        graph_ids: typing.Sequence[str],
-        user_ids: typing.Sequence[str],
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
@@ -792,13 +789,13 @@ class AsyncGraphClient:
 
         Parameters
         ----------
-        graph_ids : typing.Sequence[str]
-
-        user_ids : typing.Sequence[str]
-
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -820,19 +817,16 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            await client.graph.set_entity_types_internal(
-                graph_ids=["graph_ids"],
-                user_ids=["user_ids"],
-            )
+            await client.graph.set_entity_types_internal()
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.set_entity_types_internal(
-            graph_ids=graph_ids,
-            user_ids=user_ids,
             edge_types=edge_types,
             entity_types=entity_types,
+            graph_ids=graph_ids,
+            user_ids=user_ids,
             request_options=request_options,
         )
         return _response.data

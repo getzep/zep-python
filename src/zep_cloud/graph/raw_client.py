@@ -129,10 +129,10 @@ class RawGraphClient:
     def set_entity_types_internal(
         self,
         *,
-        graph_ids: typing.Sequence[str],
-        user_ids: typing.Sequence[str],
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[SuccessResponse]:
         """
@@ -140,13 +140,13 @@ class RawGraphClient:
 
         Parameters
         ----------
-        graph_ids : typing.Sequence[str]
-
-        user_ids : typing.Sequence[str]
-
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1260,10 +1260,10 @@ class AsyncRawGraphClient:
     async def set_entity_types_internal(
         self,
         *,
-        graph_ids: typing.Sequence[str],
-        user_ids: typing.Sequence[str],
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[SuccessResponse]:
         """
@@ -1271,13 +1271,13 @@ class AsyncRawGraphClient:
 
         Parameters
         ----------
-        graph_ids : typing.Sequence[str]
-
-        user_ids : typing.Sequence[str]
-
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

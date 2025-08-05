@@ -108,10 +108,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.set_entity_types_internal(
-    graph_ids=["graph_ids"],
-    user_ids=["user_ids"],
-)
+client.graph.set_entity_types_internal()
 
 ```
 </dd>
@@ -127,22 +124,6 @@ client.graph.set_entity_types_internal(
 <dl>
 <dd>
 
-**graph_ids:** `typing.Sequence[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_ids:** `typing.Sequence[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **edge_types:** `typing.Optional[typing.Sequence[EdgeType]]` 
     
 </dd>
@@ -152,6 +133,22 @@ client.graph.set_entity_types_internal(
 <dd>
 
 **entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_ids:** `typing.Optional[typing.Sequence[str]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_ids:** `typing.Optional[typing.Sequence[str]]` 
     
 </dd>
 </dl>
