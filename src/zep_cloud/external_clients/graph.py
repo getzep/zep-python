@@ -32,6 +32,8 @@ class GraphClient(BaseGraphClient):
                 ],
             ]
         ] = None,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ):
         """
@@ -40,8 +42,17 @@ class GraphClient(BaseGraphClient):
         Parameters
         ----------
         entities : dict[str, "EntityModel"]
+            Entity type definitions.
 
         edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
+            Edge type definitions.
+
+        user_id : typing.Optional[str]
+
+            The user ID for which to set the ontology. If None, sets for the entire project.
+
+        graph_id : typing.Optional[str]
+            The graph ID for which to set the ontology. If None, sets for the entire project.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -102,6 +113,8 @@ class GraphClient(BaseGraphClient):
         return self.set_entity_types(
             entities=entities,
             edges=edges,
+            user_id=user_id,
+            graph_id=graph_id,
             request_options=request_options,
         )
 
@@ -117,6 +130,8 @@ class GraphClient(BaseGraphClient):
                 ],
             ]
         ] = None,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ):
         """
@@ -127,6 +142,13 @@ class GraphClient(BaseGraphClient):
         entities : dict[str, "EntityModel"]
 
         edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
+
+        user_id : typing.Optional[str]
+
+            The user ID for which to set the ontology. If None, sets for the entire project.
+
+        graph_id : typing.Optional[str]
+            The graph ID for which to set the ontology. If None, sets for the entire project.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -207,6 +229,8 @@ class GraphClient(BaseGraphClient):
         res = self.set_entity_types_internal(
             entity_types=api_entity_types,
             edge_types=api_edge_types,
+            user_id=user_id,
+            graph_id=graph_id,
             request_options=request_options,
         )
         return res
@@ -228,6 +252,8 @@ class AsyncGraphClient(AsyncBaseGraphClient):
                 ],
             ]
         ] = None,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ):
         """
@@ -236,8 +262,17 @@ class AsyncGraphClient(AsyncBaseGraphClient):
         Parameters
         ----------
         entities : dict[str, "EntityModel"]
+            Entity type definitions.
 
         edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
+            Edge type definitions.
+
+        user_id : typing.Optional[str]
+
+            The user ID for which to set the ontology. If None, sets for the entire project.
+
+        graph_id : typing.Optional[str]
+            The graph ID for which to set the ontology. If None, sets for the entire project.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -296,7 +331,11 @@ class AsyncGraphClient(AsyncBaseGraphClient):
         )
         """
         return await self.set_entity_types(
-            entities=entities, edges=edges, request_options=request_options
+            entities=entities,
+            edges=edges,
+            request_options=request_options,
+            user_id=user_id,
+            graph_id=graph_id
         )
 
     async def set_entity_types(
@@ -311,6 +350,8 @@ class AsyncGraphClient(AsyncBaseGraphClient):
                 ],
             ]
         ] = None,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ):
         """
@@ -321,6 +362,13 @@ class AsyncGraphClient(AsyncBaseGraphClient):
         entities : dict[str, "EntityModel"]
 
         edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
+
+        user_id : typing.Optional[str]
+
+            The user ID for which to set the ontology. If None, sets for the entire project.
+
+        graph_id : typing.Optional[str]
+            The graph ID for which to set the ontology. If None, sets for the entire project.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -402,6 +450,8 @@ class AsyncGraphClient(AsyncBaseGraphClient):
         res = await self.set_entity_types_internal(
             entity_types=api_entity_types,
             edge_types=api_edge_types,
+            user_id=user_id,
+            graph_id=graph_id,
             request_options=request_options,
         )
         return res
