@@ -65,7 +65,7 @@ class GraphClient:
             User ID to get user-specific entity types
 
         graph_id : typing.Optional[str]
-            Graph ID to get group-specific entity types
+            Graph ID to get graph-specific entity types
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -92,24 +92,24 @@ class GraphClient:
     def set_entity_types_internal(
         self,
         *,
+        graph_ids: typing.Sequence[str],
+        user_ids: typing.Sequence[str],
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Sets the entity types for a project, user, or graph, replacing any existing ones.
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
+        graph_ids : typing.Sequence[str]
+
+        user_ids : typing.Sequence[str]
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
-
-        graph_id : typing.Optional[str]
-
-        user_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -126,13 +126,16 @@ class GraphClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.set_entity_types_internal()
+        client.graph.set_entity_types_internal(
+            graph_ids=["graph_ids"],
+            user_ids=["user_ids"],
+        )
         """
         _response = self._raw_client.set_entity_types_internal(
+            graph_ids=graph_ids,
+            user_ids=user_ids,
             edge_types=edge_types,
             entity_types=entity_types,
-            graph_id=graph_id,
-            user_id=user_id,
             request_options=request_options,
         )
         return _response.data
@@ -743,7 +746,7 @@ class AsyncGraphClient:
             User ID to get user-specific entity types
 
         graph_id : typing.Optional[str]
-            Graph ID to get group-specific entity types
+            Graph ID to get graph-specific entity types
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -778,24 +781,24 @@ class AsyncGraphClient:
     async def set_entity_types_internal(
         self,
         *,
+        graph_ids: typing.Sequence[str],
+        user_ids: typing.Sequence[str],
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Sets the entity types for a project, user, or graph, replacing any existing ones.
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
+        graph_ids : typing.Sequence[str]
+
+        user_ids : typing.Sequence[str]
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
-
-        graph_id : typing.Optional[str]
-
-        user_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -817,16 +820,19 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            await client.graph.set_entity_types_internal()
+            await client.graph.set_entity_types_internal(
+                graph_ids=["graph_ids"],
+                user_ids=["user_ids"],
+            )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.set_entity_types_internal(
+            graph_ids=graph_ids,
+            user_ids=user_ids,
             edge_types=edge_types,
             entity_types=entity_types,
-            graph_id=graph_id,
-            user_id=user_id,
             request_options=request_options,
         )
         return _response.data

@@ -56,7 +56,7 @@ client.graph.list_entity_types()
 <dl>
 <dd>
 
-**graph_id:** `typing.Optional[str]` — Graph ID to get group-specific entity types
+**graph_id:** `typing.Optional[str]` — Graph ID to get graph-specific entity types
     
 </dd>
 </dl>
@@ -88,7 +88,7 @@ client.graph.list_entity_types()
 <dl>
 <dd>
 
-Sets the entity types for a project, user, or graph, replacing any existing ones.
+Sets the entity types for multiple users and graphs, replacing any existing ones.
 </dd>
 </dl>
 </dd>
@@ -108,7 +108,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.set_entity_types_internal()
+client.graph.set_entity_types_internal(
+    graph_ids=["graph_ids"],
+    user_ids=["user_ids"],
+)
 
 ```
 </dd>
@@ -124,6 +127,22 @@ client.graph.set_entity_types_internal()
 <dl>
 <dd>
 
+**graph_ids:** `typing.Sequence[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_ids:** `typing.Sequence[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **edge_types:** `typing.Optional[typing.Sequence[EdgeType]]` 
     
 </dd>
@@ -133,22 +152,6 @@ client.graph.set_entity_types_internal()
 <dd>
 
 **entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**graph_id:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>

@@ -55,7 +55,7 @@ class RawGraphClient:
             User ID to get user-specific entity types
 
         graph_id : typing.Optional[str]
-            Graph ID to get group-specific entity types
+            Graph ID to get graph-specific entity types
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -129,24 +129,24 @@ class RawGraphClient:
     def set_entity_types_internal(
         self,
         *,
+        graph_ids: typing.Sequence[str],
+        user_ids: typing.Sequence[str],
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[SuccessResponse]:
         """
-        Sets the entity types for a project, user, or graph, replacing any existing ones.
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
+        graph_ids : typing.Sequence[str]
+
+        user_ids : typing.Sequence[str]
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
-
-        graph_id : typing.Optional[str]
-
-        user_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -166,8 +166,8 @@ class RawGraphClient:
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
-                "graph_id": graph_id,
-                "user_id": user_id,
+                "graph_ids": graph_ids,
+                "user_ids": user_ids,
             },
             headers={
                 "content-type": "application/json",
@@ -1186,7 +1186,7 @@ class AsyncRawGraphClient:
             User ID to get user-specific entity types
 
         graph_id : typing.Optional[str]
-            Graph ID to get group-specific entity types
+            Graph ID to get graph-specific entity types
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1260,24 +1260,24 @@ class AsyncRawGraphClient:
     async def set_entity_types_internal(
         self,
         *,
+        graph_ids: typing.Sequence[str],
+        user_ids: typing.Sequence[str],
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[SuccessResponse]:
         """
-        Sets the entity types for a project, user, or graph, replacing any existing ones.
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
+        graph_ids : typing.Sequence[str]
+
+        user_ids : typing.Sequence[str]
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
-
-        graph_id : typing.Optional[str]
-
-        user_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1297,8 +1297,8 @@ class AsyncRawGraphClient:
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
-                "graph_id": graph_id,
-                "user_id": user_id,
+                "graph_ids": graph_ids,
+                "user_ids": user_ids,
             },
             headers={
                 "content-type": "application/json",
