@@ -467,7 +467,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
-        Returns all graphs.
+        List all graphs. In order to list users, use user.list_ordered instead
 
         Parameters
         ----------
@@ -1201,7 +1201,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
-        Returns all graphs.
+        List all graphs. In order to list users, use user.list_ordered instead
 
         Parameters
         ----------

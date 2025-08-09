@@ -752,7 +752,7 @@ client.graph.create(
 <dl>
 <dd>
 
-Returns all graphs.
+List all graphs. In order to list users, use user.list_ordered instead
 </dd>
 </dl>
 </dd>
@@ -1603,6 +1603,14 @@ client.thread.get(
 <dd>
 
 **cursor:** `typing.Optional[int]` — Cursor for pagination
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**lastn:** `typing.Optional[int]` — Number of most recent messages to return (overrides limit and cursor)
     
 </dd>
 </dl>

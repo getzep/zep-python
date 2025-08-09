@@ -202,6 +202,7 @@ class ThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
+        lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
@@ -217,6 +218,9 @@ class ThreadClient:
 
         cursor : typing.Optional[int]
             Cursor for pagination
+
+        lastn : typing.Optional[int]
+            Number of most recent messages to return (overrides limit and cursor)
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -237,7 +241,9 @@ class ThreadClient:
             thread_id="threadId",
         )
         """
-        _response = self._raw_client.get(thread_id, limit=limit, cursor=cursor, request_options=request_options)
+        _response = self._raw_client.get(
+            thread_id, limit=limit, cursor=cursor, lastn=lastn, request_options=request_options
+        )
         return _response.data
 
     def add_messages(
@@ -520,6 +526,7 @@ class AsyncThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
+        lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
@@ -535,6 +542,9 @@ class AsyncThreadClient:
 
         cursor : typing.Optional[int]
             Cursor for pagination
+
+        lastn : typing.Optional[int]
+            Number of most recent messages to return (overrides limit and cursor)
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -563,7 +573,9 @@ class AsyncThreadClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(thread_id, limit=limit, cursor=cursor, request_options=request_options)
+        _response = await self._raw_client.get(
+            thread_id, limit=limit, cursor=cursor, lastn=lastn, request_options=request_options
+        )
         return _response.data
 
     async def add_messages(
