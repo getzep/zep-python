@@ -345,6 +345,7 @@ class RawThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
+        lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[MessageListResponse]:
         """
@@ -361,6 +362,9 @@ class RawThreadClient:
         cursor : typing.Optional[int]
             Cursor for pagination
 
+        lastn : typing.Optional[int]
+            Number of most recent messages to return (overrides limit and cursor)
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -375,6 +379,7 @@ class RawThreadClient:
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "lastn": lastn,
             },
             request_options=request_options,
         )
@@ -819,6 +824,7 @@ class AsyncRawThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
+        lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[MessageListResponse]:
         """
@@ -835,6 +841,9 @@ class AsyncRawThreadClient:
         cursor : typing.Optional[int]
             Cursor for pagination
 
+        lastn : typing.Optional[int]
+            Number of most recent messages to return (overrides limit and cursor)
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -849,6 +858,7 @@ class AsyncRawThreadClient:
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "lastn": lastn,
             },
             request_options=request_options,
         )

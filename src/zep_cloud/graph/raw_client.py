@@ -727,7 +727,7 @@ class RawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GraphListResponse]:
         """
-        Returns all graphs.
+        List all graphs. In order to list users, use user.list_ordered instead
 
         Parameters
         ----------
@@ -1858,7 +1858,7 @@ class AsyncRawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GraphListResponse]:
         """
-        Returns all graphs.
+        List all graphs. In order to list users, use user.list_ordered instead
 
         Parameters
         ----------
