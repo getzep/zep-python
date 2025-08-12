@@ -5,6 +5,17 @@ from zep_cloud import EntityEdge, EntityNode, Episode
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+
+def parse_iso_datetime(iso_string: str) -> datetime:
+    """Parse ISO datetime string, handling Z suffix for UTC."""
+    try:
+        return datetime.fromisoformat(iso_string)
+    except ValueError:
+        # Handle Z suffix for Python 3.9 compatibility
+        if iso_string.endswith('Z'):
+            return datetime.fromisoformat(iso_string[:-1] + '+00:00')
+        raise
+
 TEMPLATE_STRING = """
 FACTS and ENTITIES{episodes_header} represent relevant context to the current conversation.
 
@@ -41,9 +52,9 @@ def format_edge_date_range(edge: EntityEdge) -> str:
     invalid_at = "present"
 
     if edge.valid_at is not None:
-        valid_at = datetime.fromisoformat(edge.valid_at).strftime(DATE_FORMAT)
+        valid_at = parse_iso_datetime(edge.valid_at).strftime(DATE_FORMAT)
     if edge.invalid_at is not None:
-        invalid_at = datetime.fromisoformat(edge.invalid_at).strftime(DATE_FORMAT)
+        invalid_at = parse_iso_datetime(edge.invalid_at).strftime(DATE_FORMAT)
 
     return f"{valid_at} - {invalid_at}"
 
@@ -110,7 +121,7 @@ def compose_context_string(edges: List[EntityEdge], nodes: List[EntityNode], epi
             
             # Parse timestamp if it's a string (ISO format)
             if isinstance(episode_created_at, str):
-                timestamp = datetime.fromisoformat(episode_created_at.replace('Z', '+00:00')).strftime(DATE_FORMAT)
+                timestamp = parse_iso_datetime(episode_created_at).strftime(DATE_FORMAT)
             else:
                 timestamp = episode_created_at.strftime(DATE_FORMAT)
             
