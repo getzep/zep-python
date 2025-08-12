@@ -573,7 +573,7 @@ class RawGraphClient:
         Returns
         -------
         HttpResponse[CloneGraphResponse]
-            Response object containing group_id or user_id pointing to the new graph
+            Response object containing graph_id or user_id pointing to the new graph
         """
         _response = self._client_wrapper.httpx_client.request(
             "graph/clone",
@@ -727,7 +727,7 @@ class RawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GraphListResponse]:
         """
-        List all graphs. In order to list users, use user.list_ordered instead
+        Returns all graphs. In order to list users, use user.list_ordered instead
 
         Parameters
         ----------
@@ -1704,7 +1704,7 @@ class AsyncRawGraphClient:
         Returns
         -------
         AsyncHttpResponse[CloneGraphResponse]
-            Response object containing group_id or user_id pointing to the new graph
+            Response object containing graph_id or user_id pointing to the new graph
         """
         _response = await self._client_wrapper.httpx_client.request(
             "graph/clone",
@@ -1858,7 +1858,7 @@ class AsyncRawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GraphListResponse]:
         """
-        List all graphs. In order to list users, use user.list_ordered instead
+        Returns all graphs. In order to list users, use user.list_ordered instead
 
         Parameters
         ----------

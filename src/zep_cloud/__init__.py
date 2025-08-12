@@ -3,6 +3,7 @@
 # isort: skip_file
 
 from .types import (
+    AddThreadMessagesRequest,
     AddThreadMessagesResponse,
     AddTripleResponse,
     ApiError,
@@ -53,6 +54,7 @@ from .thread import ThreadGetUserContextRequestMode
 from .version import __version__
 
 __all__ = [
+    "AddThreadMessagesRequest",
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",

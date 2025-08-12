@@ -308,6 +308,68 @@ class ThreadClient:
         )
         return _response.data
 
+    def add_messages_batch(
+        self,
+        thread_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AddThreadMessagesResponse:
+        """
+        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread to which messages should be added.
+
+        messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added, retained and used as context for messages
+            that are added to a user's graph.
+
+        return_context : typing.Optional[bool]
+            Optionally return memory context relevant to the most recent messages.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AddThreadMessagesResponse
+            An object, optionally containing user context retrieved for the last thread message
+
+        Examples
+        --------
+        from zep_cloud import Message, Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.thread.add_messages_batch(
+            thread_id="threadId",
+            messages=[
+                Message(
+                    content="content",
+                    role="norole",
+                )
+            ],
+        )
+        """
+        _response = self._raw_client.add_messages_batch(
+            thread_id,
+            messages=messages,
+            ignore_roles=ignore_roles,
+            return_context=return_context,
+            request_options=request_options,
+        )
+        return _response.data
+
 
 class AsyncThreadClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -640,6 +702,76 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.add_messages(
+            thread_id,
+            messages=messages,
+            ignore_roles=ignore_roles,
+            return_context=return_context,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def add_messages_batch(
+        self,
+        thread_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AddThreadMessagesResponse:
+        """
+        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread to which messages should be added.
+
+        messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added, retained and used as context for messages
+            that are added to a user's graph.
+
+        return_context : typing.Optional[bool]
+            Optionally return memory context relevant to the most recent messages.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AddThreadMessagesResponse
+            An object, optionally containing user context retrieved for the last thread message
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep, Message
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.thread.add_messages_batch(
+                thread_id="threadId",
+                messages=[
+                    Message(
+                        content="content",
+                        role="norole",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.add_messages_batch(
             thread_id,
             messages=messages,
             ignore_roles=ignore_roles,
