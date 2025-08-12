@@ -752,7 +752,7 @@ client.graph.create(
 <dl>
 <dd>
 
-List all graphs. In order to list users, use user.list_ordered instead
+Returns all graphs. In order to list users, use user.list_ordered instead
 </dd>
 </dl>
 </dd>
@@ -1663,6 +1663,110 @@ client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.thread.add_messages(
+    thread_id="threadId",
+    messages=[
+        Message(
+            content="content",
+            role="norole",
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**thread_id:** `str` — The ID of the thread to which messages should be added.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
+
+Optional list of role types to ignore when adding messages to graph memory.
+The message itself will still be added, retained and used as context for messages
+that are added to a user's graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**return_context:** `typing.Optional[bool]` — Optionally return memory context relevant to the most recent messages.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">add_messages_batch</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Message, Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.thread.add_messages_batch(
     thread_id="threadId",
     messages=[
         Message(
