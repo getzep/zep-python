@@ -2,6 +2,7 @@
 src/zep_cloud/client.py
 src/zep_cloud/graph/utils.py
 src/zep_cloud/external_clients/
+tests/graph/
 examples/
 pyproject.toml
 poetry.lock

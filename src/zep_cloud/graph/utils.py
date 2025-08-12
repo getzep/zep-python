@@ -1,24 +1,40 @@
 from datetime import datetime
 from typing import List
 
-from zep_cloud import EntityEdge, EntityNode
+from zep_cloud import EntityEdge, EntityNode, Episode
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+
+def parse_iso_datetime(iso_string: str) -> datetime:
+    """Parse ISO datetime string, handling Z suffix for UTC."""
+    try:
+        return datetime.fromisoformat(iso_string)
+    except ValueError:
+        # Handle Z suffix for Python 3.9 compatibility
+        if iso_string.endswith('Z'):
+            return datetime.fromisoformat(iso_string[:-1] + '+00:00')
+        raise
+
 TEMPLATE_STRING = """
-FACTS and ENTITIES represent relevant context to the current conversation.
+FACTS and ENTITIES{episodes_header} represent relevant context to the current conversation.
 
 # These are the most relevant facts and their valid date ranges
 # format: FACT (Date range: from - to)
 <FACTS>
-%s
+{facts}
 </FACTS>
 
 # These are the most relevant entities
-# ENTITY_NAME: entity summary
+# Name: ENTITY_NAME
+# Label: entity_label (if present)
+# Attributes: (if present)
+#   attr_name: attr_value
+# Summary: entity summary
 <ENTITIES>
-%s
+{entities}
 </ENTITIES>
+{episodes_section}
 """
 
 
@@ -36,35 +52,93 @@ def format_edge_date_range(edge: EntityEdge) -> str:
     invalid_at = "present"
 
     if edge.valid_at is not None:
-        valid_at = datetime.fromisoformat(edge.valid_at).strftime(DATE_FORMAT)
+        valid_at = parse_iso_datetime(edge.valid_at).strftime(DATE_FORMAT)
     if edge.invalid_at is not None:
-        invalid_at = datetime.fromisoformat(edge.invalid_at).strftime(DATE_FORMAT)
+        invalid_at = parse_iso_datetime(edge.invalid_at).strftime(DATE_FORMAT)
 
     return f"{valid_at} - {invalid_at}"
 
 
-def compose_context_string(edges: List[EntityEdge], nodes: List[EntityNode]) -> str:
+def compose_context_string(edges: List[EntityEdge], nodes: List[EntityNode], episodes: List[Episode]) -> str:
     """
-    Compose a search context from entity edges and nodes.
+    Compose a search context from entity edges, nodes, and episodes.
     
     Args:
         edges: List of entity edges.
         nodes: List of entity nodes.
+        episodes: List of episodes.
         
     Returns:
-        A formatted string containing facts and entities.
+        A formatted string containing facts, entities, and episodes.
     """
     facts = []
     for edge in edges:
-        fact = f"  - {edge.fact} ({format_edge_date_range(edge)})"
+        fact = f"  - {edge.fact} (Date range: {format_edge_date_range(edge)})"
         facts.append(fact)
 
     entities = []
     for node in nodes:
-        entity = f"  - {node.name}: {node.summary}"
+        entity_parts = [f"Name: {node.name}"]
+        
+        if hasattr(node, 'labels') and node.labels:
+            labels = list(node.labels)  # Create a copy to avoid modifying original
+            if 'Entity' in labels:
+                labels.remove('Entity')
+            if labels:  # Only add label if there are remaining labels after removing 'Entity'
+                entity_parts.append(f"Label: {labels[0]}")
+        
+        if hasattr(node, 'attributes') and node.attributes:
+            # Filter out 'labels' from attributes as it's redundant with the Label field
+            filtered_attributes = {k: v for k, v in node.attributes.items() if k != 'labels'}
+            if filtered_attributes:  # Only add attributes section if there are non-label attributes
+                entity_parts.append("Attributes:")
+                for attr_name, attr_value in filtered_attributes.items():
+                    entity_parts.append(f"  {attr_name}: {attr_value}")
+        
+        if node.summary:
+            entity_parts.append(f"Summary: {node.summary}")
+        
+        entity = "\n".join(entity_parts)
         entities.append(entity)
 
-    facts_str = "\n".join(facts)
-    entities_str = "\n".join(entities)
+    # Format episodes
+    episodes_list = []
+    if episodes:
+        for episode in episodes:
+            role_prefix = ""
+            if hasattr(episode, 'role') and episode.role:
+                if hasattr(episode, 'role_type') and episode.role_type:
+                    role_prefix = f"{episode.role} ({episode.role_type}): "
+                else:
+                    role_prefix = f"{episode.role}: "
+            elif hasattr(episode, 'role_type') and episode.role_type:
+                role_prefix = f"({episode.role_type}): "
+            
+            # Format timestamp
+            episode_created_at = episode.created_at
+            if hasattr(episode, 'provided_created_at') and episode.provided_created_at:
+                episode_created_at = episode.provided_created_at
+            
+            # Parse timestamp if it's a string (ISO format)
+            if isinstance(episode_created_at, str):
+                timestamp = parse_iso_datetime(episode_created_at).strftime(DATE_FORMAT)
+            else:
+                timestamp = episode_created_at.strftime(DATE_FORMAT)
+            
+            episode_str = f"  - {role_prefix}{episode.content} ({timestamp})"
+            episodes_list.append(episode_str)
 
-    return TEMPLATE_STRING % (facts_str, entities_str)
+    facts_str = "\n".join(facts) if facts else ""
+    entities_str = "\n".join(entities) if entities else ""
+    episodes_str = "\n".join(episodes_list) if episodes_list else ""
+    
+    # Determine if episodes section should be included
+    episodes_header = ", and EPISODES" if episodes else ""
+    episodes_section = f"\n# These are the most relevant episodes\n<EPISODES>\n{episodes_str}\n</EPISODES>" if episodes else ""
+    
+    return TEMPLATE_STRING.format(
+        episodes_header=episodes_header,
+        facts=facts_str,
+        entities=entities_str,
+        episodes_section=episodes_section
+    )
