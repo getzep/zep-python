@@ -4,12 +4,11 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .message import Message
 
 
 class AddThreadMessagesResponse(UniversalBaseModel):
     context: typing.Optional[str] = None
-    messages: typing.Optional[typing.List[Message]] = None
+    message_uuids: typing.Optional[typing.List[str]] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
