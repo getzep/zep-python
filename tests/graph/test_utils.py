@@ -188,7 +188,6 @@ class TestComposeContextString:
                 self.created_at = "2024-01-01T10:00:00Z"
                 self.role = "assistant"
                 self.role_type = "ai"
-                self.provided_created_at = None
         
         episode = MockEpisode()
         result = compose_context_string([], [], [episode])
@@ -202,26 +201,12 @@ class TestComposeContextString:
                 self.created_at = "2024-01-01T10:00:00Z"
                 self.role = None
                 self.role_type = "system"
-                self.provided_created_at = None
         
         episode = MockEpisode()
         result = compose_context_string([], [], [episode])
         
         assert "(system): Hello there! (2024-01-01 10:00:00)" in result
 
-    def test_episodes_with_provided_created_at(self):
-        class MockEpisode:
-            def __init__(self):
-                self.content = "Hello there!"
-                self.created_at = "2024-01-01T10:00:00Z"
-                self.role = "user"
-                self.role_type = None
-                self.provided_created_at = "2024-01-02T15:30:00Z"
-        
-        episode = MockEpisode()
-        result = compose_context_string([], [], [episode])
-        
-        assert "user: Hello there! (2024-01-02 15:30:00)" in result
 
     def test_complete_context_with_all_elements(self):
         edge = EntityEdge(
@@ -250,7 +235,6 @@ class TestComposeContextString:
                 self.created_at = "2024-01-01T09:00:00Z"
                 self.role = "user"
                 self.role_type = "customer"
-                self.provided_created_at = None
         
         episode = MockEpisode()
         
