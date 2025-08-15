@@ -113,17 +113,8 @@ def compose_context_string(edges: List[EntityEdge], nodes: List[EntityNode], epi
                     role_prefix = f"{episode.role}: "
             elif hasattr(episode, 'role_type') and episode.role_type:
                 role_prefix = f"({episode.role_type}): "
-            
-            # Format timestamp
-            episode_created_at = episode.created_at
-            if hasattr(episode, 'provided_created_at') and episode.provided_created_at:
-                episode_created_at = episode.provided_created_at
-            
-            # Parse timestamp if it's a string (ISO format)
-            if isinstance(episode_created_at, str):
-                timestamp = parse_iso_datetime(episode_created_at).strftime(DATE_FORMAT)
-            else:
-                timestamp = episode_created_at.strftime(DATE_FORMAT)
+
+            timestamp = parse_iso_datetime(episode.created_at).strftime(DATE_FORMAT)
             
             episode_str = f"  - {role_prefix}{episode.content} ({timestamp})"
             episodes_list.append(episode_str)

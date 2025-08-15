@@ -389,7 +389,7 @@ class GraphClient:
         Returns
         -------
         CloneGraphResponse
-            Response object containing group_id or user_id pointing to the new graph
+            Response object containing graph_id or user_id pointing to the new graph
 
         Examples
         --------
@@ -467,7 +467,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
-        List all graphs. In order to list users, use user.list_ordered instead
+        Returns all graphs. In order to list users, use user.list_ordered instead
 
         Parameters
         ----------
@@ -1107,7 +1107,7 @@ class AsyncGraphClient:
         Returns
         -------
         CloneGraphResponse
-            Response object containing group_id or user_id pointing to the new graph
+            Response object containing graph_id or user_id pointing to the new graph
 
         Examples
         --------
@@ -1201,7 +1201,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
-        List all graphs. In order to list users, use user.list_ordered instead
+        Returns all graphs. In order to list users, use user.list_ordered instead
 
         Parameters
         ----------

@@ -2,6 +2,7 @@
 
 # isort: skip_file
 
+from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
@@ -45,6 +46,7 @@ from .user_list_response import UserListResponse
 from .user_node_response import UserNodeResponse
 
 __all__ = [
+    "AddThreadMessagesRequest",
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
