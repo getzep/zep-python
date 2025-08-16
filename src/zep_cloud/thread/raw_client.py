@@ -268,12 +268,12 @@ class RawThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ThreadContextResponse]:
         """
-        Returns most relevant context for a given thread.
+        Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 
         Parameters
         ----------
         thread_id : str
-            The ID of the thread for which to retrieve context.
+            The ID of the current thread (for which context is being retrieved).
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -450,7 +450,7 @@ class RawThreadClient:
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
-            Optionally return memory context relevant to the most recent messages.
+            Optionally return context block relevant to the most recent messages.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -532,7 +532,7 @@ class RawThreadClient:
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
-            Optionally return memory context relevant to the most recent messages.
+            Optionally return context block relevant to the most recent messages.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -829,12 +829,12 @@ class AsyncRawThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ThreadContextResponse]:
         """
-        Returns most relevant context for a given thread.
+        Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 
         Parameters
         ----------
         thread_id : str
-            The ID of the thread for which to retrieve context.
+            The ID of the current thread (for which context is being retrieved).
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -1011,7 +1011,7 @@ class AsyncRawThreadClient:
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
-            Optionally return memory context relevant to the most recent messages.
+            Optionally return context block relevant to the most recent messages.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1093,7 +1093,7 @@ class AsyncRawThreadClient:
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
-            Optionally return memory context relevant to the most recent messages.
+            Optionally return context block relevant to the most recent messages.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

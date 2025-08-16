@@ -23,7 +23,7 @@ class AddThreadMessagesRequest(UniversalBaseModel):
 
     return_context: typing.Optional[bool] = pydantic.Field(default=None)
     """
-    Optionally return memory context relevant to the most recent messages.
+    Optionally return context block relevant to the most recent messages.
     """
 
     if IS_PYDANTIC_V2:
