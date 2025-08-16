@@ -1462,7 +1462,7 @@ client.thread.delete(
 <dl>
 <dd>
 
-Returns most relevant context for a given thread.
+Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 </dd>
 </dl>
 </dd>
@@ -1500,7 +1500,7 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
-**thread_id:** `str` — The ID of the thread for which to retrieve context.
+**thread_id:** `str` — The ID of the current thread (for which context is being retrieved).
     
 </dd>
 </dl>
@@ -1714,7 +1714,7 @@ that are added to a user's graph.
 <dl>
 <dd>
 
-**return_context:** `typing.Optional[bool]` — Optionally return memory context relevant to the most recent messages.
+**return_context:** `typing.Optional[bool]` — Optionally return context block relevant to the most recent messages.
     
 </dd>
 </dl>
@@ -1818,7 +1818,7 @@ that are added to a user's graph.
 <dl>
 <dd>
 
-**return_context:** `typing.Optional[bool]` — Optionally return memory context relevant to the most recent messages.
+**return_context:** `typing.Optional[bool]` — Optionally return context block relevant to the most recent messages.
     
 </dd>
 </dl>
