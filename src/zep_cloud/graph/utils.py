@@ -1,20 +1,21 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
+from dateutil import parser as dateutil_parser
 from zep_cloud import EntityEdge, EntityNode, Episode
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def parse_iso_datetime(iso_string: str) -> datetime:
-    """Parse ISO datetime string, handling Z suffix for UTC."""
+def parse_iso_datetime(iso_string: str) -> Optional[datetime]:
+    """Parse ISO datetime string using dateutil parser."""
+    if not iso_string:
+        return None
+    
     try:
-        return datetime.fromisoformat(iso_string)
-    except ValueError:
-        # Handle Z suffix for Python 3.9 compatibility
-        if iso_string.endswith('Z'):
-            return datetime.fromisoformat(iso_string[:-1] + '+00:00')
-        raise
+        return dateutil_parser.isoparse(iso_string)
+    except (ValueError, TypeError):
+        return None
 
 TEMPLATE_STRING = """
 FACTS and ENTITIES{episodes_header} represent relevant context to the current conversation.
@@ -52,9 +53,13 @@ def format_edge_date_range(edge: EntityEdge) -> str:
     invalid_at = "present"
 
     if edge.valid_at is not None:
-        valid_at = parse_iso_datetime(edge.valid_at).strftime(DATE_FORMAT)
+        parsed_valid_at = parse_iso_datetime(edge.valid_at)
+        if parsed_valid_at is not None:
+            valid_at = parsed_valid_at.strftime(DATE_FORMAT)
     if edge.invalid_at is not None:
-        invalid_at = parse_iso_datetime(edge.invalid_at).strftime(DATE_FORMAT)
+        parsed_invalid_at = parse_iso_datetime(edge.invalid_at)
+        if parsed_invalid_at is not None:
+            invalid_at = parsed_invalid_at.strftime(DATE_FORMAT)
 
     return f"{valid_at} - {invalid_at}"
 
@@ -114,7 +119,8 @@ def compose_context_string(edges: List[EntityEdge], nodes: List[EntityNode], epi
             elif hasattr(episode, 'role_type') and episode.role_type:
                 role_prefix = f"({episode.role_type}): "
 
-            timestamp = parse_iso_datetime(episode.created_at).strftime(DATE_FORMAT)
+            parsed_timestamp = parse_iso_datetime(episode.created_at)
+            timestamp = parsed_timestamp.strftime(DATE_FORMAT) if parsed_timestamp is not None else "date unknown"
             
             episode_str = f"  - {role_prefix}{episode.content} ({timestamp})"
             episodes_list.append(episode_str)
