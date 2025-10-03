@@ -2415,7 +2415,7 @@ client.user.get_threads(
 </dl>
 </details>
 
-<details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">warm_user_cache</a>(...)</code></summary>
+<details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">warm</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -2427,7 +2427,7 @@ client.user.get_threads(
 <dl>
 <dd>
 
-Hints TurboPuffer to warm cache for this user's graph namespaces for low-latency search
+Hints Zep to warm a user's graph for low-latency search
 </dd>
 </dl>
 </dd>
@@ -2447,7 +2447,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.user.warm_user_cache(
+client.user.warm(
     user_id="userId",
 )
 

@@ -325,11 +325,9 @@ class UserClient:
         _response = self._raw_client.get_threads(user_id, request_options=request_options)
         return _response.data
 
-    def warm_user_cache(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
+    def warm(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Hints TurboPuffer to warm cache for this user's graph namespaces for low-latency search
+        Hints Zep to warm a user's graph for low-latency search
 
         Parameters
         ----------
@@ -342,7 +340,7 @@ class UserClient:
         Returns
         -------
         SuccessResponse
-            Cache warm hint accepted
+            Warm hint accepted
 
         Examples
         --------
@@ -351,11 +349,11 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.warm_user_cache(
+        client.user.warm(
             user_id="userId",
         )
         """
-        _response = self._raw_client.warm_user_cache(user_id, request_options=request_options)
+        _response = self._raw_client.warm(user_id, request_options=request_options)
         return _response.data
 
 
@@ -726,11 +724,9 @@ class AsyncUserClient:
         _response = await self._raw_client.get_threads(user_id, request_options=request_options)
         return _response.data
 
-    async def warm_user_cache(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
+    async def warm(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
-        Hints TurboPuffer to warm cache for this user's graph namespaces for low-latency search
+        Hints Zep to warm a user's graph for low-latency search
 
         Parameters
         ----------
@@ -743,7 +739,7 @@ class AsyncUserClient:
         Returns
         -------
         SuccessResponse
-            Cache warm hint accepted
+            Warm hint accepted
 
         Examples
         --------
@@ -757,12 +753,12 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.warm_user_cache(
+            await client.user.warm(
                 user_id="userId",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.warm_user_cache(user_id, request_options=request_options)
+        _response = await self._raw_client.warm(user_id, request_options=request_options)
         return _response.data

@@ -566,11 +566,11 @@ class RawUserClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def warm_user_cache(
+    def warm(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[SuccessResponse]:
         """
-        Hints TurboPuffer to warm cache for this user's graph namespaces for low-latency search
+        Hints Zep to warm a user's graph for low-latency search
 
         Parameters
         ----------
@@ -583,7 +583,7 @@ class RawUserClient:
         Returns
         -------
         HttpResponse[SuccessResponse]
-            Cache warm hint accepted
+            Warm hint accepted
         """
         _response = self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}/warm",
@@ -1175,11 +1175,11 @@ class AsyncRawUserClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def warm_user_cache(
+    async def warm(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[SuccessResponse]:
         """
-        Hints TurboPuffer to warm cache for this user's graph namespaces for low-latency search
+        Hints Zep to warm a user's graph for low-latency search
 
         Parameters
         ----------
@@ -1192,7 +1192,7 @@ class AsyncRawUserClient:
         Returns
         -------
         AsyncHttpResponse[SuccessResponse]
-            Cache warm hint accepted
+            Warm hint accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"users/{jsonable_encoder(user_id)}/warm",
