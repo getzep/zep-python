@@ -325,6 +325,39 @@ class UserClient:
         _response = self._raw_client.get_threads(user_id, request_options=request_options)
         return _response.data
 
+    def warm_user_cache(
+        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
+        """
+        Hints TurboPuffer to warm cache for this user's graph namespaces for low-latency search
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Cache warm hint accepted
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.warm_user_cache(
+            user_id="userId",
+        )
+        """
+        _response = self._raw_client.warm_user_cache(user_id, request_options=request_options)
+        return _response.data
+
 
 class AsyncUserClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -691,4 +724,45 @@ class AsyncUserClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_threads(user_id, request_options=request_options)
+        return _response.data
+
+    async def warm_user_cache(
+        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> SuccessResponse:
+        """
+        Hints TurboPuffer to warm cache for this user's graph namespaces for low-latency search
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Cache warm hint accepted
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.warm_user_cache(
+                user_id="userId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.warm_user_cache(user_id, request_options=request_options)
         return _response.data
