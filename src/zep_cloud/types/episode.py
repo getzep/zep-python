@@ -14,6 +14,12 @@ class Episode(UniversalBaseModel):
     content: str
     created_at: str
     processed: typing.Optional[bool] = None
+    relevance: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    Relevance is an experimental rank-aligned score in [0,1] derived from Score via logit transformation.
+    Only populated when using cross_encoder reranker; omitted for other reranker types (e.g., RRF).
+    """
+
     role: typing.Optional[str] = pydantic.Field(default=None)
     """
     Optional role, will only be present if the episode was created using memory.add API
@@ -24,7 +30,11 @@ class Episode(UniversalBaseModel):
     Optional role_type, will only be present if the episode was created using memory.add API
     """
 
-    score: typing.Optional[float] = None
+    score: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    Score is the reranker output: sigmoid-distributed logits [0,1] when using cross_encoder reranker, or RRF ordinal rank when using rrf reranker
+    """
+
     session_id: typing.Optional[str] = None
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
