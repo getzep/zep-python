@@ -6,6 +6,7 @@ from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
+from .apidata_message import ApidataMessage
 from .clone_graph_response import CloneGraphResponse
 from .comparison_operator import ComparisonOperator
 from .date_filter import DateFilter
@@ -50,6 +51,7 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
+    "ApidataMessage",
     "CloneGraphResponse",
     "ComparisonOperator",
     "DateFilter",

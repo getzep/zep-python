@@ -5,6 +5,7 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_thread_messages_response import AddThreadMessagesResponse
+from ..types.apidata_message import ApidataMessage
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.role_type import RoleType
@@ -33,6 +34,48 @@ class ThreadClient:
         RawThreadClient
         """
         return self._raw_client
+
+    def update_message_metadata(
+        self,
+        message_uuid: str,
+        *,
+        metadata: typing.Dict[str, typing.Optional[typing.Any]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataMessage:
+        """
+        Updates the metadata of a message.
+
+        Parameters
+        ----------
+        message_uuid : str
+            The UUID of the message.
+
+        metadata : typing.Dict[str, typing.Optional[typing.Any]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataMessage
+            The updated message.
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.thread.update_message_metadata(
+            message_uuid="messageUUID",
+            metadata={"key": "value"},
+        )
+        """
+        _response = self._raw_client.update_message_metadata(
+            message_uuid, metadata=metadata, request_options=request_options
+        )
+        return _response.data
 
     def list_all(
         self,
@@ -385,6 +428,56 @@ class AsyncThreadClient:
         AsyncRawThreadClient
         """
         return self._raw_client
+
+    async def update_message_metadata(
+        self,
+        message_uuid: str,
+        *,
+        metadata: typing.Dict[str, typing.Optional[typing.Any]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataMessage:
+        """
+        Updates the metadata of a message.
+
+        Parameters
+        ----------
+        message_uuid : str
+            The UUID of the message.
+
+        metadata : typing.Dict[str, typing.Optional[typing.Any]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataMessage
+            The updated message.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.thread.update_message_metadata(
+                message_uuid="messageUUID",
+                metadata={"key": "value"},
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.update_message_metadata(
+            message_uuid, metadata=metadata, request_options=request_options
+        )
+        return _response.data
 
     async def list_all(
         self,
