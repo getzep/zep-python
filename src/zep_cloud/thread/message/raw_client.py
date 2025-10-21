@@ -12,7 +12,7 @@ from ...core.request_options import RequestOptions
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.apidata_message import ApidataMessage
+from ...types.message import Message
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -28,7 +28,7 @@ class RawMessageClient:
         *,
         metadata: typing.Dict[str, typing.Optional[typing.Any]],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataMessage]:
+    ) -> HttpResponse[Message]:
         """
         Updates a message.
 
@@ -44,7 +44,7 @@ class RawMessageClient:
 
         Returns
         -------
-        HttpResponse[ApidataMessage]
+        HttpResponse[Message]
             The updated message.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -62,9 +62,9 @@ class RawMessageClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataMessage,
+                    Message,
                     parse_obj_as(
-                        type_=ApidataMessage,  # type: ignore
+                        type_=Message,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -111,7 +111,7 @@ class AsyncRawMessageClient:
         *,
         metadata: typing.Dict[str, typing.Optional[typing.Any]],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataMessage]:
+    ) -> AsyncHttpResponse[Message]:
         """
         Updates a message.
 
@@ -127,7 +127,7 @@ class AsyncRawMessageClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataMessage]
+        AsyncHttpResponse[Message]
             The updated message.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -145,9 +145,9 @@ class AsyncRawMessageClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataMessage,
+                    Message,
                     parse_obj_as(
-                        type_=ApidataMessage,  # type: ignore
+                        type_=Message,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
