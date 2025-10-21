@@ -10,14 +10,8 @@ from .apidata_project_info_response import ApidataProjectInfoResponse
 from .clone_graph_response import CloneGraphResponse
 from .comparison_operator import ComparisonOperator
 from .date_filter import DateFilter
-from .edge_type import EdgeType
 from .entity_edge import EntityEdge
-from .entity_edge_source_target import EntityEdgeSourceTarget
 from .entity_node import EntityNode
-from .entity_property import EntityProperty
-from .entity_property_type import EntityPropertyType
-from .entity_type import EntityType
-from .entity_type_response import EntityTypeResponse
 from .episode import Episode
 from .episode_data import EpisodeData
 from .episode_mentions import EpisodeMentions
@@ -56,14 +50,8 @@ __all__ = [
     "CloneGraphResponse",
     "ComparisonOperator",
     "DateFilter",
-    "EdgeType",
     "EntityEdge",
-    "EntityEdgeSourceTarget",
     "EntityNode",
-    "EntityProperty",
-    "EntityPropertyType",
-    "EntityType",
-    "EntityTypeResponse",
     "Episode",
     "EpisodeData",
     "EpisodeMentions",
