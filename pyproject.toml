@@ -3,7 +3,7 @@ name = "zep-cloud"
 
 [tool.poetry]
 name = "zep-cloud"
-version = "3.7.0"
+version = "3.8.0"
 description = ""
 readme = "README.md"
 authors = []
