@@ -1165,6 +1165,142 @@ class RawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def set_ontology(
+        self,
+        *,
+        entities: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        edges: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[SuccessResponse]:
+        """
+        Sets custom entity and edge types for your graph. This wrapper method
+        provides a clean interface for defining your graph schema with custom
+        entity and edge types.
+
+        See the [full documentation](/customizing-graph-structure#setting-entity-and-edge-types) for details.
+
+        Parameters
+        ----------
+        entities : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Dictionary mapping entity type names to their definitions
+
+        edges : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Dictionary mapping edge type names to their definitions with source/target constraints
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Optional list of user IDs to apply ontology to
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Optional list of graph IDs to apply ontology to
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[SuccessResponse]
+            Ontology set successfully
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph/set-ontology",
+            method="PUT",
+            json={
+                "entities": entities,
+                "edges": edges,
+                "user_ids": user_ids,
+                "graph_ids": graph_ids,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def list_ontology(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[EntityTypeResponse]:
+        """
+        Retrieves the current entity and edge types configured for your graph.
+
+        See the [full documentation](/customizing-graph-structure) for details.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[EntityTypeResponse]
+            Current ontology
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph/list-ontology",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EntityTypeResponse,
+                    parse_obj_as(
+                        type_=EntityTypeResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
 
 class AsyncRawGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -2267,6 +2403,142 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_ontology(
+        self,
+        *,
+        entities: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        edges: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[SuccessResponse]:
+        """
+        Sets custom entity and edge types for your graph. This wrapper method
+        provides a clean interface for defining your graph schema with custom
+        entity and edge types.
+
+        See the [full documentation](/customizing-graph-structure#setting-entity-and-edge-types) for details.
+
+        Parameters
+        ----------
+        entities : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Dictionary mapping entity type names to their definitions
+
+        edges : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Dictionary mapping edge type names to their definitions with source/target constraints
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Optional list of user IDs to apply ontology to
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Optional list of graph IDs to apply ontology to
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[SuccessResponse]
+            Ontology set successfully
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph/set-ontology",
+            method="PUT",
+            json={
+                "entities": entities,
+                "edges": edges,
+                "user_ids": user_ids,
+                "graph_ids": graph_ids,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def list_ontology(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[EntityTypeResponse]:
+        """
+        Retrieves the current entity and edge types configured for your graph.
+
+        See the [full documentation](/customizing-graph-structure) for details.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[EntityTypeResponse]
+            Current ontology
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph/list-ontology",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EntityTypeResponse,
+                    parse_obj_as(
+                        type_=EntityTypeResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),

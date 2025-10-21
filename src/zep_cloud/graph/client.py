@@ -706,6 +706,86 @@ class GraphClient:
         )
         return _response.data
 
+    def set_ontology(
+        self,
+        *,
+        entities: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        edges: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Sets custom entity and edge types for your graph. This wrapper method
+        provides a clean interface for defining your graph schema with custom
+        entity and edge types.
+
+        See the [full documentation](/customizing-graph-structure#setting-entity-and-edge-types) for details.
+
+        Parameters
+        ----------
+        entities : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Dictionary mapping entity type names to their definitions
+
+        edges : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Dictionary mapping edge type names to their definitions with source/target constraints
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Optional list of user IDs to apply ontology to
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Optional list of graph IDs to apply ontology to
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Ontology set successfully
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.set_ontology()
+        """
+        _response = self._raw_client.set_ontology(
+            entities=entities, edges=edges, user_ids=user_ids, graph_ids=graph_ids, request_options=request_options
+        )
+        return _response.data
+
+    def list_ontology(self, *, request_options: typing.Optional[RequestOptions] = None) -> EntityTypeResponse:
+        """
+        Retrieves the current entity and edge types configured for your graph.
+
+        See the [full documentation](/customizing-graph-structure) for details.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityTypeResponse
+            Current ontology
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.list_ontology()
+        """
+        _response = self._raw_client.list_ontology(request_options=request_options)
+        return _response.data
+
 
 class AsyncGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -1480,4 +1560,100 @@ class AsyncGraphClient:
             name=name,
             request_options=request_options,
         )
+        return _response.data
+
+    async def set_ontology(
+        self,
+        *,
+        entities: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        edges: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Sets custom entity and edge types for your graph. This wrapper method
+        provides a clean interface for defining your graph schema with custom
+        entity and edge types.
+
+        See the [full documentation](/customizing-graph-structure#setting-entity-and-edge-types) for details.
+
+        Parameters
+        ----------
+        entities : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Dictionary mapping entity type names to their definitions
+
+        edges : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Dictionary mapping edge type names to their definitions with source/target constraints
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Optional list of user IDs to apply ontology to
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Optional list of graph IDs to apply ontology to
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Ontology set successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.set_ontology()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_ontology(
+            entities=entities, edges=edges, user_ids=user_ids, graph_ids=graph_ids, request_options=request_options
+        )
+        return _response.data
+
+    async def list_ontology(self, *, request_options: typing.Optional[RequestOptions] = None) -> EntityTypeResponse:
+        """
+        Retrieves the current entity and edge types configured for your graph.
+
+        See the [full documentation](/customizing-graph-structure) for details.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityTypeResponse
+            Current ontology
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.list_ontology()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_ontology(request_options=request_options)
         return _response.data
