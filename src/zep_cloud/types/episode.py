@@ -13,6 +13,7 @@ from .role_type import RoleType
 class Episode(UniversalBaseModel):
     content: str
     created_at: str
+    metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     processed: typing.Optional[bool] = None
     relevance: typing.Optional[float] = pydantic.Field(default=None)
     """
@@ -35,9 +36,13 @@ class Episode(UniversalBaseModel):
     Score is the reranker output: sigmoid-distributed logits [0,1] when using cross_encoder reranker, or RRF ordinal rank when using rrf reranker
     """
 
-    session_id: typing.Optional[str] = None
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
+    thread_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Optional thread ID, will be present if the episode is part of a thread
+    """
+
     uuid_: typing_extensions.Annotated[str, FieldMetadata(alias="uuid")]
 
     if IS_PYDANTIC_V2:

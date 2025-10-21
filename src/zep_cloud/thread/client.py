@@ -12,6 +12,7 @@ from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
+from .message.client import AsyncMessageClient, MessageClient
 from .raw_client import AsyncRawThreadClient, RawThreadClient
 from .types.thread_get_user_context_request_mode import ThreadGetUserContextRequestMode
 
@@ -22,6 +23,7 @@ OMIT = typing.cast(typing.Any, ...)
 class ThreadClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawThreadClient(client_wrapper=client_wrapper)
+        self.message = MessageClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawThreadClient:
@@ -374,6 +376,7 @@ class ThreadClient:
 class AsyncThreadClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._raw_client = AsyncRawThreadClient(client_wrapper=client_wrapper)
+        self.message = AsyncMessageClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawThreadClient:
