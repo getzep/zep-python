@@ -6,6 +6,9 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_triple_response import AddTripleResponse
 from ..types.clone_graph_response import CloneGraphResponse
+from ..types.edge_type import EdgeType
+from ..types.entity_type import EntityType
+from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.episode_data import EpisodeData
 from ..types.fact_rating_instruction import FactRatingInstruction
@@ -45,6 +48,94 @@ class GraphClient:
         RawGraphClient
         """
         return self._raw_client
+
+    def list_entity_types(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EntityTypeResponse:
+        """
+        Returns all entity types for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific entity types
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific entity types
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityTypeResponse
+            The list of entity types.
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.list_entity_types()
+        """
+        _response = self._raw_client.list_entity_types(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    def set_entity_types_internal(
+        self,
+        *,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
+
+        Parameters
+        ----------
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
+
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Entity types set successfully
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.set_entity_types_internal()
+        """
+        _response = self._raw_client.set_entity_types_internal(
+            edge_types=edge_types,
+            entity_types=entity_types,
+            graph_ids=graph_ids,
+            user_ids=user_ids,
+            request_options=request_options,
+        )
+        return _response.data
 
     def add(
         self,
@@ -635,6 +726,110 @@ class AsyncGraphClient:
         AsyncRawGraphClient
         """
         return self._raw_client
+
+    async def list_entity_types(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EntityTypeResponse:
+        """
+        Returns all entity types for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific entity types
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific entity types
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityTypeResponse
+            The list of entity types.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.list_entity_types()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_entity_types(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    async def set_entity_types_internal(
+        self,
+        *,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
+
+        Parameters
+        ----------
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
+
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Entity types set successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.set_entity_types_internal()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_entity_types_internal(
+            edge_types=edge_types,
+            entity_types=entity_types,
+            graph_ids=graph_ids,
+            user_ids=user_ids,
+            request_options=request_options,
+        )
+        return _response.data
 
     async def add(
         self,
