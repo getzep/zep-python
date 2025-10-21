@@ -7,7 +7,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .project_info import ProjectInfo
 
 
-class ApidataProjectInfoResponse(UniversalBaseModel):
+class ProjectInfoResponse(UniversalBaseModel):
     project: typing.Optional[ProjectInfo] = None
 
     if IS_PYDANTIC_V2:

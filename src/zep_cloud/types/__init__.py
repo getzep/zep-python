@@ -6,7 +6,6 @@ from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
-from .apidata_project_info_response import ApidataProjectInfoResponse
 from .clone_graph_response import CloneGraphResponse
 from .comparison_operator import ComparisonOperator
 from .date_filter import DateFilter
@@ -36,6 +35,7 @@ from .message_list_response import MessageListResponse
 from .models_fact_rating_examples import ModelsFactRatingExamples
 from .models_fact_rating_instruction import ModelsFactRatingInstruction
 from .project_info import ProjectInfo
+from .project_info_response import ProjectInfoResponse
 from .reranker import Reranker
 from .role_type import RoleType
 from .search_filters import SearchFilters
@@ -52,7 +52,6 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
-    "ApidataProjectInfoResponse",
     "CloneGraphResponse",
     "ComparisonOperator",
     "DateFilter",
@@ -82,6 +81,7 @@ __all__ = [
     "ModelsFactRatingExamples",
     "ModelsFactRatingInstruction",
     "ProjectInfo",
+    "ProjectInfoResponse",
     "Reranker",
     "RoleType",
     "SearchFilters",

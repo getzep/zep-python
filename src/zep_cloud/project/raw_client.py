@@ -12,16 +12,14 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_project_info_response import ApidataProjectInfoResponse
+from ..types.project_info_response import ProjectInfoResponse
 
 
 class RawProjectClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataProjectInfoResponse]:
+    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[ProjectInfoResponse]:
         """
         Retrieve project info based on the provided api key.
 
@@ -32,7 +30,7 @@ class RawProjectClient:
 
         Returns
         -------
-        HttpResponse[ApidataProjectInfoResponse]
+        HttpResponse[ProjectInfoResponse]
             Retrieved
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -43,9 +41,9 @@ class RawProjectClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataProjectInfoResponse,
+                    ProjectInfoResponse,
                     parse_obj_as(
-                        type_=ApidataProjectInfoResponse,  # type: ignore
+                        type_=ProjectInfoResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -99,7 +97,7 @@ class AsyncRawProjectClient:
 
     async def get(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataProjectInfoResponse]:
+    ) -> AsyncHttpResponse[ProjectInfoResponse]:
         """
         Retrieve project info based on the provided api key.
 
@@ -110,7 +108,7 @@ class AsyncRawProjectClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataProjectInfoResponse]
+        AsyncHttpResponse[ProjectInfoResponse]
             Retrieved
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -121,9 +119,9 @@ class AsyncRawProjectClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataProjectInfoResponse,
+                    ProjectInfoResponse,
                     parse_obj_as(
-                        type_=ApidataProjectInfoResponse,  # type: ignore
+                        type_=ProjectInfoResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
