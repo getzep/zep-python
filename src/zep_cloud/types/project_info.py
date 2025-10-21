@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
-class ApidataProjectInfo(UniversalBaseModel):
+class ProjectInfo(UniversalBaseModel):
     created_at: typing.Optional[str] = None
     description: typing.Optional[str] = None
     name: typing.Optional[str] = None

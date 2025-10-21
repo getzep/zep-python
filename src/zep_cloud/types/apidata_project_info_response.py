@@ -4,11 +4,11 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .apidata_project_info import ApidataProjectInfo
+from .project_info import ProjectInfo
 
 
 class ApidataProjectInfoResponse(UniversalBaseModel):
-    project: typing.Optional[ApidataProjectInfo] = None
+    project: typing.Optional[ProjectInfo] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
