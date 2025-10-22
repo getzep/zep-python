@@ -35,6 +35,8 @@ from .types import (
     MessageListResponse,
     ModelsFactRatingExamples,
     ModelsFactRatingInstruction,
+    ProjectInfo,
+    ProjectInfoResponse,
     Reranker,
     RoleType,
     SearchFilters,
@@ -47,7 +49,7 @@ from .types import (
     UserNodeResponse,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError
-from . import graph, thread, user
+from . import graph, project, thread, user
 from .client import AsyncZep, Zep
 from .environment import ZepEnvironment
 from .thread import ThreadGetUserContextRequestMode
@@ -90,6 +92,8 @@ __all__ = [
     "ModelsFactRatingExamples",
     "ModelsFactRatingInstruction",
     "NotFoundError",
+    "ProjectInfo",
+    "ProjectInfoResponse",
     "Reranker",
     "RoleType",
     "SearchFilters",
@@ -105,6 +109,7 @@ __all__ = [
     "ZepEnvironment",
     "__version__",
     "graph",
+    "project",
     "thread",
     "user",
 ]

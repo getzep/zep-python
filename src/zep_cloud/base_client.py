@@ -8,6 +8,7 @@ from .core.api_error import ApiError
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .environment import ZepEnvironment
 from .graph.client import AsyncGraphClient, GraphClient
+from .project.client import AsyncProjectClient, ProjectClient
 from .thread.client import AsyncThreadClient, ThreadClient
 from .user.client import AsyncUserClient, UserClient
 
@@ -80,6 +81,7 @@ class BaseClient:
             timeout=_defaulted_timeout,
         )
         self.graph = GraphClient(client_wrapper=self._client_wrapper)
+        self.project = ProjectClient(client_wrapper=self._client_wrapper)
         self.thread = ThreadClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
@@ -152,6 +154,7 @@ class AsyncBaseClient:
             timeout=_defaulted_timeout,
         )
         self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
+        self.project = AsyncProjectClient(client_wrapper=self._client_wrapper)
         self.thread = AsyncThreadClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 

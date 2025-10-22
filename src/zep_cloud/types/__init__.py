@@ -34,6 +34,8 @@ from .message import Message
 from .message_list_response import MessageListResponse
 from .models_fact_rating_examples import ModelsFactRatingExamples
 from .models_fact_rating_instruction import ModelsFactRatingInstruction
+from .project_info import ProjectInfo
+from .project_info_response import ProjectInfoResponse
 from .reranker import Reranker
 from .role_type import RoleType
 from .search_filters import SearchFilters
@@ -78,6 +80,8 @@ __all__ = [
     "MessageListResponse",
     "ModelsFactRatingExamples",
     "ModelsFactRatingInstruction",
+    "ProjectInfo",
+    "ProjectInfoResponse",
     "Reranker",
     "RoleType",
     "SearchFilters",
