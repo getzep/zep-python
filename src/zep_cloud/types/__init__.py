@@ -2,6 +2,7 @@
 
 # isort: skip_file
 
+from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
@@ -33,6 +34,8 @@ from .message import Message
 from .message_list_response import MessageListResponse
 from .models_fact_rating_examples import ModelsFactRatingExamples
 from .models_fact_rating_instruction import ModelsFactRatingInstruction
+from .project_info import ProjectInfo
+from .project_info_response import ProjectInfoResponse
 from .reranker import Reranker
 from .role_type import RoleType
 from .search_filters import SearchFilters
@@ -45,6 +48,7 @@ from .user_list_response import UserListResponse
 from .user_node_response import UserNodeResponse
 
 __all__ = [
+    "AddThreadMessagesRequest",
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
@@ -76,6 +80,8 @@ __all__ = [
     "MessageListResponse",
     "ModelsFactRatingExamples",
     "ModelsFactRatingInstruction",
+    "ProjectInfo",
+    "ProjectInfoResponse",
     "Reranker",
     "RoleType",
     "SearchFilters",

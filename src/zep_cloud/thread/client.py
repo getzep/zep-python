@@ -12,6 +12,7 @@ from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
+from .message.client import AsyncMessageClient, MessageClient
 from .raw_client import AsyncRawThreadClient, RawThreadClient
 from .types.thread_get_user_context_request_mode import ThreadGetUserContextRequestMode
 
@@ -22,6 +23,7 @@ OMIT = typing.cast(typing.Any, ...)
 class ThreadClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawThreadClient(client_wrapper=client_wrapper)
+        self.message = MessageClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawThreadClient:
@@ -159,12 +161,12 @@ class ThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
         """
-        Returns most relevant context for a given thread.
+        Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 
         Parameters
         ----------
         thread_id : str
-            The ID of the thread for which to retrieve context.
+            The ID of the current thread (for which context is being retrieved).
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -202,6 +204,7 @@ class ThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
+        lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
@@ -217,6 +220,9 @@ class ThreadClient:
 
         cursor : typing.Optional[int]
             Cursor for pagination
+
+        lastn : typing.Optional[int]
+            Number of most recent messages to return (overrides limit and cursor)
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -237,7 +243,9 @@ class ThreadClient:
             thread_id="threadId",
         )
         """
-        _response = self._raw_client.get(thread_id, limit=limit, cursor=cursor, request_options=request_options)
+        _response = self._raw_client.get(
+            thread_id, limit=limit, cursor=cursor, lastn=lastn, request_options=request_options
+        )
         return _response.data
 
     def add_messages(
@@ -266,7 +274,7 @@ class ThreadClient:
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
-            Optionally return memory context relevant to the most recent messages.
+            Optionally return context block relevant to the most recent messages.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -302,10 +310,73 @@ class ThreadClient:
         )
         return _response.data
 
+    def add_messages_batch(
+        self,
+        thread_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AddThreadMessagesResponse:
+        """
+        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread to which messages should be added.
+
+        messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added, retained and used as context for messages
+            that are added to a user's graph.
+
+        return_context : typing.Optional[bool]
+            Optionally return context block relevant to the most recent messages.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AddThreadMessagesResponse
+            An object, optionally containing user context retrieved for the last thread message
+
+        Examples
+        --------
+        from zep_cloud import Message, Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.thread.add_messages_batch(
+            thread_id="threadId",
+            messages=[
+                Message(
+                    content="content",
+                    role="norole",
+                )
+            ],
+        )
+        """
+        _response = self._raw_client.add_messages_batch(
+            thread_id,
+            messages=messages,
+            ignore_roles=ignore_roles,
+            return_context=return_context,
+            request_options=request_options,
+        )
+        return _response.data
+
 
 class AsyncThreadClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._raw_client = AsyncRawThreadClient(client_wrapper=client_wrapper)
+        self.message = AsyncMessageClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawThreadClient:
@@ -469,12 +540,12 @@ class AsyncThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
         """
-        Returns most relevant context for a given thread.
+        Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 
         Parameters
         ----------
         thread_id : str
-            The ID of the thread for which to retrieve context.
+            The ID of the current thread (for which context is being retrieved).
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -520,6 +591,7 @@ class AsyncThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
+        lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> MessageListResponse:
         """
@@ -535,6 +607,9 @@ class AsyncThreadClient:
 
         cursor : typing.Optional[int]
             Cursor for pagination
+
+        lastn : typing.Optional[int]
+            Number of most recent messages to return (overrides limit and cursor)
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -563,7 +638,9 @@ class AsyncThreadClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(thread_id, limit=limit, cursor=cursor, request_options=request_options)
+        _response = await self._raw_client.get(
+            thread_id, limit=limit, cursor=cursor, lastn=lastn, request_options=request_options
+        )
         return _response.data
 
     async def add_messages(
@@ -592,7 +669,7 @@ class AsyncThreadClient:
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
-            Optionally return memory context relevant to the most recent messages.
+            Optionally return context block relevant to the most recent messages.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -628,6 +705,76 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.add_messages(
+            thread_id,
+            messages=messages,
+            ignore_roles=ignore_roles,
+            return_context=return_context,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def add_messages_batch(
+        self,
+        thread_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AddThreadMessagesResponse:
+        """
+        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread to which messages should be added.
+
+        messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added, retained and used as context for messages
+            that are added to a user's graph.
+
+        return_context : typing.Optional[bool]
+            Optionally return context block relevant to the most recent messages.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AddThreadMessagesResponse
+            An object, optionally containing user context retrieved for the last thread message
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep, Message
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.thread.add_messages_batch(
+                thread_id="threadId",
+                messages=[
+                    Message(
+                        content="content",
+                        role="norole",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.add_messages_batch(
             thread_id,
             messages=messages,
             ignore_roles=ignore_roles,

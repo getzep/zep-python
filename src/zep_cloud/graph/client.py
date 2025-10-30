@@ -49,12 +49,24 @@ class GraphClient:
         """
         return self._raw_client
 
-    def list_entity_types(self, *, request_options: typing.Optional[RequestOptions] = None) -> EntityTypeResponse:
+    def list_entity_types(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EntityTypeResponse:
         """
-        Returns all entity types for a project.
+        Returns all entity types for a project, user, or graph.
 
         Parameters
         ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific entity types
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific entity types
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -72,7 +84,9 @@ class GraphClient:
         )
         client.graph.list_entity_types()
         """
-        _response = self._raw_client.list_entity_types(request_options=request_options)
+        _response = self._raw_client.list_entity_types(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
         return _response.data
 
     def set_entity_types_internal(
@@ -80,16 +94,22 @@ class GraphClient:
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Sets the entity types for a project, replacing any existing ones.
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -109,7 +129,11 @@ class GraphClient:
         client.graph.set_entity_types_internal()
         """
         _response = self._raw_client.set_entity_types_internal(
-            edge_types=edge_types, entity_types=entity_types, request_options=request_options
+            edge_types=edge_types,
+            entity_types=entity_types,
+            graph_ids=graph_ids,
+            user_ids=user_ids,
+            request_options=request_options,
         )
         return _response.data
 
@@ -365,7 +389,7 @@ class GraphClient:
         Returns
         -------
         CloneGraphResponse
-            Response object containing group_id or user_id pointing to the new graph
+            Response object containing graph_id or user_id pointing to the new graph
 
         Examples
         --------
@@ -382,6 +406,96 @@ class GraphClient:
             target_graph_id=target_graph_id,
             target_user_id=target_user_id,
             request_options=request_options,
+        )
+        return _response.data
+
+    def create(
+        self,
+        *,
+        graph_id: str,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Graph:
+        """
+        Creates a new graph.
+
+        Parameters
+        ----------
+        graph_id : str
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Graph
+            The added graph
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.create(
+            graph_id="graph_id",
+        )
+        """
+        _response = self._raw_client.create(
+            graph_id=graph_id,
+            description=description,
+            fact_rating_instruction=fact_rating_instruction,
+            name=name,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def list_all(
+        self,
+        *,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GraphListResponse:
+        """
+        Returns all graphs. In order to list users, use user.list_ordered instead
+
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1.
+
+        page_size : typing.Optional[int]
+            Number of graphs to retrieve per page.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphListResponse
+            Successfully retrieved list of graphs.
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.list_all()
+        """
+        _response = self._raw_client.list_all(
+            page_number=page_number, page_size=page_size, request_options=request_options
         )
         return _response.data
 
@@ -476,96 +590,6 @@ class GraphClient:
             search_filters=search_filters,
             user_id=user_id,
             request_options=request_options,
-        )
-        return _response.data
-
-    def create(
-        self,
-        *,
-        graph_id: str,
-        description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> Graph:
-        """
-        Creates a new graph.
-
-        Parameters
-        ----------
-        graph_id : str
-
-        description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-
-        name : typing.Optional[str]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        Graph
-            The added graph
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.graph.create(
-            graph_id="graph_id",
-        )
-        """
-        _response = self._raw_client.create(
-            graph_id=graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
-        )
-        return _response.data
-
-    def list_all(
-        self,
-        *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> GraphListResponse:
-        """
-        Returns all graphs.
-
-        Parameters
-        ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1.
-
-        page_size : typing.Optional[int]
-            Number of graphs to retrieve per page.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        GraphListResponse
-            Successfully retrieved list of graphs.
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.graph.list_all()
-        """
-        _response = self._raw_client.list_all(
-            page_number=page_number, page_size=page_size, request_options=request_options
         )
         return _response.data
 
@@ -703,12 +727,24 @@ class AsyncGraphClient:
         """
         return self._raw_client
 
-    async def list_entity_types(self, *, request_options: typing.Optional[RequestOptions] = None) -> EntityTypeResponse:
+    async def list_entity_types(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EntityTypeResponse:
         """
-        Returns all entity types for a project.
+        Returns all entity types for a project, user, or graph.
 
         Parameters
         ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific entity types
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific entity types
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -734,7 +770,9 @@ class AsyncGraphClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list_entity_types(request_options=request_options)
+        _response = await self._raw_client.list_entity_types(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
         return _response.data
 
     async def set_entity_types_internal(
@@ -742,16 +780,22 @@ class AsyncGraphClient:
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Sets the entity types for a project, replacing any existing ones.
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -779,7 +823,11 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.set_entity_types_internal(
-            edge_types=edge_types, entity_types=entity_types, request_options=request_options
+            edge_types=edge_types,
+            entity_types=entity_types,
+            graph_ids=graph_ids,
+            user_ids=user_ids,
+            request_options=request_options,
         )
         return _response.data
 
@@ -1059,7 +1107,7 @@ class AsyncGraphClient:
         Returns
         -------
         CloneGraphResponse
-            Response object containing group_id or user_id pointing to the new graph
+            Response object containing graph_id or user_id pointing to the new graph
 
         Examples
         --------
@@ -1084,6 +1132,112 @@ class AsyncGraphClient:
             target_graph_id=target_graph_id,
             target_user_id=target_user_id,
             request_options=request_options,
+        )
+        return _response.data
+
+    async def create(
+        self,
+        *,
+        graph_id: str,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Graph:
+        """
+        Creates a new graph.
+
+        Parameters
+        ----------
+        graph_id : str
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Graph
+            The added graph
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.create(
+                graph_id="graph_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.create(
+            graph_id=graph_id,
+            description=description,
+            fact_rating_instruction=fact_rating_instruction,
+            name=name,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def list_all(
+        self,
+        *,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GraphListResponse:
+        """
+        Returns all graphs. In order to list users, use user.list_ordered instead
+
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1.
+
+        page_size : typing.Optional[int]
+            Number of graphs to retrieve per page.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphListResponse
+            Successfully retrieved list of graphs.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.list_all()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_all(
+            page_number=page_number, page_size=page_size, request_options=request_options
         )
         return _response.data
 
@@ -1186,112 +1340,6 @@ class AsyncGraphClient:
             search_filters=search_filters,
             user_id=user_id,
             request_options=request_options,
-        )
-        return _response.data
-
-    async def create(
-        self,
-        *,
-        graph_id: str,
-        description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> Graph:
-        """
-        Creates a new graph.
-
-        Parameters
-        ----------
-        graph_id : str
-
-        description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-
-        name : typing.Optional[str]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        Graph
-            The added graph
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.graph.create(
-                graph_id="graph_id",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.create(
-            graph_id=graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
-        )
-        return _response.data
-
-    async def list_all(
-        self,
-        *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> GraphListResponse:
-        """
-        Returns all graphs.
-
-        Parameters
-        ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1.
-
-        page_size : typing.Optional[int]
-            Number of graphs to retrieve per page.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        GraphListResponse
-            Successfully retrieved list of graphs.
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.graph.list_all()
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.list_all(
-            page_number=page_number, page_size=page_size, request_options=request_options
         )
         return _response.data
 

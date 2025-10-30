@@ -268,12 +268,12 @@ class RawThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ThreadContextResponse]:
         """
-        Returns most relevant context for a given thread.
+        Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 
         Parameters
         ----------
         thread_id : str
-            The ID of the thread for which to retrieve context.
+            The ID of the current thread (for which context is being retrieved).
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -345,6 +345,7 @@ class RawThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
+        lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[MessageListResponse]:
         """
@@ -361,6 +362,9 @@ class RawThreadClient:
         cursor : typing.Optional[int]
             Cursor for pagination
 
+        lastn : typing.Optional[int]
+            Number of most recent messages to return (overrides limit and cursor)
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -375,6 +379,7 @@ class RawThreadClient:
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "lastn": lastn,
             },
             request_options=request_options,
         )
@@ -445,7 +450,7 @@ class RawThreadClient:
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
-            Optionally return memory context relevant to the most recent messages.
+            Optionally return context block relevant to the most recent messages.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -457,6 +462,88 @@ class RawThreadClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             f"threads/{jsonable_encoder(thread_id)}/messages",
+            method="POST",
+            json={
+                "ignore_roles": ignore_roles,
+                "messages": convert_and_respect_annotation_metadata(
+                    object_=messages, annotation=typing.Sequence[Message], direction="write"
+                ),
+                "return_context": return_context,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    AddThreadMessagesResponse,
+                    parse_obj_as(
+                        type_=AddThreadMessagesResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def add_messages_batch(
+        self,
+        thread_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[AddThreadMessagesResponse]:
+        """
+        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread to which messages should be added.
+
+        messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added, retained and used as context for messages
+            that are added to a user's graph.
+
+        return_context : typing.Optional[bool]
+            Optionally return context block relevant to the most recent messages.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[AddThreadMessagesResponse]
+            An object, optionally containing user context retrieved for the last thread message
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"threads/{jsonable_encoder(thread_id)}/messages-batch",
             method="POST",
             json={
                 "ignore_roles": ignore_roles,
@@ -742,12 +829,12 @@ class AsyncRawThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ThreadContextResponse]:
         """
-        Returns most relevant context for a given thread.
+        Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 
         Parameters
         ----------
         thread_id : str
-            The ID of the thread for which to retrieve context.
+            The ID of the current thread (for which context is being retrieved).
 
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
@@ -819,6 +906,7 @@ class AsyncRawThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
+        lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[MessageListResponse]:
         """
@@ -835,6 +923,9 @@ class AsyncRawThreadClient:
         cursor : typing.Optional[int]
             Cursor for pagination
 
+        lastn : typing.Optional[int]
+            Number of most recent messages to return (overrides limit and cursor)
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -849,6 +940,7 @@ class AsyncRawThreadClient:
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "lastn": lastn,
             },
             request_options=request_options,
         )
@@ -919,7 +1011,7 @@ class AsyncRawThreadClient:
             that are added to a user's graph.
 
         return_context : typing.Optional[bool]
-            Optionally return memory context relevant to the most recent messages.
+            Optionally return context block relevant to the most recent messages.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -931,6 +1023,88 @@ class AsyncRawThreadClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             f"threads/{jsonable_encoder(thread_id)}/messages",
+            method="POST",
+            json={
+                "ignore_roles": ignore_roles,
+                "messages": convert_and_respect_annotation_metadata(
+                    object_=messages, annotation=typing.Sequence[Message], direction="write"
+                ),
+                "return_context": return_context,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    AddThreadMessagesResponse,
+                    parse_obj_as(
+                        type_=AddThreadMessagesResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def add_messages_batch(
+        self,
+        thread_id: str,
+        *,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
+        return_context: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[AddThreadMessagesResponse]:
+        """
+        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread to which messages should be added.
+
+        messages : typing.Sequence[Message]
+            A list of message objects, where each message contains a role and content.
+
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of role types to ignore when adding messages to graph memory.
+            The message itself will still be added, retained and used as context for messages
+            that are added to a user's graph.
+
+        return_context : typing.Optional[bool]
+            Optionally return context block relevant to the most recent messages.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[AddThreadMessagesResponse]
+            An object, optionally containing user context retrieved for the last thread message
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"threads/{jsonable_encoder(thread_id)}/messages-batch",
             method="POST",
             json={
                 "ignore_roles": ignore_roles,

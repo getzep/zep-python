@@ -40,13 +40,23 @@ class RawGraphClient:
         self._client_wrapper = client_wrapper
 
     def list_entity_types(
-        self, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EntityTypeResponse]:
         """
-        Returns all entity types for a project.
+        Returns all entity types for a project, user, or graph.
 
         Parameters
         ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific entity types
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific entity types
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -58,6 +68,10 @@ class RawGraphClient:
         _response = self._client_wrapper.httpx_client.request(
             "entity-types",
             method="GET",
+            params={
+                "user_id": user_id,
+                "graph_id": graph_id,
+            },
             request_options=request_options,
         )
         try:
@@ -70,6 +84,17 @@ class RawGraphClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
@@ -106,16 +131,22 @@ class RawGraphClient:
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[SuccessResponse]:
         """
-        Sets the entity types for a project, replacing any existing ones.
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -135,6 +166,8 @@ class RawGraphClient:
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
+                "graph_ids": graph_ids,
+                "user_ids": user_ids,
             },
             headers={
                 "content-type": "application/json",
@@ -540,7 +573,7 @@ class RawGraphClient:
         Returns
         -------
         HttpResponse[CloneGraphResponse]
-            Response object containing group_id or user_id pointing to the new graph
+            Response object containing graph_id or user_id pointing to the new graph
         """
         _response = self._client_wrapper.httpx_client.request(
             "graph/clone",
@@ -563,6 +596,170 @@ class RawGraphClient:
                     CloneGraphResponse,
                     parse_obj_as(
                         type_=CloneGraphResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def create(
+        self,
+        *,
+        graph_id: str,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[Graph]:
+        """
+        Creates a new graph.
+
+        Parameters
+        ----------
+        graph_id : str
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[Graph]
+            The added graph
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph/create",
+            method="POST",
+            json={
+                "description": description,
+                "fact_rating_instruction": convert_and_respect_annotation_metadata(
+                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
+                ),
+                "graph_id": graph_id,
+                "name": name,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Graph,
+                    parse_obj_as(
+                        type_=Graph,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def list_all(
+        self,
+        *,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[GraphListResponse]:
+        """
+        Returns all graphs. In order to list users, use user.list_ordered instead
+
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1.
+
+        page_size : typing.Optional[int]
+            Number of graphs to retrieve per page.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[GraphListResponse]
+            Successfully retrieved list of graphs.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph/list-all",
+            method="GET",
+            params={
+                "pageNumber": page_number,
+                "pageSize": page_size,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphListResponse,
+                    parse_obj_as(
+                        type_=GraphListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -730,170 +927,6 @@ class RawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def create(
-        self,
-        *,
-        graph_id: str,
-        description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[Graph]:
-        """
-        Creates a new graph.
-
-        Parameters
-        ----------
-        graph_id : str
-
-        description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-
-        name : typing.Optional[str]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[Graph]
-            The added graph
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graphs",
-            method="POST",
-            json={
-                "description": description,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
-                "graph_id": graph_id,
-                "name": name,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    Graph,
-                    parse_obj_as(
-                        type_=Graph,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def list_all(
-        self,
-        *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[GraphListResponse]:
-        """
-        Returns all graphs.
-
-        Parameters
-        ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1.
-
-        page_size : typing.Optional[int]
-            Number of graphs to retrieve per page.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[GraphListResponse]
-            Successfully retrieved list of graphs.
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graphs/list-all",
-            method="GET",
-            params={
-                "pageNumber": page_number,
-                "pageSize": page_size,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GraphListResponse,
-                    parse_obj_as(
-                        type_=GraphListResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
     def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[Graph]:
         """
         Returns a graph.
@@ -912,7 +945,7 @@ class RawGraphClient:
             The graph that was retrieved.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_id)}",
+            f"graph/{jsonable_encoder(graph_id)}",
             method="GET",
             request_options=request_options,
         )
@@ -977,7 +1010,7 @@ class RawGraphClient:
             Deleted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_id)}",
+            f"graph/{jsonable_encoder(graph_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -1065,7 +1098,7 @@ class RawGraphClient:
             The updated graph object
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_id)}",
+            f"graph/{jsonable_encoder(graph_id)}",
             method="PATCH",
             json={
                 "description": description,
@@ -1138,13 +1171,23 @@ class AsyncRawGraphClient:
         self._client_wrapper = client_wrapper
 
     async def list_entity_types(
-        self, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EntityTypeResponse]:
         """
-        Returns all entity types for a project.
+        Returns all entity types for a project, user, or graph.
 
         Parameters
         ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific entity types
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific entity types
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -1156,6 +1199,10 @@ class AsyncRawGraphClient:
         _response = await self._client_wrapper.httpx_client.request(
             "entity-types",
             method="GET",
+            params={
+                "user_id": user_id,
+                "graph_id": graph_id,
+            },
             request_options=request_options,
         )
         try:
@@ -1168,6 +1215,17 @@ class AsyncRawGraphClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
@@ -1204,16 +1262,22 @@ class AsyncRawGraphClient:
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[SuccessResponse]:
         """
-        Sets the entity types for a project, replacing any existing ones.
+        Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1233,6 +1297,8 @@ class AsyncRawGraphClient:
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
+                "graph_ids": graph_ids,
+                "user_ids": user_ids,
             },
             headers={
                 "content-type": "application/json",
@@ -1638,7 +1704,7 @@ class AsyncRawGraphClient:
         Returns
         -------
         AsyncHttpResponse[CloneGraphResponse]
-            Response object containing group_id or user_id pointing to the new graph
+            Response object containing graph_id or user_id pointing to the new graph
         """
         _response = await self._client_wrapper.httpx_client.request(
             "graph/clone",
@@ -1661,6 +1727,170 @@ class AsyncRawGraphClient:
                     CloneGraphResponse,
                     parse_obj_as(
                         type_=CloneGraphResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def create(
+        self,
+        *,
+        graph_id: str,
+        description: typing.Optional[str] = OMIT,
+        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[Graph]:
+        """
+        Creates a new graph.
+
+        Parameters
+        ----------
+        graph_id : str
+
+        description : typing.Optional[str]
+
+        fact_rating_instruction : typing.Optional[FactRatingInstruction]
+
+        name : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[Graph]
+            The added graph
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph/create",
+            method="POST",
+            json={
+                "description": description,
+                "fact_rating_instruction": convert_and_respect_annotation_metadata(
+                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
+                ),
+                "graph_id": graph_id,
+                "name": name,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Graph,
+                    parse_obj_as(
+                        type_=Graph,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def list_all(
+        self,
+        *,
+        page_number: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[GraphListResponse]:
+        """
+        Returns all graphs. In order to list users, use user.list_ordered instead
+
+        Parameters
+        ----------
+        page_number : typing.Optional[int]
+            Page number for pagination, starting from 1.
+
+        page_size : typing.Optional[int]
+            Number of graphs to retrieve per page.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[GraphListResponse]
+            Successfully retrieved list of graphs.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph/list-all",
+            method="GET",
+            params={
+                "pageNumber": page_number,
+                "pageSize": page_size,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphListResponse,
+                    parse_obj_as(
+                        type_=GraphListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1828,170 +2058,6 @@ class AsyncRawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def create(
-        self,
-        *,
-        graph_id: str,
-        description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[Graph]:
-        """
-        Creates a new graph.
-
-        Parameters
-        ----------
-        graph_id : str
-
-        description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-
-        name : typing.Optional[str]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[Graph]
-            The added graph
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graphs",
-            method="POST",
-            json={
-                "description": description,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
-                "graph_id": graph_id,
-                "name": name,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    Graph,
-                    parse_obj_as(
-                        type_=Graph,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def list_all(
-        self,
-        *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[GraphListResponse]:
-        """
-        Returns all graphs.
-
-        Parameters
-        ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1.
-
-        page_size : typing.Optional[int]
-            Number of graphs to retrieve per page.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[GraphListResponse]
-            Successfully retrieved list of graphs.
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graphs/list-all",
-            method="GET",
-            params={
-                "pageNumber": page_number,
-                "pageSize": page_size,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GraphListResponse,
-                    parse_obj_as(
-                        type_=GraphListResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
     async def get(
         self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[Graph]:
@@ -2012,7 +2078,7 @@ class AsyncRawGraphClient:
             The graph that was retrieved.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_id)}",
+            f"graph/{jsonable_encoder(graph_id)}",
             method="GET",
             request_options=request_options,
         )
@@ -2077,7 +2143,7 @@ class AsyncRawGraphClient:
             Deleted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_id)}",
+            f"graph/{jsonable_encoder(graph_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -2165,7 +2231,7 @@ class AsyncRawGraphClient:
             The updated graph object
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_id)}",
+            f"graph/{jsonable_encoder(graph_id)}",
             method="PATCH",
             json={
                 "description": description,

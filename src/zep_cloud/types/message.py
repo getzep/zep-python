@@ -20,6 +20,11 @@ class Message(UniversalBaseModel):
     The timestamp of when the message was created.
     """
 
+    metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
+    """
+    The metadata associated with the message.
+    """
+
     name: typing.Optional[str] = pydantic.Field(default=None)
     """
     Customizable name of the sender of the message (e.g., "john", "sales_agent").

@@ -29,7 +29,17 @@ class EntityNode(UniversalBaseModel):
     Name of the node
     """
 
-    score: typing.Optional[float] = None
+    relevance: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    Relevance is an experimental rank-aligned score in [0,1] derived from Score via logit transformation.
+    Only populated when using cross_encoder reranker; omitted for other reranker types (e.g., RRF).
+    """
+
+    score: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    Score is the reranker output: sigmoid-distributed logits [0,1] when using cross_encoder reranker, or RRF ordinal rank when using rrf reranker
+    """
+
     summary: str = pydantic.Field()
     """
     Regional summary of surrounding edges

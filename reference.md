@@ -1,6 +1,6 @@
 # Reference
 ## Graph
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_entity_types</a>()</code></summary>
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_entity_types</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -12,7 +12,7 @@
 <dl>
 <dd>
 
-Returns all entity types for a project.
+Returns all entity types for a project, user, or graph.
 </dd>
 </dl>
 </dd>
@@ -48,6 +48,22 @@ client.graph.list_entity_types()
 <dl>
 <dd>
 
+**user_id:** `typing.Optional[str]` — User ID to get user-specific entity types
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_id:** `typing.Optional[str]` — Graph ID to get graph-specific entity types
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -72,7 +88,7 @@ client.graph.list_entity_types()
 <dl>
 <dd>
 
-Sets the entity types for a project, replacing any existing ones.
+Sets the entity types for multiple users and graphs, replacing any existing ones.
 </dd>
 </dl>
 </dd>
@@ -117,6 +133,22 @@ client.graph.set_entity_types_internal()
 <dd>
 
 **entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_ids:** `typing.Optional[typing.Sequence[str]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_ids:** `typing.Optional[typing.Sequence[str]]` 
     
 </dd>
 </dl>
@@ -614,6 +646,176 @@ client.graph.clone()
 </dl>
 </details>
 
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">create</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.create(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_all</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns all graphs. In order to list users, use user.list_ordered instead
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.list_all()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**page_number:** `typing.Optional[int]` — Page number for pagination, starting from 1.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_size:** `typing.Optional[int]` — Number of graphs to retrieve per page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">search</a>(...)</code></summary>
 <dl>
 <dd>
@@ -753,176 +955,6 @@ client.graph.search(
 <dd>
 
 **user_id:** `typing.Optional[str]` — The user_id when searching user graph. If not searching user graph, please use graph_id instead.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">create</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Creates a new graph.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.create(
-    graph_id="graph_id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**graph_id:** `str` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**description:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**name:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_all</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns all graphs.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.list_all()
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**page_number:** `typing.Optional[int]` — Page number for pagination, starting from 1.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**page_size:** `typing.Optional[int]` — Number of graphs to retrieve per page.
     
 </dd>
 </dl>
@@ -1160,6 +1192,67 @@ client.graph.update(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Project
+<details><summary><code>client.project.<a href="src/zep_cloud/project/client.py">get</a>()</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve project info based on the provided api key.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.project.get()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
 
 <dl>
 <dd>
@@ -1430,7 +1523,7 @@ client.thread.delete(
 <dl>
 <dd>
 
-Returns most relevant context for a given thread.
+Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 </dd>
 </dl>
 </dd>
@@ -1468,7 +1561,7 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
-**thread_id:** `str` — The ID of the thread for which to retrieve context.
+**thread_id:** `str` — The ID of the current thread (for which context is being retrieved).
     
 </dd>
 </dl>
@@ -1578,6 +1671,14 @@ client.thread.get(
 <dl>
 <dd>
 
+**lastn:** `typing.Optional[int]` — Number of most recent messages to return (overrides limit and cursor)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -1674,7 +1775,111 @@ that are added to a user's graph.
 <dl>
 <dd>
 
-**return_context:** `typing.Optional[bool]` — Optionally return memory context relevant to the most recent messages.
+**return_context:** `typing.Optional[bool]` — Optionally return context block relevant to the most recent messages.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">add_messages_batch</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Message, Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.thread.add_messages_batch(
+    thread_id="threadId",
+    messages=[
+        Message(
+            content="content",
+            role="norole",
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**thread_id:** `str` — The ID of the thread to which messages should be added.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
+
+Optional list of role types to ignore when adding messages to graph memory.
+The message itself will still be added, retained and used as context for messages
+that are added to a user's graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**return_context:** `typing.Optional[bool]` — Optionally return context block relevant to the most recent messages.
     
 </dd>
 </dl>
@@ -2234,6 +2439,76 @@ client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.user.get_threads(
+    user_id="userId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">warm</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Hints Zep to warm a user's graph for low-latency search
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user.warm(
     user_id="userId",
 )
 
@@ -3315,6 +3590,86 @@ client.graph.node.get(
 <dd>
 
 **uuid_:** `str` — Node UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Thread Message
+<details><summary><code>client.thread.message.<a href="src/zep_cloud/thread/message/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates a message.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.thread.message.update(
+    message_uuid="messageUUID",
+    metadata={"key": "value"},
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**message_uuid:** `str` — The UUID of the message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Dict[str, typing.Optional[typing.Any]]` 
     
 </dd>
 </dl>

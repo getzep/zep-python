@@ -3,6 +3,7 @@
 # isort: skip_file
 
 from .types import (
+    AddThreadMessagesRequest,
     AddThreadMessagesResponse,
     AddTripleResponse,
     ApiError,
@@ -34,6 +35,8 @@ from .types import (
     MessageListResponse,
     ModelsFactRatingExamples,
     ModelsFactRatingInstruction,
+    ProjectInfo,
+    ProjectInfoResponse,
     Reranker,
     RoleType,
     SearchFilters,
@@ -46,13 +49,14 @@ from .types import (
     UserNodeResponse,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError
-from . import graph, thread, user
+from . import graph, project, thread, user
 from .client import AsyncZep, Zep
 from .environment import ZepEnvironment
 from .thread import ThreadGetUserContextRequestMode
 from .version import __version__
 
 __all__ = [
+    "AddThreadMessagesRequest",
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
@@ -88,6 +92,8 @@ __all__ = [
     "ModelsFactRatingExamples",
     "ModelsFactRatingInstruction",
     "NotFoundError",
+    "ProjectInfo",
+    "ProjectInfoResponse",
     "Reranker",
     "RoleType",
     "SearchFilters",
@@ -103,6 +109,7 @@ __all__ = [
     "ZepEnvironment",
     "__version__",
     "graph",
+    "project",
     "thread",
     "user",
 ]
