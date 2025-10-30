@@ -61,7 +61,6 @@ class EpisodeClient:
         )
         client.graph.episode.get_by_graph_id(
             graph_id="graph_id",
-            lastn=1,
         )
         """
         _response = self._raw_client.get_by_graph_id(graph_id, lastn=lastn, request_options=request_options)
@@ -102,7 +101,6 @@ class EpisodeClient:
         )
         client.graph.episode.get_by_user_id(
             user_id="user_id",
-            lastn=1,
         )
         """
         _response = self._raw_client.get_by_user_id(user_id, lastn=lastn, request_options=request_options)
@@ -259,7 +257,6 @@ class AsyncEpisodeClient:
         async def main() -> None:
             await client.graph.episode.get_by_graph_id(
                 graph_id="graph_id",
-                lastn=1,
             )
 
 
@@ -308,7 +305,6 @@ class AsyncEpisodeClient:
         async def main() -> None:
             await client.graph.episode.get_by_user_id(
                 user_id="user_id",
-                lastn=1,
             )
 
 
