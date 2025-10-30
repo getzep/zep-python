@@ -23,7 +23,7 @@ class RawEpisodeClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_graph_episodes(
+    def get_by_graph_id(
         self,
         graph_id: str,
         *,
@@ -98,7 +98,7 @@ class RawEpisodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get_user_episodes(
+    def get_by_user_id(
         self,
         user_id: str,
         *,
@@ -312,7 +312,7 @@ class RawEpisodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get_mentions(
+    def get_nodes_and_edges(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[EpisodeMentions]:
         """
@@ -382,7 +382,7 @@ class AsyncRawEpisodeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get_graph_episodes(
+    async def get_by_graph_id(
         self,
         graph_id: str,
         *,
@@ -457,7 +457,7 @@ class AsyncRawEpisodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def get_user_episodes(
+    async def get_by_user_id(
         self,
         user_id: str,
         *,
@@ -673,7 +673,7 @@ class AsyncRawEpisodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def get_mentions(
+    async def get_nodes_and_edges(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[EpisodeMentions]:
         """

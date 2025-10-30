@@ -22,7 +22,7 @@ from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
-from .types.thread_get_context_request_mode import ThreadGetContextRequestMode
+from .types.thread_get_user_context_request_mode import ThreadGetUserContextRequestMode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -32,7 +32,7 @@ class RawThreadClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list(
+    def list_all(
         self,
         *,
         page_number: typing.Optional[int] = None,
@@ -259,12 +259,12 @@ class RawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get_context(
+    def get_user_context(
         self,
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
-        mode: typing.Optional[ThreadGetContextRequestMode] = None,
+        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ThreadContextResponse]:
         """
@@ -278,7 +278,7 @@ class RawThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
-        mode : typing.Optional[ThreadGetContextRequestMode]
+        mode : typing.Optional[ThreadGetUserContextRequestMode]
             Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
@@ -339,7 +339,7 @@ class RawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get_messages(
+    def get(
         self,
         thread_id: str,
         *,
@@ -593,7 +593,7 @@ class AsyncRawThreadClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list(
+    async def list_all(
         self,
         *,
         page_number: typing.Optional[int] = None,
@@ -820,12 +820,12 @@ class AsyncRawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def get_context(
+    async def get_user_context(
         self,
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
-        mode: typing.Optional[ThreadGetContextRequestMode] = None,
+        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ThreadContextResponse]:
         """
@@ -839,7 +839,7 @@ class AsyncRawThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
-        mode : typing.Optional[ThreadGetContextRequestMode]
+        mode : typing.Optional[ThreadGetUserContextRequestMode]
             Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
@@ -900,7 +900,7 @@ class AsyncRawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def get_messages(
+    async def get(
         self,
         thread_id: str,
         *,
