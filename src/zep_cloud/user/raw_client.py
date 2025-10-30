@@ -33,6 +33,7 @@ class RawUserClient:
         self,
         *,
         user_id: str,
+        disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
@@ -47,6 +48,9 @@ class RawUserClient:
         ----------
         user_id : str
             The unique identifier of the user.
+
+        disable_default_ontology : typing.Optional[bool]
+            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
             The email address of the user.
@@ -75,6 +79,7 @@ class RawUserClient:
             "users",
             method="POST",
             json={
+                "disable_default_ontology": disable_default_ontology,
                 "email": email,
                 "fact_rating_instruction": convert_and_respect_annotation_metadata(
                     object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
@@ -339,6 +344,7 @@ class RawUserClient:
         self,
         user_id: str,
         *,
+        disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
@@ -353,6 +359,9 @@ class RawUserClient:
         ----------
         user_id : str
             User ID
+
+        disable_default_ontology : typing.Optional[bool]
+            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
             The email address of the user.
@@ -381,6 +390,7 @@ class RawUserClient:
             f"users/{jsonable_encoder(user_id)}",
             method="PATCH",
             json={
+                "disable_default_ontology": disable_default_ontology,
                 "email": email,
                 "fact_rating_instruction": convert_and_respect_annotation_metadata(
                     object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
@@ -640,6 +650,7 @@ class AsyncRawUserClient:
         self,
         *,
         user_id: str,
+        disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
@@ -654,6 +665,9 @@ class AsyncRawUserClient:
         ----------
         user_id : str
             The unique identifier of the user.
+
+        disable_default_ontology : typing.Optional[bool]
+            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
             The email address of the user.
@@ -682,6 +696,7 @@ class AsyncRawUserClient:
             "users",
             method="POST",
             json={
+                "disable_default_ontology": disable_default_ontology,
                 "email": email,
                 "fact_rating_instruction": convert_and_respect_annotation_metadata(
                     object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
@@ -948,6 +963,7 @@ class AsyncRawUserClient:
         self,
         user_id: str,
         *,
+        disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
@@ -962,6 +978,9 @@ class AsyncRawUserClient:
         ----------
         user_id : str
             User ID
+
+        disable_default_ontology : typing.Optional[bool]
+            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
             The email address of the user.
@@ -990,6 +1009,7 @@ class AsyncRawUserClient:
             f"users/{jsonable_encoder(user_id)}",
             method="PATCH",
             json={
+                "disable_default_ontology": disable_default_ontology,
                 "email": email,
                 "fact_rating_instruction": convert_and_respect_annotation_metadata(
                     object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"

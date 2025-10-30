@@ -22,6 +22,16 @@ class SearchFilters(UniversalBaseModel):
     List of edge types to filter on
     """
 
+    exclude_edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    List of edge types to exclude from results
+    """
+
+    exclude_node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    List of node labels to exclude from results
+    """
+
     expired_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic.Field(default=None)
     """
     2D array of date filters for the expired_at field.

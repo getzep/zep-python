@@ -1958,6 +1958,14 @@ client.user.add(
 <dl>
 <dd>
 
+**disable_default_ontology:** `typing.Optional[bool]` — When true, disables the use of default/fallback ontology for the user's graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **email:** `typing.Optional[str]` — The email address of the user.
     
 </dd>
@@ -2277,6 +2285,14 @@ client.user.update(
 <dd>
 
 **user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disable_default_ontology:** `typing.Optional[bool]` — When true, disables the use of default/fallback ontology for the user's graph.
     
 </dd>
 </dl>
