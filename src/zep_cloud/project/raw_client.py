@@ -19,7 +19,7 @@ class RawProjectClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[ProjectInfoResponse]:
+    def get_info(self, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[ProjectInfoResponse]:
         """
         Retrieve project info based on the provided api key.
 
@@ -95,7 +95,7 @@ class AsyncRawProjectClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get(
+    async def get_info(
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[ProjectInfoResponse]:
         """

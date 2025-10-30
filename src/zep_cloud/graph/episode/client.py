@@ -26,7 +26,7 @@ class EpisodeClient:
         """
         return self._raw_client
 
-    def get_by_graph_id(
+    def get_graph_episodes(
         self,
         graph_id: str,
         *,
@@ -59,14 +59,15 @@ class EpisodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.episode.get_by_graph_id(
+        client.graph.episode.get_graph_episodes(
             graph_id="graph_id",
+            lastn=1,
         )
         """
-        _response = self._raw_client.get_by_graph_id(graph_id, lastn=lastn, request_options=request_options)
+        _response = self._raw_client.get_graph_episodes(graph_id, lastn=lastn, request_options=request_options)
         return _response.data
 
-    def get_by_user_id(
+    def get_user_episodes(
         self,
         user_id: str,
         *,
@@ -99,11 +100,12 @@ class EpisodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.episode.get_by_user_id(
+        client.graph.episode.get_user_episodes(
             user_id="user_id",
+            lastn=1,
         )
         """
-        _response = self._raw_client.get_by_user_id(user_id, lastn=lastn, request_options=request_options)
+        _response = self._raw_client.get_user_episodes(user_id, lastn=lastn, request_options=request_options)
         return _response.data
 
     def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
@@ -168,9 +170,7 @@ class EpisodeClient:
         _response = self._raw_client.delete(uuid_, request_options=request_options)
         return _response.data
 
-    def get_nodes_and_edges(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> EpisodeMentions:
+    def get_mentions(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EpisodeMentions:
         """
         Returns nodes and edges mentioned in an episode
 
@@ -194,11 +194,11 @@ class EpisodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.episode.get_nodes_and_edges(
+        client.graph.episode.get_mentions(
             uuid_="uuid",
         )
         """
-        _response = self._raw_client.get_nodes_and_edges(uuid_, request_options=request_options)
+        _response = self._raw_client.get_mentions(uuid_, request_options=request_options)
         return _response.data
 
 
@@ -217,7 +217,7 @@ class AsyncEpisodeClient:
         """
         return self._raw_client
 
-    async def get_by_graph_id(
+    async def get_graph_episodes(
         self,
         graph_id: str,
         *,
@@ -255,17 +255,18 @@ class AsyncEpisodeClient:
 
 
         async def main() -> None:
-            await client.graph.episode.get_by_graph_id(
+            await client.graph.episode.get_graph_episodes(
                 graph_id="graph_id",
+                lastn=1,
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_graph_id(graph_id, lastn=lastn, request_options=request_options)
+        _response = await self._raw_client.get_graph_episodes(graph_id, lastn=lastn, request_options=request_options)
         return _response.data
 
-    async def get_by_user_id(
+    async def get_user_episodes(
         self,
         user_id: str,
         *,
@@ -303,14 +304,15 @@ class AsyncEpisodeClient:
 
 
         async def main() -> None:
-            await client.graph.episode.get_by_user_id(
+            await client.graph.episode.get_user_episodes(
                 user_id="user_id",
+                lastn=1,
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_user_id(user_id, lastn=lastn, request_options=request_options)
+        _response = await self._raw_client.get_user_episodes(user_id, lastn=lastn, request_options=request_options)
         return _response.data
 
     async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
@@ -391,7 +393,7 @@ class AsyncEpisodeClient:
         _response = await self._raw_client.delete(uuid_, request_options=request_options)
         return _response.data
 
-    async def get_nodes_and_edges(
+    async def get_mentions(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EpisodeMentions:
         """
@@ -422,12 +424,12 @@ class AsyncEpisodeClient:
 
 
         async def main() -> None:
-            await client.graph.episode.get_nodes_and_edges(
+            await client.graph.episode.get_mentions(
                 uuid_="uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_nodes_and_edges(uuid_, request_options=request_options)
+        _response = await self._raw_client.get_mentions(uuid_, request_options=request_options)
         return _response.data

@@ -25,7 +25,7 @@ class RawNodeClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_by_graph_id(
+    def get_graph_nodes(
         self,
         graph_id: str,
         *,
@@ -109,7 +109,7 @@ class RawNodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get_by_user_id(
+    def get_user_nodes(
         self,
         user_id: str,
         *,
@@ -193,7 +193,7 @@ class RawNodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get_edges(
+    def get_entity_edges(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[typing.List[EntityEdge]]:
         """
@@ -402,7 +402,7 @@ class AsyncRawNodeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get_by_graph_id(
+    async def get_graph_nodes(
         self,
         graph_id: str,
         *,
@@ -486,7 +486,7 @@ class AsyncRawNodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def get_by_user_id(
+    async def get_user_nodes(
         self,
         user_id: str,
         *,
@@ -570,7 +570,7 @@ class AsyncRawNodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def get_edges(
+    async def get_entity_edges(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[typing.List[EntityEdge]]:
         """

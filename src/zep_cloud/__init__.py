@@ -52,7 +52,7 @@ from .errors import BadRequestError, InternalServerError, NotFoundError
 from . import graph, project, thread, user
 from .client import AsyncZep, Zep
 from .environment import ZepEnvironment
-from .thread import ThreadGetUserContextRequestMode
+from .thread import ThreadGetContextRequestMode
 from .version import __version__
 
 __all__ = [
@@ -100,7 +100,7 @@ __all__ = [
     "SuccessResponse",
     "Thread",
     "ThreadContextResponse",
-    "ThreadGetUserContextRequestMode",
+    "ThreadGetContextRequestMode",
     "ThreadListResponse",
     "User",
     "UserListResponse",

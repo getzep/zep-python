@@ -35,6 +35,7 @@ class UserClient:
         self,
         *,
         user_id: str,
+        disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
@@ -49,6 +50,9 @@ class UserClient:
         ----------
         user_id : str
             The unique identifier of the user.
+
+        disable_default_ontology : typing.Optional[bool]
+            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
             The email address of the user.
@@ -86,6 +90,7 @@ class UserClient:
         """
         _response = self._raw_client.add(
             user_id=user_id,
+            disable_default_ontology=disable_default_ontology,
             email=email,
             fact_rating_instruction=fact_rating_instruction,
             first_name=first_name,
@@ -128,7 +133,10 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.list_ordered()
+        client.user.list_ordered(
+            page_number=1,
+            page_size=1,
+        )
         """
         _response = self._raw_client.list_ordered(
             page_number=page_number, page_size=page_size, request_options=request_options
@@ -201,6 +209,7 @@ class UserClient:
         self,
         user_id: str,
         *,
+        disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
@@ -215,6 +224,9 @@ class UserClient:
         ----------
         user_id : str
             User ID
+
+        disable_default_ontology : typing.Optional[bool]
+            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
             The email address of the user.
@@ -252,6 +264,7 @@ class UserClient:
         """
         _response = self._raw_client.update(
             user_id,
+            disable_default_ontology=disable_default_ontology,
             email=email,
             fact_rating_instruction=fact_rating_instruction,
             first_name=first_name,
@@ -376,6 +389,7 @@ class AsyncUserClient:
         self,
         *,
         user_id: str,
+        disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
@@ -390,6 +404,9 @@ class AsyncUserClient:
         ----------
         user_id : str
             The unique identifier of the user.
+
+        disable_default_ontology : typing.Optional[bool]
+            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
             The email address of the user.
@@ -435,6 +452,7 @@ class AsyncUserClient:
         """
         _response = await self._raw_client.add(
             user_id=user_id,
+            disable_default_ontology=disable_default_ontology,
             email=email,
             fact_rating_instruction=fact_rating_instruction,
             first_name=first_name,
@@ -482,7 +500,10 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.list_ordered()
+            await client.user.list_ordered(
+                page_number=1,
+                page_size=1,
+            )
 
 
         asyncio.run(main())
@@ -574,6 +595,7 @@ class AsyncUserClient:
         self,
         user_id: str,
         *,
+        disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
@@ -588,6 +610,9 @@ class AsyncUserClient:
         ----------
         user_id : str
             User ID
+
+        disable_default_ontology : typing.Optional[bool]
+            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
             The email address of the user.
@@ -633,6 +658,7 @@ class AsyncUserClient:
         """
         _response = await self._raw_client.update(
             user_id,
+            disable_default_ontology=disable_default_ontology,
             email=email,
             fact_rating_instruction=fact_rating_instruction,
             first_name=first_name,

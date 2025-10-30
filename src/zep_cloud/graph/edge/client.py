@@ -27,7 +27,7 @@ class EdgeClient:
         """
         return self._raw_client
 
-    def get_by_graph_id(
+    def get_graph_edges(
         self,
         graph_id: str,
         *,
@@ -64,16 +64,16 @@ class EdgeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.edge.get_by_graph_id(
+        client.graph.edge.get_graph_edges(
             graph_id="graph_id",
         )
         """
-        _response = self._raw_client.get_by_graph_id(
+        _response = self._raw_client.get_graph_edges(
             graph_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
         )
         return _response.data
 
-    def get_by_user_id(
+    def get_user_edges(
         self,
         user_id: str,
         *,
@@ -110,11 +110,11 @@ class EdgeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.edge.get_by_user_id(
+        client.graph.edge.get_user_edges(
             user_id="user_id",
         )
         """
-        _response = self._raw_client.get_by_user_id(
+        _response = self._raw_client.get_user_edges(
             user_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
         )
         return _response.data
@@ -197,7 +197,7 @@ class AsyncEdgeClient:
         """
         return self._raw_client
 
-    async def get_by_graph_id(
+    async def get_graph_edges(
         self,
         graph_id: str,
         *,
@@ -239,19 +239,19 @@ class AsyncEdgeClient:
 
 
         async def main() -> None:
-            await client.graph.edge.get_by_graph_id(
+            await client.graph.edge.get_graph_edges(
                 graph_id="graph_id",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_graph_id(
+        _response = await self._raw_client.get_graph_edges(
             graph_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
         )
         return _response.data
 
-    async def get_by_user_id(
+    async def get_user_edges(
         self,
         user_id: str,
         *,
@@ -293,14 +293,14 @@ class AsyncEdgeClient:
 
 
         async def main() -> None:
-            await client.graph.edge.get_by_user_id(
+            await client.graph.edge.get_user_edges(
                 user_id="user_id",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_user_id(
+        _response = await self._raw_client.get_user_edges(
             user_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
         )
         return _response.data

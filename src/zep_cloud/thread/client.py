@@ -14,7 +14,7 @@ from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
 from .message.client import AsyncMessageClient, MessageClient
 from .raw_client import AsyncRawThreadClient, RawThreadClient
-from .types.thread_get_user_context_request_mode import ThreadGetUserContextRequestMode
+from .types.thread_get_context_request_mode import ThreadGetContextRequestMode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -36,7 +36,7 @@ class ThreadClient:
         """
         return self._raw_client
 
-    def list_all(
+    def list(
         self,
         *,
         page_number: typing.Optional[int] = None,
@@ -77,9 +77,14 @@ class ThreadClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.thread.list_all()
+        client.thread.list(
+            page_number=1,
+            page_size=1,
+            order_by="order_by",
+            asc=True,
+        )
         """
-        _response = self._raw_client.list_all(
+        _response = self._raw_client.list(
             page_number=page_number, page_size=page_size, order_by=order_by, asc=asc, request_options=request_options
         )
         return _response.data
@@ -152,12 +157,12 @@ class ThreadClient:
         _response = self._raw_client.delete(thread_id, request_options=request_options)
         return _response.data
 
-    def get_user_context(
+    def get_context(
         self,
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
-        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
+        mode: typing.Optional[ThreadGetContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
         """
@@ -171,7 +176,7 @@ class ThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
-        mode : typing.Optional[ThreadGetUserContextRequestMode]
+        mode : typing.Optional[ThreadGetContextRequestMode]
             Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
@@ -189,16 +194,18 @@ class ThreadClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.thread.get_user_context(
+        client.thread.get_context(
             thread_id="threadId",
+            min_rating=1.1,
+            mode="basic",
         )
         """
-        _response = self._raw_client.get_user_context(
+        _response = self._raw_client.get_context(
             thread_id, min_rating=min_rating, mode=mode, request_options=request_options
         )
         return _response.data
 
-    def get(
+    def get_messages(
         self,
         thread_id: str,
         *,
@@ -239,11 +246,14 @@ class ThreadClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.thread.get(
+        client.thread.get_messages(
             thread_id="threadId",
+            limit=1,
+            cursor=1,
+            lastn=1,
         )
         """
-        _response = self._raw_client.get(
+        _response = self._raw_client.get_messages(
             thread_id, limit=limit, cursor=cursor, lastn=lastn, request_options=request_options
         )
         return _response.data
@@ -389,7 +399,7 @@ class AsyncThreadClient:
         """
         return self._raw_client
 
-    async def list_all(
+    async def list(
         self,
         *,
         page_number: typing.Optional[int] = None,
@@ -435,12 +445,17 @@ class AsyncThreadClient:
 
 
         async def main() -> None:
-            await client.thread.list_all()
+            await client.thread.list(
+                page_number=1,
+                page_size=1,
+                order_by="order_by",
+                asc=True,
+            )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list_all(
+        _response = await self._raw_client.list(
             page_number=page_number, page_size=page_size, order_by=order_by, asc=asc, request_options=request_options
         )
         return _response.data
@@ -531,12 +546,12 @@ class AsyncThreadClient:
         _response = await self._raw_client.delete(thread_id, request_options=request_options)
         return _response.data
 
-    async def get_user_context(
+    async def get_context(
         self,
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
-        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
+        mode: typing.Optional[ThreadGetContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
         """
@@ -550,7 +565,7 @@ class AsyncThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
-        mode : typing.Optional[ThreadGetUserContextRequestMode]
+        mode : typing.Optional[ThreadGetContextRequestMode]
             Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
@@ -573,19 +588,21 @@ class AsyncThreadClient:
 
 
         async def main() -> None:
-            await client.thread.get_user_context(
+            await client.thread.get_context(
                 thread_id="threadId",
+                min_rating=1.1,
+                mode="basic",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_user_context(
+        _response = await self._raw_client.get_context(
             thread_id, min_rating=min_rating, mode=mode, request_options=request_options
         )
         return _response.data
 
-    async def get(
+    async def get_messages(
         self,
         thread_id: str,
         *,
@@ -631,14 +648,17 @@ class AsyncThreadClient:
 
 
         async def main() -> None:
-            await client.thread.get(
+            await client.thread.get_messages(
                 thread_id="threadId",
+                limit=1,
+                cursor=1,
+                lastn=1,
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(
+        _response = await self._raw_client.get_messages(
             thread_id, limit=limit, cursor=cursor, lastn=lastn, request_options=request_options
         )
         return _response.data

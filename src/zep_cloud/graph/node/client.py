@@ -28,7 +28,7 @@ class NodeClient:
         """
         return self._raw_client
 
-    def get_by_graph_id(
+    def get_graph_nodes(
         self,
         graph_id: str,
         *,
@@ -65,16 +65,16 @@ class NodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.node.get_by_graph_id(
+        client.graph.node.get_graph_nodes(
             graph_id="graph_id",
         )
         """
-        _response = self._raw_client.get_by_graph_id(
+        _response = self._raw_client.get_graph_nodes(
             graph_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
         )
         return _response.data
 
-    def get_by_user_id(
+    def get_user_nodes(
         self,
         user_id: str,
         *,
@@ -111,16 +111,16 @@ class NodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.node.get_by_user_id(
+        client.graph.node.get_user_nodes(
             user_id="user_id",
         )
         """
-        _response = self._raw_client.get_by_user_id(
+        _response = self._raw_client.get_user_nodes(
             user_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
         )
         return _response.data
 
-    def get_edges(
+    def get_entity_edges(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityEdge]:
         """
@@ -146,11 +146,11 @@ class NodeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.node.get_edges(
+        client.graph.node.get_entity_edges(
             node_uuid="node_uuid",
         )
         """
-        _response = self._raw_client.get_edges(node_uuid, request_options=request_options)
+        _response = self._raw_client.get_entity_edges(node_uuid, request_options=request_options)
         return _response.data
 
     def get_episodes(
@@ -233,7 +233,7 @@ class AsyncNodeClient:
         """
         return self._raw_client
 
-    async def get_by_graph_id(
+    async def get_graph_nodes(
         self,
         graph_id: str,
         *,
@@ -275,19 +275,19 @@ class AsyncNodeClient:
 
 
         async def main() -> None:
-            await client.graph.node.get_by_graph_id(
+            await client.graph.node.get_graph_nodes(
                 graph_id="graph_id",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_graph_id(
+        _response = await self._raw_client.get_graph_nodes(
             graph_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
         )
         return _response.data
 
-    async def get_by_user_id(
+    async def get_user_nodes(
         self,
         user_id: str,
         *,
@@ -329,19 +329,19 @@ class AsyncNodeClient:
 
 
         async def main() -> None:
-            await client.graph.node.get_by_user_id(
+            await client.graph.node.get_user_nodes(
                 user_id="user_id",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_user_id(
+        _response = await self._raw_client.get_user_nodes(
             user_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
         )
         return _response.data
 
-    async def get_edges(
+    async def get_entity_edges(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityEdge]:
         """
@@ -372,14 +372,14 @@ class AsyncNodeClient:
 
 
         async def main() -> None:
-            await client.graph.node.get_edges(
+            await client.graph.node.get_entity_edges(
                 node_uuid="node_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_edges(node_uuid, request_options=request_options)
+        _response = await self._raw_client.get_entity_edges(node_uuid, request_options=request_options)
         return _response.data
 
     async def get_episodes(

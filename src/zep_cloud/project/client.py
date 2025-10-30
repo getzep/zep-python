@@ -23,7 +23,7 @@ class ProjectClient:
         """
         return self._raw_client
 
-    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectInfoResponse:
+    def get_info(self, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectInfoResponse:
         """
         Retrieve project info based on the provided api key.
 
@@ -44,9 +44,9 @@ class ProjectClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.project.get()
+        client.project.get_info()
         """
-        _response = self._raw_client.get(request_options=request_options)
+        _response = self._raw_client.get_info(request_options=request_options)
         return _response.data
 
 
@@ -65,7 +65,7 @@ class AsyncProjectClient:
         """
         return self._raw_client
 
-    async def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectInfoResponse:
+    async def get_info(self, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectInfoResponse:
         """
         Retrieve project info based on the provided api key.
 
@@ -91,10 +91,10 @@ class AsyncProjectClient:
 
 
         async def main() -> None:
-            await client.project.get()
+            await client.project.get_info()
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(request_options=request_options)
+        _response = await self._raw_client.get_info(request_options=request_options)
         return _response.data

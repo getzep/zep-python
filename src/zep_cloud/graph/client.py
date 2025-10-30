@@ -82,7 +82,10 @@ class GraphClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.list_entity_types()
+        client.graph.list_entity_types(
+            user_id="user_id",
+            graph_id="graph_id",
+        )
         """
         _response = self._raw_client.list_entity_types(
             user_id=user_id, graph_id=graph_id, request_options=request_options
@@ -492,7 +495,10 @@ class GraphClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.list_all()
+        client.graph.list_all(
+            page_number=1,
+            page_size=1,
+        )
         """
         _response = self._raw_client.list_all(
             page_number=page_number, page_size=page_size, request_options=request_options
@@ -765,7 +771,10 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            await client.graph.list_entity_types()
+            await client.graph.list_entity_types(
+                user_id="user_id",
+                graph_id="graph_id",
+            )
 
 
         asyncio.run(main())
@@ -1231,7 +1240,10 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            await client.graph.list_all()
+            await client.graph.list_all(
+                page_number=1,
+                page_size=1,
+            )
 
 
         asyncio.run(main())

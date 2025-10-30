@@ -32,7 +32,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.list_entity_types()
+client.graph.list_entity_types(
+    user_id="user_id",
+    graph_id="graph_id",
+)
 
 ```
 </dd>
@@ -772,7 +775,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.list_all()
+client.graph.list_all(
+    page_number=1,
+    page_size=1,
+)
 
 ```
 </dd>
@@ -1209,7 +1215,7 @@ client.graph.update(
 </details>
 
 ## Project
-<details><summary><code>client.project.<a href="src/zep_cloud/project/client.py">get</a>()</code></summary>
+<details><summary><code>client.project.<a href="src/zep_cloud/project/client.py">get_info</a>()</code></summary>
 <dl>
 <dd>
 
@@ -1241,7 +1247,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.project.get()
+client.project.get_info()
 
 ```
 </dd>
@@ -1270,7 +1276,7 @@ client.project.get()
 </details>
 
 ## Thread
-<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">list_all</a>(...)</code></summary>
+<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">list</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -1302,7 +1308,12 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.thread.list_all()
+client.thread.list(
+    page_number=1,
+    page_size=1,
+    order_by="order_by",
+    asc=True,
+)
 
 ```
 </dd>
@@ -1511,7 +1522,7 @@ client.thread.delete(
 </dl>
 </details>
 
-<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">get_user_context</a>(...)</code></summary>
+<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">get_context</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -1543,8 +1554,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.thread.get_user_context(
+client.thread.get_context(
     thread_id="threadId",
+    min_rating=1.1,
+    mode="basic",
 )
 
 ```
@@ -1577,7 +1590,7 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
-**mode:** `typing.Optional[ThreadGetUserContextRequestMode]` — Defaults to summary mode. Use basic for lower latency
+**mode:** `typing.Optional[ThreadGetContextRequestMode]` — Defaults to summary mode. Use basic for lower latency
     
 </dd>
 </dl>
@@ -1597,7 +1610,7 @@ client.thread.get_user_context(
 </dl>
 </details>
 
-<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">get</a>(...)</code></summary>
+<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">get_messages</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -1629,8 +1642,11 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.thread.get(
+client.thread.get_messages(
     thread_id="threadId",
+    limit=1,
+    cursor=1,
+    lastn=1,
 )
 
 ```
@@ -1958,6 +1974,14 @@ client.user.add(
 <dl>
 <dd>
 
+**disable_default_ontology:** `typing.Optional[bool]` — When true, disables the use of default/fallback ontology for the user's graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **email:** `typing.Optional[str]` — The email address of the user.
     
 </dd>
@@ -2042,7 +2066,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.user.list_ordered()
+client.user.list_ordered(
+    page_number=1,
+    page_size=1,
+)
 
 ```
 </dd>
@@ -2277,6 +2304,14 @@ client.user.update(
 <dd>
 
 **user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disable_default_ontology:** `typing.Optional[bool]` — When true, disables the use of default/fallback ontology for the user's graph.
     
 </dd>
 </dl>
@@ -2547,7 +2582,7 @@ client.user.warm(
 </details>
 
 ## Graph Edge
-<details><summary><code>client.graph.edge.<a href="src/zep_cloud/graph/edge/client.py">get_by_graph_id</a>(...)</code></summary>
+<details><summary><code>client.graph.edge.<a href="src/zep_cloud/graph/edge/client.py">get_graph_edges</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -2579,7 +2614,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.edge.get_by_graph_id(
+client.graph.edge.get_graph_edges(
     graph_id="graph_id",
 )
 
@@ -2633,7 +2668,7 @@ client.graph.edge.get_by_graph_id(
 </dl>
 </details>
 
-<details><summary><code>client.graph.edge.<a href="src/zep_cloud/graph/edge/client.py">get_by_user_id</a>(...)</code></summary>
+<details><summary><code>client.graph.edge.<a href="src/zep_cloud/graph/edge/client.py">get_user_edges</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -2665,7 +2700,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.edge.get_by_user_id(
+client.graph.edge.get_user_edges(
     user_id="user_id",
 )
 
@@ -2860,7 +2895,7 @@ client.graph.edge.delete(
 </details>
 
 ## Graph Episode
-<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_by_graph_id</a>(...)</code></summary>
+<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_graph_episodes</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -2892,8 +2927,9 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.episode.get_by_graph_id(
+client.graph.episode.get_graph_episodes(
     graph_id="graph_id",
+    lastn=1,
 )
 
 ```
@@ -2938,7 +2974,7 @@ client.graph.episode.get_by_graph_id(
 </dl>
 </details>
 
-<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_by_user_id</a>(...)</code></summary>
+<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_user_episodes</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -2970,8 +3006,9 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.episode.get_by_user_id(
+client.graph.episode.get_user_episodes(
     user_id="user_id",
+    lastn=1,
 )
 
 ```
@@ -3156,7 +3193,7 @@ client.graph.episode.delete(
 </dl>
 </details>
 
-<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_nodes_and_edges</a>(...)</code></summary>
+<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_mentions</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -3188,7 +3225,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.episode.get_nodes_and_edges(
+client.graph.episode.get_mentions(
     uuid_="uuid",
 )
 
@@ -3227,7 +3264,7 @@ client.graph.episode.get_nodes_and_edges(
 </details>
 
 ## Graph Node
-<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_by_graph_id</a>(...)</code></summary>
+<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_graph_nodes</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -3259,7 +3296,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.node.get_by_graph_id(
+client.graph.node.get_graph_nodes(
     graph_id="graph_id",
 )
 
@@ -3313,7 +3350,7 @@ client.graph.node.get_by_graph_id(
 </dl>
 </details>
 
-<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_by_user_id</a>(...)</code></summary>
+<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_user_nodes</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -3345,7 +3382,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.node.get_by_user_id(
+client.graph.node.get_user_nodes(
     user_id="user_id",
 )
 
@@ -3399,7 +3436,7 @@ client.graph.node.get_by_user_id(
 </dl>
 </details>
 
-<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_edges</a>(...)</code></summary>
+<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_entity_edges</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -3431,7 +3468,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.node.get_edges(
+client.graph.node.get_entity_edges(
     node_uuid="node_uuid",
 )
 
