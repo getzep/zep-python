@@ -4,6 +4,8 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
+from ..types.apidata_list_user_instructions_response import ApidataListUserInstructionsResponse
+from ..types.apidata_user_instruction import ApidataUserInstruction
 from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
@@ -30,6 +32,130 @@ class UserClient:
         RawUserClient
         """
         return self._raw_client
+
+    def list_user_summary_instructions(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataListUserInstructionsResponse:
+        """
+        Lists all user summary/instructions for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataListUserInstructionsResponse
+            The list of instructions.
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.list_user_summary_instructions()
+        """
+        _response = self._raw_client.list_user_summary_instructions(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    def add_user_summary_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[ApidataUserInstruction],
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds new summary/instructions for users and/or graphs without removing existing ones.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[ApidataUserInstruction]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions added successfully
+
+        Examples
+        --------
+        from zep_cloud import ApidataUserInstruction, Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.add_user_summary_instructions(
+            instructions=[
+                ApidataUserInstruction(
+                    name="name",
+                    text="text",
+                )
+            ],
+        )
+        """
+        _response = self._raw_client.add_user_summary_instructions(
+            instructions=instructions, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
+
+    def delete_user_summary_instructions(
+        self,
+        *,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Deletes user summary/instructions for users and/or graphs.
+
+        Parameters
+        ----------
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            If empty, deletes all
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions deleted successfully
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.delete_user_summary_instructions()
+        """
+        _response = self._raw_client.delete_user_summary_instructions(
+            instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
 
     def add(
         self,
@@ -381,6 +507,154 @@ class AsyncUserClient:
         AsyncRawUserClient
         """
         return self._raw_client
+
+    async def list_user_summary_instructions(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataListUserInstructionsResponse:
+        """
+        Lists all user summary/instructions for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataListUserInstructionsResponse
+            The list of instructions.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.list_user_summary_instructions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_user_summary_instructions(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    async def add_user_summary_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[ApidataUserInstruction],
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds new summary/instructions for users and/or graphs without removing existing ones.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[ApidataUserInstruction]
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions added successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import ApidataUserInstruction, AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.add_user_summary_instructions(
+                instructions=[
+                    ApidataUserInstruction(
+                        name="name",
+                        text="text",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.add_user_summary_instructions(
+            instructions=instructions, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
+
+    async def delete_user_summary_instructions(
+        self,
+        *,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Deletes user summary/instructions for users and/or graphs.
+
+        Parameters
+        ----------
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            If empty, deletes all
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions deleted successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.delete_user_summary_instructions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.delete_user_summary_instructions(
+            instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
 
     async def add(
         self,
