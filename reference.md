@@ -1912,7 +1912,7 @@ that are added to a user's graph.
 <dl>
 <dd>
 
-Lists all user summary/instructions for a project, user, or graph.
+Lists all user summary instructions for a project, user.
 </dd>
 </dl>
 </dd>
@@ -1956,14 +1956,6 @@ client.user.list_user_summary_instructions()
 <dl>
 <dd>
 
-**graph_id:** `typing.Optional[str]` — Graph ID to get graph-specific instructions
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -1988,7 +1980,7 @@ client.user.list_user_summary_instructions()
 <dl>
 <dd>
 
-Adds new summary/instructions for users and/or graphs without removing existing ones.
+Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
 </dd>
 </dl>
 </dd>
@@ -2031,7 +2023,7 @@ client.user.add_user_summary_instructions(
 <dl>
 <dd>
 
-**instructions:** `typing.Sequence[UserInstruction]` 
+**instructions:** `typing.Sequence[UserInstruction]` — Instructions to add to the user summary generation.
     
 </dd>
 </dl>
@@ -2039,7 +2031,7 @@ client.user.add_user_summary_instructions(
 <dl>
 <dd>
 
-**user_ids:** `typing.Optional[typing.Sequence[str]]` 
+**user_ids:** `typing.Optional[typing.Sequence[str]]` — User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
     
 </dd>
 </dl>
@@ -2071,7 +2063,7 @@ client.user.add_user_summary_instructions(
 <dl>
 <dd>
 
-Deletes user summary/instructions for users and/or graphs.
+Deletes user summary/instructions for users or project wide defaults.
 </dd>
 </dl>
 </dd>
@@ -2107,7 +2099,7 @@ client.user.delete_user_summary_instructions()
 <dl>
 <dd>
 
-**instruction_names:** `typing.Optional[typing.Sequence[str]]` — If empty, deletes all
+**instruction_names:** `typing.Optional[typing.Sequence[str]]` — Unique identifier for the instructions to be deleted. If empty deletes all instructions.
     
 </dd>
 </dl>
@@ -2115,7 +2107,7 @@ client.user.delete_user_summary_instructions()
 <dl>
 <dd>
 
-**user_ids:** `typing.Optional[typing.Sequence[str]]` 
+**user_ids:** `typing.Optional[typing.Sequence[str]]` — Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
     
 </dd>
 </dl>

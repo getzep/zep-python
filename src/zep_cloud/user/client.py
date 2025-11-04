@@ -34,22 +34,15 @@ class UserClient:
         return self._raw_client
 
     def list_user_summary_instructions(
-        self,
-        *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
     ) -> ListUserInstructionsResponse:
         """
-        Lists all user summary/instructions for a project, user, or graph.
+        Lists all user summary instructions for a project, user.
 
         Parameters
         ----------
         user_id : typing.Optional[str]
             User ID to get user-specific instructions
-
-        graph_id : typing.Optional[str]
-            Graph ID to get graph-specific instructions
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -68,9 +61,7 @@ class UserClient:
         )
         client.user.list_user_summary_instructions()
         """
-        _response = self._raw_client.list_user_summary_instructions(
-            user_id=user_id, graph_id=graph_id, request_options=request_options
-        )
+        _response = self._raw_client.list_user_summary_instructions(user_id=user_id, request_options=request_options)
         return _response.data
 
     def add_user_summary_instructions(
@@ -81,13 +72,15 @@ class UserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Adds new summary/instructions for users and/or graphs without removing existing ones.
+        Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
         instructions : typing.Sequence[UserInstruction]
+            Instructions to add to the user summary generation.
 
         user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -126,14 +119,15 @@ class UserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Deletes user summary/instructions for users and/or graphs.
+        Deletes user summary/instructions for users or project wide defaults.
 
         Parameters
         ----------
         instruction_names : typing.Optional[typing.Sequence[str]]
-            If empty, deletes all
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
 
         user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -509,22 +503,15 @@ class AsyncUserClient:
         return self._raw_client
 
     async def list_user_summary_instructions(
-        self,
-        *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
     ) -> ListUserInstructionsResponse:
         """
-        Lists all user summary/instructions for a project, user, or graph.
+        Lists all user summary instructions for a project, user.
 
         Parameters
         ----------
         user_id : typing.Optional[str]
             User ID to get user-specific instructions
-
-        graph_id : typing.Optional[str]
-            Graph ID to get graph-specific instructions
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -552,7 +539,7 @@ class AsyncUserClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.list_user_summary_instructions(
-            user_id=user_id, graph_id=graph_id, request_options=request_options
+            user_id=user_id, request_options=request_options
         )
         return _response.data
 
@@ -564,13 +551,15 @@ class AsyncUserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Adds new summary/instructions for users and/or graphs without removing existing ones.
+        Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
         instructions : typing.Sequence[UserInstruction]
+            Instructions to add to the user summary generation.
 
         user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -617,14 +606,15 @@ class AsyncUserClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
         """
-        Deletes user summary/instructions for users and/or graphs.
+        Deletes user summary/instructions for users or project wide defaults.
 
         Parameters
         ----------
         instruction_names : typing.Optional[typing.Sequence[str]]
-            If empty, deletes all
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
 
         user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
