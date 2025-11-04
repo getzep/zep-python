@@ -133,10 +133,7 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.list_ordered(
-            page_number=1,
-            page_size=1,
-        )
+        client.user.list_ordered()
         """
         _response = self._raw_client.list_ordered(
             page_number=page_number, page_size=page_size, request_options=request_options
@@ -500,10 +497,7 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.list_ordered(
-                page_number=1,
-                page_size=1,
-            )
+            await client.user.list_ordered()
 
 
         asyncio.run(main())
