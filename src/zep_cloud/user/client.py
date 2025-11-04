@@ -4,12 +4,12 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.apidata_list_user_instructions_response import ApidataListUserInstructionsResponse
-from ..types.apidata_user_instruction import ApidataUserInstruction
 from ..types.fact_rating_instruction import FactRatingInstruction
+from ..types.list_user_instructions_response import ListUserInstructionsResponse
 from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.user import User
+from ..types.user_instruction import UserInstruction
 from ..types.user_list_response import UserListResponse
 from ..types.user_node_response import UserNodeResponse
 from .raw_client import AsyncRawUserClient, RawUserClient
@@ -39,7 +39,7 @@ class UserClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataListUserInstructionsResponse:
+    ) -> ListUserInstructionsResponse:
         """
         Lists all user summary/instructions for a project, user, or graph.
 
@@ -56,7 +56,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataListUserInstructionsResponse
+        ListUserInstructionsResponse
             The list of instructions.
 
         Examples
@@ -76,7 +76,7 @@ class UserClient:
     def add_user_summary_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataUserInstruction],
+        instructions: typing.Sequence[UserInstruction],
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
@@ -85,7 +85,7 @@ class UserClient:
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataUserInstruction]
+        instructions : typing.Sequence[UserInstruction]
 
         user_ids : typing.Optional[typing.Sequence[str]]
 
@@ -99,14 +99,14 @@ class UserClient:
 
         Examples
         --------
-        from zep_cloud import ApidataUserInstruction, Zep
+        from zep_cloud import UserInstruction, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.user.add_user_summary_instructions(
             instructions=[
-                ApidataUserInstruction(
+                UserInstruction(
                     name="name",
                     text="text",
                 )
@@ -514,7 +514,7 @@ class AsyncUserClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataListUserInstructionsResponse:
+    ) -> ListUserInstructionsResponse:
         """
         Lists all user summary/instructions for a project, user, or graph.
 
@@ -531,7 +531,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataListUserInstructionsResponse
+        ListUserInstructionsResponse
             The list of instructions.
 
         Examples
@@ -559,7 +559,7 @@ class AsyncUserClient:
     async def add_user_summary_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataUserInstruction],
+        instructions: typing.Sequence[UserInstruction],
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SuccessResponse:
@@ -568,7 +568,7 @@ class AsyncUserClient:
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataUserInstruction]
+        instructions : typing.Sequence[UserInstruction]
 
         user_ids : typing.Optional[typing.Sequence[str]]
 
@@ -584,7 +584,7 @@ class AsyncUserClient:
         --------
         import asyncio
 
-        from zep_cloud import ApidataUserInstruction, AsyncZep
+        from zep_cloud import AsyncZep, UserInstruction
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -594,7 +594,7 @@ class AsyncUserClient:
         async def main() -> None:
             await client.user.add_user_summary_instructions(
                 instructions=[
-                    ApidataUserInstruction(
+                    UserInstruction(
                         name="name",
                         text="text",
                     )

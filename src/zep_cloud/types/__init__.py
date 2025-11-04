@@ -6,8 +6,6 @@ from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
-from .apidata_list_user_instructions_response import ApidataListUserInstructionsResponse
-from .apidata_user_instruction import ApidataUserInstruction
 from .clone_graph_response import CloneGraphResponse
 from .comparison_operator import ComparisonOperator
 from .date_filter import DateFilter
@@ -32,6 +30,7 @@ from .graph_list_response import GraphListResponse
 from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
+from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
 from .models_fact_rating_examples import ModelsFactRatingExamples
@@ -46,6 +45,7 @@ from .thread import Thread
 from .thread_context_response import ThreadContextResponse
 from .thread_list_response import ThreadListResponse
 from .user import User
+from .user_instruction import UserInstruction
 from .user_list_response import UserListResponse
 from .user_node_response import UserNodeResponse
 
@@ -54,8 +54,6 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
-    "ApidataListUserInstructionsResponse",
-    "ApidataUserInstruction",
     "CloneGraphResponse",
     "ComparisonOperator",
     "DateFilter",
@@ -80,6 +78,7 @@ __all__ = [
     "GraphNodesRequest",
     "GraphSearchResults",
     "GraphSearchScope",
+    "ListUserInstructionsResponse",
     "Message",
     "MessageListResponse",
     "ModelsFactRatingExamples",
@@ -94,6 +93,7 @@ __all__ = [
     "ThreadContextResponse",
     "ThreadListResponse",
     "User",
+    "UserInstruction",
     "UserListResponse",
     "UserNodeResponse",
 ]

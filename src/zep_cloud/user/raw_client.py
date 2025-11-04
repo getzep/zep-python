@@ -14,12 +14,12 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_list_user_instructions_response import ApidataListUserInstructionsResponse
-from ..types.apidata_user_instruction import ApidataUserInstruction
 from ..types.fact_rating_instruction import FactRatingInstruction
+from ..types.list_user_instructions_response import ListUserInstructionsResponse
 from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.user import User
+from ..types.user_instruction import UserInstruction
 from ..types.user_list_response import UserListResponse
 from ..types.user_node_response import UserNodeResponse
 
@@ -37,7 +37,7 @@ class RawUserClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataListUserInstructionsResponse]:
+    ) -> HttpResponse[ListUserInstructionsResponse]:
         """
         Lists all user summary/instructions for a project, user, or graph.
 
@@ -54,7 +54,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[ApidataListUserInstructionsResponse]
+        HttpResponse[ListUserInstructionsResponse]
             The list of instructions.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -69,9 +69,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataListUserInstructionsResponse,
+                    ListUserInstructionsResponse,
                     parse_obj_as(
-                        type_=ApidataListUserInstructionsResponse,  # type: ignore
+                        type_=ListUserInstructionsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -110,7 +110,7 @@ class RawUserClient:
     def add_user_summary_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataUserInstruction],
+        instructions: typing.Sequence[UserInstruction],
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[SuccessResponse]:
@@ -119,7 +119,7 @@ class RawUserClient:
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataUserInstruction]
+        instructions : typing.Sequence[UserInstruction]
 
         user_ids : typing.Optional[typing.Sequence[str]]
 
@@ -136,7 +136,7 @@ class RawUserClient:
             method="POST",
             json={
                 "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[ApidataUserInstruction], direction="write"
+                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
                 ),
                 "user_ids": user_ids,
             },
@@ -889,7 +889,7 @@ class AsyncRawUserClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataListUserInstructionsResponse]:
+    ) -> AsyncHttpResponse[ListUserInstructionsResponse]:
         """
         Lists all user summary/instructions for a project, user, or graph.
 
@@ -906,7 +906,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataListUserInstructionsResponse]
+        AsyncHttpResponse[ListUserInstructionsResponse]
             The list of instructions.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -921,9 +921,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataListUserInstructionsResponse,
+                    ListUserInstructionsResponse,
                     parse_obj_as(
-                        type_=ApidataListUserInstructionsResponse,  # type: ignore
+                        type_=ListUserInstructionsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -962,7 +962,7 @@ class AsyncRawUserClient:
     async def add_user_summary_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataUserInstruction],
+        instructions: typing.Sequence[UserInstruction],
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[SuccessResponse]:
@@ -971,7 +971,7 @@ class AsyncRawUserClient:
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataUserInstruction]
+        instructions : typing.Sequence[UserInstruction]
 
         user_ids : typing.Optional[typing.Sequence[str]]
 
@@ -988,7 +988,7 @@ class AsyncRawUserClient:
             method="POST",
             json={
                 "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[ApidataUserInstruction], direction="write"
+                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
                 ),
                 "user_ids": user_ids,
             },

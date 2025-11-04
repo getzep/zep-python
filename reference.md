@@ -2003,14 +2003,14 @@ Adds new summary/instructions for users and/or graphs without removing existing 
 <dd>
 
 ```python
-from zep_cloud import ApidataUserInstruction, Zep
+from zep_cloud import UserInstruction, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.user.add_user_summary_instructions(
     instructions=[
-        ApidataUserInstruction(
+        UserInstruction(
             name="name",
             text="text",
         )
@@ -2031,7 +2031,7 @@ client.user.add_user_summary_instructions(
 <dl>
 <dd>
 
-**instructions:** `typing.Sequence[ApidataUserInstruction]` 
+**instructions:** `typing.Sequence[UserInstruction]` 
     
 </dd>
 </dl>

@@ -4,11 +4,11 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .user_instruction import UserInstruction
 
 
-class ApidataUserInstruction(UniversalBaseModel):
-    name: str
-    text: str
+class ListUserInstructionsResponse(UniversalBaseModel):
+    instructions: typing.Optional[typing.List[UserInstruction]] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
