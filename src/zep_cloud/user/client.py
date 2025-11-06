@@ -5,9 +5,11 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.fact_rating_instruction import FactRatingInstruction
+from ..types.list_user_instructions_response import ListUserInstructionsResponse
 from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.user import User
+from ..types.user_instruction import UserInstruction
 from ..types.user_list_response import UserListResponse
 from ..types.user_node_response import UserNodeResponse
 from .raw_client import AsyncRawUserClient, RawUserClient
@@ -30,6 +32,124 @@ class UserClient:
         RawUserClient
         """
         return self._raw_client
+
+    def list_user_summary_instructions(
+        self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
+    ) -> ListUserInstructionsResponse:
+        """
+        Lists all user summary instructions for a project, user.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ListUserInstructionsResponse
+            The list of instructions.
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.list_user_summary_instructions()
+        """
+        _response = self._raw_client.list_user_summary_instructions(user_id=user_id, request_options=request_options)
+        return _response.data
+
+    def add_user_summary_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[UserInstruction],
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[UserInstruction]
+            Instructions to add to the user summary generation.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions added successfully
+
+        Examples
+        --------
+        from zep_cloud import UserInstruction, Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.add_user_summary_instructions(
+            instructions=[
+                UserInstruction(
+                    name="name",
+                    text="text",
+                )
+            ],
+        )
+        """
+        _response = self._raw_client.add_user_summary_instructions(
+            instructions=instructions, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
+
+    def delete_user_summary_instructions(
+        self,
+        *,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Deletes user summary/instructions for users or project wide defaults.
+
+        Parameters
+        ----------
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions deleted successfully
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.delete_user_summary_instructions()
+        """
+        _response = self._raw_client.delete_user_summary_instructions(
+            instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
 
     def add(
         self,
@@ -381,6 +501,150 @@ class AsyncUserClient:
         AsyncRawUserClient
         """
         return self._raw_client
+
+    async def list_user_summary_instructions(
+        self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
+    ) -> ListUserInstructionsResponse:
+        """
+        Lists all user summary instructions for a project, user.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ListUserInstructionsResponse
+            The list of instructions.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.list_user_summary_instructions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_user_summary_instructions(
+            user_id=user_id, request_options=request_options
+        )
+        return _response.data
+
+    async def add_user_summary_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[UserInstruction],
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[UserInstruction]
+            Instructions to add to the user summary generation.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions added successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep, UserInstruction
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.add_user_summary_instructions(
+                instructions=[
+                    UserInstruction(
+                        name="name",
+                        text="text",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.add_user_summary_instructions(
+            instructions=instructions, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
+
+    async def delete_user_summary_instructions(
+        self,
+        *,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Deletes user summary/instructions for users or project wide defaults.
+
+        Parameters
+        ----------
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions deleted successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.delete_user_summary_instructions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.delete_user_summary_instructions(
+            instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
 
     async def add(
         self,
