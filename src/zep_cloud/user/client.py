@@ -59,7 +59,9 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.list_user_summary_instructions()
+        client.user.list_user_summary_instructions(
+            user_id="user_id",
+        )
         """
         _response = self._raw_client.list_user_summary_instructions(user_id=user_id, request_options=request_options)
         return _response.data
@@ -253,7 +255,10 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.list_ordered()
+        client.user.list_ordered(
+            page_number=1,
+            page_size=1,
+        )
         """
         _response = self._raw_client.list_ordered(
             page_number=page_number, page_size=page_size, request_options=request_options
@@ -533,7 +538,9 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.list_user_summary_instructions()
+            await client.user.list_user_summary_instructions(
+                user_id="user_id",
+            )
 
 
         asyncio.run(main())
@@ -761,7 +768,10 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.list_ordered()
+            await client.user.list_ordered(
+                page_number=1,
+                page_size=1,
+            )
 
 
         asyncio.run(main())
