@@ -1269,77 +1269,6 @@ client.project.get()
 </dl>
 </details>
 
-## Task
-<details><summary><code>client.task.<a href="src/zep_cloud/task/client.py">get</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Gets a task by its ID
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.task.get(
-    task_id="task_id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**task_id:** `str` — Task ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Thread
 <details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">list_all</a>(...)</code></summary>
 <dl>
@@ -1648,7 +1577,7 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
-**mode:** `typing.Optional[ThreadGetUserContextRequestMode]` — Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
+**mode:** `typing.Optional[ThreadGetUserContextRequestMode]` — Defaults to summary mode. Use basic for lower latency
     
 </dd>
 </dl>

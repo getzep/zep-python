@@ -172,7 +172,7 @@ class ThreadClient:
             The minimum rating by which to filter relevant facts.
 
         mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
+            Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -551,7 +551,7 @@ class AsyncThreadClient:
             The minimum rating by which to filter relevant facts.
 
         mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
+            Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

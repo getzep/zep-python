@@ -38,11 +38,6 @@ class Episode(UniversalBaseModel):
 
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
-    task_id: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Optional task ID to poll episode processing status. Currently only available for batch ingestion.
-    """
-
     thread_id: typing.Optional[str] = pydantic.Field(default=None)
     """
     Optional thread ID, will be present if the episode is part of a thread

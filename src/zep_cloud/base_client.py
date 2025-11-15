@@ -9,7 +9,6 @@ from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .environment import ZepEnvironment
 from .graph.client import AsyncGraphClient, GraphClient
 from .project.client import AsyncProjectClient, ProjectClient
-from .task.client import AsyncTaskClient, TaskClient
 from .thread.client import AsyncThreadClient, ThreadClient
 from .user.client import AsyncUserClient, UserClient
 
@@ -83,7 +82,6 @@ class BaseClient:
         )
         self.graph = GraphClient(client_wrapper=self._client_wrapper)
         self.project = ProjectClient(client_wrapper=self._client_wrapper)
-        self.task = TaskClient(client_wrapper=self._client_wrapper)
         self.thread = ThreadClient(client_wrapper=self._client_wrapper)
         self.user = UserClient(client_wrapper=self._client_wrapper)
 
@@ -157,7 +155,6 @@ class AsyncBaseClient:
         )
         self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
         self.project = AsyncProjectClient(client_wrapper=self._client_wrapper)
-        self.task = AsyncTaskClient(client_wrapper=self._client_wrapper)
         self.thread = AsyncThreadClient(client_wrapper=self._client_wrapper)
         self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
 
