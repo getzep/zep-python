@@ -32,7 +32,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.list_entity_types()
+client.graph.list_entity_types(
+    user_id="user_id",
+    graph_id="graph_id",
+)
 
 ```
 </dd>
@@ -772,7 +775,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.list_all()
+client.graph.list_all(
+    page_number=1,
+    page_size=1,
+)
 
 ```
 </dd>
@@ -1302,7 +1308,12 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.thread.list_all()
+client.thread.list_all(
+    page_number=1,
+    page_size=1,
+    order_by="order_by",
+    asc=True,
+)
 
 ```
 </dd>
@@ -1545,6 +1556,8 @@ client = Zep(
 )
 client.thread.get_user_context(
     thread_id="threadId",
+    min_rating=1.1,
+    mode="basic",
 )
 
 ```
@@ -1631,6 +1644,9 @@ client = Zep(
 )
 client.thread.get(
     thread_id="threadId",
+    limit=1,
+    cursor=1,
+    lastn=1,
 )
 
 ```
@@ -1932,7 +1948,9 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.user.list_user_summary_instructions()
+client.user.list_user_summary_instructions(
+    user_id="user_id",
+)
 
 ```
 </dd>
@@ -2277,7 +2295,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.user.list_ordered()
+client.user.list_ordered(
+    page_number=1,
+    page_size=1,
+)
 
 ```
 </dd>
@@ -3137,6 +3158,7 @@ client = Zep(
 )
 client.graph.episode.get_by_graph_id(
     graph_id="graph_id",
+    lastn=1,
 )
 
 ```
@@ -3215,6 +3237,7 @@ client = Zep(
 )
 client.graph.episode.get_by_user_id(
     user_id="user_id",
+    lastn=1,
 )
 
 ```

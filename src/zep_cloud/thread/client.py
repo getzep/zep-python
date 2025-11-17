@@ -77,7 +77,12 @@ class ThreadClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.thread.list_all()
+        client.thread.list_all(
+            page_number=1,
+            page_size=1,
+            order_by="order_by",
+            asc=True,
+        )
         """
         _response = self._raw_client.list_all(
             page_number=page_number, page_size=page_size, order_by=order_by, asc=asc, request_options=request_options
@@ -191,6 +196,8 @@ class ThreadClient:
         )
         client.thread.get_user_context(
             thread_id="threadId",
+            min_rating=1.1,
+            mode="basic",
         )
         """
         _response = self._raw_client.get_user_context(
@@ -241,6 +248,9 @@ class ThreadClient:
         )
         client.thread.get(
             thread_id="threadId",
+            limit=1,
+            cursor=1,
+            lastn=1,
         )
         """
         _response = self._raw_client.get(
@@ -435,7 +445,12 @@ class AsyncThreadClient:
 
 
         async def main() -> None:
-            await client.thread.list_all()
+            await client.thread.list_all(
+                page_number=1,
+                page_size=1,
+                order_by="order_by",
+                asc=True,
+            )
 
 
         asyncio.run(main())
@@ -575,6 +590,8 @@ class AsyncThreadClient:
         async def main() -> None:
             await client.thread.get_user_context(
                 thread_id="threadId",
+                min_rating=1.1,
+                mode="basic",
             )
 
 
@@ -633,6 +650,9 @@ class AsyncThreadClient:
         async def main() -> None:
             await client.thread.get(
                 thread_id="threadId",
+                limit=1,
+                cursor=1,
+                lastn=1,
             )
 
 
