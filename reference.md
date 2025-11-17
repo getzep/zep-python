@@ -1590,7 +1590,7 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
-**mode:** `typing.Optional[ThreadGetUserContextRequestMode]` — Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
+**mode:** `typing.Optional[ThreadGetUserContextRequestMode]` — Defaults to summary mode. Use basic for lower latency
     
 </dd>
 </dl>
@@ -1645,7 +1645,7 @@ client = Zep(
 client.thread.get(
     thread_id="threadId",
     limit=1,
-    cursor=1000000,
+    cursor=1,
     lastn=1,
 )
 

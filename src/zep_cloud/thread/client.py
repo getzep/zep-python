@@ -177,7 +177,7 @@ class ThreadClient:
             The minimum rating by which to filter relevant facts.
 
         mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
+            Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -249,7 +249,7 @@ class ThreadClient:
         client.thread.get(
             thread_id="threadId",
             limit=1,
-            cursor=1000000,
+            cursor=1,
             lastn=1,
         )
         """
@@ -566,7 +566,7 @@ class AsyncThreadClient:
             The minimum rating by which to filter relevant facts.
 
         mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
+            Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -651,7 +651,7 @@ class AsyncThreadClient:
             await client.thread.get(
                 thread_id="threadId",
                 limit=1,
-                cursor=1000000,
+                cursor=1,
                 lastn=1,
             )
 
