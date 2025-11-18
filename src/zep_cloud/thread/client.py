@@ -162,6 +162,7 @@ class ThreadClient:
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
+        template_id: typing.Optional[str] = None,
         mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
@@ -176,8 +177,11 @@ class ThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
+        template_id : typing.Optional[str]
+            Optional template ID to use for custom context rendering.
+
         mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Defaults to summary mode. Use basic for lower latency
+            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -197,11 +201,12 @@ class ThreadClient:
         client.thread.get_user_context(
             thread_id="threadId",
             min_rating=1.1,
+            template_id="template_id",
             mode="basic",
         )
         """
         _response = self._raw_client.get_user_context(
-            thread_id, min_rating=min_rating, mode=mode, request_options=request_options
+            thread_id, min_rating=min_rating, template_id=template_id, mode=mode, request_options=request_options
         )
         return _response.data
 
@@ -551,6 +556,7 @@ class AsyncThreadClient:
         thread_id: str,
         *,
         min_rating: typing.Optional[float] = None,
+        template_id: typing.Optional[str] = None,
         mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
@@ -565,8 +571,11 @@ class AsyncThreadClient:
         min_rating : typing.Optional[float]
             The minimum rating by which to filter relevant facts.
 
+        template_id : typing.Optional[str]
+            Optional template ID to use for custom context rendering.
+
         mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Defaults to summary mode. Use basic for lower latency
+            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -591,6 +600,7 @@ class AsyncThreadClient:
             await client.thread.get_user_context(
                 thread_id="threadId",
                 min_rating=1.1,
+                template_id="template_id",
                 mode="basic",
             )
 
@@ -598,7 +608,7 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_user_context(
-            thread_id, min_rating=min_rating, mode=mode, request_options=request_options
+            thread_id, min_rating=min_rating, template_id=template_id, mode=mode, request_options=request_options
         )
         return _response.data
 

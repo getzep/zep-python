@@ -9,6 +9,7 @@ from .types import (
     ApiError,
     CloneGraphResponse,
     ComparisonOperator,
+    ContextTemplateResponse,
     DateFilter,
     EdgeType,
     EntityEdge,
@@ -31,6 +32,7 @@ from .types import (
     GraphNodesRequest,
     GraphSearchResults,
     GraphSearchScope,
+    ListContextTemplatesResponse,
     ListUserInstructionsResponse,
     Message,
     MessageListResponse,
@@ -51,7 +53,7 @@ from .types import (
     UserNodeResponse,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError
-from . import graph, project, thread, user
+from . import context, graph, project, thread, user
 from .client import AsyncZep, Zep
 from .environment import ZepEnvironment
 from .thread import ThreadGetUserContextRequestMode
@@ -66,6 +68,7 @@ __all__ = [
     "BadRequestError",
     "CloneGraphResponse",
     "ComparisonOperator",
+    "ContextTemplateResponse",
     "DateFilter",
     "EdgeType",
     "EntityEdge",
@@ -89,6 +92,7 @@ __all__ = [
     "GraphSearchResults",
     "GraphSearchScope",
     "InternalServerError",
+    "ListContextTemplatesResponse",
     "ListUserInstructionsResponse",
     "Message",
     "MessageListResponse",
@@ -112,6 +116,7 @@ __all__ = [
     "Zep",
     "ZepEnvironment",
     "__version__",
+    "context",
     "graph",
     "project",
     "thread",
