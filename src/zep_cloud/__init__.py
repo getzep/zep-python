@@ -7,6 +7,9 @@ from .types import (
     AddThreadMessagesResponse,
     AddTripleResponse,
     ApiError,
+    ApidataGetTaskResponse,
+    ApidataTaskErrorResponse,
+    ApidataTaskProgress,
     CloneGraphResponse,
     ComparisonOperator,
     ContextTemplateResponse,
@@ -53,7 +56,7 @@ from .types import (
     UserNodeResponse,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError
-from . import context, graph, project, thread, user
+from . import context, graph, project, task, thread, user
 from .client import AsyncZep, Zep
 from .environment import ZepEnvironment
 from .thread import ThreadGetUserContextRequestMode
@@ -64,6 +67,9 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
+    "ApidataGetTaskResponse",
+    "ApidataTaskErrorResponse",
+    "ApidataTaskProgress",
     "AsyncZep",
     "BadRequestError",
     "CloneGraphResponse",
@@ -119,6 +125,7 @@ __all__ = [
     "context",
     "graph",
     "project",
+    "task",
     "thread",
     "user",
 ]
