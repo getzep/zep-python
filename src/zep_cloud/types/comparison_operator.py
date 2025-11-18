@@ -2,4 +2,4 @@
 
 import typing
 
-ComparisonOperator = typing.Union[typing.Literal["=", "<>", ">", "<", ">=", "<="], typing.Any]
+ComparisonOperator = typing.Union[typing.Literal["=", "<>", ">", "<", ">=", "<=", "IS NULL", "IS NOT NULL"], typing.Any]

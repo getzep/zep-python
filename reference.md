@@ -32,7 +32,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.list_entity_types()
+client.graph.list_entity_types(
+    user_id="user_id",
+    graph_id="graph_id",
+)
 
 ```
 </dd>
@@ -772,7 +775,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.list_all()
+client.graph.list_all(
+    page_number=1,
+    page_size=1,
+)
 
 ```
 </dd>
@@ -1302,7 +1308,12 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.thread.list_all()
+client.thread.list_all(
+    page_number=1,
+    page_size=1,
+    order_by="order_by",
+    asc=True,
+)
 
 ```
 </dd>
@@ -1545,6 +1556,8 @@ client = Zep(
 )
 client.thread.get_user_context(
     thread_id="threadId",
+    min_rating=1.1,
+    mode="basic",
 )
 
 ```
@@ -1631,6 +1644,9 @@ client = Zep(
 )
 client.thread.get(
     thread_id="threadId",
+    limit=1,
+    cursor=1,
+    lastn=1,
 )
 
 ```
@@ -1900,6 +1916,235 @@ that are added to a user's graph.
 </details>
 
 ## User
+<details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">list_user_summary_instructions</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists all user summary instructions for a project, user.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user.list_user_summary_instructions(
+    user_id="user_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` — User ID to get user-specific instructions
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">add_user_summary_instructions</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import UserInstruction, Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user.add_user_summary_instructions(
+    instructions=[
+        UserInstruction(
+            name="name",
+            text="text",
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instructions:** `typing.Sequence[UserInstruction]` — Instructions to add to the user summary generation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_ids:** `typing.Optional[typing.Sequence[str]]` — User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">delete_user_summary_instructions</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes user summary/instructions for users or project wide defaults.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user.delete_user_summary_instructions()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instruction_names:** `typing.Optional[typing.Sequence[str]]` — Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_ids:** `typing.Optional[typing.Sequence[str]]` — Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">add</a>(...)</code></summary>
 <dl>
 <dd>
@@ -1951,6 +2196,14 @@ client.user.add(
 <dd>
 
 **user_id:** `str` — The unique identifier of the user.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disable_default_ontology:** `typing.Optional[bool]` — When true, disables the use of default/fallback ontology for the user's graph.
     
 </dd>
 </dl>
@@ -2042,7 +2295,10 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.user.list_ordered()
+client.user.list_ordered(
+    page_number=1,
+    page_size=1,
+)
 
 ```
 </dd>
@@ -2277,6 +2533,14 @@ client.user.update(
 <dd>
 
 **user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disable_default_ontology:** `typing.Optional[bool]` — When true, disables the use of default/fallback ontology for the user's graph.
     
 </dd>
 </dl>
@@ -2894,6 +3158,7 @@ client = Zep(
 )
 client.graph.episode.get_by_graph_id(
     graph_id="graph_id",
+    lastn=1,
 )
 
 ```
@@ -2972,6 +3237,7 @@ client = Zep(
 )
 client.graph.episode.get_by_user_id(
     user_id="user_id",
+    lastn=1,
 )
 
 ```

@@ -12,6 +12,7 @@ from .models_fact_rating_instruction import ModelsFactRatingInstruction
 class User(UniversalBaseModel):
     created_at: typing.Optional[str] = None
     deleted_at: typing.Optional[str] = None
+    disable_default_ontology: typing.Optional[bool] = None
     email: typing.Optional[str] = None
     fact_rating_instruction: typing.Optional[ModelsFactRatingInstruction] = None
     first_name: typing.Optional[str] = None
