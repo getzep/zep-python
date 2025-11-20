@@ -24,6 +24,7 @@ from .episode_mentions import EpisodeMentions
 from .episode_response import EpisodeResponse
 from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
+from .get_task_response import GetTaskResponse
 from .graph import Graph
 from .graph_data_type import GraphDataType
 from .graph_edges_request import GraphEdgesRequest
@@ -43,6 +44,8 @@ from .reranker import Reranker
 from .role_type import RoleType
 from .search_filters import SearchFilters
 from .success_response import SuccessResponse
+from .task_error_response import TaskErrorResponse
+from .task_progress import TaskProgress
 from .thread import Thread
 from .thread_context_response import ThreadContextResponse
 from .thread_list_response import ThreadListResponse
@@ -74,6 +77,7 @@ __all__ = [
     "EpisodeResponse",
     "FactRatingExamples",
     "FactRatingInstruction",
+    "GetTaskResponse",
     "Graph",
     "GraphDataType",
     "GraphEdgesRequest",
@@ -93,6 +97,8 @@ __all__ = [
     "RoleType",
     "SearchFilters",
     "SuccessResponse",
+    "TaskErrorResponse",
+    "TaskProgress",
     "Thread",
     "ThreadContextResponse",
     "ThreadListResponse",

@@ -767,6 +767,7 @@ client = Zep(
 client.graph.add_fact_triple(
     fact="fact",
     fact_name="fact_name",
+    source_node_name="source_node_name",
     target_node_name="target_node_name",
 )
 
@@ -793,6 +794,14 @@ client.graph.add_fact_triple(
 <dd>
 
 **fact_name:** `str` — The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_node_name:** `str` — The name of the source node to add
     
 </dd>
 </dl>
@@ -841,14 +850,6 @@ client.graph.add_fact_triple(
 <dd>
 
 **invalid_at:** `typing.Optional[str]` — The time (if any) at which the fact stops being true
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**source_node_name:** `typing.Optional[str]` — The name of the source node to add
     
 </dd>
 </dl>
@@ -1618,6 +1619,77 @@ client.project.get()
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Task
+<details><summary><code>client.task.<a href="src/zep_cloud/task/client.py">get</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Gets a task by its ID
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.task.get(
+    task_id="task_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**task_id:** `str` — Task ID
+    
+</dd>
+</dl>
 
 <dl>
 <dd>

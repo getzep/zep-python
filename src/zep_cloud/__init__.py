@@ -25,6 +25,7 @@ from .types import (
     EpisodeResponse,
     FactRatingExamples,
     FactRatingInstruction,
+    GetTaskResponse,
     Graph,
     GraphDataType,
     GraphEdgesRequest,
@@ -44,6 +45,8 @@ from .types import (
     RoleType,
     SearchFilters,
     SuccessResponse,
+    TaskErrorResponse,
+    TaskProgress,
     Thread,
     ThreadContextResponse,
     ThreadListResponse,
@@ -53,7 +56,7 @@ from .types import (
     UserNodeResponse,
 )
 from .errors import BadRequestError, InternalServerError, NotFoundError
-from . import context, graph, project, thread, user
+from . import context, graph, project, task, thread, user
 from .client import AsyncZep, Zep
 from .environment import ZepEnvironment
 from .thread import ThreadGetUserContextRequestMode
@@ -84,6 +87,7 @@ __all__ = [
     "EpisodeResponse",
     "FactRatingExamples",
     "FactRatingInstruction",
+    "GetTaskResponse",
     "Graph",
     "GraphDataType",
     "GraphEdgesRequest",
@@ -105,6 +109,8 @@ __all__ = [
     "RoleType",
     "SearchFilters",
     "SuccessResponse",
+    "TaskErrorResponse",
+    "TaskProgress",
     "Thread",
     "ThreadContextResponse",
     "ThreadGetUserContextRequestMode",
@@ -119,6 +125,7 @@ __all__ = [
     "context",
     "graph",
     "project",
+    "task",
     "thread",
     "user",
 ]

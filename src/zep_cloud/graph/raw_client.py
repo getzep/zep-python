@@ -403,13 +403,13 @@ class RawGraphClient:
         *,
         fact: str,
         fact_name: str,
+        source_node_name: str,
         target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
-        source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
@@ -429,6 +429,9 @@ class RawGraphClient:
         fact_name : str
             The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
 
+        source_node_name : str
+            The name of the source node to add
+
         target_node_name : str
             The name of the target node to add
 
@@ -445,9 +448,6 @@ class RawGraphClient:
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
-
-        source_node_name : typing.Optional[str]
-            The name of the source node to add
 
         source_node_summary : typing.Optional[str]
             The summary of the source node to add
@@ -1534,13 +1534,13 @@ class AsyncRawGraphClient:
         *,
         fact: str,
         fact_name: str,
+        source_node_name: str,
         target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
-        source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
@@ -1560,6 +1560,9 @@ class AsyncRawGraphClient:
         fact_name : str
             The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
 
+        source_node_name : str
+            The name of the source node to add
+
         target_node_name : str
             The name of the target node to add
 
@@ -1576,9 +1579,6 @@ class AsyncRawGraphClient:
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
-
-        source_node_name : typing.Optional[str]
-            The name of the source node to add
 
         source_node_summary : typing.Optional[str]
             The summary of the source node to add
