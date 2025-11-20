@@ -256,13 +256,13 @@ class GraphClient:
         *,
         fact: str,
         fact_name: str,
+        source_node_name: str,
         target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
-        source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
@@ -282,6 +282,9 @@ class GraphClient:
         fact_name : str
             The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
 
+        source_node_name : str
+            The name of the source node to add
+
         target_node_name : str
             The name of the target node to add
 
@@ -298,9 +301,6 @@ class GraphClient:
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
-
-        source_node_name : typing.Optional[str]
-            The name of the source node to add
 
         source_node_summary : typing.Optional[str]
             The summary of the source node to add
@@ -337,19 +337,20 @@ class GraphClient:
         client.graph.add_fact_triple(
             fact="fact",
             fact_name="fact_name",
+            source_node_name="source_node_name",
             target_node_name="target_node_name",
         )
         """
         _response = self._raw_client.add_fact_triple(
             fact=fact,
             fact_name=fact_name,
+            source_node_name=source_node_name,
             target_node_name=target_node_name,
             created_at=created_at,
             expired_at=expired_at,
             fact_uuid=fact_uuid,
             graph_id=graph_id,
             invalid_at=invalid_at,
-            source_node_name=source_node_name,
             source_node_summary=source_node_summary,
             source_node_uuid=source_node_uuid,
             target_node_summary=target_node_summary,
@@ -972,13 +973,13 @@ class AsyncGraphClient:
         *,
         fact: str,
         fact_name: str,
+        source_node_name: str,
         target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
-        source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
@@ -998,6 +999,9 @@ class AsyncGraphClient:
         fact_name : str
             The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
 
+        source_node_name : str
+            The name of the source node to add
+
         target_node_name : str
             The name of the target node to add
 
@@ -1014,9 +1018,6 @@ class AsyncGraphClient:
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
-
-        source_node_name : typing.Optional[str]
-            The name of the source node to add
 
         source_node_summary : typing.Optional[str]
             The summary of the source node to add
@@ -1058,6 +1059,7 @@ class AsyncGraphClient:
             await client.graph.add_fact_triple(
                 fact="fact",
                 fact_name="fact_name",
+                source_node_name="source_node_name",
                 target_node_name="target_node_name",
             )
 
@@ -1067,13 +1069,13 @@ class AsyncGraphClient:
         _response = await self._raw_client.add_fact_triple(
             fact=fact,
             fact_name=fact_name,
+            source_node_name=source_node_name,
             target_node_name=target_node_name,
             created_at=created_at,
             expired_at=expired_at,
             fact_uuid=fact_uuid,
             graph_id=graph_id,
             invalid_at=invalid_at,
-            source_node_name=source_node_name,
             source_node_summary=source_node_summary,
             source_node_uuid=source_node_uuid,
             target_node_summary=target_node_summary,

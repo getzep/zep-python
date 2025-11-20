@@ -767,6 +767,7 @@ client = Zep(
 client.graph.add_fact_triple(
     fact="fact",
     fact_name="fact_name",
+    source_node_name="source_node_name",
     target_node_name="target_node_name",
 )
 
@@ -793,6 +794,14 @@ client.graph.add_fact_triple(
 <dd>
 
 **fact_name:** `str` — The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_node_name:** `str` — The name of the source node to add
     
 </dd>
 </dl>
@@ -841,14 +850,6 @@ client.graph.add_fact_triple(
 <dd>
 
 **invalid_at:** `typing.Optional[str]` — The time (if any) at which the fact stops being true
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**source_node_name:** `typing.Optional[str]` — The name of the source node to add
     
 </dd>
 </dl>
