@@ -4,15 +4,15 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .apidata_task_error_response import ApidataTaskErrorResponse
-from .apidata_task_progress import ApidataTaskProgress
+from .task_error_response import TaskErrorResponse
+from .task_progress import TaskProgress
 
 
-class ApidataGetTaskResponse(UniversalBaseModel):
+class GetTaskResponse(UniversalBaseModel):
     completed_at: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
-    error: typing.Optional[ApidataTaskErrorResponse] = None
-    progress: typing.Optional[ApidataTaskProgress] = None
+    error: typing.Optional[TaskErrorResponse] = None
+    progress: typing.Optional[TaskProgress] = None
     started_at: typing.Optional[str] = None
     status: typing.Optional[str] = None
     task_id: typing.Optional[str] = None

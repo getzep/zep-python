@@ -6,9 +6,6 @@ from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
-from .apidata_get_task_response import ApidataGetTaskResponse
-from .apidata_task_error_response import ApidataTaskErrorResponse
-from .apidata_task_progress import ApidataTaskProgress
 from .clone_graph_response import CloneGraphResponse
 from .comparison_operator import ComparisonOperator
 from .context_template_response import ContextTemplateResponse
@@ -27,6 +24,7 @@ from .episode_mentions import EpisodeMentions
 from .episode_response import EpisodeResponse
 from .fact_rating_examples import FactRatingExamples
 from .fact_rating_instruction import FactRatingInstruction
+from .get_task_response import GetTaskResponse
 from .graph import Graph
 from .graph_data_type import GraphDataType
 from .graph_edges_request import GraphEdgesRequest
@@ -46,6 +44,8 @@ from .reranker import Reranker
 from .role_type import RoleType
 from .search_filters import SearchFilters
 from .success_response import SuccessResponse
+from .task_error_response import TaskErrorResponse
+from .task_progress import TaskProgress
 from .thread import Thread
 from .thread_context_response import ThreadContextResponse
 from .thread_list_response import ThreadListResponse
@@ -59,9 +59,6 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
-    "ApidataGetTaskResponse",
-    "ApidataTaskErrorResponse",
-    "ApidataTaskProgress",
     "CloneGraphResponse",
     "ComparisonOperator",
     "ContextTemplateResponse",
@@ -80,6 +77,7 @@ __all__ = [
     "EpisodeResponse",
     "FactRatingExamples",
     "FactRatingInstruction",
+    "GetTaskResponse",
     "Graph",
     "GraphDataType",
     "GraphEdgesRequest",
@@ -99,6 +97,8 @@ __all__ = [
     "RoleType",
     "SearchFilters",
     "SuccessResponse",
+    "TaskErrorResponse",
+    "TaskProgress",
     "Thread",
     "ThreadContextResponse",
     "ThreadListResponse",

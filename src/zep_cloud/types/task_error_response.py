@@ -6,7 +6,7 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ApidataTaskErrorResponse(UniversalBaseModel):
+class TaskErrorResponse(UniversalBaseModel):
     code: typing.Optional[str] = None
     details: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     message: typing.Optional[str] = None

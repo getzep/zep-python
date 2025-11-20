@@ -6,7 +6,7 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ApidataTaskProgress(UniversalBaseModel):
+class TaskProgress(UniversalBaseModel):
     message: typing.Optional[str] = None
     stage: typing.Optional[str] = None
 

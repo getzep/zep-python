@@ -12,7 +12,7 @@ from ..core.request_options import RequestOptions
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_get_task_response import ApidataGetTaskResponse
+from ..types.get_task_response import GetTaskResponse
 
 
 class RawTaskClient:
@@ -21,7 +21,7 @@ class RawTaskClient:
 
     def get(
         self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataGetTaskResponse]:
+    ) -> HttpResponse[GetTaskResponse]:
         """
         Gets a task by its ID
 
@@ -35,7 +35,7 @@ class RawTaskClient:
 
         Returns
         -------
-        HttpResponse[ApidataGetTaskResponse]
+        HttpResponse[GetTaskResponse]
             Task
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -46,9 +46,9 @@ class RawTaskClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGetTaskResponse,
+                    GetTaskResponse,
                     parse_obj_as(
-                        type_=ApidataGetTaskResponse,  # type: ignore
+                        type_=GetTaskResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -91,7 +91,7 @@ class AsyncRawTaskClient:
 
     async def get(
         self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataGetTaskResponse]:
+    ) -> AsyncHttpResponse[GetTaskResponse]:
         """
         Gets a task by its ID
 
@@ -105,7 +105,7 @@ class AsyncRawTaskClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGetTaskResponse]
+        AsyncHttpResponse[GetTaskResponse]
             Task
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -116,9 +116,9 @@ class AsyncRawTaskClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGetTaskResponse,
+                    GetTaskResponse,
                     parse_obj_as(
-                        type_=ApidataGetTaskResponse,  # type: ignore
+                        type_=GetTaskResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
