@@ -259,12 +259,15 @@ class GraphClient:
         source_node_name: str,
         target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
+        edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
+        source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
+        target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -291,6 +294,10 @@ class GraphClient:
         created_at : typing.Optional[str]
             The timestamp of the message
 
+        edge_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the edge. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
+
         expired_at : typing.Optional[str]
             The time (if any) at which the edge expires
 
@@ -302,11 +309,19 @@ class GraphClient:
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
 
+        source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
+
         source_node_summary : typing.Optional[str]
             The summary of the source node to add
 
         source_node_uuid : typing.Optional[str]
             The source node uuid
+
+        target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
 
         target_node_summary : typing.Optional[str]
             The summary of the target node to add
@@ -347,12 +362,15 @@ class GraphClient:
             source_node_name=source_node_name,
             target_node_name=target_node_name,
             created_at=created_at,
+            edge_attributes=edge_attributes,
             expired_at=expired_at,
             fact_uuid=fact_uuid,
             graph_id=graph_id,
             invalid_at=invalid_at,
+            source_node_attributes=source_node_attributes,
             source_node_summary=source_node_summary,
             source_node_uuid=source_node_uuid,
+            target_node_attributes=target_node_attributes,
             target_node_summary=target_node_summary,
             target_node_uuid=target_node_uuid,
             user_id=user_id,
@@ -976,12 +994,15 @@ class AsyncGraphClient:
         source_node_name: str,
         target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
+        edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
+        source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
+        target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -1008,6 +1029,10 @@ class AsyncGraphClient:
         created_at : typing.Optional[str]
             The timestamp of the message
 
+        edge_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the edge. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
+
         expired_at : typing.Optional[str]
             The time (if any) at which the edge expires
 
@@ -1019,11 +1044,19 @@ class AsyncGraphClient:
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
 
+        source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
+
         source_node_summary : typing.Optional[str]
             The summary of the source node to add
 
         source_node_uuid : typing.Optional[str]
             The source node uuid
+
+        target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
 
         target_node_summary : typing.Optional[str]
             The summary of the target node to add
@@ -1072,12 +1105,15 @@ class AsyncGraphClient:
             source_node_name=source_node_name,
             target_node_name=target_node_name,
             created_at=created_at,
+            edge_attributes=edge_attributes,
             expired_at=expired_at,
             fact_uuid=fact_uuid,
             graph_id=graph_id,
             invalid_at=invalid_at,
+            source_node_attributes=source_node_attributes,
             source_node_summary=source_node_summary,
             source_node_uuid=source_node_uuid,
+            target_node_attributes=target_node_attributes,
             target_node_summary=target_node_summary,
             target_node_uuid=target_node_uuid,
             user_id=user_id,

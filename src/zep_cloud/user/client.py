@@ -180,7 +180,7 @@ class UserClient:
             The email address of the user.
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
+            Deprecated: this field will be removed in a future release. Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -354,7 +354,7 @@ class UserClient:
             The email address of the user.
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
+            Deprecated: this field will be removed in a future release. Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -680,7 +680,7 @@ class AsyncUserClient:
             The email address of the user.
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
+            Deprecated: this field will be removed in a future release. Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -886,7 +886,7 @@ class AsyncUserClient:
             The email address of the user.
 
         fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
+            Deprecated: this field will be removed in a future release. Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.

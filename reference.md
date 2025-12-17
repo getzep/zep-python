@@ -825,6 +825,17 @@ client.graph.add_fact_triple(
 <dl>
 <dd>
 
+**edge_attributes:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` 
+
+Additional attributes of the edge. Values must be scalar types (string, number, boolean, or null).
+Nested objects and arrays are not allowed.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **expired_at:** `typing.Optional[str]` — The time (if any) at which the edge expires
     
 </dd>
@@ -857,6 +868,17 @@ client.graph.add_fact_triple(
 <dl>
 <dd>
 
+**source_node_attributes:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` 
+
+Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
+Nested objects and arrays are not allowed.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **source_node_summary:** `typing.Optional[str]` — The summary of the source node to add
     
 </dd>
@@ -866,6 +888,17 @@ client.graph.add_fact_triple(
 <dd>
 
 **source_node_uuid:** `typing.Optional[str]` — The source node uuid
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_node_attributes:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` 
+
+Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
+Nested objects and arrays are not allowed.
     
 </dd>
 </dl>
@@ -2014,7 +2047,7 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
-**min_rating:** `typing.Optional[float]` — The minimum rating by which to filter relevant facts.
+**min_rating:** `typing.Optional[float]` — Deprecated, this field will be removed in a future release. The minimum rating by which to filter relevant facts.
     
 </dd>
 </dl>
@@ -2659,7 +2692,7 @@ client.user.add(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Optional instruction to use for fact rating.
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Deprecated: this field will be removed in a future release. Optional instruction to use for fact rating.
     
 </dd>
 </dl>
@@ -2996,7 +3029,7 @@ client.user.update(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Optional instruction to use for fact rating.
+**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Deprecated: this field will be removed in a future release. Optional instruction to use for fact rating.
     
 </dd>
 </dl>
@@ -4278,6 +4311,76 @@ client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.graph.node.get(
+    uuid_="uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**uuid_:** `str` — Node UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a node by UUID.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.node.delete(
     uuid_="uuid",
 )
 
