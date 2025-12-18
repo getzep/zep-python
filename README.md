@@ -9,7 +9,7 @@
 </p>
 
 <h1 align="center">
-Zep: Long-Term Memory for ‍AI Assistants.
+Zep: Long-Term Context for ‍AI Assistants.
 </h1>
 <h2 align="center">Recall, understand, and extract data from chat histories. Power personalized AI experiences.</h2>
 <br />
@@ -24,7 +24,7 @@ Zep: Long-Term Memory for ‍AI Assistants.
 </p>
 
 ## What is Zep? 💬
-Zep is a long-term memory service for AI Assistant apps. With Zep, you can provide AI assistants with the ability to recall past conversations, no matter how distant, while also reducing hallucinations, latency, and cost.
+Zep is a context engineering platform for AI Assistant apps. With Zep, you can provide AI assistants with the ability to recall past conversations, no matter how distant, while also reducing hallucinations, latency, and cost.
 
 ### Cloud Installation
 You can install the Zep Cloud SDK by running:
@@ -53,7 +53,7 @@ pip install "zep-python>=1.5.0,<2.0.0"
 
 Zep persists and recalls chat histories, and automatically generates summaries and other artifacts from these chat histories. It also embeds messages and summaries, enabling you to search Zep for relevant context from past conversations. Zep does all of this asynchronously, ensuring these operations don't impact your user's chat experience. Data is persisted to database, allowing you to scale out when growth demands.
 
-Zep also provides a simple, easy to use abstraction for document vector search called Document Collections. This is designed to complement Zep's core memory features, but is not designed to be a general purpose vector database.
+Zep also provides a simple, easy to use abstraction for document vector search called Document Collections. This is designed to complement Zep's core context features, but is not designed to be a general purpose vector database.
 
 Zep allows you to be more intentional about constructing your prompt:
 1. automatically adding a few recent messages, with the number customized for your app;
