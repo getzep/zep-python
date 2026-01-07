@@ -13,7 +13,7 @@ class DateFilter(UniversalBaseModel):
     Comparison operator for date filter
     """
 
-    date: str = pydantic.Field()
+    date: typing.Optional[str] = pydantic.Field(default=None)
     """
     Date to filter on
     """
