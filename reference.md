@@ -767,8 +767,6 @@ client = Zep(
 client.graph.add_fact_triple(
     fact="fact",
     fact_name="fact_name",
-    source_node_name="source_node_name",
-    target_node_name="target_node_name",
 )
 
 ```
@@ -794,22 +792,6 @@ client.graph.add_fact_triple(
 <dd>
 
 **fact_name:** `str` — The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**source_node_name:** `str` — The name of the source node to add
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**target_node_name:** `str` — The name of the target node to add
     
 </dd>
 </dl>
@@ -879,6 +861,14 @@ Nested objects and arrays are not allowed.
 <dl>
 <dd>
 
+**source_node_name:** `typing.Optional[str]` — The name of the source node to add
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **source_node_summary:** `typing.Optional[str]` — The summary of the source node to add
     
 </dd>
@@ -899,6 +889,14 @@ Nested objects and arrays are not allowed.
 
 Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
 Nested objects and arrays are not allowed.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_node_name:** `typing.Optional[str]` — The name of the target node to add
     
 </dd>
 </dl>

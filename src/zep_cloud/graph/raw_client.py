@@ -403,8 +403,6 @@ class RawGraphClient:
         *,
         fact: str,
         fact_name: str,
-        source_node_name: str,
-        target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
         edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
@@ -412,9 +410,11 @@ class RawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        target_node_name: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -431,12 +431,6 @@ class RawGraphClient:
 
         fact_name : str
             The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
-
-        source_node_name : str
-            The name of the source node to add
-
-        target_node_name : str
-            The name of the target node to add
 
         created_at : typing.Optional[str]
             The timestamp of the message
@@ -460,6 +454,9 @@ class RawGraphClient:
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
 
+        source_node_name : typing.Optional[str]
+            The name of the source node to add
+
         source_node_summary : typing.Optional[str]
             The summary of the source node to add
 
@@ -469,6 +466,9 @@ class RawGraphClient:
         target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
+
+        target_node_name : typing.Optional[str]
+            The name of the target node to add
 
         target_node_summary : typing.Optional[str]
             The summary of the target node to add
@@ -1552,8 +1552,6 @@ class AsyncRawGraphClient:
         *,
         fact: str,
         fact_name: str,
-        source_node_name: str,
-        target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
         edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
@@ -1561,9 +1559,11 @@ class AsyncRawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        target_node_name: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -1580,12 +1580,6 @@ class AsyncRawGraphClient:
 
         fact_name : str
             The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
-
-        source_node_name : str
-            The name of the source node to add
-
-        target_node_name : str
-            The name of the target node to add
 
         created_at : typing.Optional[str]
             The timestamp of the message
@@ -1609,6 +1603,9 @@ class AsyncRawGraphClient:
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
 
+        source_node_name : typing.Optional[str]
+            The name of the source node to add
+
         source_node_summary : typing.Optional[str]
             The summary of the source node to add
 
@@ -1618,6 +1615,9 @@ class AsyncRawGraphClient:
         target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
+
+        target_node_name : typing.Optional[str]
+            The name of the target node to add
 
         target_node_summary : typing.Optional[str]
             The summary of the target node to add
