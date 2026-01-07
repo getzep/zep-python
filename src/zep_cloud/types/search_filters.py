@@ -5,6 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .date_filter import DateFilter
+from .property_filter import PropertyFilter
 
 
 class SearchFilters(UniversalBaseModel):
@@ -20,6 +21,11 @@ class SearchFilters(UniversalBaseModel):
     edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     List of edge types to filter on
+    """
+
+    edge_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    List of edge UUIDs to filter on
     """
 
     exclude_edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
@@ -53,6 +59,11 @@ class SearchFilters(UniversalBaseModel):
     node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     List of node labels to filter on
+    """
+
+    property_filters: typing.Optional[typing.List[PropertyFilter]] = pydantic.Field(default=None)
+    """
+    List of property filters to apply to nodes and edges
     """
 
     valid_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic.Field(default=None)

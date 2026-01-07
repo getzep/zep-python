@@ -277,7 +277,7 @@ class RawThreadClient:
             The ID of the current thread (for which context is being retrieved).
 
         min_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts.
+            Deprecated, this field will be removed in a future release. The minimum rating by which to filter relevant facts.
 
         template_id : typing.Optional[str]
             Optional template ID to use for custom context rendering.
@@ -843,7 +843,7 @@ class AsyncRawThreadClient:
             The ID of the current thread (for which context is being retrieved).
 
         min_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts.
+            Deprecated, this field will be removed in a future release. The minimum rating by which to filter relevant facts.
 
         template_id : typing.Optional[str]
             Optional template ID to use for custom context rendering.

@@ -40,6 +40,7 @@ from .models_fact_rating_examples import ModelsFactRatingExamples
 from .models_fact_rating_instruction import ModelsFactRatingInstruction
 from .project_info import ProjectInfo
 from .project_info_response import ProjectInfoResponse
+from .property_filter import PropertyFilter
 from .reranker import Reranker
 from .role_type import RoleType
 from .search_filters import SearchFilters
@@ -93,6 +94,7 @@ __all__ = [
     "ModelsFactRatingInstruction",
     "ProjectInfo",
     "ProjectInfoResponse",
+    "PropertyFilter",
     "Reranker",
     "RoleType",
     "SearchFilters",

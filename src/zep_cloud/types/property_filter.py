@@ -7,16 +7,22 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .comparison_operator import ComparisonOperator
 
 
-class DateFilter(UniversalBaseModel):
+class PropertyFilter(UniversalBaseModel):
     comparison_operator: ComparisonOperator = pydantic.Field()
     """
-    Comparison operator for date filter
+    Comparison operator for property filter
     """
 
-    date: typing.Optional[str] = pydantic.Field(default=None)
+    property_name: str = pydantic.Field()
     """
-    Date to filter on. Required for non-null operators (=, <>, >, <, >=, <=).
-    Should be omitted for IS NULL and IS NOT NULL operators.
+    Property name to filter on
+    """
+
+    property_value: typing.Optional[typing.Optional[typing.Any]] = pydantic.Field(default=None)
+    """
+    Property value to match on. Accepted types: string, int, float64, bool, or nil.
+    Invalid types (e.g., arrays, objects) will be rejected by validation.
+    Must be non-nil for non-null operators (=, <>, >, <, >=, <=).
     """
 
     if IS_PYDANTIC_V2:
