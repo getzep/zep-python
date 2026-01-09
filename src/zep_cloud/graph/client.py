@@ -6,6 +6,7 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_triple_response import AddTripleResponse
 from ..types.clone_graph_response import CloneGraphResponse
+from ..types.custom_instruction import CustomInstruction
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
@@ -17,6 +18,7 @@ from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
+from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
@@ -48,6 +50,144 @@ class GraphClient:
         RawGraphClient
         """
         return self._raw_client
+
+    def list_custom_instructions(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ListCustomInstructionsResponse:
+        """
+        Lists all custom instructions for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ListCustomInstructionsResponse
+            The list of instructions.
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.list_custom_instructions(
+            user_id="user_id",
+            graph_id="graph_id",
+        )
+        """
+        _response = self._raw_client.list_custom_instructions(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    def add_custom_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[CustomInstruction],
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[CustomInstruction]
+            Instructions to add to the graph.
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Graph IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions added successfully
+
+        Examples
+        --------
+        from zep_cloud import CustomInstruction, Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.add_custom_instructions(
+            instructions=[
+                CustomInstruction(
+                    name="name",
+                    text="text",
+                )
+            ],
+        )
+        """
+        _response = self._raw_client.add_custom_instructions(
+            instructions=instructions, graph_ids=graph_ids, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
+
+    def delete_custom_instructions(
+        self,
+        *,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Deletes custom instructions for graphs or project wide defaults.
+
+        Parameters
+        ----------
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Determines which group graphs will have their custom instructions deleted. If no graphs are provided, the project-wide custom instructions will be affected.
+
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which user graphs will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be affected.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions deleted successfully
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.delete_custom_instructions()
+        """
+        _response = self._raw_client.delete_custom_instructions(
+            graph_ids=graph_ids, instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
 
     def list_entity_types(
         self,
@@ -749,6 +889,168 @@ class AsyncGraphClient:
         AsyncRawGraphClient
         """
         return self._raw_client
+
+    async def list_custom_instructions(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ListCustomInstructionsResponse:
+        """
+        Lists all custom instructions for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ListCustomInstructionsResponse
+            The list of instructions.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.list_custom_instructions(
+                user_id="user_id",
+                graph_id="graph_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_custom_instructions(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    async def add_custom_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[CustomInstruction],
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[CustomInstruction]
+            Instructions to add to the graph.
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Graph IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions added successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep, CustomInstruction
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.add_custom_instructions(
+                instructions=[
+                    CustomInstruction(
+                        name="name",
+                        text="text",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.add_custom_instructions(
+            instructions=instructions, graph_ids=graph_ids, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
+
+    async def delete_custom_instructions(
+        self,
+        *,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Deletes custom instructions for graphs or project wide defaults.
+
+        Parameters
+        ----------
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Determines which group graphs will have their custom instructions deleted. If no graphs are provided, the project-wide custom instructions will be affected.
+
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which user graphs will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be affected.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions deleted successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.delete_custom_instructions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.delete_custom_instructions(
+            graph_ids=graph_ids, instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
 
     async def list_entity_types(
         self,

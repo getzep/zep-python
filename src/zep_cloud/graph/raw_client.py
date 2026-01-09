@@ -16,6 +16,7 @@ from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.clone_graph_response import CloneGraphResponse
+from ..types.custom_instruction import CustomInstruction
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
@@ -27,6 +28,7 @@ from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
+from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
@@ -38,6 +40,254 @@ OMIT = typing.cast(typing.Any, ...)
 class RawGraphClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
+
+    def list_custom_instructions(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[ListCustomInstructionsResponse]:
+        """
+        Lists all custom instructions for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ListCustomInstructionsResponse]
+            The list of instructions.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "custom-instructions",
+            method="GET",
+            params={
+                "user_id": user_id,
+                "graph_id": graph_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ListCustomInstructionsResponse,
+                    parse_obj_as(
+                        type_=ListCustomInstructionsResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def add_custom_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[CustomInstruction],
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[SuccessResponse]:
+        """
+        Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[CustomInstruction]
+            Instructions to add to the graph.
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Graph IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[SuccessResponse]
+            Instructions added successfully
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "custom-instructions",
+            method="POST",
+            json={
+                "graph_ids": graph_ids,
+                "instructions": convert_and_respect_annotation_metadata(
+                    object_=instructions, annotation=typing.Sequence[CustomInstruction], direction="write"
+                ),
+                "user_ids": user_ids,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def delete_custom_instructions(
+        self,
+        *,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[SuccessResponse]:
+        """
+        Deletes custom instructions for graphs or project wide defaults.
+
+        Parameters
+        ----------
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Determines which group graphs will have their custom instructions deleted. If no graphs are provided, the project-wide custom instructions will be affected.
+
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which user graphs will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be affected.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[SuccessResponse]
+            Instructions deleted successfully
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "custom-instructions",
+            method="DELETE",
+            json={
+                "graph_ids": graph_ids,
+                "instruction_names": instruction_names,
+                "user_ids": user_ids,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def list_entity_types(
         self,
@@ -1187,6 +1437,254 @@ class RawGraphClient:
 class AsyncRawGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
+
+    async def list_custom_instructions(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[ListCustomInstructionsResponse]:
+        """
+        Lists all custom instructions for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ListCustomInstructionsResponse]
+            The list of instructions.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "custom-instructions",
+            method="GET",
+            params={
+                "user_id": user_id,
+                "graph_id": graph_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ListCustomInstructionsResponse,
+                    parse_obj_as(
+                        type_=ListCustomInstructionsResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def add_custom_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[CustomInstruction],
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[SuccessResponse]:
+        """
+        Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[CustomInstruction]
+            Instructions to add to the graph.
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Graph IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[SuccessResponse]
+            Instructions added successfully
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "custom-instructions",
+            method="POST",
+            json={
+                "graph_ids": graph_ids,
+                "instructions": convert_and_respect_annotation_metadata(
+                    object_=instructions, annotation=typing.Sequence[CustomInstruction], direction="write"
+                ),
+                "user_ids": user_ids,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def delete_custom_instructions(
+        self,
+        *,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[SuccessResponse]:
+        """
+        Deletes custom instructions for graphs or project wide defaults.
+
+        Parameters
+        ----------
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Determines which group graphs will have their custom instructions deleted. If no graphs are provided, the project-wide custom instructions will be affected.
+
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which user graphs will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be affected.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[SuccessResponse]
+            Instructions deleted successfully
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "custom-instructions",
+            method="DELETE",
+            json={
+                "graph_ids": graph_ids,
+                "instruction_names": instruction_names,
+                "user_ids": user_ids,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def list_entity_types(
         self,
