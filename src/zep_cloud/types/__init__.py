@@ -9,6 +9,7 @@ from .api_error import ApiError
 from .clone_graph_response import CloneGraphResponse
 from .comparison_operator import ComparisonOperator
 from .context_template_response import ContextTemplateResponse
+from .custom_instruction import CustomInstruction
 from .date_filter import DateFilter
 from .edge_type import EdgeType
 from .entity_edge import EntityEdge
@@ -33,6 +34,7 @@ from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
 from .list_context_templates_response import ListContextTemplatesResponse
+from .list_custom_instructions_response import ListCustomInstructionsResponse
 from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
@@ -63,6 +65,7 @@ __all__ = [
     "CloneGraphResponse",
     "ComparisonOperator",
     "ContextTemplateResponse",
+    "CustomInstruction",
     "DateFilter",
     "EdgeType",
     "EntityEdge",
@@ -87,6 +90,7 @@ __all__ = [
     "GraphSearchResults",
     "GraphSearchScope",
     "ListContextTemplatesResponse",
+    "ListCustomInstructionsResponse",
     "ListUserInstructionsResponse",
     "Message",
     "MessageListResponse",

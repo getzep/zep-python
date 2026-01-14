@@ -359,6 +359,260 @@ client.context.delete_context_template(
 </details>
 
 ## Graph
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_custom_instructions</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists all custom instructions for a project, user, or graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.list_custom_instructions(
+    user_id="user_id",
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` — User ID to get user-specific instructions
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_id:** `typing.Optional[str]` — Graph ID to get graph-specific instructions
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">add_custom_instructions</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import CustomInstruction, Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.add_custom_instructions(
+    instructions=[
+        CustomInstruction(
+            name="name",
+            text="text",
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**instructions:** `typing.Sequence[CustomInstruction]` — Instructions to add to the graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_ids:** `typing.Optional[typing.Sequence[str]]` — Graph IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_ids:** `typing.Optional[typing.Sequence[str]]` — User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">delete_custom_instructions</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes custom instructions for graphs or project wide defaults.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.delete_custom_instructions()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_ids:** `typing.Optional[typing.Sequence[str]]` — Determines which group graphs will have their custom instructions deleted. If no graphs are provided, the project-wide custom instructions will be affected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**instruction_names:** `typing.Optional[typing.Sequence[str]]` — Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_ids:** `typing.Optional[typing.Sequence[str]]` — Determines which user graphs will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be affected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_entity_types</a>(...)</code></summary>
 <dl>
 <dd>
