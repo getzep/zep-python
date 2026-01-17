@@ -12,6 +12,7 @@ class GetTaskResponse(UniversalBaseModel):
     completed_at: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
     error: typing.Optional[TaskErrorResponse] = None
+    params: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     progress: typing.Optional[TaskProgress] = None
     started_at: typing.Optional[str] = None
     status: typing.Optional[str] = None
