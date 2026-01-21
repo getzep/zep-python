@@ -1,3 +1,6 @@
+> **⚠️ DEPRECATED: This version (v2.x) of zep-cloud is deprecated and will be removed on February 1, 2026.**
+>
+> **Please upgrade to v3.** See the [migration guide](https://docs.getzep.com/zep-v2-to-v3-migration) for details.
 
 [![Release to PyPI](https://github.com/getzep/zep-python/actions/workflows/release.yml/badge.svg)](https://github.com/getzep/zep-python/actions/workflows/release.yml) ![GitHub](https://img.shields.io/github/license/getzep/zep-python?color=blue) [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-SDK%20generated%20by%20Fern-brightgreen)](https://github.com/fern-api/fern)
 
