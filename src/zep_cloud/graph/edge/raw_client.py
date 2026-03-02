@@ -311,6 +311,132 @@ class RawEdgeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def update(
+        self,
+        uuid_: str,
+        *,
+        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        expired_at: typing.Optional[str] = OMIT,
+        fact: typing.Optional[str] = OMIT,
+        invalid_at: typing.Optional[str] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        valid_at: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[EntityEdge]:
+        """
+        Updates an entity edge by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Edge UUID
+
+        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+
+        expired_at : typing.Optional[str]
+            Updated time at which the edge expires
+
+        fact : typing.Optional[str]
+            Updated fact for the edge
+
+        invalid_at : typing.Optional[str]
+            Updated time at which the fact stopped being true
+
+        name : typing.Optional[str]
+            Updated name (relationship type) for the edge
+
+        valid_at : typing.Optional[str]
+            Updated time at which the fact becomes true
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[EntityEdge]
+            Updated edge
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/edge/{jsonable_encoder(uuid_)}",
+            method="PATCH",
+            json={
+                "attributes": attributes,
+                "expired_at": expired_at,
+                "fact": fact,
+                "invalid_at": invalid_at,
+                "name": name,
+                "valid_at": valid_at,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EntityEdge,
+                    parse_obj_as(
+                        type_=EntityEdge,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -616,6 +742,132 @@ class AsyncRawEdgeClient:
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def update(
+        self,
+        uuid_: str,
+        *,
+        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        expired_at: typing.Optional[str] = OMIT,
+        fact: typing.Optional[str] = OMIT,
+        invalid_at: typing.Optional[str] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        valid_at: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[EntityEdge]:
+        """
+        Updates an entity edge by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Edge UUID
+
+        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+
+        expired_at : typing.Optional[str]
+            Updated time at which the edge expires
+
+        fact : typing.Optional[str]
+            Updated fact for the edge
+
+        invalid_at : typing.Optional[str]
+            Updated time at which the fact stopped being true
+
+        name : typing.Optional[str]
+            Updated name (relationship type) for the edge
+
+        valid_at : typing.Optional[str]
+            Updated time at which the fact becomes true
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[EntityEdge]
+            Updated edge
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/edge/{jsonable_encoder(uuid_)}",
+            method="PATCH",
+            json={
+                "attributes": attributes,
+                "expired_at": expired_at,
+                "fact": fact,
+                "invalid_at": invalid_at,
+                "name": name,
+                "valid_at": valid_at,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EntityEdge,
+                    parse_obj_as(
+                        type_=EntityEdge,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

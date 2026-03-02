@@ -4,12 +4,20 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .pattern_metadata import PatternMetadata
+from .pattern_result import PatternResult
 
 
-class ModelsFactRatingExamples(UniversalBaseModel):
-    high: typing.Optional[str] = None
-    low: typing.Optional[str] = None
-    medium: typing.Optional[str] = None
+class ApidataDetectPatternsResponse(UniversalBaseModel):
+    metadata: typing.Optional[PatternMetadata] = pydantic.Field(default=None)
+    """
+    Statistics about the detection run
+    """
+
+    patterns: typing.Optional[typing.List[PatternResult]] = pydantic.Field(default=None)
+    """
+    Detected patterns, sorted by weighted_score descending
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

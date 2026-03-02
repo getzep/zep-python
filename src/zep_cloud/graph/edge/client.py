@@ -181,6 +181,75 @@ class EdgeClient:
         _response = self._raw_client.delete(uuid_, request_options=request_options)
         return _response.data
 
+    def update(
+        self,
+        uuid_: str,
+        *,
+        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        expired_at: typing.Optional[str] = OMIT,
+        fact: typing.Optional[str] = OMIT,
+        invalid_at: typing.Optional[str] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        valid_at: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EntityEdge:
+        """
+        Updates an entity edge by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Edge UUID
+
+        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+
+        expired_at : typing.Optional[str]
+            Updated time at which the edge expires
+
+        fact : typing.Optional[str]
+            Updated fact for the edge
+
+        invalid_at : typing.Optional[str]
+            Updated time at which the fact stopped being true
+
+        name : typing.Optional[str]
+            Updated name (relationship type) for the edge
+
+        valid_at : typing.Optional[str]
+            Updated time at which the fact becomes true
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityEdge
+            Updated edge
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.edge.update(
+            uuid_="uuid",
+        )
+        """
+        _response = self._raw_client.update(
+            uuid_,
+            attributes=attributes,
+            expired_at=expired_at,
+            fact=fact,
+            invalid_at=invalid_at,
+            name=name,
+            valid_at=valid_at,
+            request_options=request_options,
+        )
+        return _response.data
+
 
 class AsyncEdgeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -381,4 +450,81 @@ class AsyncEdgeClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(uuid_, request_options=request_options)
+        return _response.data
+
+    async def update(
+        self,
+        uuid_: str,
+        *,
+        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        expired_at: typing.Optional[str] = OMIT,
+        fact: typing.Optional[str] = OMIT,
+        invalid_at: typing.Optional[str] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        valid_at: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EntityEdge:
+        """
+        Updates an entity edge by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Edge UUID
+
+        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+
+        expired_at : typing.Optional[str]
+            Updated time at which the edge expires
+
+        fact : typing.Optional[str]
+            Updated fact for the edge
+
+        invalid_at : typing.Optional[str]
+            Updated time at which the fact stopped being true
+
+        name : typing.Optional[str]
+            Updated name (relationship type) for the edge
+
+        valid_at : typing.Optional[str]
+            Updated time at which the fact becomes true
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityEdge
+            Updated edge
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.edge.update(
+                uuid_="uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.update(
+            uuid_,
+            attributes=attributes,
+            expired_at=expired_at,
+            fact=fact,
+            invalid_at=invalid_at,
+            name=name,
+            valid_at=valid_at,
+            request_options=request_options,
+        )
         return _response.data

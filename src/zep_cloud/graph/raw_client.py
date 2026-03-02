@@ -11,24 +11,28 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
+from ..errors.forbidden_error import ForbiddenError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.apidata_detect_patterns_response import ApidataDetectPatternsResponse
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.custom_instruction import CustomInstruction
+from ..types.detect_config import DetectConfig
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.episode_data import EpisodeData
-from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.graph import Graph
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
 from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
+from ..types.pattern_seeds import PatternSeeds
+from ..types.recency_weight import RecencyWeight
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
@@ -571,7 +575,7 @@ class RawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[typing.List[Episode]]:
         """
-        Add data to the graph in batch mode, processing episodes concurrently. Use only for data that is insensitive to processing order.
+        Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
@@ -660,10 +664,12 @@ class RawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        target_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         target_node_name: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
@@ -704,6 +710,9 @@ class RawGraphClient:
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
 
+        source_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the source node
+
         source_node_name : typing.Optional[str]
             The name of the source node to add
 
@@ -716,6 +725,9 @@ class RawGraphClient:
         target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
+
+        target_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the target node
 
         target_node_name : typing.Optional[str]
             The name of the target node to add
@@ -752,10 +764,12 @@ class RawGraphClient:
                 "graph_id": graph_id,
                 "invalid_at": invalid_at,
                 "source_node_attributes": source_node_attributes,
+                "source_node_labels": source_node_labels,
                 "source_node_name": source_node_name,
                 "source_node_summary": source_node_summary,
                 "source_node_uuid": source_node_uuid,
                 "target_node_attributes": target_node_attributes,
+                "target_node_labels": target_node_labels,
                 "target_node_name": target_node_name,
                 "target_node_summary": target_node_summary,
                 "target_node_uuid": target_node_uuid,
@@ -904,7 +918,6 @@ class RawGraphClient:
         *,
         graph_id: str,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Graph]:
@@ -916,8 +929,6 @@ class RawGraphClient:
         graph_id : str
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -934,9 +945,6 @@ class RawGraphClient:
             method="POST",
             json={
                 "description": description,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
                 "graph_id": graph_id,
                 "name": name,
             },
@@ -992,6 +1000,8 @@ class RawGraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GraphListResponse]:
         """
@@ -1004,6 +1014,12 @@ class RawGraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, group_id, name).
+
+        asc : typing.Optional[bool]
+            Sort in ascending order.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1019,6 +1035,8 @@ class RawGraphClient:
             params={
                 "pageNumber": page_number,
                 "pageSize": page_size,
+                "order_by": order_by,
+                "asc": asc,
             },
             request_options=request_options,
         )
@@ -1063,6 +1081,153 @@ class RawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def detect_patterns(
+        self,
+        *,
+        detect: typing.Optional[DetectConfig] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        include_examples: typing.Optional[bool] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        min_occurrences: typing.Optional[int] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[ApidataDetectPatternsResponse]:
+        """
+        Detects structural patterns in a knowledge graph including relationship frequencies,
+        multi-hop paths, co-occurrences, hubs, and clusters.
+
+        Parameters
+        ----------
+        detect : typing.Optional[DetectConfig]
+            Which pattern types to detect with type-specific configuration.
+            Omit to detect all types with defaults.
+
+        graph_id : typing.Optional[str]
+            Graph ID when detecting patterns on a named graph
+
+        include_examples : typing.Optional[bool]
+            Include example node/edge UUIDs per pattern. Default: false
+
+        limit : typing.Optional[int]
+            Max patterns to return. Default: 50, Max: 200
+
+        min_occurrences : typing.Optional[int]
+            Minimum occurrence count to report a pattern. Default: 2
+
+        recency_weight : typing.Optional[RecencyWeight]
+            Exponential half-life decay applied to edge created_at timestamps.
+            Valid values: none, 7_days, 30_days, 90_days. Default: none
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters which edges/nodes participate in pattern detection.
+            Reuses the same filter format as /graph/search.
+
+        seeds : typing.Optional[PatternSeeds]
+            Seed selection. If omitted, analyzes the entire graph.
+
+        user_id : typing.Optional[str]
+            User ID when detecting patterns on a user graph
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ApidataDetectPatternsResponse]
+            Detected patterns
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph/patterns",
+            method="POST",
+            json={
+                "detect": convert_and_respect_annotation_metadata(
+                    object_=detect, annotation=DetectConfig, direction="write"
+                ),
+                "graph_id": graph_id,
+                "include_examples": include_examples,
+                "limit": limit,
+                "min_occurrences": min_occurrences,
+                "recency_weight": recency_weight,
+                "search_filters": convert_and_respect_annotation_metadata(
+                    object_=search_filters, annotation=SearchFilters, direction="write"
+                ),
+                "seeds": convert_and_respect_annotation_metadata(
+                    object_=seeds, annotation=PatternSeeds, direction="write"
+                ),
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ApidataDetectPatternsResponse,
+                    parse_obj_as(
+                        type_=ApidataDetectPatternsResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     def search(
         self,
         *,
@@ -1071,8 +1236,6 @@ class RawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
-        min_fact_rating: typing.Optional[float] = OMIT,
-        min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
@@ -1099,12 +1262,6 @@ class RawGraphClient:
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
-
-        min_fact_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts
-
-        min_score : typing.Optional[float]
-            Deprecated
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
@@ -1137,8 +1294,6 @@ class RawGraphClient:
                 "center_node_uuid": center_node_uuid,
                 "graph_id": graph_id,
                 "limit": limit,
-                "min_fact_rating": min_fact_rating,
-                "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "query": query,
                 "reranker": reranker,
@@ -1339,7 +1494,6 @@ class RawGraphClient:
         graph_id: str,
         *,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Graph]:
@@ -1352,8 +1506,6 @@ class RawGraphClient:
             Graph ID
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -1370,9 +1522,6 @@ class RawGraphClient:
             method="PATCH",
             json={
                 "description": description,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
                 "name": name,
             },
             headers={
@@ -1968,7 +2117,7 @@ class AsyncRawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[typing.List[Episode]]:
         """
-        Add data to the graph in batch mode, processing episodes concurrently. Use only for data that is insensitive to processing order.
+        Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
@@ -2057,10 +2206,12 @@ class AsyncRawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        target_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         target_node_name: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
@@ -2101,6 +2252,9 @@ class AsyncRawGraphClient:
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
 
+        source_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the source node
+
         source_node_name : typing.Optional[str]
             The name of the source node to add
 
@@ -2113,6 +2267,9 @@ class AsyncRawGraphClient:
         target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
+
+        target_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the target node
 
         target_node_name : typing.Optional[str]
             The name of the target node to add
@@ -2149,10 +2306,12 @@ class AsyncRawGraphClient:
                 "graph_id": graph_id,
                 "invalid_at": invalid_at,
                 "source_node_attributes": source_node_attributes,
+                "source_node_labels": source_node_labels,
                 "source_node_name": source_node_name,
                 "source_node_summary": source_node_summary,
                 "source_node_uuid": source_node_uuid,
                 "target_node_attributes": target_node_attributes,
+                "target_node_labels": target_node_labels,
                 "target_node_name": target_node_name,
                 "target_node_summary": target_node_summary,
                 "target_node_uuid": target_node_uuid,
@@ -2301,7 +2460,6 @@ class AsyncRawGraphClient:
         *,
         graph_id: str,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Graph]:
@@ -2313,8 +2471,6 @@ class AsyncRawGraphClient:
         graph_id : str
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -2331,9 +2487,6 @@ class AsyncRawGraphClient:
             method="POST",
             json={
                 "description": description,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
                 "graph_id": graph_id,
                 "name": name,
             },
@@ -2389,6 +2542,8 @@ class AsyncRawGraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GraphListResponse]:
         """
@@ -2401,6 +2556,12 @@ class AsyncRawGraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, group_id, name).
+
+        asc : typing.Optional[bool]
+            Sort in ascending order.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2416,6 +2577,8 @@ class AsyncRawGraphClient:
             params={
                 "pageNumber": page_number,
                 "pageSize": page_size,
+                "order_by": order_by,
+                "asc": asc,
             },
             request_options=request_options,
         )
@@ -2460,6 +2623,153 @@ class AsyncRawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    async def detect_patterns(
+        self,
+        *,
+        detect: typing.Optional[DetectConfig] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        include_examples: typing.Optional[bool] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        min_occurrences: typing.Optional[int] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[ApidataDetectPatternsResponse]:
+        """
+        Detects structural patterns in a knowledge graph including relationship frequencies,
+        multi-hop paths, co-occurrences, hubs, and clusters.
+
+        Parameters
+        ----------
+        detect : typing.Optional[DetectConfig]
+            Which pattern types to detect with type-specific configuration.
+            Omit to detect all types with defaults.
+
+        graph_id : typing.Optional[str]
+            Graph ID when detecting patterns on a named graph
+
+        include_examples : typing.Optional[bool]
+            Include example node/edge UUIDs per pattern. Default: false
+
+        limit : typing.Optional[int]
+            Max patterns to return. Default: 50, Max: 200
+
+        min_occurrences : typing.Optional[int]
+            Minimum occurrence count to report a pattern. Default: 2
+
+        recency_weight : typing.Optional[RecencyWeight]
+            Exponential half-life decay applied to edge created_at timestamps.
+            Valid values: none, 7_days, 30_days, 90_days. Default: none
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters which edges/nodes participate in pattern detection.
+            Reuses the same filter format as /graph/search.
+
+        seeds : typing.Optional[PatternSeeds]
+            Seed selection. If omitted, analyzes the entire graph.
+
+        user_id : typing.Optional[str]
+            User ID when detecting patterns on a user graph
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ApidataDetectPatternsResponse]
+            Detected patterns
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph/patterns",
+            method="POST",
+            json={
+                "detect": convert_and_respect_annotation_metadata(
+                    object_=detect, annotation=DetectConfig, direction="write"
+                ),
+                "graph_id": graph_id,
+                "include_examples": include_examples,
+                "limit": limit,
+                "min_occurrences": min_occurrences,
+                "recency_weight": recency_weight,
+                "search_filters": convert_and_respect_annotation_metadata(
+                    object_=search_filters, annotation=SearchFilters, direction="write"
+                ),
+                "seeds": convert_and_respect_annotation_metadata(
+                    object_=seeds, annotation=PatternSeeds, direction="write"
+                ),
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ApidataDetectPatternsResponse,
+                    parse_obj_as(
+                        type_=ApidataDetectPatternsResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     async def search(
         self,
         *,
@@ -2468,8 +2778,6 @@ class AsyncRawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
-        min_fact_rating: typing.Optional[float] = OMIT,
-        min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
@@ -2496,12 +2804,6 @@ class AsyncRawGraphClient:
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
-
-        min_fact_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts
-
-        min_score : typing.Optional[float]
-            Deprecated
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
@@ -2534,8 +2836,6 @@ class AsyncRawGraphClient:
                 "center_node_uuid": center_node_uuid,
                 "graph_id": graph_id,
                 "limit": limit,
-                "min_fact_rating": min_fact_rating,
-                "min_score": min_score,
                 "mmr_lambda": mmr_lambda,
                 "query": query,
                 "reranker": reranker,
@@ -2738,7 +3038,6 @@ class AsyncRawGraphClient:
         graph_id: str,
         *,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Graph]:
@@ -2751,8 +3050,6 @@ class AsyncRawGraphClient:
             Graph ID
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -2769,9 +3066,6 @@ class AsyncRawGraphClient:
             method="PATCH",
             json={
                 "description": description,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
                 "name": name,
             },
             headers={

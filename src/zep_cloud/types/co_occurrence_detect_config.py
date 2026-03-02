@@ -6,10 +6,11 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class FactRatingExamples(UniversalBaseModel):
-    high: typing.Optional[str] = None
-    low: typing.Optional[str] = None
-    medium: typing.Optional[str] = None
+class CoOccurrenceDetectConfig(UniversalBaseModel):
+    max_hops: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Max hops within which to detect co-occurring node types. Default: 3, Max: 5
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

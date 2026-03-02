@@ -5,20 +5,23 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_triple_response import AddTripleResponse
+from ..types.apidata_detect_patterns_response import ApidataDetectPatternsResponse
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.custom_instruction import CustomInstruction
+from ..types.detect_config import DetectConfig
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.episode_data import EpisodeData
-from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.graph import Graph
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
 from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
+from ..types.pattern_seeds import PatternSeeds
+from ..types.recency_weight import RecencyWeight
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
@@ -350,7 +353,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
         """
-        Add data to the graph in batch mode, processing episodes concurrently. Use only for data that is insensitive to processing order.
+        Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
@@ -403,10 +406,12 @@ class GraphClient:
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        target_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         target_node_name: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
@@ -447,6 +452,9 @@ class GraphClient:
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
 
+        source_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the source node
+
         source_node_name : typing.Optional[str]
             The name of the source node to add
 
@@ -459,6 +467,9 @@ class GraphClient:
         target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
+
+        target_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the target node
 
         target_node_name : typing.Optional[str]
             The name of the target node to add
@@ -504,10 +515,12 @@ class GraphClient:
             graph_id=graph_id,
             invalid_at=invalid_at,
             source_node_attributes=source_node_attributes,
+            source_node_labels=source_node_labels,
             source_node_name=source_node_name,
             source_node_summary=source_node_summary,
             source_node_uuid=source_node_uuid,
             target_node_attributes=target_node_attributes,
+            target_node_labels=target_node_labels,
             target_node_name=target_node_name,
             target_node_summary=target_node_summary,
             target_node_uuid=target_node_uuid,
@@ -574,7 +587,6 @@ class GraphClient:
         *,
         graph_id: str,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
@@ -586,8 +598,6 @@ class GraphClient:
         graph_id : str
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -611,11 +621,7 @@ class GraphClient:
         )
         """
         _response = self._raw_client.create(
-            graph_id=graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
+            graph_id=graph_id, description=description, name=name, request_options=request_options
         )
         return _response.data
 
@@ -624,6 +630,8 @@ class GraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
@@ -636,6 +644,12 @@ class GraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, group_id, name).
+
+        asc : typing.Optional[bool]
+            Sort in ascending order.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -655,10 +669,93 @@ class GraphClient:
         client.graph.list_all(
             page_number=1,
             page_size=1,
+            order_by="order_by",
+            asc=True,
         )
         """
         _response = self._raw_client.list_all(
-            page_number=page_number, page_size=page_size, request_options=request_options
+            page_number=page_number, page_size=page_size, order_by=order_by, asc=asc, request_options=request_options
+        )
+        return _response.data
+
+    def detect_patterns(
+        self,
+        *,
+        detect: typing.Optional[DetectConfig] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        include_examples: typing.Optional[bool] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        min_occurrences: typing.Optional[int] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataDetectPatternsResponse:
+        """
+        Detects structural patterns in a knowledge graph including relationship frequencies,
+        multi-hop paths, co-occurrences, hubs, and clusters.
+
+        Parameters
+        ----------
+        detect : typing.Optional[DetectConfig]
+            Which pattern types to detect with type-specific configuration.
+            Omit to detect all types with defaults.
+
+        graph_id : typing.Optional[str]
+            Graph ID when detecting patterns on a named graph
+
+        include_examples : typing.Optional[bool]
+            Include example node/edge UUIDs per pattern. Default: false
+
+        limit : typing.Optional[int]
+            Max patterns to return. Default: 50, Max: 200
+
+        min_occurrences : typing.Optional[int]
+            Minimum occurrence count to report a pattern. Default: 2
+
+        recency_weight : typing.Optional[RecencyWeight]
+            Exponential half-life decay applied to edge created_at timestamps.
+            Valid values: none, 7_days, 30_days, 90_days. Default: none
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters which edges/nodes participate in pattern detection.
+            Reuses the same filter format as /graph/search.
+
+        seeds : typing.Optional[PatternSeeds]
+            Seed selection. If omitted, analyzes the entire graph.
+
+        user_id : typing.Optional[str]
+            User ID when detecting patterns on a user graph
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataDetectPatternsResponse
+            Detected patterns
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.detect_patterns()
+        """
+        _response = self._raw_client.detect_patterns(
+            detect=detect,
+            graph_id=graph_id,
+            include_examples=include_examples,
+            limit=limit,
+            min_occurrences=min_occurrences,
+            recency_weight=recency_weight,
+            search_filters=search_filters,
+            seeds=seeds,
+            user_id=user_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -670,8 +767,6 @@ class GraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
-        min_fact_rating: typing.Optional[float] = OMIT,
-        min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
@@ -698,12 +793,6 @@ class GraphClient:
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
-
-        min_fact_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts
-
-        min_score : typing.Optional[float]
-            Deprecated
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
@@ -745,8 +834,6 @@ class GraphClient:
             center_node_uuid=center_node_uuid,
             graph_id=graph_id,
             limit=limit,
-            min_fact_rating=min_fact_rating,
-            min_score=min_score,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
             scope=scope,
@@ -823,7 +910,6 @@ class GraphClient:
         graph_id: str,
         *,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
@@ -836,8 +922,6 @@ class GraphClient:
             Graph ID
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -861,11 +945,7 @@ class GraphClient:
         )
         """
         _response = self._raw_client.update(
-            graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
+            graph_id, description=description, name=name, request_options=request_options
         )
         return _response.data
 
@@ -1237,7 +1317,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
         """
-        Add data to the graph in batch mode, processing episodes concurrently. Use only for data that is insensitive to processing order.
+        Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
@@ -1298,10 +1378,12 @@ class AsyncGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
         target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        target_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         target_node_name: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
@@ -1342,6 +1424,9 @@ class AsyncGraphClient:
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
 
+        source_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the source node
+
         source_node_name : typing.Optional[str]
             The name of the source node to add
 
@@ -1354,6 +1439,9 @@ class AsyncGraphClient:
         target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
             Nested objects and arrays are not allowed.
+
+        target_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the target node
 
         target_node_name : typing.Optional[str]
             The name of the target node to add
@@ -1407,10 +1495,12 @@ class AsyncGraphClient:
             graph_id=graph_id,
             invalid_at=invalid_at,
             source_node_attributes=source_node_attributes,
+            source_node_labels=source_node_labels,
             source_node_name=source_node_name,
             source_node_summary=source_node_summary,
             source_node_uuid=source_node_uuid,
             target_node_attributes=target_node_attributes,
+            target_node_labels=target_node_labels,
             target_node_name=target_node_name,
             target_node_summary=target_node_summary,
             target_node_uuid=target_node_uuid,
@@ -1485,7 +1575,6 @@ class AsyncGraphClient:
         *,
         graph_id: str,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
@@ -1497,8 +1586,6 @@ class AsyncGraphClient:
         graph_id : str
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -1530,11 +1617,7 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            graph_id=graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
+            graph_id=graph_id, description=description, name=name, request_options=request_options
         )
         return _response.data
 
@@ -1543,6 +1626,8 @@ class AsyncGraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
@@ -1555,6 +1640,12 @@ class AsyncGraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, group_id, name).
+
+        asc : typing.Optional[bool]
+            Sort in ascending order.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1579,13 +1670,104 @@ class AsyncGraphClient:
             await client.graph.list_all(
                 page_number=1,
                 page_size=1,
+                order_by="order_by",
+                asc=True,
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.list_all(
-            page_number=page_number, page_size=page_size, request_options=request_options
+            page_number=page_number, page_size=page_size, order_by=order_by, asc=asc, request_options=request_options
+        )
+        return _response.data
+
+    async def detect_patterns(
+        self,
+        *,
+        detect: typing.Optional[DetectConfig] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        include_examples: typing.Optional[bool] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        min_occurrences: typing.Optional[int] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ApidataDetectPatternsResponse:
+        """
+        Detects structural patterns in a knowledge graph including relationship frequencies,
+        multi-hop paths, co-occurrences, hubs, and clusters.
+
+        Parameters
+        ----------
+        detect : typing.Optional[DetectConfig]
+            Which pattern types to detect with type-specific configuration.
+            Omit to detect all types with defaults.
+
+        graph_id : typing.Optional[str]
+            Graph ID when detecting patterns on a named graph
+
+        include_examples : typing.Optional[bool]
+            Include example node/edge UUIDs per pattern. Default: false
+
+        limit : typing.Optional[int]
+            Max patterns to return. Default: 50, Max: 200
+
+        min_occurrences : typing.Optional[int]
+            Minimum occurrence count to report a pattern. Default: 2
+
+        recency_weight : typing.Optional[RecencyWeight]
+            Exponential half-life decay applied to edge created_at timestamps.
+            Valid values: none, 7_days, 30_days, 90_days. Default: none
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters which edges/nodes participate in pattern detection.
+            Reuses the same filter format as /graph/search.
+
+        seeds : typing.Optional[PatternSeeds]
+            Seed selection. If omitted, analyzes the entire graph.
+
+        user_id : typing.Optional[str]
+            User ID when detecting patterns on a user graph
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataDetectPatternsResponse
+            Detected patterns
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.detect_patterns()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.detect_patterns(
+            detect=detect,
+            graph_id=graph_id,
+            include_examples=include_examples,
+            limit=limit,
+            min_occurrences=min_occurrences,
+            recency_weight=recency_weight,
+            search_filters=search_filters,
+            seeds=seeds,
+            user_id=user_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -1597,8 +1779,6 @@ class AsyncGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
-        min_fact_rating: typing.Optional[float] = OMIT,
-        min_score: typing.Optional[float] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
@@ -1625,12 +1805,6 @@ class AsyncGraphClient:
 
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
-
-        min_fact_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts
-
-        min_score : typing.Optional[float]
-            Deprecated
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
@@ -1680,8 +1854,6 @@ class AsyncGraphClient:
             center_node_uuid=center_node_uuid,
             graph_id=graph_id,
             limit=limit,
-            min_fact_rating=min_fact_rating,
-            min_score=min_score,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
             scope=scope,
@@ -1776,7 +1948,6 @@ class AsyncGraphClient:
         graph_id: str,
         *,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
@@ -1789,8 +1960,6 @@ class AsyncGraphClient:
             Graph ID
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -1822,10 +1991,6 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
+            graph_id, description=description, name=name, request_options=request_options
         )
         return _response.data

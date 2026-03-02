@@ -907,7 +907,7 @@ client.graph.add(
 <dl>
 <dd>
 
-Add data to the graph in batch mode, processing episodes concurrently. Use only for data that is insensitive to processing order.
+Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 </dd>
 </dl>
 </dd>
@@ -1115,6 +1115,14 @@ Nested objects and arrays are not allowed.
 <dl>
 <dd>
 
+**source_node_labels:** `typing.Optional[typing.Sequence[str]]` — The labels for the source node
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **source_node_name:** `typing.Optional[str]` — The name of the source node to add
     
 </dd>
@@ -1143,6 +1151,14 @@ Nested objects and arrays are not allowed.
 
 Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
 Nested objects and arrays are not allowed.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_node_labels:** `typing.Optional[typing.Sequence[str]]` — The labels for the target node
     
 </dd>
 </dl>
@@ -1360,14 +1376,6 @@ client.graph.create(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **name:** `typing.Optional[str]` 
     
 </dd>
@@ -1423,6 +1431,8 @@ client = Zep(
 client.graph.list_all(
     page_number=1,
     page_size=1,
+    order_by="order_by",
+    asc=True,
 )
 
 ```
@@ -1448,6 +1458,164 @@ client.graph.list_all(
 <dd>
 
 **page_size:** `typing.Optional[int]` — Number of graphs to retrieve per page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order_by:** `typing.Optional[str]` — Column to sort by (created_at, group_id, name).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**asc:** `typing.Optional[bool]` — Sort in ascending order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">detect_patterns</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Detects structural patterns in a knowledge graph including relationship frequencies,
+multi-hop paths, co-occurrences, hubs, and clusters.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.detect_patterns()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**detect:** `typing.Optional[DetectConfig]` 
+
+Which pattern types to detect with type-specific configuration.
+Omit to detect all types with defaults.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_id:** `typing.Optional[str]` — Graph ID when detecting patterns on a named graph
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_examples:** `typing.Optional[bool]` — Include example node/edge UUIDs per pattern. Default: false
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Max patterns to return. Default: 50, Max: 200
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**min_occurrences:** `typing.Optional[int]` — Minimum occurrence count to report a pattern. Default: 2
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recency_weight:** `typing.Optional[RecencyWeight]` 
+
+Exponential half-life decay applied to edge created_at timestamps.
+Valid values: none, 7_days, 30_days, 90_days. Default: none
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search_filters:** `typing.Optional[SearchFilters]` 
+
+Filters which edges/nodes participate in pattern detection.
+Reuses the same filter format as /graph/search.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**seeds:** `typing.Optional[PatternSeeds]` — Seed selection. If omitted, analyzes the entire graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` — User ID when detecting patterns on a user graph
     
 </dd>
 </dl>
@@ -1550,22 +1718,6 @@ client.graph.search(
 <dd>
 
 **limit:** `typing.Optional[int]` — The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**min_fact_rating:** `typing.Optional[float]` — The minimum rating by which to filter relevant facts
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**min_score:** `typing.Optional[float]` — Deprecated
     
 </dd>
 </dl>
@@ -1824,14 +1976,6 @@ client.graph.update(
 <dd>
 
 **description:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` 
     
 </dd>
 </dl>
@@ -2272,9 +2416,7 @@ client = Zep(
 )
 client.thread.get_user_context(
     thread_id="threadId",
-    min_rating=1.1,
     template_id="template_id",
-    mode="basic",
 )
 
 ```
@@ -2299,23 +2441,7 @@ client.thread.get_user_context(
 <dl>
 <dd>
 
-**min_rating:** `typing.Optional[float]` — Deprecated, this field will be removed in a future release. The minimum rating by which to filter relevant facts.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **template_id:** `typing.Optional[str]` — Optional template ID to use for custom context rendering.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**mode:** `typing.Optional[ThreadGetUserContextRequestMode]` — Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
     
 </dd>
 </dl>
@@ -2944,14 +3070,6 @@ client.user.add(
 <dl>
 <dd>
 
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Deprecated: this field will be removed in a future release. Optional instruction to use for fact rating.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **first_name:** `typing.Optional[str]` — The first name of the user.
     
 </dd>
@@ -3023,6 +3141,9 @@ client = Zep(
 client.user.list_ordered(
     page_number=1,
     page_size=1,
+    search="search",
+    order_by="order_by",
+    asc=True,
 )
 
 ```
@@ -3048,6 +3169,30 @@ client.user.list_ordered(
 <dd>
 
 **page_size:** `typing.Optional[int]` — Number of users to retrieve per page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `typing.Optional[str]` — Search term for filtering users by user_id, name, or email
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order_by:** `typing.Optional[str]` — Column to sort by (created_at, user_id, email)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**asc:** `typing.Optional[bool]` — Sort in ascending order
     
 </dd>
 </dl>
@@ -3274,14 +3419,6 @@ client.user.update(
 <dd>
 
 **email:** `typing.Optional[str]` — The email address of the user.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**fact_rating_instruction:** `typing.Optional[FactRatingInstruction]` — Deprecated: this field will be removed in a future release. Optional instruction to use for fact rating.
     
 </dd>
 </dl>
@@ -3829,6 +3966,124 @@ client.graph.edge.delete(
 <dd>
 
 **uuid_:** `str` — Edge UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.edge.<a href="src/zep_cloud/graph/edge/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates an entity edge by UUID.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.edge.update(
+    uuid_="uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**uuid_:** `str` — Edge UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**attributes:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` — Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expired_at:** `typing.Optional[str]` — Updated time at which the edge expires
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fact:** `typing.Optional[str]` — Updated fact for the edge
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**invalid_at:** `typing.Optional[str]` — Updated time at which the fact stopped being true
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` — Updated name (relationship type) for the edge
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**valid_at:** `typing.Optional[str]` — Updated time at which the fact becomes true
     
 </dd>
 </dl>
@@ -4651,6 +4906,108 @@ client.graph.node.delete(
 <dd>
 
 **uuid_:** `str` — Node UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates an entity node by UUID.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.node.update(
+    uuid_="uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**uuid_:** `str` — Node UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**attributes:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` — Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**labels:** `typing.Optional[typing.Sequence[str]]` — Updated labels for the node
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` — Updated name for the node
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**summary:** `typing.Optional[str]` — Updated summary for the node
     
 </dd>
 </dl>

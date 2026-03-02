@@ -3,19 +3,24 @@
 import typing
 
 import pydantic
-import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
 
 
-class Graph(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    graph_id: typing.Optional[str] = None
-    id: typing.Optional[int] = None
-    name: typing.Optional[str] = None
-    project_uuid: typing.Optional[str] = None
-    uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = None
+class PatternMetadata(UniversalBaseModel):
+    edges_analyzed: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Number of edges analyzed
+    """
+
+    elapsed_ms: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Elapsed time in milliseconds
+    """
+
+    nodes_analyzed: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Number of unique nodes analyzed
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
