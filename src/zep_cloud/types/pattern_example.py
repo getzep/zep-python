@@ -6,10 +6,16 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ModelsFactRatingExamples(UniversalBaseModel):
-    high: typing.Optional[str] = None
-    low: typing.Optional[str] = None
-    medium: typing.Optional[str] = None
+class PatternExample(UniversalBaseModel):
+    edge_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Edge UUIDs involved in this instance
+    """
+
+    node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Node UUIDs involved in this instance
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

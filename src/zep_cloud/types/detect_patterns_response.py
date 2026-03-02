@@ -3,19 +3,21 @@
 import typing
 
 import pydantic
-import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
+from .pattern_metadata import PatternMetadata
+from .pattern_result import PatternResult
 
 
-class Graph(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    graph_id: typing.Optional[str] = None
-    id: typing.Optional[int] = None
-    name: typing.Optional[str] = None
-    project_uuid: typing.Optional[str] = None
-    uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = None
+class DetectPatternsResponse(UniversalBaseModel):
+    metadata: typing.Optional[PatternMetadata] = pydantic.Field(default=None)
+    """
+    Statistics about the detection run
+    """
+
+    patterns: typing.Optional[typing.List[PatternResult]] = pydantic.Field(default=None)
+    """
+    Detected patterns, sorted by weighted_score descending
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

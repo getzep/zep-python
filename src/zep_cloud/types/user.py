@@ -6,7 +6,6 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
-from .models_fact_rating_instruction import ModelsFactRatingInstruction
 
 
 class User(UniversalBaseModel):
@@ -14,7 +13,6 @@ class User(UniversalBaseModel):
     deleted_at: typing.Optional[str] = None
     disable_default_ontology: typing.Optional[bool] = None
     email: typing.Optional[str] = None
-    fact_rating_instruction: typing.Optional[ModelsFactRatingInstruction] = None
     first_name: typing.Optional[str] = None
     id: typing.Optional[int] = None
     last_name: typing.Optional[str] = None

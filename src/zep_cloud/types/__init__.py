@@ -7,10 +7,14 @@ from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
 from .clone_graph_response import CloneGraphResponse
+from .cluster_detect_config import ClusterDetectConfig
+from .co_occurrence_detect_config import CoOccurrenceDetectConfig
 from .comparison_operator import ComparisonOperator
 from .context_template_response import ContextTemplateResponse
 from .custom_instruction import CustomInstruction
 from .date_filter import DateFilter
+from .detect_config import DetectConfig
+from .detect_patterns_response import DetectPatternsResponse
 from .edge_type import EdgeType
 from .entity_edge import EntityEdge
 from .entity_edge_source_target import EntityEdgeSourceTarget
@@ -23,8 +27,6 @@ from .episode import Episode
 from .episode_data import EpisodeData
 from .episode_mentions import EpisodeMentions
 from .episode_response import EpisodeResponse
-from .fact_rating_examples import FactRatingExamples
-from .fact_rating_instruction import FactRatingInstruction
 from .get_task_response import GetTaskResponse
 from .graph import Graph
 from .graph_data_type import GraphDataType
@@ -33,16 +35,22 @@ from .graph_list_response import GraphListResponse
 from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
+from .hub_detect_config import HubDetectConfig
 from .list_context_templates_response import ListContextTemplatesResponse
 from .list_custom_instructions_response import ListCustomInstructionsResponse
 from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
-from .models_fact_rating_examples import ModelsFactRatingExamples
-from .models_fact_rating_instruction import ModelsFactRatingInstruction
+from .path_detect_config import PathDetectConfig
+from .pattern_example import PatternExample
+from .pattern_metadata import PatternMetadata
+from .pattern_result import PatternResult
+from .pattern_seeds import PatternSeeds
 from .project_info import ProjectInfo
 from .project_info_response import ProjectInfoResponse
 from .property_filter import PropertyFilter
+from .recency_weight import RecencyWeight
+from .relationship_detect_config import RelationshipDetectConfig
 from .reranker import Reranker
 from .role_type import RoleType
 from .search_filters import SearchFilters
@@ -63,10 +71,14 @@ __all__ = [
     "AddTripleResponse",
     "ApiError",
     "CloneGraphResponse",
+    "ClusterDetectConfig",
+    "CoOccurrenceDetectConfig",
     "ComparisonOperator",
     "ContextTemplateResponse",
     "CustomInstruction",
     "DateFilter",
+    "DetectConfig",
+    "DetectPatternsResponse",
     "EdgeType",
     "EntityEdge",
     "EntityEdgeSourceTarget",
@@ -79,8 +91,6 @@ __all__ = [
     "EpisodeData",
     "EpisodeMentions",
     "EpisodeResponse",
-    "FactRatingExamples",
-    "FactRatingInstruction",
     "GetTaskResponse",
     "Graph",
     "GraphDataType",
@@ -89,16 +99,22 @@ __all__ = [
     "GraphNodesRequest",
     "GraphSearchResults",
     "GraphSearchScope",
+    "HubDetectConfig",
     "ListContextTemplatesResponse",
     "ListCustomInstructionsResponse",
     "ListUserInstructionsResponse",
     "Message",
     "MessageListResponse",
-    "ModelsFactRatingExamples",
-    "ModelsFactRatingInstruction",
+    "PathDetectConfig",
+    "PatternExample",
+    "PatternMetadata",
+    "PatternResult",
+    "PatternSeeds",
     "ProjectInfo",
     "ProjectInfoResponse",
     "PropertyFilter",
+    "RecencyWeight",
+    "RelationshipDetectConfig",
     "Reranker",
     "RoleType",
     "SearchFilters",
