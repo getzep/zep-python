@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .apidata_pattern_example import ApidataPatternExample
+from .pattern_example import PatternExample
 
 
 class PatternResult(UniversalBaseModel):
@@ -18,7 +18,7 @@ class PatternResult(UniversalBaseModel):
     Edge types in the pattern structure
     """
 
-    examples: typing.Optional[typing.List[ApidataPatternExample]] = pydantic.Field(default=None)
+    examples: typing.Optional[typing.List[PatternExample]] = pydantic.Field(default=None)
     """
     Example instances (only populated when include_examples is true)
     """

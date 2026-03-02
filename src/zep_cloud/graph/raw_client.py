@@ -16,10 +16,10 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_triple_response import AddTripleResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_detect_patterns_response import ApidataDetectPatternsResponse
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.custom_instruction import CustomInstruction
 from ..types.detect_config import DetectConfig
+from ..types.detect_patterns_response import DetectPatternsResponse
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
@@ -1094,7 +1094,7 @@ class RawGraphClient:
         seeds: typing.Optional[PatternSeeds] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataDetectPatternsResponse]:
+    ) -> HttpResponse[DetectPatternsResponse]:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
@@ -1136,7 +1136,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataDetectPatternsResponse]
+        HttpResponse[DetectPatternsResponse]
             Detected patterns
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1168,9 +1168,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataDetectPatternsResponse,
+                    DetectPatternsResponse,
                     parse_obj_as(
-                        type_=ApidataDetectPatternsResponse,  # type: ignore
+                        type_=DetectPatternsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2636,7 +2636,7 @@ class AsyncRawGraphClient:
         seeds: typing.Optional[PatternSeeds] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataDetectPatternsResponse]:
+    ) -> AsyncHttpResponse[DetectPatternsResponse]:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
@@ -2678,7 +2678,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataDetectPatternsResponse]
+        AsyncHttpResponse[DetectPatternsResponse]
             Detected patterns
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2710,9 +2710,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataDetectPatternsResponse,
+                    DetectPatternsResponse,
                     parse_obj_as(
-                        type_=ApidataDetectPatternsResponse,  # type: ignore
+                        type_=DetectPatternsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

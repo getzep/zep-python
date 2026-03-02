@@ -4,19 +4,17 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .pattern_metadata import PatternMetadata
-from .pattern_result import PatternResult
 
 
-class ApidataDetectPatternsResponse(UniversalBaseModel):
-    metadata: typing.Optional[PatternMetadata] = pydantic.Field(default=None)
+class PatternExample(UniversalBaseModel):
+    edge_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Statistics about the detection run
+    Edge UUIDs involved in this instance
     """
 
-    patterns: typing.Optional[typing.List[PatternResult]] = pydantic.Field(default=None)
+    node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Detected patterns, sorted by weighted_score descending
+    Node UUIDs involved in this instance
     """
 
     if IS_PYDANTIC_V2:

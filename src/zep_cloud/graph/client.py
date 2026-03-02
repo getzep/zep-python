@@ -5,10 +5,10 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_triple_response import AddTripleResponse
-from ..types.apidata_detect_patterns_response import ApidataDetectPatternsResponse
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.custom_instruction import CustomInstruction
 from ..types.detect_config import DetectConfig
+from ..types.detect_patterns_response import DetectPatternsResponse
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
@@ -691,7 +691,7 @@ class GraphClient:
         seeds: typing.Optional[PatternSeeds] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataDetectPatternsResponse:
+    ) -> DetectPatternsResponse:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
@@ -733,7 +733,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataDetectPatternsResponse
+        DetectPatternsResponse
             Detected patterns
 
         Examples
@@ -1695,7 +1695,7 @@ class AsyncGraphClient:
         seeds: typing.Optional[PatternSeeds] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataDetectPatternsResponse:
+    ) -> DetectPatternsResponse:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
@@ -1737,7 +1737,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataDetectPatternsResponse
+        DetectPatternsResponse
             Detected patterns
 
         Examples

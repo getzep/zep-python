@@ -6,8 +6,6 @@ from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
-from .apidata_detect_patterns_response import ApidataDetectPatternsResponse
-from .apidata_pattern_example import ApidataPatternExample
 from .clone_graph_response import CloneGraphResponse
 from .cluster_detect_config import ClusterDetectConfig
 from .co_occurrence_detect_config import CoOccurrenceDetectConfig
@@ -16,6 +14,7 @@ from .context_template_response import ContextTemplateResponse
 from .custom_instruction import CustomInstruction
 from .date_filter import DateFilter
 from .detect_config import DetectConfig
+from .detect_patterns_response import DetectPatternsResponse
 from .edge_type import EdgeType
 from .entity_edge import EntityEdge
 from .entity_edge_source_target import EntityEdgeSourceTarget
@@ -43,6 +42,7 @@ from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
 from .path_detect_config import PathDetectConfig
+from .pattern_example import PatternExample
 from .pattern_metadata import PatternMetadata
 from .pattern_result import PatternResult
 from .pattern_seeds import PatternSeeds
@@ -70,8 +70,6 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
-    "ApidataDetectPatternsResponse",
-    "ApidataPatternExample",
     "CloneGraphResponse",
     "ClusterDetectConfig",
     "CoOccurrenceDetectConfig",
@@ -80,6 +78,7 @@ __all__ = [
     "CustomInstruction",
     "DateFilter",
     "DetectConfig",
+    "DetectPatternsResponse",
     "EdgeType",
     "EntityEdge",
     "EntityEdgeSourceTarget",
@@ -107,6 +106,7 @@ __all__ = [
     "Message",
     "MessageListResponse",
     "PathDetectConfig",
+    "PatternExample",
     "PatternMetadata",
     "PatternResult",
     "PatternSeeds",
