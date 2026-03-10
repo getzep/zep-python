@@ -14,8 +14,8 @@ class SearchFilters(UniversalBaseModel):
     2D array of date filters for the created_at field.
     The outer array elements are combined with OR logic.
     The inner array elements are combined with AND logic.
-    Example: [[{">", date1}, {"<", date2}], [{"=", date3}]]
-    This translates to: (created_at > date1 AND created_at < date2) OR (created_at = date3)
+    Example: [[\{"\>", date1\}, \{"\<", date2\}], [\{"=", date3\}]]
+    This translates to: (created_at \> date1 AND created_at \< date2) OR (created_at = date3)
     """
 
     edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
@@ -43,8 +43,8 @@ class SearchFilters(UniversalBaseModel):
     2D array of date filters for the expired_at field.
     The outer array elements are combined with OR logic.
     The inner array elements are combined with AND logic.
-    Example: [[{">", date1}, {"<", date2}], [{"=", date3}]]
-    This translates to: (expired_at > date1 AND expired_at < date2) OR (expired_at = date3)
+    Example: [[\{"\>", date1\}, \{"\<", date2\}], [\{"=", date3\}]]
+    This translates to: (expired_at \> date1 AND expired_at \< date2) OR (expired_at = date3)
     """
 
     invalid_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic.Field(default=None)
@@ -52,8 +52,8 @@ class SearchFilters(UniversalBaseModel):
     2D array of date filters for the invalid_at field.
     The outer array elements are combined with OR logic.
     The inner array elements are combined with AND logic.
-    Example: [[{">", date1}, {"<", date2}], [{"=", date3}]]
-    This translates to: (invalid_at > date1 AND invalid_at < date2) OR (invalid_at = date3)
+    Example: [[\{"\>", date1\}, \{"\<", date2\}], [\{"=", date3\}]]
+    This translates to: (invalid_at \> date1 AND invalid_at \< date2) OR (invalid_at = date3)
     """
 
     node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
@@ -71,8 +71,8 @@ class SearchFilters(UniversalBaseModel):
     2D array of date filters for the valid_at field.
     The outer array elements are combined with OR logic.
     The inner array elements are combined with AND logic.
-    Example: [[{">", date1}, {"<", date2}], [{"=", date3}]]
-    This translates to: (valid_at > date1 AND valid_at < date2) OR (valid_at = date3)
+    Example: [[\{"\>", date1\}, \{"\<", date2\}], [\{"=", date3\}]]
+    This translates to: (valid_at \> date1 AND valid_at \< date2) OR (valid_at = date3)
     """
 
     if IS_PYDANTIC_V2:

@@ -42,7 +42,6 @@ from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
 from .path_detect_config import PathDetectConfig
-from .pattern_example import PatternExample
 from .pattern_metadata import PatternMetadata
 from .pattern_result import PatternResult
 from .pattern_seeds import PatternSeeds
@@ -106,7 +105,6 @@ __all__ = [
     "Message",
     "MessageListResponse",
     "PathDetectConfig",
-    "PatternExample",
     "PatternMetadata",
     "PatternResult",
     "PatternSeeds",

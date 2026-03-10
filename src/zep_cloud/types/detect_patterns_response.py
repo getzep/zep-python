@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .entity_node import EntityNode
 from .pattern_metadata import PatternMetadata
 from .pattern_result import PatternResult
 
@@ -12,6 +13,11 @@ class DetectPatternsResponse(UniversalBaseModel):
     metadata: typing.Optional[PatternMetadata] = pydantic.Field(default=None)
     """
     Statistics about the detection run
+    """
+
+    nodes: typing.Optional[typing.List[EntityNode]] = pydantic.Field(default=None)
+    """
+    Resolved nodes referenced by pattern edges (deduplicated). Only populated when query is set.
     """
 
     patterns: typing.Optional[typing.List[PatternResult]] = pydantic.Field(default=None)
