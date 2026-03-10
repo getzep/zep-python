@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .pattern_example import PatternExample
+from .entity_edge import EntityEdge
 
 
 class PatternResult(UniversalBaseModel):
@@ -18,9 +18,10 @@ class PatternResult(UniversalBaseModel):
     Edge types in the pattern structure
     """
 
-    examples: typing.Optional[typing.List[PatternExample]] = pydantic.Field(default=None)
+    edges: typing.Optional[typing.List[EntityEdge]] = pydantic.Field(default=None)
     """
-    Example instances (only populated when include_examples is true)
+    Resolved edges for this pattern, sorted by cross-encoder relevance.
+    Only populated when query is set.
     """
 
     node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)

@@ -1507,6 +1507,8 @@ client.graph.list_all(
 
 Detects structural patterns in a knowledge graph including relationship frequencies,
 multi-hop paths, co-occurrences, hubs, and clusters.
+When a query is provided, uses hybrid search to discover seed nodes,
+detects triple-frequency patterns, and returns resolved edges ranked by relevance.
 </dd>
 </dl>
 </dd>
@@ -1545,7 +1547,15 @@ client.graph.detect_patterns()
 **detect:** `typing.Optional[DetectConfig]` 
 
 Which pattern types to detect with type-specific configuration.
-Omit to detect all types with defaults.
+Omit to detect all types with defaults. Ignored when query is set.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**edge_limit:** `typing.Optional[int]` — Max resolved edges per pattern. Default: 10, Max: 100. Only used with query.
     
 </dd>
 </dl>
@@ -1554,14 +1564,6 @@ Omit to detect all types with defaults.
 <dd>
 
 **graph_id:** `typing.Optional[str]` — Graph ID when detecting patterns on a named graph
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**include_examples:** `typing.Optional[bool]` — Include example node/edge UUIDs per pattern. Default: false
     
 </dd>
 </dl>
@@ -1578,6 +1580,26 @@ Omit to detect all types with defaults.
 <dd>
 
 **min_occurrences:** `typing.Optional[int]` — Minimum occurrence count to report a pattern. Default: 2
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `typing.Optional[str]` 
+
+Search query for discovering seed nodes via hybrid search.
+When set, forces triple-frequency detection only and enables edge resolution
+with cross-encoder reranking. Mutually exclusive with seeds.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query_limit:** `typing.Optional[int]` — Max seed nodes from search. Default: 10, Max: 50. Only used with query.
     
 </dd>
 </dl>
@@ -1607,7 +1629,7 @@ Reuses the same filter format as /graph/search.
 <dl>
 <dd>
 
-**seeds:** `typing.Optional[PatternSeeds]` — Seed selection. If omitted, analyzes the entire graph.
+**seeds:** `typing.Optional[PatternSeeds]` — Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
     
 </dd>
 </dl>

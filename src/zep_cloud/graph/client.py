@@ -682,10 +682,12 @@ class GraphClient:
         self,
         *,
         detect: typing.Optional[DetectConfig] = OMIT,
+        edge_limit: typing.Optional[int] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
-        include_examples: typing.Optional[bool] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_occurrences: typing.Optional[int] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        query_limit: typing.Optional[int] = OMIT,
         recency_weight: typing.Optional[RecencyWeight] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         seeds: typing.Optional[PatternSeeds] = OMIT,
@@ -695,24 +697,34 @@ class GraphClient:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
+        When a query is provided, uses hybrid search to discover seed nodes,
+        detects triple-frequency patterns, and returns resolved edges ranked by relevance.
 
         Parameters
         ----------
         detect : typing.Optional[DetectConfig]
             Which pattern types to detect with type-specific configuration.
-            Omit to detect all types with defaults.
+            Omit to detect all types with defaults. Ignored when query is set.
+
+        edge_limit : typing.Optional[int]
+            Max resolved edges per pattern. Default: 10, Max: 100. Only used with query.
 
         graph_id : typing.Optional[str]
             Graph ID when detecting patterns on a named graph
-
-        include_examples : typing.Optional[bool]
-            Include example node/edge UUIDs per pattern. Default: false
 
         limit : typing.Optional[int]
             Max patterns to return. Default: 50, Max: 200
 
         min_occurrences : typing.Optional[int]
             Minimum occurrence count to report a pattern. Default: 2
+
+        query : typing.Optional[str]
+            Search query for discovering seed nodes via hybrid search.
+            When set, forces triple-frequency detection only and enables edge resolution
+            with cross-encoder reranking. Mutually exclusive with seeds.
+
+        query_limit : typing.Optional[int]
+            Max seed nodes from search. Default: 10, Max: 50. Only used with query.
 
         recency_weight : typing.Optional[RecencyWeight]
             Exponential half-life decay applied to edge created_at timestamps.
@@ -723,7 +735,7 @@ class GraphClient:
             Reuses the same filter format as /graph/search.
 
         seeds : typing.Optional[PatternSeeds]
-            Seed selection. If omitted, analyzes the entire graph.
+            Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
 
         user_id : typing.Optional[str]
             User ID when detecting patterns on a user graph
@@ -747,10 +759,12 @@ class GraphClient:
         """
         _response = self._raw_client.detect_patterns(
             detect=detect,
+            edge_limit=edge_limit,
             graph_id=graph_id,
-            include_examples=include_examples,
             limit=limit,
             min_occurrences=min_occurrences,
+            query=query,
+            query_limit=query_limit,
             recency_weight=recency_weight,
             search_filters=search_filters,
             seeds=seeds,
@@ -1686,10 +1700,12 @@ class AsyncGraphClient:
         self,
         *,
         detect: typing.Optional[DetectConfig] = OMIT,
+        edge_limit: typing.Optional[int] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
-        include_examples: typing.Optional[bool] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_occurrences: typing.Optional[int] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        query_limit: typing.Optional[int] = OMIT,
         recency_weight: typing.Optional[RecencyWeight] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         seeds: typing.Optional[PatternSeeds] = OMIT,
@@ -1699,24 +1715,34 @@ class AsyncGraphClient:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
+        When a query is provided, uses hybrid search to discover seed nodes,
+        detects triple-frequency patterns, and returns resolved edges ranked by relevance.
 
         Parameters
         ----------
         detect : typing.Optional[DetectConfig]
             Which pattern types to detect with type-specific configuration.
-            Omit to detect all types with defaults.
+            Omit to detect all types with defaults. Ignored when query is set.
+
+        edge_limit : typing.Optional[int]
+            Max resolved edges per pattern. Default: 10, Max: 100. Only used with query.
 
         graph_id : typing.Optional[str]
             Graph ID when detecting patterns on a named graph
-
-        include_examples : typing.Optional[bool]
-            Include example node/edge UUIDs per pattern. Default: false
 
         limit : typing.Optional[int]
             Max patterns to return. Default: 50, Max: 200
 
         min_occurrences : typing.Optional[int]
             Minimum occurrence count to report a pattern. Default: 2
+
+        query : typing.Optional[str]
+            Search query for discovering seed nodes via hybrid search.
+            When set, forces triple-frequency detection only and enables edge resolution
+            with cross-encoder reranking. Mutually exclusive with seeds.
+
+        query_limit : typing.Optional[int]
+            Max seed nodes from search. Default: 10, Max: 50. Only used with query.
 
         recency_weight : typing.Optional[RecencyWeight]
             Exponential half-life decay applied to edge created_at timestamps.
@@ -1727,7 +1753,7 @@ class AsyncGraphClient:
             Reuses the same filter format as /graph/search.
 
         seeds : typing.Optional[PatternSeeds]
-            Seed selection. If omitted, analyzes the entire graph.
+            Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
 
         user_id : typing.Optional[str]
             User ID when detecting patterns on a user graph
@@ -1759,10 +1785,12 @@ class AsyncGraphClient:
         """
         _response = await self._raw_client.detect_patterns(
             detect=detect,
+            edge_limit=edge_limit,
             graph_id=graph_id,
-            include_examples=include_examples,
             limit=limit,
             min_occurrences=min_occurrences,
+            query=query,
+            query_limit=query_limit,
             recency_weight=recency_weight,
             search_filters=search_filters,
             seeds=seeds,

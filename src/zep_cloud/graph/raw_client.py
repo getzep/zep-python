@@ -101,6 +101,17 @@ class RawGraphClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -188,6 +199,17 @@ class RawGraphClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -264,6 +286,17 @@ class RawGraphClient:
                 return HttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -441,6 +474,17 @@ class RawGraphClient:
                 return HttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1085,10 +1129,12 @@ class RawGraphClient:
         self,
         *,
         detect: typing.Optional[DetectConfig] = OMIT,
+        edge_limit: typing.Optional[int] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
-        include_examples: typing.Optional[bool] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_occurrences: typing.Optional[int] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        query_limit: typing.Optional[int] = OMIT,
         recency_weight: typing.Optional[RecencyWeight] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         seeds: typing.Optional[PatternSeeds] = OMIT,
@@ -1098,24 +1144,34 @@ class RawGraphClient:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
+        When a query is provided, uses hybrid search to discover seed nodes,
+        detects triple-frequency patterns, and returns resolved edges ranked by relevance.
 
         Parameters
         ----------
         detect : typing.Optional[DetectConfig]
             Which pattern types to detect with type-specific configuration.
-            Omit to detect all types with defaults.
+            Omit to detect all types with defaults. Ignored when query is set.
+
+        edge_limit : typing.Optional[int]
+            Max resolved edges per pattern. Default: 10, Max: 100. Only used with query.
 
         graph_id : typing.Optional[str]
             Graph ID when detecting patterns on a named graph
-
-        include_examples : typing.Optional[bool]
-            Include example node/edge UUIDs per pattern. Default: false
 
         limit : typing.Optional[int]
             Max patterns to return. Default: 50, Max: 200
 
         min_occurrences : typing.Optional[int]
             Minimum occurrence count to report a pattern. Default: 2
+
+        query : typing.Optional[str]
+            Search query for discovering seed nodes via hybrid search.
+            When set, forces triple-frequency detection only and enables edge resolution
+            with cross-encoder reranking. Mutually exclusive with seeds.
+
+        query_limit : typing.Optional[int]
+            Max seed nodes from search. Default: 10, Max: 50. Only used with query.
 
         recency_weight : typing.Optional[RecencyWeight]
             Exponential half-life decay applied to edge created_at timestamps.
@@ -1126,7 +1182,7 @@ class RawGraphClient:
             Reuses the same filter format as /graph/search.
 
         seeds : typing.Optional[PatternSeeds]
-            Seed selection. If omitted, analyzes the entire graph.
+            Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
 
         user_id : typing.Optional[str]
             User ID when detecting patterns on a user graph
@@ -1146,10 +1202,12 @@ class RawGraphClient:
                 "detect": convert_and_respect_annotation_metadata(
                     object_=detect, annotation=DetectConfig, direction="write"
                 ),
+                "edge_limit": edge_limit,
                 "graph_id": graph_id,
-                "include_examples": include_examples,
                 "limit": limit,
                 "min_occurrences": min_occurrences,
+                "query": query,
+                "query_limit": query_limit,
                 "recency_weight": recency_weight,
                 "search_filters": convert_and_respect_annotation_metadata(
                     object_=search_filters, annotation=SearchFilters, direction="write"
@@ -1643,6 +1701,17 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -1730,6 +1799,17 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -1806,6 +1886,17 @@ class AsyncRawGraphClient:
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1983,6 +2074,17 @@ class AsyncRawGraphClient:
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -2627,10 +2729,12 @@ class AsyncRawGraphClient:
         self,
         *,
         detect: typing.Optional[DetectConfig] = OMIT,
+        edge_limit: typing.Optional[int] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
-        include_examples: typing.Optional[bool] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_occurrences: typing.Optional[int] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        query_limit: typing.Optional[int] = OMIT,
         recency_weight: typing.Optional[RecencyWeight] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         seeds: typing.Optional[PatternSeeds] = OMIT,
@@ -2640,24 +2744,34 @@ class AsyncRawGraphClient:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
+        When a query is provided, uses hybrid search to discover seed nodes,
+        detects triple-frequency patterns, and returns resolved edges ranked by relevance.
 
         Parameters
         ----------
         detect : typing.Optional[DetectConfig]
             Which pattern types to detect with type-specific configuration.
-            Omit to detect all types with defaults.
+            Omit to detect all types with defaults. Ignored when query is set.
+
+        edge_limit : typing.Optional[int]
+            Max resolved edges per pattern. Default: 10, Max: 100. Only used with query.
 
         graph_id : typing.Optional[str]
             Graph ID when detecting patterns on a named graph
-
-        include_examples : typing.Optional[bool]
-            Include example node/edge UUIDs per pattern. Default: false
 
         limit : typing.Optional[int]
             Max patterns to return. Default: 50, Max: 200
 
         min_occurrences : typing.Optional[int]
             Minimum occurrence count to report a pattern. Default: 2
+
+        query : typing.Optional[str]
+            Search query for discovering seed nodes via hybrid search.
+            When set, forces triple-frequency detection only and enables edge resolution
+            with cross-encoder reranking. Mutually exclusive with seeds.
+
+        query_limit : typing.Optional[int]
+            Max seed nodes from search. Default: 10, Max: 50. Only used with query.
 
         recency_weight : typing.Optional[RecencyWeight]
             Exponential half-life decay applied to edge created_at timestamps.
@@ -2668,7 +2782,7 @@ class AsyncRawGraphClient:
             Reuses the same filter format as /graph/search.
 
         seeds : typing.Optional[PatternSeeds]
-            Seed selection. If omitted, analyzes the entire graph.
+            Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
 
         user_id : typing.Optional[str]
             User ID when detecting patterns on a user graph
@@ -2688,10 +2802,12 @@ class AsyncRawGraphClient:
                 "detect": convert_and_respect_annotation_metadata(
                     object_=detect, annotation=DetectConfig, direction="write"
                 ),
+                "edge_limit": edge_limit,
                 "graph_id": graph_id,
-                "include_examples": include_examples,
                 "limit": limit,
                 "min_occurrences": min_occurrences,
+                "query": query,
+                "query_limit": query_limit,
                 "recency_weight": recency_weight,
                 "search_filters": convert_and_respect_annotation_metadata(
                     object_=search_filters, annotation=SearchFilters, direction="write"
