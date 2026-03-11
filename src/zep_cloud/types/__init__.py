@@ -9,6 +9,7 @@ from .api_error import ApiError
 from .clone_graph_response import CloneGraphResponse
 from .cluster_detect_config import ClusterDetectConfig
 from .co_occurrence_detect_config import CoOccurrenceDetectConfig
+from .community_node import CommunityNode
 from .comparison_operator import ComparisonOperator
 from .context_template_response import ContextTemplateResponse
 from .custom_instruction import CustomInstruction
@@ -29,6 +30,7 @@ from .episode_mentions import EpisodeMentions
 from .episode_response import EpisodeResponse
 from .get_task_response import GetTaskResponse
 from .graph import Graph
+from .graph_communities_request import GraphCommunitiesRequest
 from .graph_data_type import GraphDataType
 from .graph_edges_request import GraphEdgesRequest
 from .graph_list_response import GraphListResponse
@@ -72,6 +74,7 @@ __all__ = [
     "CloneGraphResponse",
     "ClusterDetectConfig",
     "CoOccurrenceDetectConfig",
+    "CommunityNode",
     "ComparisonOperator",
     "ContextTemplateResponse",
     "CustomInstruction",
@@ -92,6 +95,7 @@ __all__ = [
     "EpisodeResponse",
     "GetTaskResponse",
     "Graph",
+    "GraphCommunitiesRequest",
     "GraphDataType",
     "GraphEdgesRequest",
     "GraphListResponse",

@@ -1044,6 +1044,7 @@ class RawGraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1058,6 +1059,9 @@ class RawGraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        search : typing.Optional[str]
+            Search term for filtering graphs by graph_id.
 
         order_by : typing.Optional[str]
             Column to sort by (created_at, group_id, name).
@@ -1079,6 +1083,7 @@ class RawGraphClient:
             params={
                 "pageNumber": page_number,
                 "pageSize": page_size,
+                "search": search,
                 "order_by": order_by,
                 "asc": asc,
             },
@@ -1328,7 +1333,7 @@ class RawGraphClient:
             Defaults to RRF
 
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Communities will be added in the future.
+            Defaults to Edges.
 
         search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
@@ -2644,6 +2649,7 @@ class AsyncRawGraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -2658,6 +2664,9 @@ class AsyncRawGraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        search : typing.Optional[str]
+            Search term for filtering graphs by graph_id.
 
         order_by : typing.Optional[str]
             Column to sort by (created_at, group_id, name).
@@ -2679,6 +2688,7 @@ class AsyncRawGraphClient:
             params={
                 "pageNumber": page_number,
                 "pageSize": page_size,
+                "search": search,
                 "order_by": order_by,
                 "asc": asc,
             },
@@ -2928,7 +2938,7 @@ class AsyncRawGraphClient:
             Defaults to RRF
 
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Communities will be added in the future.
+            Defaults to Edges.
 
         search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search

@@ -4,17 +4,18 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .community_node import CommunityNode
-from .entity_edge import EntityEdge
-from .entity_node import EntityNode
-from .episode import Episode
 
 
-class GraphSearchResults(UniversalBaseModel):
-    communities: typing.Optional[typing.List[CommunityNode]] = None
-    edges: typing.Optional[typing.List[EntityEdge]] = None
-    episodes: typing.Optional[typing.List[Episode]] = None
-    nodes: typing.Optional[typing.List[EntityNode]] = None
+class GraphCommunitiesRequest(UniversalBaseModel):
+    limit: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Maximum number of items to return
+    """
+
+    uuid_cursor: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
