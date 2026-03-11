@@ -25,6 +25,7 @@ from ..types.recency_weight import RecencyWeight
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
+from .community.client import AsyncCommunityClient, CommunityClient
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
 from .node.client import AsyncNodeClient, NodeClient
@@ -37,6 +38,8 @@ OMIT = typing.cast(typing.Any, ...)
 class GraphClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawGraphClient(client_wrapper=client_wrapper)
+        self.community = CommunityClient(client_wrapper=client_wrapper)
+
         self.edge = EdgeClient(client_wrapper=client_wrapper)
 
         self.episode = EpisodeClient(client_wrapper=client_wrapper)
@@ -630,6 +633,7 @@ class GraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -644,6 +648,9 @@ class GraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        search : typing.Optional[str]
+            Search term for filtering graphs by graph_id.
 
         order_by : typing.Optional[str]
             Column to sort by (created_at, group_id, name).
@@ -669,12 +676,18 @@ class GraphClient:
         client.graph.list_all(
             page_number=1,
             page_size=1,
+            search="search",
             order_by="order_by",
             asc=True,
         )
         """
         _response = self._raw_client.list_all(
-            page_number=page_number, page_size=page_size, order_by=order_by, asc=asc, request_options=request_options
+            page_number=page_number,
+            page_size=page_size,
+            search=search,
+            order_by=order_by,
+            asc=asc,
+            request_options=request_options,
         )
         return _response.data
 
@@ -815,7 +828,7 @@ class GraphClient:
             Defaults to RRF
 
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Communities will be added in the future.
+            Defaults to Edges.
 
         search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
@@ -967,6 +980,8 @@ class GraphClient:
 class AsyncGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._raw_client = AsyncRawGraphClient(client_wrapper=client_wrapper)
+        self.community = AsyncCommunityClient(client_wrapper=client_wrapper)
+
         self.edge = AsyncEdgeClient(client_wrapper=client_wrapper)
 
         self.episode = AsyncEpisodeClient(client_wrapper=client_wrapper)
@@ -1640,6 +1655,7 @@ class AsyncGraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1654,6 +1670,9 @@ class AsyncGraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        search : typing.Optional[str]
+            Search term for filtering graphs by graph_id.
 
         order_by : typing.Optional[str]
             Column to sort by (created_at, group_id, name).
@@ -1684,6 +1703,7 @@ class AsyncGraphClient:
             await client.graph.list_all(
                 page_number=1,
                 page_size=1,
+                search="search",
                 order_by="order_by",
                 asc=True,
             )
@@ -1692,7 +1712,12 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.list_all(
-            page_number=page_number, page_size=page_size, order_by=order_by, asc=asc, request_options=request_options
+            page_number=page_number,
+            page_size=page_size,
+            search=search,
+            order_by=order_by,
+            asc=asc,
+            request_options=request_options,
         )
         return _response.data
 
@@ -1841,7 +1866,7 @@ class AsyncGraphClient:
             Defaults to RRF
 
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Communities will be added in the future.
+            Defaults to Edges.
 
         search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
