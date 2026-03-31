@@ -1,6 +1,6 @@
 import typing
 
-from zep_cloud import EdgeType, EntityEdgeSourceTarget
+from zep_cloud import ApidataEdgeType as EdgeType, ApidataEntityEdgeSourceTarget as EntityEdgeSourceTarget
 from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from zep_cloud.external_clients.ontology import (
     EdgeModel,
@@ -9,7 +9,7 @@ from zep_cloud.external_clients.ontology import (
 )
 from zep_cloud.graph.client import AsyncGraphClient as AsyncBaseGraphClient
 from zep_cloud.graph.client import GraphClient as BaseGraphClient
-from zep_cloud.types import EntityType
+from zep_cloud.types import ApidataEntityType as EntityType
 
 if typing.TYPE_CHECKING:
     from zep_cloud.external_clients.ontology import EntityModel
