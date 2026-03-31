@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ...core.api_error import ApiError as core_api_error_ApiError
+from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
 from ...core.jsonable_encoder import jsonable_encoder
@@ -12,8 +12,8 @@ from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
-from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.community_node import CommunityNode
+from ...types.apidata_api_error import ApidataApiError
+from ...types.graphiti_community_node import GraphitiCommunityNode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,7 +30,7 @@ class RawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[CommunityNode]]:
+    ) -> HttpResponse[typing.List[GraphitiCommunityNode]]:
         """
         Returns read-only community nodes for a graph.
 
@@ -50,7 +50,7 @@ class RawCommunityClient:
 
         Returns
         -------
-        HttpResponse[typing.List[CommunityNode]]
+        HttpResponse[typing.List[GraphitiCommunityNode]]
             Communities
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -69,9 +69,9 @@ class RawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[GraphitiCommunityNode],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[GraphitiCommunityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -80,9 +80,9 @@ class RawCommunityClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -91,9 +91,9 @@ class RawCommunityClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -102,21 +102,17 @@ class RawCommunityClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get_by_user_id(
         self,
@@ -125,7 +121,7 @@ class RawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[CommunityNode]]:
+    ) -> HttpResponse[typing.List[GraphitiCommunityNode]]:
         """
         Returns read-only community nodes for a user's graph.
 
@@ -145,7 +141,7 @@ class RawCommunityClient:
 
         Returns
         -------
-        HttpResponse[typing.List[CommunityNode]]
+        HttpResponse[typing.List[GraphitiCommunityNode]]
             Communities
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -164,9 +160,9 @@ class RawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[GraphitiCommunityNode],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[GraphitiCommunityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -175,9 +171,9 @@ class RawCommunityClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -186,9 +182,9 @@ class RawCommunityClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -197,25 +193,21 @@ class RawCommunityClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[CommunityNode]:
+    ) -> HttpResponse[GraphitiCommunityNode]:
         """
         Returns a specific community node by UUID. Community nodes are read-only.
 
@@ -229,7 +221,7 @@ class RawCommunityClient:
 
         Returns
         -------
-        HttpResponse[CommunityNode]
+        HttpResponse[GraphitiCommunityNode]
             Community
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -240,9 +232,9 @@ class RawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    CommunityNode,
+                    GraphitiCommunityNode,
                     parse_obj_as(
-                        type_=CommunityNode,  # type: ignore
+                        type_=GraphitiCommunityNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -251,9 +243,9 @@ class RawCommunityClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -262,9 +254,9 @@ class RawCommunityClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -273,21 +265,17 @@ class RawCommunityClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
 class AsyncRawCommunityClient:
@@ -301,7 +289,7 @@ class AsyncRawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[CommunityNode]]:
+    ) -> AsyncHttpResponse[typing.List[GraphitiCommunityNode]]:
         """
         Returns read-only community nodes for a graph.
 
@@ -321,7 +309,7 @@ class AsyncRawCommunityClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[CommunityNode]]
+        AsyncHttpResponse[typing.List[GraphitiCommunityNode]]
             Communities
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -340,9 +328,9 @@ class AsyncRawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[GraphitiCommunityNode],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[GraphitiCommunityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -351,9 +339,9 @@ class AsyncRawCommunityClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -362,9 +350,9 @@ class AsyncRawCommunityClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -373,21 +361,17 @@ class AsyncRawCommunityClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get_by_user_id(
         self,
@@ -396,7 +380,7 @@ class AsyncRawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[CommunityNode]]:
+    ) -> AsyncHttpResponse[typing.List[GraphitiCommunityNode]]:
         """
         Returns read-only community nodes for a user's graph.
 
@@ -416,7 +400,7 @@ class AsyncRawCommunityClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[CommunityNode]]
+        AsyncHttpResponse[typing.List[GraphitiCommunityNode]]
             Communities
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -435,9 +419,9 @@ class AsyncRawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[GraphitiCommunityNode],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[GraphitiCommunityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -446,9 +430,9 @@ class AsyncRawCommunityClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -457,9 +441,9 @@ class AsyncRawCommunityClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -468,25 +452,21 @@ class AsyncRawCommunityClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[CommunityNode]:
+    ) -> AsyncHttpResponse[GraphitiCommunityNode]:
         """
         Returns a specific community node by UUID. Community nodes are read-only.
 
@@ -500,7 +480,7 @@ class AsyncRawCommunityClient:
 
         Returns
         -------
-        AsyncHttpResponse[CommunityNode]
+        AsyncHttpResponse[GraphitiCommunityNode]
             Community
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -511,9 +491,9 @@ class AsyncRawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    CommunityNode,
+                    GraphitiCommunityNode,
                     parse_obj_as(
-                        type_=CommunityNode,  # type: ignore
+                        type_=GraphitiCommunityNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -522,9 +502,9 @@ class AsyncRawCommunityClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -533,9 +513,9 @@ class AsyncRawCommunityClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -544,18 +524,14 @@ class AsyncRawCommunityClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

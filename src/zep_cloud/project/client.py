@@ -4,7 +4,7 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.project_info_response import ProjectInfoResponse
+from ..types.apidata_project_info_response import ApidataProjectInfoResponse
 from .raw_client import AsyncRawProjectClient, RawProjectClient
 
 
@@ -23,7 +23,7 @@ class ProjectClient:
         """
         return self._raw_client
 
-    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectInfoResponse:
+    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataProjectInfoResponse:
         """
         Retrieve project info based on the provided api key.
 
@@ -34,7 +34,7 @@ class ProjectClient:
 
         Returns
         -------
-        ProjectInfoResponse
+        ApidataProjectInfoResponse
             Retrieved
 
         Examples
@@ -65,7 +65,7 @@ class AsyncProjectClient:
         """
         return self._raw_client
 
-    async def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectInfoResponse:
+    async def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataProjectInfoResponse:
         """
         Retrieve project info based on the provided api key.
 
@@ -76,7 +76,7 @@ class AsyncProjectClient:
 
         Returns
         -------
-        ProjectInfoResponse
+        ApidataProjectInfoResponse
             Retrieved
 
         Examples

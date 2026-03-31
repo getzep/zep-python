@@ -2,6 +2,6 @@
 
 # isort: skip_file
 
-from . import community, edge, episode, node
+from . import community, edge, episode, node, theme
 
-__all__ = ["community", "edge", "episode", "node"]
+__all__ = ["community", "edge", "episode", "node", "theme"]

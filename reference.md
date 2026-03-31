@@ -465,14 +465,14 @@ Adds new custom instructions for graphs without removing existing ones. If user_
 <dd>
 
 ```python
-from zep_cloud import CustomInstruction, Zep
+from zep_cloud import ApidataCustomInstruction, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.graph.add_custom_instructions(
     instructions=[
-        CustomInstruction(
+        ApidataCustomInstruction(
             name="name",
             text="text",
         )
@@ -493,7 +493,7 @@ client.graph.add_custom_instructions(
 <dl>
 <dd>
 
-**instructions:** `typing.Sequence[CustomInstruction]` — Instructions to add to the graph.
+**instructions:** `typing.Sequence[ApidataCustomInstruction]` — Instructions to add to the graph.
     
 </dd>
 </dl>
@@ -740,7 +740,7 @@ client.graph.set_entity_types_internal()
 <dl>
 <dd>
 
-**edge_types:** `typing.Optional[typing.Sequence[EdgeType]]` 
+**edge_types:** `typing.Optional[typing.Sequence[ApidataEdgeType]]` 
     
 </dd>
 </dl>
@@ -748,7 +748,7 @@ client.graph.set_entity_types_internal()
 <dl>
 <dd>
 
-**entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
+**entity_types:** `typing.Optional[typing.Sequence[ApidataEntityType]]` 
     
 </dd>
 </dl>
@@ -843,7 +843,7 @@ client.graph.add(
 <dl>
 <dd>
 
-**type:** `GraphDataType` 
+**type:** `ModelsGraphDataType` 
     
 </dd>
 </dl>
@@ -860,6 +860,14 @@ client.graph.add(
 <dd>
 
 **graph_id:** `typing.Optional[str]` — graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` — Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, or booleans.
     
 </dd>
 </dl>
@@ -922,14 +930,14 @@ Add data to the graph in batch mode. Episodes are processed sequentially in the 
 <dd>
 
 ```python
-from zep_cloud import EpisodeData, Zep
+from zep_cloud import ApidataEpisodeData, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.graph.add_batch(
     episodes=[
-        EpisodeData(
+        ApidataEpisodeData(
             data="data",
             type="text",
         )
@@ -950,7 +958,7 @@ client.graph.add_batch(
 <dl>
 <dd>
 
-**episodes:** `typing.Sequence[EpisodeData]` 
+**episodes:** `typing.Sequence[ApidataEpisodeData]` 
     
 </dd>
 </dl>
@@ -1097,6 +1105,17 @@ Nested objects and arrays are not allowed.
 <dd>
 
 **invalid_at:** `typing.Optional[str]` — The time (if any) at which the fact stops being true
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` 
+
+Optional metadata key-value pairs for the shadow episode created for this fact triple.
+Max 10 keys. Values must be strings, numbers, or booleans.
     
 </dd>
 </dl>
@@ -1553,7 +1572,7 @@ client.graph.detect_patterns()
 <dl>
 <dd>
 
-**detect:** `typing.Optional[DetectConfig]` 
+**detect:** `typing.Optional[ApidataDetectConfig]` 
 
 Which pattern types to detect with type-specific configuration.
 Omit to detect all types with defaults. Ignored when query is set.
@@ -1616,7 +1635,7 @@ with cross-encoder reranking. Mutually exclusive with seeds.
 <dl>
 <dd>
 
-**recency_weight:** `typing.Optional[RecencyWeight]` 
+**recency_weight:** `typing.Optional[ApidataRecencyWeight]` 
 
 Exponential half-life decay applied to edge created_at timestamps.
 Valid values: none, 7_days, 30_days, 90_days. Default: none
@@ -1627,7 +1646,7 @@ Valid values: none, 7_days, 30_days, 90_days. Default: none
 <dl>
 <dd>
 
-**search_filters:** `typing.Optional[SearchFilters]` 
+**search_filters:** `typing.Optional[GraphitiSearchFilters]` 
 
 Filters which edges/nodes participate in pattern detection.
 Reuses the same filter format as /graph/search.
@@ -1638,7 +1657,7 @@ Reuses the same filter format as /graph/search.
 <dl>
 <dd>
 
-**seeds:** `typing.Optional[PatternSeeds]` — Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
+**seeds:** `typing.Optional[ApidataPatternSeeds]` — Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
     
 </dd>
 </dl>
@@ -1764,7 +1783,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**reranker:** `typing.Optional[Reranker]` — Defaults to RRF
+**reranker:** `typing.Optional[GraphitiReranker]` — Defaults to RRF
     
 </dd>
 </dl>
@@ -1772,7 +1791,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges.
+**scope:** `typing.Optional[GraphitiGraphSearchScope]` — Defaults to Edges.
     
 </dd>
 </dl>
@@ -1780,7 +1799,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**search_filters:** `typing.Optional[SearchFilters]` — Search filters to apply to the search
+**search_filters:** `typing.Optional[GraphitiSearchFilters]` — Search filters to apply to the search
     
 </dd>
 </dl>
@@ -2527,7 +2546,7 @@ client = Zep(
 client.thread.get(
     thread_id="threadId",
     limit=1,
-    cursor=1,
+    cursor=1000000,
     lastn=1,
 )
 
@@ -2616,7 +2635,7 @@ Add messages to a thread.
 <dd>
 
 ```python
-from zep_cloud import Message, Zep
+from zep_cloud import ApidataThreadMessage, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
@@ -2624,7 +2643,7 @@ client = Zep(
 client.thread.add_messages(
     thread_id="threadId",
     messages=[
-        Message(
+        ApidataThreadMessage(
             content="content",
             role="norole",
         )
@@ -2653,7 +2672,7 @@ client.thread.add_messages(
 <dl>
 <dd>
 
-**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content.
+**messages:** `typing.Sequence[ApidataThreadMessage]` — A list of message objects, where each message contains a role and content.
     
 </dd>
 </dl>
@@ -2661,7 +2680,7 @@ client.thread.add_messages(
 <dl>
 <dd>
 
-**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
+**ignore_roles:** `typing.Optional[typing.Sequence[ApidataRoleType]]` 
 
 Optional list of role types to ignore when adding messages to graph memory.
 The message itself will still be added, retained and used as context for messages
@@ -2720,7 +2739,7 @@ Add messages to a thread in batch mode. This will process messages concurrently,
 <dd>
 
 ```python
-from zep_cloud import Message, Zep
+from zep_cloud import ApidataThreadMessage, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
@@ -2728,7 +2747,7 @@ client = Zep(
 client.thread.add_messages_batch(
     thread_id="threadId",
     messages=[
-        Message(
+        ApidataThreadMessage(
             content="content",
             role="norole",
         )
@@ -2757,7 +2776,7 @@ client.thread.add_messages_batch(
 <dl>
 <dd>
 
-**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content.
+**messages:** `typing.Sequence[ApidataThreadMessage]` — A list of message objects, where each message contains a role and content.
     
 </dd>
 </dl>
@@ -2765,7 +2784,7 @@ client.thread.add_messages_batch(
 <dl>
 <dd>
 
-**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
+**ignore_roles:** `typing.Optional[typing.Sequence[ApidataRoleType]]` 
 
 Optional list of role types to ignore when adding messages to graph memory.
 The message itself will still be added, retained and used as context for messages
@@ -2895,14 +2914,14 @@ Adds new summary instructions for users graphs without removing existing ones. I
 <dd>
 
 ```python
-from zep_cloud import UserInstruction, Zep
+from zep_cloud import ApidataUserInstruction, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.user.add_user_summary_instructions(
     instructions=[
-        UserInstruction(
+        ApidataUserInstruction(
             name="name",
             text="text",
         )
@@ -2923,7 +2942,7 @@ client.user.add_user_summary_instructions(
 <dl>
 <dd>
 
-**instructions:** `typing.Sequence[UserInstruction]` — Instructions to add to the user summary generation.
+**instructions:** `typing.Sequence[ApidataUserInstruction]` — Instructions to add to the user summary generation.
     
 </dd>
 </dl>
@@ -5282,6 +5301,249 @@ client.graph.node.update(
 <dd>
 
 **summary:** `typing.Optional[str]` — Updated summary for the node
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Graph Theme
+<details><summary><code>client.graph.theme.<a href="src/zep_cloud/graph/theme/client.py">get_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns read-only theme nodes for a graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.theme.get_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.theme.<a href="src/zep_cloud/graph/theme/client.py">get_by_user_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns read-only theme nodes for a user's graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.theme.get_by_user_id(
+    user_id="user_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.theme.<a href="src/zep_cloud/graph/theme/client.py">get</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a specific theme node by UUID. Theme nodes are read-only.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.theme.get(
+    uuid_="uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**uuid_:** `str` — Theme UUID
     
 </dd>
 </dl>

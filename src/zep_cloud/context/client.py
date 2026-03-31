@@ -4,9 +4,9 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.context_template_response import ContextTemplateResponse
-from ..types.list_context_templates_response import ListContextTemplatesResponse
-from ..types.success_response import SuccessResponse
+from ..types.apidata_context_template_response import ApidataContextTemplateResponse
+from ..types.apidata_list_context_templates_response import ApidataListContextTemplatesResponse
+from ..types.apidata_success_response import ApidataSuccessResponse
 from .raw_client import AsyncRawContextClient, RawContextClient
 
 # this is used as the default value for optional parameters
@@ -30,7 +30,7 @@ class ContextClient:
 
     def list_context_templates(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ListContextTemplatesResponse:
+    ) -> ApidataListContextTemplatesResponse:
         """
         Lists all context templates.
 
@@ -41,7 +41,7 @@ class ContextClient:
 
         Returns
         -------
-        ListContextTemplatesResponse
+        ApidataListContextTemplatesResponse
             The list of context templates.
 
         Examples
@@ -58,7 +58,7 @@ class ContextClient:
 
     def create_context_template(
         self, *, template: str, template_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    ) -> ApidataContextTemplateResponse:
         """
         Creates a new context template.
 
@@ -75,7 +75,7 @@ class ContextClient:
 
         Returns
         -------
-        ContextTemplateResponse
+        ApidataContextTemplateResponse
             The created context template.
 
         Examples
@@ -97,7 +97,7 @@ class ContextClient:
 
     def get_context_template(
         self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    ) -> ApidataContextTemplateResponse:
         """
         Retrieves a context template by template_id.
 
@@ -111,7 +111,7 @@ class ContextClient:
 
         Returns
         -------
-        ContextTemplateResponse
+        ApidataContextTemplateResponse
             The context template.
 
         Examples
@@ -130,7 +130,7 @@ class ContextClient:
 
     def update_context_template(
         self, template_id: str, *, template: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    ) -> ApidataContextTemplateResponse:
         """
         Updates an existing context template by template_id.
 
@@ -147,7 +147,7 @@ class ContextClient:
 
         Returns
         -------
-        ContextTemplateResponse
+        ApidataContextTemplateResponse
             The updated context template.
 
         Examples
@@ -169,7 +169,7 @@ class ContextClient:
 
     def delete_context_template(
         self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
+    ) -> ApidataSuccessResponse:
         """
         Deletes a context template by template_id.
 
@@ -183,7 +183,7 @@ class ContextClient:
 
         Returns
         -------
-        SuccessResponse
+        ApidataSuccessResponse
             Template deleted successfully
 
         Examples
@@ -218,7 +218,7 @@ class AsyncContextClient:
 
     async def list_context_templates(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ListContextTemplatesResponse:
+    ) -> ApidataListContextTemplatesResponse:
         """
         Lists all context templates.
 
@@ -229,7 +229,7 @@ class AsyncContextClient:
 
         Returns
         -------
-        ListContextTemplatesResponse
+        ApidataListContextTemplatesResponse
             The list of context templates.
 
         Examples
@@ -254,7 +254,7 @@ class AsyncContextClient:
 
     async def create_context_template(
         self, *, template: str, template_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    ) -> ApidataContextTemplateResponse:
         """
         Creates a new context template.
 
@@ -271,7 +271,7 @@ class AsyncContextClient:
 
         Returns
         -------
-        ContextTemplateResponse
+        ApidataContextTemplateResponse
             The created context template.
 
         Examples
@@ -301,7 +301,7 @@ class AsyncContextClient:
 
     async def get_context_template(
         self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    ) -> ApidataContextTemplateResponse:
         """
         Retrieves a context template by template_id.
 
@@ -315,7 +315,7 @@ class AsyncContextClient:
 
         Returns
         -------
-        ContextTemplateResponse
+        ApidataContextTemplateResponse
             The context template.
 
         Examples
@@ -342,7 +342,7 @@ class AsyncContextClient:
 
     async def update_context_template(
         self, template_id: str, *, template: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    ) -> ApidataContextTemplateResponse:
         """
         Updates an existing context template by template_id.
 
@@ -359,7 +359,7 @@ class AsyncContextClient:
 
         Returns
         -------
-        ContextTemplateResponse
+        ApidataContextTemplateResponse
             The updated context template.
 
         Examples
@@ -389,7 +389,7 @@ class AsyncContextClient:
 
     async def delete_context_template(
         self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
+    ) -> ApidataSuccessResponse:
         """
         Deletes a context template by template_id.
 
@@ -403,7 +403,7 @@ class AsyncContextClient:
 
         Returns
         -------
-        SuccessResponse
+        ApidataSuccessResponse
             Template deleted successfully
 
         Examples

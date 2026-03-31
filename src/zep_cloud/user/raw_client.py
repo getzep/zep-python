@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError as core_api_error_ApiError
+from ..core.api_error import ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.jsonable_encoder import jsonable_encoder
@@ -13,14 +13,14 @@ from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.list_user_instructions_response import ListUserInstructionsResponse
-from ..types.success_response import SuccessResponse
-from ..types.thread import Thread
-from ..types.user import User
-from ..types.user_instruction import UserInstruction
-from ..types.user_list_response import UserListResponse
-from ..types.user_node_response import UserNodeResponse
+from ..types.apidata_api_error import ApidataApiError
+from ..types.apidata_list_user_instructions_response import ApidataListUserInstructionsResponse
+from ..types.apidata_success_response import ApidataSuccessResponse
+from ..types.apidata_thread import ApidataThread
+from ..types.apidata_user import ApidataUser
+from ..types.apidata_user_instruction import ApidataUserInstruction
+from ..types.apidata_user_list_response import ApidataUserListResponse
+from ..types.apidata_user_node_response import ApidataUserNodeResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -32,7 +32,7 @@ class RawUserClient:
 
     def list_user_summary_instructions(
         self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ListUserInstructionsResponse]:
+    ) -> HttpResponse[ApidataListUserInstructionsResponse]:
         """
         Lists all user summary instructions for a project, user.
 
@@ -46,7 +46,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[ListUserInstructionsResponse]
+        HttpResponse[ApidataListUserInstructionsResponse]
             The list of instructions.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -60,9 +60,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ListUserInstructionsResponse,
+                    ApidataListUserInstructionsResponse,
                     parse_obj_as(
-                        type_=ListUserInstructionsResponse,  # type: ignore
+                        type_=ApidataListUserInstructionsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -71,9 +71,9 @@ class RawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -82,9 +82,9 @@ class RawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -93,35 +93,31 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def add_user_summary_instructions(
         self,
         *,
-        instructions: typing.Sequence[UserInstruction],
+        instructions: typing.Sequence[ApidataUserInstruction],
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[SuccessResponse]:
+    ) -> HttpResponse[ApidataSuccessResponse]:
         """
         Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
-        instructions : typing.Sequence[UserInstruction]
+        instructions : typing.Sequence[ApidataUserInstruction]
             Instructions to add to the user summary generation.
 
         user_ids : typing.Optional[typing.Sequence[str]]
@@ -132,7 +128,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
+        HttpResponse[ApidataSuccessResponse]
             Instructions added successfully
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -140,7 +136,7 @@ class RawUserClient:
             method="POST",
             json={
                 "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
+                    object_=instructions, annotation=typing.Sequence[ApidataUserInstruction], direction="write"
                 ),
                 "user_ids": user_ids,
             },
@@ -153,9 +149,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -164,9 +160,9 @@ class RawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -175,9 +171,9 @@ class RawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -186,21 +182,17 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete_user_summary_instructions(
         self,
@@ -208,7 +200,7 @@ class RawUserClient:
         instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[SuccessResponse]:
+    ) -> HttpResponse[ApidataSuccessResponse]:
         """
         Deletes user summary/instructions for users or project wide defaults.
 
@@ -225,7 +217,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
+        HttpResponse[ApidataSuccessResponse]
             Instructions deleted successfully
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -244,9 +236,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -255,9 +247,9 @@ class RawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -266,9 +258,9 @@ class RawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -277,21 +269,17 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def add(
         self,
@@ -303,7 +291,7 @@ class RawUserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[User]:
+    ) -> HttpResponse[ApidataUser]:
         """
         Adds a user.
 
@@ -332,7 +320,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[User]
+        HttpResponse[ApidataUser]
             The user that was added.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -355,9 +343,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    User,
+                    ApidataUser,
                     parse_obj_as(
-                        type_=User,  # type: ignore
+                        type_=ApidataUser,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -366,9 +354,9 @@ class RawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -377,21 +365,17 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def list_ordered(
         self,
@@ -402,7 +386,7 @@ class RawUserClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[UserListResponse]:
+    ) -> HttpResponse[ApidataUserListResponse]:
         """
         Returns all users.
 
@@ -428,7 +412,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[UserListResponse]
+        HttpResponse[ApidataUserListResponse]
             Successfully retrieved list of users
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -446,9 +430,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    UserListResponse,
+                    ApidataUserListResponse,
                     parse_obj_as(
-                        type_=UserListResponse,  # type: ignore
+                        type_=ApidataUserListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -457,9 +441,9 @@ class RawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -468,23 +452,21 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[User]:
+    def get(
+        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[ApidataUser]:
         """
         Returns a user.
 
@@ -498,7 +480,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[User]
+        HttpResponse[ApidataUser]
             The user that was retrieved.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -509,9 +491,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    User,
+                    ApidataUser,
                     parse_obj_as(
-                        type_=User,  # type: ignore
+                        type_=ApidataUser,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -520,9 +502,9 @@ class RawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -531,25 +513,21 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[SuccessResponse]:
+    ) -> HttpResponse[ApidataSuccessResponse]:
         """
         Deletes a user.
 
@@ -563,7 +541,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
+        HttpResponse[ApidataSuccessResponse]
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -574,9 +552,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -585,9 +563,9 @@ class RawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -596,21 +574,17 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def update(
         self,
@@ -622,7 +596,7 @@ class RawUserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[User]:
+    ) -> HttpResponse[ApidataUser]:
         """
         Updates a user.
 
@@ -651,7 +625,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[User]
+        HttpResponse[ApidataUser]
             The user that was updated.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -673,9 +647,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    User,
+                    ApidataUser,
                     parse_obj_as(
-                        type_=User,  # type: ignore
+                        type_=ApidataUser,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -684,9 +658,9 @@ class RawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -695,9 +669,9 @@ class RawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -706,25 +680,21 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get_node(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[UserNodeResponse]:
+    ) -> HttpResponse[ApidataUserNodeResponse]:
         """
         Returns a user's node.
 
@@ -738,7 +708,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[UserNodeResponse]
+        HttpResponse[ApidataUserNodeResponse]
             Response object containing the User node.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -749,9 +719,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    UserNodeResponse,
+                    ApidataUserNodeResponse,
                     parse_obj_as(
-                        type_=UserNodeResponse,  # type: ignore
+                        type_=ApidataUserNodeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -760,9 +730,9 @@ class RawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -771,25 +741,21 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get_threads(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[typing.List[Thread]]:
+    ) -> HttpResponse[typing.List[ApidataThread]]:
         """
         Returns all threads for a user.
 
@@ -803,7 +769,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[typing.List[Thread]]
+        HttpResponse[typing.List[ApidataThread]]
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -814,9 +780,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[Thread],
+                    typing.List[ApidataThread],
                     parse_obj_as(
-                        type_=typing.List[Thread],  # type: ignore
+                        type_=typing.List[ApidataThread],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -825,25 +791,21 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def warm(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[SuccessResponse]:
+    ) -> HttpResponse[ApidataSuccessResponse]:
         """
         Hints Zep to warm a user's graph for low-latency search
 
@@ -857,7 +819,7 @@ class RawUserClient:
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
+        HttpResponse[ApidataSuccessResponse]
             Warm hint accepted
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -868,9 +830,9 @@ class RawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -879,9 +841,9 @@ class RawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -890,21 +852,17 @@ class RawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
 class AsyncRawUserClient:
@@ -913,7 +871,7 @@ class AsyncRawUserClient:
 
     async def list_user_summary_instructions(
         self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ListUserInstructionsResponse]:
+    ) -> AsyncHttpResponse[ApidataListUserInstructionsResponse]:
         """
         Lists all user summary instructions for a project, user.
 
@@ -927,7 +885,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[ListUserInstructionsResponse]
+        AsyncHttpResponse[ApidataListUserInstructionsResponse]
             The list of instructions.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -941,9 +899,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ListUserInstructionsResponse,
+                    ApidataListUserInstructionsResponse,
                     parse_obj_as(
-                        type_=ListUserInstructionsResponse,  # type: ignore
+                        type_=ApidataListUserInstructionsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -952,9 +910,9 @@ class AsyncRawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -963,9 +921,9 @@ class AsyncRawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -974,35 +932,31 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def add_user_summary_instructions(
         self,
         *,
-        instructions: typing.Sequence[UserInstruction],
+        instructions: typing.Sequence[ApidataUserInstruction],
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
         """
         Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
-        instructions : typing.Sequence[UserInstruction]
+        instructions : typing.Sequence[ApidataUserInstruction]
             Instructions to add to the user summary generation.
 
         user_ids : typing.Optional[typing.Sequence[str]]
@@ -1013,7 +967,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
+        AsyncHttpResponse[ApidataSuccessResponse]
             Instructions added successfully
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1021,7 +975,7 @@ class AsyncRawUserClient:
             method="POST",
             json={
                 "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
+                    object_=instructions, annotation=typing.Sequence[ApidataUserInstruction], direction="write"
                 ),
                 "user_ids": user_ids,
             },
@@ -1034,9 +988,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1045,9 +999,9 @@ class AsyncRawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1056,9 +1010,9 @@ class AsyncRawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1067,21 +1021,17 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete_user_summary_instructions(
         self,
@@ -1089,7 +1039,7 @@ class AsyncRawUserClient:
         instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
         """
         Deletes user summary/instructions for users or project wide defaults.
 
@@ -1106,7 +1056,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
+        AsyncHttpResponse[ApidataSuccessResponse]
             Instructions deleted successfully
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1125,9 +1075,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1136,9 +1086,9 @@ class AsyncRawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1147,9 +1097,9 @@ class AsyncRawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1158,21 +1108,17 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def add(
         self,
@@ -1184,7 +1130,7 @@ class AsyncRawUserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[User]:
+    ) -> AsyncHttpResponse[ApidataUser]:
         """
         Adds a user.
 
@@ -1213,7 +1159,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[User]
+        AsyncHttpResponse[ApidataUser]
             The user that was added.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1236,9 +1182,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    User,
+                    ApidataUser,
                     parse_obj_as(
-                        type_=User,  # type: ignore
+                        type_=ApidataUser,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1247,9 +1193,9 @@ class AsyncRawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1258,21 +1204,17 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def list_ordered(
         self,
@@ -1283,7 +1225,7 @@ class AsyncRawUserClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[UserListResponse]:
+    ) -> AsyncHttpResponse[ApidataUserListResponse]:
         """
         Returns all users.
 
@@ -1309,7 +1251,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[UserListResponse]
+        AsyncHttpResponse[ApidataUserListResponse]
             Successfully retrieved list of users
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1327,9 +1269,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    UserListResponse,
+                    ApidataUserListResponse,
                     parse_obj_as(
-                        type_=UserListResponse,  # type: ignore
+                        type_=ApidataUserListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1338,9 +1280,9 @@ class AsyncRawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1349,25 +1291,21 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[User]:
+    ) -> AsyncHttpResponse[ApidataUser]:
         """
         Returns a user.
 
@@ -1381,7 +1319,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[User]
+        AsyncHttpResponse[ApidataUser]
             The user that was retrieved.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1392,9 +1330,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    User,
+                    ApidataUser,
                     parse_obj_as(
-                        type_=User,  # type: ignore
+                        type_=ApidataUser,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1403,9 +1341,9 @@ class AsyncRawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1414,25 +1352,21 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
         """
         Deletes a user.
 
@@ -1446,7 +1380,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
+        AsyncHttpResponse[ApidataSuccessResponse]
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1457,9 +1391,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1468,9 +1402,9 @@ class AsyncRawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1479,21 +1413,17 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def update(
         self,
@@ -1505,7 +1435,7 @@ class AsyncRawUserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[User]:
+    ) -> AsyncHttpResponse[ApidataUser]:
         """
         Updates a user.
 
@@ -1534,7 +1464,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[User]
+        AsyncHttpResponse[ApidataUser]
             The user that was updated.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1556,9 +1486,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    User,
+                    ApidataUser,
                     parse_obj_as(
-                        type_=User,  # type: ignore
+                        type_=ApidataUser,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1567,9 +1497,9 @@ class AsyncRawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1578,9 +1508,9 @@ class AsyncRawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1589,25 +1519,21 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get_node(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[UserNodeResponse]:
+    ) -> AsyncHttpResponse[ApidataUserNodeResponse]:
         """
         Returns a user's node.
 
@@ -1621,7 +1547,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[UserNodeResponse]
+        AsyncHttpResponse[ApidataUserNodeResponse]
             Response object containing the User node.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1632,9 +1558,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    UserNodeResponse,
+                    ApidataUserNodeResponse,
                     parse_obj_as(
-                        type_=UserNodeResponse,  # type: ignore
+                        type_=ApidataUserNodeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1643,9 +1569,9 @@ class AsyncRawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1654,25 +1580,21 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get_threads(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[typing.List[Thread]]:
+    ) -> AsyncHttpResponse[typing.List[ApidataThread]]:
         """
         Returns all threads for a user.
 
@@ -1686,7 +1608,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[Thread]]
+        AsyncHttpResponse[typing.List[ApidataThread]]
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1697,9 +1619,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[Thread],
+                    typing.List[ApidataThread],
                     parse_obj_as(
-                        type_=typing.List[Thread],  # type: ignore
+                        type_=typing.List[ApidataThread],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1708,25 +1630,21 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def warm(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
         """
         Hints Zep to warm a user's graph for low-latency search
 
@@ -1740,7 +1658,7 @@ class AsyncRawUserClient:
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
+        AsyncHttpResponse[ApidataSuccessResponse]
             Warm hint accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1751,9 +1669,9 @@ class AsyncRawUserClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    ApidataSuccessResponse,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=ApidataSuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1762,9 +1680,9 @@ class AsyncRawUserClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1773,18 +1691,14 @@ class AsyncRawUserClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        ApidataApiError,
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=ApidataApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

@@ -2,132 +2,140 @@
 
 # isort: skip_file
 
-from .add_thread_messages_request import AddThreadMessagesRequest
-from .add_thread_messages_response import AddThreadMessagesResponse
-from .add_triple_response import AddTripleResponse
-from .api_error import ApiError
-from .clone_graph_response import CloneGraphResponse
-from .cluster_detect_config import ClusterDetectConfig
-from .co_occurrence_detect_config import CoOccurrenceDetectConfig
-from .community_node import CommunityNode
-from .comparison_operator import ComparisonOperator
-from .context_template_response import ContextTemplateResponse
-from .custom_instruction import CustomInstruction
-from .date_filter import DateFilter
-from .detect_config import DetectConfig
-from .detect_patterns_response import DetectPatternsResponse
-from .edge_type import EdgeType
-from .entity_edge import EntityEdge
-from .entity_edge_source_target import EntityEdgeSourceTarget
-from .entity_node import EntityNode
-from .entity_property import EntityProperty
-from .entity_property_type import EntityPropertyType
-from .entity_type import EntityType
-from .entity_type_response import EntityTypeResponse
-from .episode import Episode
-from .episode_data import EpisodeData
-from .episode_mentions import EpisodeMentions
-from .episode_response import EpisodeResponse
-from .get_task_response import GetTaskResponse
-from .graph import Graph
-from .graph_communities_request import GraphCommunitiesRequest
-from .graph_data_type import GraphDataType
-from .graph_edges_request import GraphEdgesRequest
-from .graph_list_response import GraphListResponse
-from .graph_nodes_request import GraphNodesRequest
-from .graph_search_results import GraphSearchResults
-from .graph_search_scope import GraphSearchScope
-from .hub_detect_config import HubDetectConfig
-from .list_context_templates_response import ListContextTemplatesResponse
-from .list_custom_instructions_response import ListCustomInstructionsResponse
-from .list_user_instructions_response import ListUserInstructionsResponse
-from .message import Message
-from .message_list_response import MessageListResponse
-from .path_detect_config import PathDetectConfig
-from .pattern_metadata import PatternMetadata
-from .pattern_result import PatternResult
-from .pattern_seeds import PatternSeeds
-from .project_info import ProjectInfo
-from .project_info_response import ProjectInfoResponse
-from .property_filter import PropertyFilter
-from .recency_weight import RecencyWeight
-from .relationship_detect_config import RelationshipDetectConfig
-from .reranker import Reranker
-from .role_type import RoleType
-from .search_filters import SearchFilters
-from .success_response import SuccessResponse
-from .task_error_response import TaskErrorResponse
-from .task_progress import TaskProgress
-from .thread import Thread
-from .thread_context_response import ThreadContextResponse
-from .thread_list_response import ThreadListResponse
-from .user import User
-from .user_instruction import UserInstruction
-from .user_list_response import UserListResponse
-from .user_node_response import UserNodeResponse
+from .apidata_add_thread_messages_request import ApidataAddThreadMessagesRequest
+from .apidata_add_thread_messages_response import ApidataAddThreadMessagesResponse
+from .apidata_api_error import ApidataApiError
+from .apidata_clone_graph_response import ApidataCloneGraphResponse
+from .apidata_cluster_detect_config import ApidataClusterDetectConfig
+from .apidata_co_occurrence_detect_config import ApidataCoOccurrenceDetectConfig
+from .apidata_context_template_response import ApidataContextTemplateResponse
+from .apidata_custom_instruction import ApidataCustomInstruction
+from .apidata_detect_config import ApidataDetectConfig
+from .apidata_detect_patterns_response import ApidataDetectPatternsResponse
+from .apidata_edge_type import ApidataEdgeType
+from .apidata_entity_edge_source_target import ApidataEntityEdgeSourceTarget
+from .apidata_entity_property import ApidataEntityProperty
+from .apidata_entity_type import ApidataEntityType
+from .apidata_entity_type_response import ApidataEntityTypeResponse
+from .apidata_episode_data import ApidataEpisodeData
+from .apidata_episode_mentions import ApidataEpisodeMentions
+from .apidata_get_task_response import ApidataGetTaskResponse
+from .apidata_graph import ApidataGraph
+from .apidata_graph_communities_request import ApidataGraphCommunitiesRequest
+from .apidata_graph_edges_request import ApidataGraphEdgesRequest
+from .apidata_graph_episode import ApidataGraphEpisode
+from .apidata_graph_episode_response import ApidataGraphEpisodeResponse
+from .apidata_graph_list_response import ApidataGraphListResponse
+from .apidata_graph_nodes_request import ApidataGraphNodesRequest
+from .apidata_graph_search_results import ApidataGraphSearchResults
+from .apidata_graph_themes_request import ApidataGraphThemesRequest
+from .apidata_hub_detect_config import ApidataHubDetectConfig
+from .apidata_list_context_templates_response import ApidataListContextTemplatesResponse
+from .apidata_list_custom_instructions_response import ApidataListCustomInstructionsResponse
+from .apidata_list_user_instructions_response import ApidataListUserInstructionsResponse
+from .apidata_path_detect_config import ApidataPathDetectConfig
+from .apidata_pattern_metadata import ApidataPatternMetadata
+from .apidata_pattern_result import ApidataPatternResult
+from .apidata_pattern_seeds import ApidataPatternSeeds
+from .apidata_project_info import ApidataProjectInfo
+from .apidata_project_info_response import ApidataProjectInfoResponse
+from .apidata_recency_weight import ApidataRecencyWeight
+from .apidata_relationship_detect_config import ApidataRelationshipDetectConfig
+from .apidata_role_type import ApidataRoleType
+from .apidata_success_response import ApidataSuccessResponse
+from .apidata_task_error_response import ApidataTaskErrorResponse
+from .apidata_task_progress import ApidataTaskProgress
+from .apidata_thread import ApidataThread
+from .apidata_thread_context_response import ApidataThreadContextResponse
+from .apidata_thread_list_response import ApidataThreadListResponse
+from .apidata_thread_message import ApidataThreadMessage
+from .apidata_thread_message_list_response import ApidataThreadMessageListResponse
+from .apidata_user import ApidataUser
+from .apidata_user_instruction import ApidataUserInstruction
+from .apidata_user_list_response import ApidataUserListResponse
+from .apidata_user_node_response import ApidataUserNodeResponse
+from .graphiti_add_triple_response import GraphitiAddTripleResponse
+from .graphiti_community_node import GraphitiCommunityNode
+from .graphiti_comparison_operator import GraphitiComparisonOperator
+from .graphiti_date_filter import GraphitiDateFilter
+from .graphiti_entity_edge import GraphitiEntityEdge
+from .graphiti_entity_node import GraphitiEntityNode
+from .graphiti_graph_search_scope import GraphitiGraphSearchScope
+from .graphiti_metadata_filter_entry import GraphitiMetadataFilterEntry
+from .graphiti_metadata_filter_group import GraphitiMetadataFilterGroup
+from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
+from .graphiti_property_filter import GraphitiPropertyFilter
+from .graphiti_reranker import GraphitiReranker
+from .graphiti_search_filters import GraphitiSearchFilters
+from .models_entity_property_type import ModelsEntityPropertyType
+from .models_graph_data_type import ModelsGraphDataType
 
 __all__ = [
-    "AddThreadMessagesRequest",
-    "AddThreadMessagesResponse",
-    "AddTripleResponse",
-    "ApiError",
-    "CloneGraphResponse",
-    "ClusterDetectConfig",
-    "CoOccurrenceDetectConfig",
-    "CommunityNode",
-    "ComparisonOperator",
-    "ContextTemplateResponse",
-    "CustomInstruction",
-    "DateFilter",
-    "DetectConfig",
-    "DetectPatternsResponse",
-    "EdgeType",
-    "EntityEdge",
-    "EntityEdgeSourceTarget",
-    "EntityNode",
-    "EntityProperty",
-    "EntityPropertyType",
-    "EntityType",
-    "EntityTypeResponse",
-    "Episode",
-    "EpisodeData",
-    "EpisodeMentions",
-    "EpisodeResponse",
-    "GetTaskResponse",
-    "Graph",
-    "GraphCommunitiesRequest",
-    "GraphDataType",
-    "GraphEdgesRequest",
-    "GraphListResponse",
-    "GraphNodesRequest",
-    "GraphSearchResults",
-    "GraphSearchScope",
-    "HubDetectConfig",
-    "ListContextTemplatesResponse",
-    "ListCustomInstructionsResponse",
-    "ListUserInstructionsResponse",
-    "Message",
-    "MessageListResponse",
-    "PathDetectConfig",
-    "PatternMetadata",
-    "PatternResult",
-    "PatternSeeds",
-    "ProjectInfo",
-    "ProjectInfoResponse",
-    "PropertyFilter",
-    "RecencyWeight",
-    "RelationshipDetectConfig",
-    "Reranker",
-    "RoleType",
-    "SearchFilters",
-    "SuccessResponse",
-    "TaskErrorResponse",
-    "TaskProgress",
-    "Thread",
-    "ThreadContextResponse",
-    "ThreadListResponse",
-    "User",
-    "UserInstruction",
-    "UserListResponse",
-    "UserNodeResponse",
+    "ApidataAddThreadMessagesRequest",
+    "ApidataAddThreadMessagesResponse",
+    "ApidataApiError",
+    "ApidataCloneGraphResponse",
+    "ApidataClusterDetectConfig",
+    "ApidataCoOccurrenceDetectConfig",
+    "ApidataContextTemplateResponse",
+    "ApidataCustomInstruction",
+    "ApidataDetectConfig",
+    "ApidataDetectPatternsResponse",
+    "ApidataEdgeType",
+    "ApidataEntityEdgeSourceTarget",
+    "ApidataEntityProperty",
+    "ApidataEntityType",
+    "ApidataEntityTypeResponse",
+    "ApidataEpisodeData",
+    "ApidataEpisodeMentions",
+    "ApidataGetTaskResponse",
+    "ApidataGraph",
+    "ApidataGraphCommunitiesRequest",
+    "ApidataGraphEdgesRequest",
+    "ApidataGraphEpisode",
+    "ApidataGraphEpisodeResponse",
+    "ApidataGraphListResponse",
+    "ApidataGraphNodesRequest",
+    "ApidataGraphSearchResults",
+    "ApidataGraphThemesRequest",
+    "ApidataHubDetectConfig",
+    "ApidataListContextTemplatesResponse",
+    "ApidataListCustomInstructionsResponse",
+    "ApidataListUserInstructionsResponse",
+    "ApidataPathDetectConfig",
+    "ApidataPatternMetadata",
+    "ApidataPatternResult",
+    "ApidataPatternSeeds",
+    "ApidataProjectInfo",
+    "ApidataProjectInfoResponse",
+    "ApidataRecencyWeight",
+    "ApidataRelationshipDetectConfig",
+    "ApidataRoleType",
+    "ApidataSuccessResponse",
+    "ApidataTaskErrorResponse",
+    "ApidataTaskProgress",
+    "ApidataThread",
+    "ApidataThreadContextResponse",
+    "ApidataThreadListResponse",
+    "ApidataThreadMessage",
+    "ApidataThreadMessageListResponse",
+    "ApidataUser",
+    "ApidataUserInstruction",
+    "ApidataUserListResponse",
+    "ApidataUserNodeResponse",
+    "GraphitiAddTripleResponse",
+    "GraphitiCommunityNode",
+    "GraphitiComparisonOperator",
+    "GraphitiDateFilter",
+    "GraphitiEntityEdge",
+    "GraphitiEntityNode",
+    "GraphitiGraphSearchScope",
+    "GraphitiMetadataFilterEntry",
+    "GraphitiMetadataFilterGroup",
+    "GraphitiMetadataFilterGroupType",
+    "GraphitiPropertyFilter",
+    "GraphitiReranker",
+    "GraphitiSearchFilters",
+    "ModelsEntityPropertyType",
+    "ModelsGraphDataType",
 ]
