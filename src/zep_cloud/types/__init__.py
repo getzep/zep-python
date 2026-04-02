@@ -6,7 +6,6 @@ from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
-from .apidata_graph_themes_request import ApidataGraphThemesRequest
 from .clone_graph_response import CloneGraphResponse
 from .cluster_detect_config import ClusterDetectConfig
 from .co_occurrence_detect_config import CoOccurrenceDetectConfig
@@ -38,8 +37,7 @@ from .graph_list_response import GraphListResponse
 from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
-from .graphiti_metadata_filter_entry import GraphitiMetadataFilterEntry
-from .graphiti_metadata_filter_group import GraphitiMetadataFilterGroup
+from .graph_themes_request import GraphThemesRequest
 from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
 from .hub_detect_config import HubDetectConfig
 from .list_context_templates_response import ListContextTemplatesResponse
@@ -47,6 +45,8 @@ from .list_custom_instructions_response import ListCustomInstructionsResponse
 from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
+from .metadata_filter_entry import MetadataFilterEntry
+from .metadata_filter_group import MetadataFilterGroup
 from .path_detect_config import PathDetectConfig
 from .pattern_metadata import PatternMetadata
 from .pattern_result import PatternResult
@@ -75,7 +75,6 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
-    "ApidataGraphThemesRequest",
     "CloneGraphResponse",
     "ClusterDetectConfig",
     "CoOccurrenceDetectConfig",
@@ -107,8 +106,7 @@ __all__ = [
     "GraphNodesRequest",
     "GraphSearchResults",
     "GraphSearchScope",
-    "GraphitiMetadataFilterEntry",
-    "GraphitiMetadataFilterGroup",
+    "GraphThemesRequest",
     "GraphitiMetadataFilterGroupType",
     "HubDetectConfig",
     "ListContextTemplatesResponse",
@@ -116,6 +114,8 @@ __all__ = [
     "ListUserInstructionsResponse",
     "Message",
     "MessageListResponse",
+    "MetadataFilterEntry",
+    "MetadataFilterGroup",
     "PathDetectConfig",
     "PatternMetadata",
     "PatternResult",

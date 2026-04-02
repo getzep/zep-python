@@ -9,8 +9,8 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update
 from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
 
 
-class GraphitiMetadataFilterGroup(UniversalBaseModel):
-    filters: typing.List["GraphitiMetadataFilterEntry"] = pydantic.Field()
+class MetadataFilterGroup(UniversalBaseModel):
+    filters: typing.List["MetadataFilterEntry"] = pydantic.Field()
     """
     Leaf filters and/or nested groups
     """
@@ -30,6 +30,6 @@ class GraphitiMetadataFilterGroup(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-from .graphiti_metadata_filter_entry import GraphitiMetadataFilterEntry  # noqa: E402, F401, I001
+from .metadata_filter_entry import MetadataFilterEntry  # noqa: E402, F401, I001
 
-update_forward_refs(GraphitiMetadataFilterGroup)
+update_forward_refs(MetadataFilterGroup)

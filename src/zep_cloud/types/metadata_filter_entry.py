@@ -9,13 +9,13 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update
 from .comparison_operator import ComparisonOperator
 
 
-class GraphitiMetadataFilterEntry(UniversalBaseModel):
+class MetadataFilterEntry(UniversalBaseModel):
     comparison_operator: ComparisonOperator = pydantic.Field()
     """
     Comparison operator: =, <>, >, <, >=, <=, IS NULL, IS NOT NULL, IN, CONTAINS
     """
 
-    group: typing.Optional["GraphitiMetadataFilterGroup"] = pydantic.Field(default=None)
+    group: typing.Optional["MetadataFilterGroup"] = pydantic.Field(default=None)
     """
     Nested group (set if this entry is a sub-expression)
     """
@@ -40,6 +40,6 @@ class GraphitiMetadataFilterEntry(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-from .graphiti_metadata_filter_group import GraphitiMetadataFilterGroup  # noqa: E402, F401, I001
+from .metadata_filter_group import MetadataFilterGroup  # noqa: E402, F401, I001
 
-update_forward_refs(GraphitiMetadataFilterEntry)
+update_forward_refs(MetadataFilterEntry)
