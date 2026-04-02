@@ -22,8 +22,6 @@ class Zep(BaseClient):
         env_api_url = os.getenv("ZEP_API_URL")
         if env_api_url:
             base_url = f"{env_api_url}/api/v2"
-        if api_key is None:
-            raise ValueError("api_key is required. Set ZEP_API_KEY env var or pass api_key.")
         super().__init__(
             base_url=base_url,
             environment=environment,
@@ -49,8 +47,6 @@ class AsyncZep(AsyncBaseClient):
         env_api_url = os.getenv("ZEP_API_URL")
         if env_api_url:
             base_url = f"{env_api_url}/api/v2"
-        if api_key is None:
-            raise ValueError("api_key is required. Set ZEP_API_KEY env var or pass api_key.")
         super().__init__(
             base_url=base_url,
             environment=environment,

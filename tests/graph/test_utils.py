@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 
 import pytest
 
-from zep_cloud import GraphitiEntityEdge as EntityEdge, GraphitiEntityNode as EntityNode, ApidataGraphEpisode as Episode
+from zep_cloud import EntityEdge, EntityNode, Episode
 from zep_cloud.graph.utils import compose_context_string, format_edge_date_range
 
 

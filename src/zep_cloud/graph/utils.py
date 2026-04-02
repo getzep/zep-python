@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from dateutil import parser as dateutil_parser
-from zep_cloud import GraphitiEntityEdge as EntityEdge, GraphitiEntityNode as EntityNode, ApidataGraphEpisode as Episode
+from zep_cloud import EntityEdge, EntityNode, Episode
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
