@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError
+from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.jsonable_encoder import jsonable_encoder
@@ -13,15 +13,15 @@ from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.apidata_add_thread_messages_response import ApidataAddThreadMessagesResponse
-from ..types.apidata_api_error import ApidataApiError
-from ..types.apidata_role_type import ApidataRoleType
-from ..types.apidata_success_response import ApidataSuccessResponse
-from ..types.apidata_thread import ApidataThread
-from ..types.apidata_thread_context_response import ApidataThreadContextResponse
-from ..types.apidata_thread_list_response import ApidataThreadListResponse
-from ..types.apidata_thread_message import ApidataThreadMessage
-from ..types.apidata_thread_message_list_response import ApidataThreadMessageListResponse
+from ..types.add_thread_messages_response import AddThreadMessagesResponse
+from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.message import Message
+from ..types.message_list_response import MessageListResponse
+from ..types.role_type import RoleType
+from ..types.success_response import SuccessResponse
+from ..types.thread import Thread
+from ..types.thread_context_response import ThreadContextResponse
+from ..types.thread_list_response import ThreadListResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -39,7 +39,7 @@ class RawThreadClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataThreadListResponse]:
+    ) -> HttpResponse[ThreadListResponse]:
         """
         Returns all threads.
 
@@ -62,7 +62,7 @@ class RawThreadClient:
 
         Returns
         -------
-        HttpResponse[ApidataThreadListResponse]
+        HttpResponse[ThreadListResponse]
             List of threads
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -79,9 +79,9 @@ class RawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadListResponse,
+                    ThreadListResponse,
                     parse_obj_as(
-                        type_=ApidataThreadListResponse,  # type: ignore
+                        type_=ThreadListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -90,9 +90,9 @@ class RawThreadClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -101,21 +101,25 @@ class RawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def create(
         self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataThread]:
+    ) -> HttpResponse[Thread]:
         """
         Start a new thread.
 
@@ -132,7 +136,7 @@ class RawThreadClient:
 
         Returns
         -------
-        HttpResponse[ApidataThread]
+        HttpResponse[Thread]
             The thread object.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -151,9 +155,9 @@ class RawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThread,
+                    Thread,
                     parse_obj_as(
-                        type_=ApidataThread,  # type: ignore
+                        type_=Thread,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -162,9 +166,9 @@ class RawThreadClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -173,21 +177,25 @@ class RawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def delete(
         self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataSuccessResponse]:
+    ) -> HttpResponse[SuccessResponse]:
         """
         Deletes a thread.
 
@@ -201,7 +209,7 @@ class RawThreadClient:
 
         Returns
         -------
-        HttpResponse[ApidataSuccessResponse]
+        HttpResponse[SuccessResponse]
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -212,9 +220,9 @@ class RawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -223,9 +231,9 @@ class RawThreadClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -234,17 +242,21 @@ class RawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def get_user_context(
         self,
@@ -252,7 +264,7 @@ class RawThreadClient:
         *,
         template_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataThreadContextResponse]:
+    ) -> HttpResponse[ThreadContextResponse]:
         """
         Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 
@@ -269,7 +281,7 @@ class RawThreadClient:
 
         Returns
         -------
-        HttpResponse[ApidataThreadContextResponse]
+        HttpResponse[ThreadContextResponse]
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -283,9 +295,9 @@ class RawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadContextResponse,
+                    ThreadContextResponse,
                     parse_obj_as(
-                        type_=ApidataThreadContextResponse,  # type: ignore
+                        type_=ThreadContextResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -294,9 +306,9 @@ class RawThreadClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -305,17 +317,21 @@ class RawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def get(
         self,
@@ -325,7 +341,7 @@ class RawThreadClient:
         cursor: typing.Optional[int] = None,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataThreadMessageListResponse]:
+    ) -> HttpResponse[MessageListResponse]:
         """
         Returns messages for a thread.
 
@@ -348,7 +364,7 @@ class RawThreadClient:
 
         Returns
         -------
-        HttpResponse[ApidataThreadMessageListResponse]
+        HttpResponse[MessageListResponse]
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -364,9 +380,9 @@ class RawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadMessageListResponse,
+                    MessageListResponse,
                     parse_obj_as(
-                        type_=ApidataThreadMessageListResponse,  # type: ignore
+                        type_=MessageListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -375,9 +391,9 @@ class RawThreadClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -386,27 +402,31 @@ class RawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def add_messages(
         self,
         thread_id: str,
         *,
-        messages: typing.Sequence[ApidataThreadMessage],
-        ignore_roles: typing.Optional[typing.Sequence[ApidataRoleType]] = OMIT,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataAddThreadMessagesResponse]:
+    ) -> HttpResponse[AddThreadMessagesResponse]:
         """
         Add messages to a thread.
 
@@ -415,10 +435,10 @@ class RawThreadClient:
         thread_id : str
             The ID of the thread to which messages should be added.
 
-        messages : typing.Sequence[ApidataThreadMessage]
+        messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
-        ignore_roles : typing.Optional[typing.Sequence[ApidataRoleType]]
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
             Optional list of role types to ignore when adding messages to graph memory.
             The message itself will still be added, retained and used as context for messages
             that are added to a user's graph.
@@ -431,7 +451,7 @@ class RawThreadClient:
 
         Returns
         -------
-        HttpResponse[ApidataAddThreadMessagesResponse]
+        HttpResponse[AddThreadMessagesResponse]
             An object, optionally containing user context retrieved for the last thread message
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -440,7 +460,7 @@ class RawThreadClient:
             json={
                 "ignore_roles": ignore_roles,
                 "messages": convert_and_respect_annotation_metadata(
-                    object_=messages, annotation=typing.Sequence[ApidataThreadMessage], direction="write"
+                    object_=messages, annotation=typing.Sequence[Message], direction="write"
                 ),
                 "return_context": return_context,
             },
@@ -453,9 +473,9 @@ class RawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataAddThreadMessagesResponse,
+                    AddThreadMessagesResponse,
                     parse_obj_as(
-                        type_=ApidataAddThreadMessagesResponse,  # type: ignore
+                        type_=AddThreadMessagesResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -464,27 +484,31 @@ class RawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def add_messages_batch(
         self,
         thread_id: str,
         *,
-        messages: typing.Sequence[ApidataThreadMessage],
-        ignore_roles: typing.Optional[typing.Sequence[ApidataRoleType]] = OMIT,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataAddThreadMessagesResponse]:
+    ) -> HttpResponse[AddThreadMessagesResponse]:
         """
         Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
 
@@ -493,10 +517,10 @@ class RawThreadClient:
         thread_id : str
             The ID of the thread to which messages should be added.
 
-        messages : typing.Sequence[ApidataThreadMessage]
+        messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
-        ignore_roles : typing.Optional[typing.Sequence[ApidataRoleType]]
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
             Optional list of role types to ignore when adding messages to graph memory.
             The message itself will still be added, retained and used as context for messages
             that are added to a user's graph.
@@ -509,7 +533,7 @@ class RawThreadClient:
 
         Returns
         -------
-        HttpResponse[ApidataAddThreadMessagesResponse]
+        HttpResponse[AddThreadMessagesResponse]
             An object, optionally containing user context retrieved for the last thread message
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -518,7 +542,7 @@ class RawThreadClient:
             json={
                 "ignore_roles": ignore_roles,
                 "messages": convert_and_respect_annotation_metadata(
-                    object_=messages, annotation=typing.Sequence[ApidataThreadMessage], direction="write"
+                    object_=messages, annotation=typing.Sequence[Message], direction="write"
                 ),
                 "return_context": return_context,
             },
@@ -531,9 +555,9 @@ class RawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataAddThreadMessagesResponse,
+                    AddThreadMessagesResponse,
                     parse_obj_as(
-                        type_=ApidataAddThreadMessagesResponse,  # type: ignore
+                        type_=AddThreadMessagesResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -542,17 +566,21 @@ class RawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
 
 class AsyncRawThreadClient:
@@ -567,7 +595,7 @@ class AsyncRawThreadClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataThreadListResponse]:
+    ) -> AsyncHttpResponse[ThreadListResponse]:
         """
         Returns all threads.
 
@@ -590,7 +618,7 @@ class AsyncRawThreadClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataThreadListResponse]
+        AsyncHttpResponse[ThreadListResponse]
             List of threads
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -607,9 +635,9 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadListResponse,
+                    ThreadListResponse,
                     parse_obj_as(
-                        type_=ApidataThreadListResponse,  # type: ignore
+                        type_=ThreadListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -618,9 +646,9 @@ class AsyncRawThreadClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -629,21 +657,25 @@ class AsyncRawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def create(
         self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataThread]:
+    ) -> AsyncHttpResponse[Thread]:
         """
         Start a new thread.
 
@@ -660,7 +692,7 @@ class AsyncRawThreadClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataThread]
+        AsyncHttpResponse[Thread]
             The thread object.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -679,9 +711,9 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThread,
+                    Thread,
                     parse_obj_as(
-                        type_=ApidataThread,  # type: ignore
+                        type_=Thread,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -690,9 +722,9 @@ class AsyncRawThreadClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -701,21 +733,25 @@ class AsyncRawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def delete(
         self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
+    ) -> AsyncHttpResponse[SuccessResponse]:
         """
         Deletes a thread.
 
@@ -729,7 +765,7 @@ class AsyncRawThreadClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataSuccessResponse]
+        AsyncHttpResponse[SuccessResponse]
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -740,9 +776,9 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -751,9 +787,9 @@ class AsyncRawThreadClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -762,17 +798,21 @@ class AsyncRawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get_user_context(
         self,
@@ -780,7 +820,7 @@ class AsyncRawThreadClient:
         *,
         template_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataThreadContextResponse]:
+    ) -> AsyncHttpResponse[ThreadContextResponse]:
         """
         Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
 
@@ -797,7 +837,7 @@ class AsyncRawThreadClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataThreadContextResponse]
+        AsyncHttpResponse[ThreadContextResponse]
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -811,9 +851,9 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadContextResponse,
+                    ThreadContextResponse,
                     parse_obj_as(
-                        type_=ApidataThreadContextResponse,  # type: ignore
+                        type_=ThreadContextResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -822,9 +862,9 @@ class AsyncRawThreadClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -833,17 +873,21 @@ class AsyncRawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get(
         self,
@@ -853,7 +897,7 @@ class AsyncRawThreadClient:
         cursor: typing.Optional[int] = None,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataThreadMessageListResponse]:
+    ) -> AsyncHttpResponse[MessageListResponse]:
         """
         Returns messages for a thread.
 
@@ -876,7 +920,7 @@ class AsyncRawThreadClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataThreadMessageListResponse]
+        AsyncHttpResponse[MessageListResponse]
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -892,9 +936,9 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadMessageListResponse,
+                    MessageListResponse,
                     parse_obj_as(
-                        type_=ApidataThreadMessageListResponse,  # type: ignore
+                        type_=MessageListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -903,9 +947,9 @@ class AsyncRawThreadClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -914,27 +958,31 @@ class AsyncRawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def add_messages(
         self,
         thread_id: str,
         *,
-        messages: typing.Sequence[ApidataThreadMessage],
-        ignore_roles: typing.Optional[typing.Sequence[ApidataRoleType]] = OMIT,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataAddThreadMessagesResponse]:
+    ) -> AsyncHttpResponse[AddThreadMessagesResponse]:
         """
         Add messages to a thread.
 
@@ -943,10 +991,10 @@ class AsyncRawThreadClient:
         thread_id : str
             The ID of the thread to which messages should be added.
 
-        messages : typing.Sequence[ApidataThreadMessage]
+        messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
-        ignore_roles : typing.Optional[typing.Sequence[ApidataRoleType]]
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
             Optional list of role types to ignore when adding messages to graph memory.
             The message itself will still be added, retained and used as context for messages
             that are added to a user's graph.
@@ -959,7 +1007,7 @@ class AsyncRawThreadClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataAddThreadMessagesResponse]
+        AsyncHttpResponse[AddThreadMessagesResponse]
             An object, optionally containing user context retrieved for the last thread message
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -968,7 +1016,7 @@ class AsyncRawThreadClient:
             json={
                 "ignore_roles": ignore_roles,
                 "messages": convert_and_respect_annotation_metadata(
-                    object_=messages, annotation=typing.Sequence[ApidataThreadMessage], direction="write"
+                    object_=messages, annotation=typing.Sequence[Message], direction="write"
                 ),
                 "return_context": return_context,
             },
@@ -981,9 +1029,9 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataAddThreadMessagesResponse,
+                    AddThreadMessagesResponse,
                     parse_obj_as(
-                        type_=ApidataAddThreadMessagesResponse,  # type: ignore
+                        type_=AddThreadMessagesResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -992,27 +1040,31 @@ class AsyncRawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def add_messages_batch(
         self,
         thread_id: str,
         *,
-        messages: typing.Sequence[ApidataThreadMessage],
-        ignore_roles: typing.Optional[typing.Sequence[ApidataRoleType]] = OMIT,
+        messages: typing.Sequence[Message],
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataAddThreadMessagesResponse]:
+    ) -> AsyncHttpResponse[AddThreadMessagesResponse]:
         """
         Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
 
@@ -1021,10 +1073,10 @@ class AsyncRawThreadClient:
         thread_id : str
             The ID of the thread to which messages should be added.
 
-        messages : typing.Sequence[ApidataThreadMessage]
+        messages : typing.Sequence[Message]
             A list of message objects, where each message contains a role and content.
 
-        ignore_roles : typing.Optional[typing.Sequence[ApidataRoleType]]
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
             Optional list of role types to ignore when adding messages to graph memory.
             The message itself will still be added, retained and used as context for messages
             that are added to a user's graph.
@@ -1037,7 +1089,7 @@ class AsyncRawThreadClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataAddThreadMessagesResponse]
+        AsyncHttpResponse[AddThreadMessagesResponse]
             An object, optionally containing user context retrieved for the last thread message
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1046,7 +1098,7 @@ class AsyncRawThreadClient:
             json={
                 "ignore_roles": ignore_roles,
                 "messages": convert_and_respect_annotation_metadata(
-                    object_=messages, annotation=typing.Sequence[ApidataThreadMessage], direction="write"
+                    object_=messages, annotation=typing.Sequence[Message], direction="write"
                 ),
                 "return_context": return_context,
             },
@@ -1059,9 +1111,9 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataAddThreadMessagesResponse,
+                    AddThreadMessagesResponse,
                     parse_obj_as(
-                        type_=ApidataAddThreadMessagesResponse,  # type: ignore
+                        type_=AddThreadMessagesResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1070,14 +1122,18 @@ class AsyncRawThreadClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )

@@ -4,7 +4,7 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.apidata_thread_message import ApidataThreadMessage
+from ...types.message import Message
 from .raw_client import AsyncRawMessageClient, RawMessageClient
 
 # this is used as the default value for optional parameters
@@ -32,7 +32,7 @@ class MessageClient:
         *,
         metadata: typing.Dict[str, typing.Optional[typing.Any]],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadMessage:
+    ) -> Message:
         """
         Updates a message.
 
@@ -48,7 +48,7 @@ class MessageClient:
 
         Returns
         -------
-        ApidataThreadMessage
+        Message
             The updated message.
 
         Examples
@@ -88,7 +88,7 @@ class AsyncMessageClient:
         *,
         metadata: typing.Dict[str, typing.Optional[typing.Any]],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataThreadMessage:
+    ) -> Message:
         """
         Updates a message.
 
@@ -104,7 +104,7 @@ class AsyncMessageClient:
 
         Returns
         -------
-        ApidataThreadMessage
+        Message
             The updated message.
 
         Examples

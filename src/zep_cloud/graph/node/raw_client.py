@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ...core.api_error import ApiError
+from ...core.api_error import ApiError as core_api_error_ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
 from ...core.jsonable_encoder import jsonable_encoder
@@ -12,11 +12,11 @@ from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
-from ...types.apidata_api_error import ApidataApiError
-from ...types.apidata_graph_episode_response import ApidataGraphEpisodeResponse
-from ...types.apidata_success_response import ApidataSuccessResponse
-from ...types.graphiti_entity_edge import GraphitiEntityEdge
-from ...types.graphiti_entity_node import GraphitiEntityNode
+from ...types.api_error import ApiError as types_api_error_ApiError
+from ...types.entity_edge import EntityEdge
+from ...types.entity_node import EntityNode
+from ...types.episode_response import EpisodeResponse
+from ...types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -33,7 +33,7 @@ class RawNodeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiEntityNode]]:
+    ) -> HttpResponse[typing.List[EntityNode]]:
         """
         Returns all nodes for a graph.
 
@@ -53,7 +53,7 @@ class RawNodeClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiEntityNode]]
+        HttpResponse[typing.List[EntityNode]]
             Nodes
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -72,9 +72,9 @@ class RawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiEntityNode],
+                    typing.List[EntityNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiEntityNode],  # type: ignore
+                        type_=typing.List[EntityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -83,9 +83,9 @@ class RawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -94,17 +94,21 @@ class RawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def get_by_user_id(
         self,
@@ -113,7 +117,7 @@ class RawNodeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiEntityNode]]:
+    ) -> HttpResponse[typing.List[EntityNode]]:
         """
         Returns all nodes for a user
 
@@ -133,7 +137,7 @@ class RawNodeClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiEntityNode]]
+        HttpResponse[typing.List[EntityNode]]
             Nodes
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -152,9 +156,9 @@ class RawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiEntityNode],
+                    typing.List[EntityNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiEntityNode],  # type: ignore
+                        type_=typing.List[EntityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -163,9 +167,9 @@ class RawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -174,21 +178,25 @@ class RawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def get_edges(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[typing.List[GraphitiEntityEdge]]:
+    ) -> HttpResponse[typing.List[EntityEdge]]:
         """
         Returns all edges for a node
 
@@ -202,7 +210,7 @@ class RawNodeClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiEntityEdge]]
+        HttpResponse[typing.List[EntityEdge]]
             Edges
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -213,9 +221,9 @@ class RawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiEntityEdge],
+                    typing.List[EntityEdge],
                     parse_obj_as(
-                        type_=typing.List[GraphitiEntityEdge],  # type: ignore
+                        type_=typing.List[EntityEdge],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -224,9 +232,9 @@ class RawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -235,21 +243,25 @@ class RawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def get_episodes(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataGraphEpisodeResponse]:
+    ) -> HttpResponse[EpisodeResponse]:
         """
         Returns all episodes that mentioned a given node
 
@@ -263,7 +275,7 @@ class RawNodeClient:
 
         Returns
         -------
-        HttpResponse[ApidataGraphEpisodeResponse]
+        HttpResponse[EpisodeResponse]
             Episodes
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -274,9 +286,9 @@ class RawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphEpisodeResponse,
+                    EpisodeResponse,
                     parse_obj_as(
-                        type_=ApidataGraphEpisodeResponse,  # type: ignore
+                        type_=EpisodeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -285,9 +297,9 @@ class RawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -296,21 +308,23 @@ class RawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
-    def get(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[GraphitiEntityNode]:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[EntityNode]:
         """
         Returns a specific node by its UUID.
 
@@ -324,7 +338,7 @@ class RawNodeClient:
 
         Returns
         -------
-        HttpResponse[GraphitiEntityNode]
+        HttpResponse[EntityNode]
             Node
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -335,9 +349,9 @@ class RawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiEntityNode,
+                    EntityNode,
                     parse_obj_as(
-                        type_=GraphitiEntityNode,  # type: ignore
+                        type_=EntityNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -346,9 +360,9 @@ class RawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -357,9 +371,9 @@ class RawNodeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -368,21 +382,25 @@ class RawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def delete(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataSuccessResponse]:
+    ) -> HttpResponse[SuccessResponse]:
         """
         Deletes a node by UUID.
 
@@ -396,7 +414,7 @@ class RawNodeClient:
 
         Returns
         -------
-        HttpResponse[ApidataSuccessResponse]
+        HttpResponse[SuccessResponse]
             Node deleted
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -407,9 +425,9 @@ class RawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -418,9 +436,9 @@ class RawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -429,9 +447,9 @@ class RawNodeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -440,17 +458,21 @@ class RawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def update(
         self,
@@ -461,7 +483,7 @@ class RawNodeClient:
         name: typing.Optional[str] = OMIT,
         summary: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[GraphitiEntityNode]:
+    ) -> HttpResponse[EntityNode]:
         """
         Updates an entity node by UUID.
 
@@ -487,7 +509,7 @@ class RawNodeClient:
 
         Returns
         -------
-        HttpResponse[GraphitiEntityNode]
+        HttpResponse[EntityNode]
             Updated node
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -508,9 +530,9 @@ class RawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiEntityNode,
+                    EntityNode,
                     parse_obj_as(
-                        type_=GraphitiEntityNode,  # type: ignore
+                        type_=EntityNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -519,9 +541,9 @@ class RawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -530,9 +552,9 @@ class RawNodeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -541,17 +563,21 @@ class RawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
 
 class AsyncRawNodeClient:
@@ -565,7 +591,7 @@ class AsyncRawNodeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiEntityNode]]:
+    ) -> AsyncHttpResponse[typing.List[EntityNode]]:
         """
         Returns all nodes for a graph.
 
@@ -585,7 +611,7 @@ class AsyncRawNodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiEntityNode]]
+        AsyncHttpResponse[typing.List[EntityNode]]
             Nodes
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -604,9 +630,9 @@ class AsyncRawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiEntityNode],
+                    typing.List[EntityNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiEntityNode],  # type: ignore
+                        type_=typing.List[EntityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -615,9 +641,9 @@ class AsyncRawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -626,17 +652,21 @@ class AsyncRawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get_by_user_id(
         self,
@@ -645,7 +675,7 @@ class AsyncRawNodeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiEntityNode]]:
+    ) -> AsyncHttpResponse[typing.List[EntityNode]]:
         """
         Returns all nodes for a user
 
@@ -665,7 +695,7 @@ class AsyncRawNodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiEntityNode]]
+        AsyncHttpResponse[typing.List[EntityNode]]
             Nodes
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -684,9 +714,9 @@ class AsyncRawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiEntityNode],
+                    typing.List[EntityNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiEntityNode],  # type: ignore
+                        type_=typing.List[EntityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -695,9 +725,9 @@ class AsyncRawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -706,21 +736,25 @@ class AsyncRawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get_edges(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[typing.List[GraphitiEntityEdge]]:
+    ) -> AsyncHttpResponse[typing.List[EntityEdge]]:
         """
         Returns all edges for a node
 
@@ -734,7 +768,7 @@ class AsyncRawNodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiEntityEdge]]
+        AsyncHttpResponse[typing.List[EntityEdge]]
             Edges
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -745,9 +779,9 @@ class AsyncRawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiEntityEdge],
+                    typing.List[EntityEdge],
                     parse_obj_as(
-                        type_=typing.List[GraphitiEntityEdge],  # type: ignore
+                        type_=typing.List[EntityEdge],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -756,9 +790,9 @@ class AsyncRawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -767,21 +801,25 @@ class AsyncRawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get_episodes(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataGraphEpisodeResponse]:
+    ) -> AsyncHttpResponse[EpisodeResponse]:
         """
         Returns all episodes that mentioned a given node
 
@@ -795,7 +833,7 @@ class AsyncRawNodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGraphEpisodeResponse]
+        AsyncHttpResponse[EpisodeResponse]
             Episodes
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -806,9 +844,9 @@ class AsyncRawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphEpisodeResponse,
+                    EpisodeResponse,
                     parse_obj_as(
-                        type_=ApidataGraphEpisodeResponse,  # type: ignore
+                        type_=EpisodeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -817,9 +855,9 @@ class AsyncRawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -828,21 +866,25 @@ class AsyncRawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[GraphitiEntityNode]:
+    ) -> AsyncHttpResponse[EntityNode]:
         """
         Returns a specific node by its UUID.
 
@@ -856,7 +898,7 @@ class AsyncRawNodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[GraphitiEntityNode]
+        AsyncHttpResponse[EntityNode]
             Node
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -867,9 +909,9 @@ class AsyncRawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiEntityNode,
+                    EntityNode,
                     parse_obj_as(
-                        type_=GraphitiEntityNode,  # type: ignore
+                        type_=EntityNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -878,9 +920,9 @@ class AsyncRawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -889,9 +931,9 @@ class AsyncRawNodeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -900,21 +942,25 @@ class AsyncRawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def delete(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
+    ) -> AsyncHttpResponse[SuccessResponse]:
         """
         Deletes a node by UUID.
 
@@ -928,7 +974,7 @@ class AsyncRawNodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataSuccessResponse]
+        AsyncHttpResponse[SuccessResponse]
             Node deleted
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -939,9 +985,9 @@ class AsyncRawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -950,9 +996,9 @@ class AsyncRawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -961,9 +1007,9 @@ class AsyncRawNodeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -972,17 +1018,21 @@ class AsyncRawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def update(
         self,
@@ -993,7 +1043,7 @@ class AsyncRawNodeClient:
         name: typing.Optional[str] = OMIT,
         summary: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[GraphitiEntityNode]:
+    ) -> AsyncHttpResponse[EntityNode]:
         """
         Updates an entity node by UUID.
 
@@ -1019,7 +1069,7 @@ class AsyncRawNodeClient:
 
         Returns
         -------
-        AsyncHttpResponse[GraphitiEntityNode]
+        AsyncHttpResponse[EntityNode]
             Updated node
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1040,9 +1090,9 @@ class AsyncRawNodeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiEntityNode,
+                    EntityNode,
                     parse_obj_as(
-                        type_=GraphitiEntityNode,  # type: ignore
+                        type_=EntityNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1051,9 +1101,9 @@ class AsyncRawNodeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1062,9 +1112,9 @@ class AsyncRawNodeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1073,14 +1123,18 @@ class AsyncRawNodeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )

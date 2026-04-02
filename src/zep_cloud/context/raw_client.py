@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError
+from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.jsonable_encoder import jsonable_encoder
@@ -12,10 +12,10 @@ from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.apidata_api_error import ApidataApiError
-from ..types.apidata_context_template_response import ApidataContextTemplateResponse
-from ..types.apidata_list_context_templates_response import ApidataListContextTemplatesResponse
-from ..types.apidata_success_response import ApidataSuccessResponse
+from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.context_template_response import ContextTemplateResponse
+from ..types.list_context_templates_response import ListContextTemplatesResponse
+from ..types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -27,7 +27,7 @@ class RawContextClient:
 
     def list_context_templates(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataListContextTemplatesResponse]:
+    ) -> HttpResponse[ListContextTemplatesResponse]:
         """
         Lists all context templates.
 
@@ -38,7 +38,7 @@ class RawContextClient:
 
         Returns
         -------
-        HttpResponse[ApidataListContextTemplatesResponse]
+        HttpResponse[ListContextTemplatesResponse]
             The list of context templates.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -49,9 +49,9 @@ class RawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataListContextTemplatesResponse,
+                    ListContextTemplatesResponse,
                     parse_obj_as(
-                        type_=ApidataListContextTemplatesResponse,  # type: ignore
+                        type_=ListContextTemplatesResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -60,9 +60,9 @@ class RawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -71,21 +71,25 @@ class RawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def create_context_template(
         self, *, template: str, template_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataContextTemplateResponse]:
+    ) -> HttpResponse[ContextTemplateResponse]:
         """
         Creates a new context template.
 
@@ -102,7 +106,7 @@ class RawContextClient:
 
         Returns
         -------
-        HttpResponse[ApidataContextTemplateResponse]
+        HttpResponse[ContextTemplateResponse]
             The created context template.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -121,9 +125,9 @@ class RawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataContextTemplateResponse,
+                    ContextTemplateResponse,
                     parse_obj_as(
-                        type_=ApidataContextTemplateResponse,  # type: ignore
+                        type_=ContextTemplateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -132,9 +136,9 @@ class RawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -143,21 +147,25 @@ class RawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def get_context_template(
         self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataContextTemplateResponse]:
+    ) -> HttpResponse[ContextTemplateResponse]:
         """
         Retrieves a context template by template_id.
 
@@ -171,7 +179,7 @@ class RawContextClient:
 
         Returns
         -------
-        HttpResponse[ApidataContextTemplateResponse]
+        HttpResponse[ContextTemplateResponse]
             The context template.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -182,9 +190,9 @@ class RawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataContextTemplateResponse,
+                    ContextTemplateResponse,
                     parse_obj_as(
-                        type_=ApidataContextTemplateResponse,  # type: ignore
+                        type_=ContextTemplateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -193,9 +201,9 @@ class RawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -204,9 +212,9 @@ class RawContextClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -215,21 +223,25 @@ class RawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def update_context_template(
         self, template_id: str, *, template: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataContextTemplateResponse]:
+    ) -> HttpResponse[ContextTemplateResponse]:
         """
         Updates an existing context template by template_id.
 
@@ -246,7 +258,7 @@ class RawContextClient:
 
         Returns
         -------
-        HttpResponse[ApidataContextTemplateResponse]
+        HttpResponse[ContextTemplateResponse]
             The updated context template.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -264,9 +276,9 @@ class RawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataContextTemplateResponse,
+                    ContextTemplateResponse,
                     parse_obj_as(
-                        type_=ApidataContextTemplateResponse,  # type: ignore
+                        type_=ContextTemplateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -275,9 +287,9 @@ class RawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -286,9 +298,9 @@ class RawContextClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -297,21 +309,25 @@ class RawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def delete_context_template(
         self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataSuccessResponse]:
+    ) -> HttpResponse[SuccessResponse]:
         """
         Deletes a context template by template_id.
 
@@ -325,7 +341,7 @@ class RawContextClient:
 
         Returns
         -------
-        HttpResponse[ApidataSuccessResponse]
+        HttpResponse[SuccessResponse]
             Template deleted successfully
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -336,9 +352,9 @@ class RawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -347,9 +363,9 @@ class RawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -358,9 +374,9 @@ class RawContextClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -369,17 +385,21 @@ class RawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
 
 class AsyncRawContextClient:
@@ -388,7 +408,7 @@ class AsyncRawContextClient:
 
     async def list_context_templates(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataListContextTemplatesResponse]:
+    ) -> AsyncHttpResponse[ListContextTemplatesResponse]:
         """
         Lists all context templates.
 
@@ -399,7 +419,7 @@ class AsyncRawContextClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataListContextTemplatesResponse]
+        AsyncHttpResponse[ListContextTemplatesResponse]
             The list of context templates.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -410,9 +430,9 @@ class AsyncRawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataListContextTemplatesResponse,
+                    ListContextTemplatesResponse,
                     parse_obj_as(
-                        type_=ApidataListContextTemplatesResponse,  # type: ignore
+                        type_=ListContextTemplatesResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -421,9 +441,9 @@ class AsyncRawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -432,21 +452,25 @@ class AsyncRawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def create_context_template(
         self, *, template: str, template_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataContextTemplateResponse]:
+    ) -> AsyncHttpResponse[ContextTemplateResponse]:
         """
         Creates a new context template.
 
@@ -463,7 +487,7 @@ class AsyncRawContextClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataContextTemplateResponse]
+        AsyncHttpResponse[ContextTemplateResponse]
             The created context template.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -482,9 +506,9 @@ class AsyncRawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataContextTemplateResponse,
+                    ContextTemplateResponse,
                     parse_obj_as(
-                        type_=ApidataContextTemplateResponse,  # type: ignore
+                        type_=ContextTemplateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -493,9 +517,9 @@ class AsyncRawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -504,21 +528,25 @@ class AsyncRawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get_context_template(
         self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataContextTemplateResponse]:
+    ) -> AsyncHttpResponse[ContextTemplateResponse]:
         """
         Retrieves a context template by template_id.
 
@@ -532,7 +560,7 @@ class AsyncRawContextClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataContextTemplateResponse]
+        AsyncHttpResponse[ContextTemplateResponse]
             The context template.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -543,9 +571,9 @@ class AsyncRawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataContextTemplateResponse,
+                    ContextTemplateResponse,
                     parse_obj_as(
-                        type_=ApidataContextTemplateResponse,  # type: ignore
+                        type_=ContextTemplateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -554,9 +582,9 @@ class AsyncRawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -565,9 +593,9 @@ class AsyncRawContextClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -576,21 +604,25 @@ class AsyncRawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def update_context_template(
         self, template_id: str, *, template: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataContextTemplateResponse]:
+    ) -> AsyncHttpResponse[ContextTemplateResponse]:
         """
         Updates an existing context template by template_id.
 
@@ -607,7 +639,7 @@ class AsyncRawContextClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataContextTemplateResponse]
+        AsyncHttpResponse[ContextTemplateResponse]
             The updated context template.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -625,9 +657,9 @@ class AsyncRawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataContextTemplateResponse,
+                    ContextTemplateResponse,
                     parse_obj_as(
-                        type_=ApidataContextTemplateResponse,  # type: ignore
+                        type_=ContextTemplateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -636,9 +668,9 @@ class AsyncRawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -647,9 +679,9 @@ class AsyncRawContextClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -658,21 +690,25 @@ class AsyncRawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def delete_context_template(
         self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
+    ) -> AsyncHttpResponse[SuccessResponse]:
         """
         Deletes a context template by template_id.
 
@@ -686,7 +722,7 @@ class AsyncRawContextClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataSuccessResponse]
+        AsyncHttpResponse[SuccessResponse]
             Template deleted successfully
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -697,9 +733,9 @@ class AsyncRawContextClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -708,9 +744,9 @@ class AsyncRawContextClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -719,9 +755,9 @@ class AsyncRawContextClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -730,14 +766,18 @@ class AsyncRawContextClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )

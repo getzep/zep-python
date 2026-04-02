@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError
+from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.jsonable_encoder import jsonable_encoder
@@ -14,28 +14,28 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.forbidden_error import ForbiddenError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.apidata_api_error import ApidataApiError
-from ..types.apidata_clone_graph_response import ApidataCloneGraphResponse
-from ..types.apidata_custom_instruction import ApidataCustomInstruction
-from ..types.apidata_detect_config import ApidataDetectConfig
-from ..types.apidata_detect_patterns_response import ApidataDetectPatternsResponse
-from ..types.apidata_edge_type import ApidataEdgeType
-from ..types.apidata_entity_type import ApidataEntityType
-from ..types.apidata_entity_type_response import ApidataEntityTypeResponse
-from ..types.apidata_episode_data import ApidataEpisodeData
-from ..types.apidata_graph import ApidataGraph
-from ..types.apidata_graph_episode import ApidataGraphEpisode
-from ..types.apidata_graph_list_response import ApidataGraphListResponse
-from ..types.apidata_graph_search_results import ApidataGraphSearchResults
-from ..types.apidata_list_custom_instructions_response import ApidataListCustomInstructionsResponse
-from ..types.apidata_pattern_seeds import ApidataPatternSeeds
-from ..types.apidata_recency_weight import ApidataRecencyWeight
-from ..types.apidata_success_response import ApidataSuccessResponse
-from ..types.graphiti_add_triple_response import GraphitiAddTripleResponse
-from ..types.graphiti_graph_search_scope import GraphitiGraphSearchScope
-from ..types.graphiti_reranker import GraphitiReranker
-from ..types.graphiti_search_filters import GraphitiSearchFilters
-from ..types.models_graph_data_type import ModelsGraphDataType
+from ..types.add_triple_response import AddTripleResponse
+from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.clone_graph_response import CloneGraphResponse
+from ..types.custom_instruction import CustomInstruction
+from ..types.detect_config import DetectConfig
+from ..types.detect_patterns_response import DetectPatternsResponse
+from ..types.edge_type import EdgeType
+from ..types.entity_type import EntityType
+from ..types.entity_type_response import EntityTypeResponse
+from ..types.episode import Episode
+from ..types.episode_data import EpisodeData
+from ..types.graph import Graph
+from ..types.graph_data_type import GraphDataType
+from ..types.graph_list_response import GraphListResponse
+from ..types.graph_search_results import GraphSearchResults
+from ..types.graph_search_scope import GraphSearchScope
+from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
+from ..types.pattern_seeds import PatternSeeds
+from ..types.recency_weight import RecencyWeight
+from ..types.reranker import Reranker
+from ..types.search_filters import SearchFilters
+from ..types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -51,7 +51,7 @@ class RawGraphClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataListCustomInstructionsResponse]:
+    ) -> HttpResponse[ListCustomInstructionsResponse]:
         """
         Lists all custom instructions for a project, user, or graph.
 
@@ -68,7 +68,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataListCustomInstructionsResponse]
+        HttpResponse[ListCustomInstructionsResponse]
             The list of instructions.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -83,9 +83,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataListCustomInstructionsResponse,
+                    ListCustomInstructionsResponse,
                     parse_obj_as(
-                        type_=ApidataListCustomInstructionsResponse,  # type: ignore
+                        type_=ListCustomInstructionsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -94,9 +94,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -105,9 +105,9 @@ class RawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -116,32 +116,36 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def add_custom_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataCustomInstruction],
+        instructions: typing.Sequence[CustomInstruction],
         graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataSuccessResponse]:
+    ) -> HttpResponse[SuccessResponse]:
         """
         Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataCustomInstruction]
+        instructions : typing.Sequence[CustomInstruction]
             Instructions to add to the graph.
 
         graph_ids : typing.Optional[typing.Sequence[str]]
@@ -155,7 +159,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataSuccessResponse]
+        HttpResponse[SuccessResponse]
             Instructions added successfully
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -164,7 +168,7 @@ class RawGraphClient:
             json={
                 "graph_ids": graph_ids,
                 "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[ApidataCustomInstruction], direction="write"
+                    object_=instructions, annotation=typing.Sequence[CustomInstruction], direction="write"
                 ),
                 "user_ids": user_ids,
             },
@@ -177,9 +181,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -188,9 +192,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -199,9 +203,9 @@ class RawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -210,17 +214,21 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def delete_custom_instructions(
         self,
@@ -229,7 +237,7 @@ class RawGraphClient:
         instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataSuccessResponse]:
+    ) -> HttpResponse[SuccessResponse]:
         """
         Deletes custom instructions for graphs or project wide defaults.
 
@@ -249,7 +257,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataSuccessResponse]
+        HttpResponse[SuccessResponse]
             Instructions deleted successfully
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -269,9 +277,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -280,9 +288,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -291,9 +299,9 @@ class RawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -302,17 +310,21 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def list_entity_types(
         self,
@@ -320,7 +332,7 @@ class RawGraphClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataEntityTypeResponse]:
+    ) -> HttpResponse[EntityTypeResponse]:
         """
         Returns all entity types for a project, user, or graph.
 
@@ -337,7 +349,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataEntityTypeResponse]
+        HttpResponse[EntityTypeResponse]
             The list of entity types.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -352,9 +364,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataEntityTypeResponse,
+                    EntityTypeResponse,
                     parse_obj_as(
-                        type_=ApidataEntityTypeResponse,  # type: ignore
+                        type_=EntityTypeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -363,9 +375,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -374,9 +386,9 @@ class RawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -385,35 +397,39 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def set_entity_types_internal(
         self,
         *,
-        edge_types: typing.Optional[typing.Sequence[ApidataEdgeType]] = OMIT,
-        entity_types: typing.Optional[typing.Sequence[ApidataEntityType]] = OMIT,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataSuccessResponse]:
+    ) -> HttpResponse[SuccessResponse]:
         """
         Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
-        edge_types : typing.Optional[typing.Sequence[ApidataEdgeType]]
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
-        entity_types : typing.Optional[typing.Sequence[ApidataEntityType]]
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         graph_ids : typing.Optional[typing.Sequence[str]]
 
@@ -424,7 +440,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataSuccessResponse]
+        HttpResponse[SuccessResponse]
             Entity types set successfully
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -432,10 +448,10 @@ class RawGraphClient:
             method="PUT",
             json={
                 "edge_types": convert_and_respect_annotation_metadata(
-                    object_=edge_types, annotation=typing.Sequence[ApidataEdgeType], direction="write"
+                    object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
                 ),
                 "entity_types": convert_and_respect_annotation_metadata(
-                    object_=entity_types, annotation=typing.Sequence[ApidataEntityType], direction="write"
+                    object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
                 "graph_ids": graph_ids,
                 "user_ids": user_ids,
@@ -449,9 +465,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -460,9 +476,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -471,9 +487,9 @@ class RawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -482,30 +498,34 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def add(
         self,
         *,
         data: str,
-        type: ModelsGraphDataType,
+        type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataGraphEpisode]:
+    ) -> HttpResponse[Episode]:
         """
         Add data to the graph.
 
@@ -513,7 +533,7 @@ class RawGraphClient:
         ----------
         data : str
 
-        type : ModelsGraphDataType
+        type : GraphDataType
 
         created_at : typing.Optional[str]
 
@@ -533,7 +553,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataGraphEpisode]
+        HttpResponse[Episode]
             Added episode
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -557,9 +577,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphEpisode,
+                    Episode,
                     parse_obj_as(
-                        type_=ApidataGraphEpisode,  # type: ignore
+                        type_=Episode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -568,9 +588,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -579,32 +599,36 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def add_batch(
         self,
         *,
-        episodes: typing.Sequence[ApidataEpisodeData],
+        episodes: typing.Sequence[EpisodeData],
         graph_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[ApidataGraphEpisode]]:
+    ) -> HttpResponse[typing.List[Episode]]:
         """
         Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
-        episodes : typing.Sequence[ApidataEpisodeData]
+        episodes : typing.Sequence[EpisodeData]
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -617,7 +641,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[typing.List[ApidataGraphEpisode]]
+        HttpResponse[typing.List[Episode]]
             Added episodes
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -625,7 +649,7 @@ class RawGraphClient:
             method="POST",
             json={
                 "episodes": convert_and_respect_annotation_metadata(
-                    object_=episodes, annotation=typing.Sequence[ApidataEpisodeData], direction="write"
+                    object_=episodes, annotation=typing.Sequence[EpisodeData], direction="write"
                 ),
                 "graph_id": graph_id,
                 "user_id": user_id,
@@ -639,9 +663,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ApidataGraphEpisode],
+                    typing.List[Episode],
                     parse_obj_as(
-                        type_=typing.List[ApidataGraphEpisode],  # type: ignore
+                        type_=typing.List[Episode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -650,9 +674,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -661,17 +685,21 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def add_fact_triple(
         self,
@@ -698,7 +726,7 @@ class RawGraphClient:
         user_id: typing.Optional[str] = OMIT,
         valid_at: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[GraphitiAddTripleResponse]:
+    ) -> HttpResponse[AddTripleResponse]:
         """
         Add a fact triple for a user or group
 
@@ -774,7 +802,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[GraphitiAddTripleResponse]
+        HttpResponse[AddTripleResponse]
             Resulting triple
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -812,9 +840,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiAddTripleResponse,
+                    AddTripleResponse,
                     parse_obj_as(
-                        type_=GraphitiAddTripleResponse,  # type: ignore
+                        type_=AddTripleResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -823,9 +851,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -834,17 +862,21 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def clone(
         self,
@@ -854,7 +886,7 @@ class RawGraphClient:
         target_graph_id: typing.Optional[str] = OMIT,
         target_user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataCloneGraphResponse]:
+    ) -> HttpResponse[CloneGraphResponse]:
         """
         Clone a user or group graph.
 
@@ -877,7 +909,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataCloneGraphResponse]
+        HttpResponse[CloneGraphResponse]
             Response object containing graph_id or user_id pointing to the new graph
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -898,9 +930,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataCloneGraphResponse,
+                    CloneGraphResponse,
                     parse_obj_as(
-                        type_=ApidataCloneGraphResponse,  # type: ignore
+                        type_=CloneGraphResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -909,9 +941,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -920,17 +952,21 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def create(
         self,
@@ -939,7 +975,7 @@ class RawGraphClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataGraph]:
+    ) -> HttpResponse[Graph]:
         """
         Creates a new graph.
 
@@ -956,7 +992,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataGraph]
+        HttpResponse[Graph]
             The added graph
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -976,9 +1012,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraph,
+                    Graph,
                     parse_obj_as(
-                        type_=ApidataGraph,  # type: ignore
+                        type_=Graph,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -987,9 +1023,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -998,17 +1034,21 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def list_all(
         self,
@@ -1019,7 +1059,7 @@ class RawGraphClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataGraphListResponse]:
+    ) -> HttpResponse[GraphListResponse]:
         """
         Returns all graphs. In order to list users, use user.list_ordered instead
 
@@ -1045,7 +1085,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataGraphListResponse]
+        HttpResponse[GraphListResponse]
             Successfully retrieved list of graphs.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1063,9 +1103,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphListResponse,
+                    GraphListResponse,
                     parse_obj_as(
-                        type_=ApidataGraphListResponse,  # type: ignore
+                        type_=GraphListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1074,9 +1114,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1085,34 +1125,38 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def detect_patterns(
         self,
         *,
-        detect: typing.Optional[ApidataDetectConfig] = OMIT,
+        detect: typing.Optional[DetectConfig] = OMIT,
         edge_limit: typing.Optional[int] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_occurrences: typing.Optional[int] = OMIT,
         query: typing.Optional[str] = OMIT,
         query_limit: typing.Optional[int] = OMIT,
-        recency_weight: typing.Optional[ApidataRecencyWeight] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
-        seeds: typing.Optional[ApidataPatternSeeds] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataDetectPatternsResponse]:
+    ) -> HttpResponse[DetectPatternsResponse]:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
@@ -1121,7 +1165,7 @@ class RawGraphClient:
 
         Parameters
         ----------
-        detect : typing.Optional[ApidataDetectConfig]
+        detect : typing.Optional[DetectConfig]
             Which pattern types to detect with type-specific configuration.
             Omit to detect all types with defaults. Ignored when query is set.
 
@@ -1145,15 +1189,15 @@ class RawGraphClient:
         query_limit : typing.Optional[int]
             Max seed nodes from search. Default: 10, Max: 50. Only used with query.
 
-        recency_weight : typing.Optional[ApidataRecencyWeight]
+        recency_weight : typing.Optional[RecencyWeight]
             Exponential half-life decay applied to edge created_at timestamps.
             Valid values: none, 7_days, 30_days, 90_days. Default: none
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Filters which edges/nodes participate in pattern detection.
             Reuses the same filter format as /graph/search.
 
-        seeds : typing.Optional[ApidataPatternSeeds]
+        seeds : typing.Optional[PatternSeeds]
             Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
 
         user_id : typing.Optional[str]
@@ -1164,7 +1208,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataDetectPatternsResponse]
+        HttpResponse[DetectPatternsResponse]
             Detected patterns
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1172,7 +1216,7 @@ class RawGraphClient:
             method="POST",
             json={
                 "detect": convert_and_respect_annotation_metadata(
-                    object_=detect, annotation=ApidataDetectConfig, direction="write"
+                    object_=detect, annotation=DetectConfig, direction="write"
                 ),
                 "edge_limit": edge_limit,
                 "graph_id": graph_id,
@@ -1182,10 +1226,10 @@ class RawGraphClient:
                 "query_limit": query_limit,
                 "recency_weight": recency_weight,
                 "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=GraphitiSearchFilters, direction="write"
+                    object_=search_filters, annotation=SearchFilters, direction="write"
                 ),
                 "seeds": convert_and_respect_annotation_metadata(
-                    object_=seeds, annotation=ApidataPatternSeeds, direction="write"
+                    object_=seeds, annotation=PatternSeeds, direction="write"
                 ),
                 "user_id": user_id,
             },
@@ -1198,9 +1242,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataDetectPatternsResponse,
+                    DetectPatternsResponse,
                     parse_obj_as(
-                        type_=ApidataDetectPatternsResponse,  # type: ignore
+                        type_=DetectPatternsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1209,9 +1253,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1220,9 +1264,9 @@ class RawGraphClient:
                 raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1231,9 +1275,9 @@ class RawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1242,17 +1286,21 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def search(
         self,
@@ -1263,12 +1311,12 @@ class RawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[GraphitiReranker] = OMIT,
-        scope: typing.Optional[GraphitiGraphSearchScope] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
+        reranker: typing.Optional[Reranker] = OMIT,
+        scope: typing.Optional[GraphSearchScope] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataGraphSearchResults]:
+    ) -> HttpResponse[GraphSearchResults]:
         """
         Perform a graph search query.
 
@@ -1292,13 +1340,13 @@ class RawGraphClient:
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
-        reranker : typing.Optional[GraphitiReranker]
+        reranker : typing.Optional[Reranker]
             Defaults to RRF
 
-        scope : typing.Optional[GraphitiGraphSearchScope]
+        scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
@@ -1309,7 +1357,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataGraphSearchResults]
+        HttpResponse[GraphSearchResults]
             Graph search results
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1325,7 +1373,7 @@ class RawGraphClient:
                 "reranker": reranker,
                 "scope": scope,
                 "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=GraphitiSearchFilters, direction="write"
+                    object_=search_filters, annotation=SearchFilters, direction="write"
                 ),
                 "user_id": user_id,
             },
@@ -1338,9 +1386,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphSearchResults,
+                    GraphSearchResults,
                     parse_obj_as(
-                        type_=ApidataGraphSearchResults,  # type: ignore
+                        type_=GraphSearchResults,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1349,9 +1397,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1360,21 +1408,23 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
-    def get(
-        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataGraph]:
+    def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[Graph]:
         """
         Returns a graph.
 
@@ -1388,7 +1438,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataGraph]
+        HttpResponse[Graph]
             The graph that was retrieved.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1399,9 +1449,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraph,
+                    Graph,
                     parse_obj_as(
-                        type_=ApidataGraph,  # type: ignore
+                        type_=Graph,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1410,9 +1460,9 @@ class RawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1421,21 +1471,25 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def delete(
         self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataSuccessResponse]:
+    ) -> HttpResponse[SuccessResponse]:
         """
         Deletes a graph. If you would like to delete a user graph, make sure to use user.delete instead.
 
@@ -1449,7 +1503,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataSuccessResponse]
+        HttpResponse[SuccessResponse]
             Deleted
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1460,9 +1514,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1471,9 +1525,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1482,9 +1536,9 @@ class RawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1493,17 +1547,21 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def update(
         self,
@@ -1512,7 +1570,7 @@ class RawGraphClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataGraph]:
+    ) -> HttpResponse[Graph]:
         """
         Updates information about a graph.
 
@@ -1530,7 +1588,7 @@ class RawGraphClient:
 
         Returns
         -------
-        HttpResponse[ApidataGraph]
+        HttpResponse[Graph]
             The updated graph object
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -1549,9 +1607,9 @@ class RawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraph,
+                    Graph,
                     parse_obj_as(
-                        type_=ApidataGraph,  # type: ignore
+                        type_=Graph,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1560,9 +1618,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1571,9 +1629,9 @@ class RawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1582,17 +1640,21 @@ class RawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
 
 class AsyncRawGraphClient:
@@ -1605,7 +1667,7 @@ class AsyncRawGraphClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataListCustomInstructionsResponse]:
+    ) -> AsyncHttpResponse[ListCustomInstructionsResponse]:
         """
         Lists all custom instructions for a project, user, or graph.
 
@@ -1622,7 +1684,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataListCustomInstructionsResponse]
+        AsyncHttpResponse[ListCustomInstructionsResponse]
             The list of instructions.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1637,9 +1699,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataListCustomInstructionsResponse,
+                    ListCustomInstructionsResponse,
                     parse_obj_as(
-                        type_=ApidataListCustomInstructionsResponse,  # type: ignore
+                        type_=ListCustomInstructionsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1648,9 +1710,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1659,9 +1721,9 @@ class AsyncRawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1670,32 +1732,36 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def add_custom_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataCustomInstruction],
+        instructions: typing.Sequence[CustomInstruction],
         graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
+    ) -> AsyncHttpResponse[SuccessResponse]:
         """
         Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataCustomInstruction]
+        instructions : typing.Sequence[CustomInstruction]
             Instructions to add to the graph.
 
         graph_ids : typing.Optional[typing.Sequence[str]]
@@ -1709,7 +1775,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataSuccessResponse]
+        AsyncHttpResponse[SuccessResponse]
             Instructions added successfully
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1718,7 +1784,7 @@ class AsyncRawGraphClient:
             json={
                 "graph_ids": graph_ids,
                 "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[ApidataCustomInstruction], direction="write"
+                    object_=instructions, annotation=typing.Sequence[CustomInstruction], direction="write"
                 ),
                 "user_ids": user_ids,
             },
@@ -1731,9 +1797,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1742,9 +1808,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1753,9 +1819,9 @@ class AsyncRawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1764,17 +1830,21 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def delete_custom_instructions(
         self,
@@ -1783,7 +1853,7 @@ class AsyncRawGraphClient:
         instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
+    ) -> AsyncHttpResponse[SuccessResponse]:
         """
         Deletes custom instructions for graphs or project wide defaults.
 
@@ -1803,7 +1873,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataSuccessResponse]
+        AsyncHttpResponse[SuccessResponse]
             Instructions deleted successfully
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1823,9 +1893,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1834,9 +1904,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1845,9 +1915,9 @@ class AsyncRawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1856,17 +1926,21 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def list_entity_types(
         self,
@@ -1874,7 +1948,7 @@ class AsyncRawGraphClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataEntityTypeResponse]:
+    ) -> AsyncHttpResponse[EntityTypeResponse]:
         """
         Returns all entity types for a project, user, or graph.
 
@@ -1891,7 +1965,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataEntityTypeResponse]
+        AsyncHttpResponse[EntityTypeResponse]
             The list of entity types.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1906,9 +1980,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataEntityTypeResponse,
+                    EntityTypeResponse,
                     parse_obj_as(
-                        type_=ApidataEntityTypeResponse,  # type: ignore
+                        type_=EntityTypeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1917,9 +1991,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1928,9 +2002,9 @@ class AsyncRawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1939,35 +2013,39 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def set_entity_types_internal(
         self,
         *,
-        edge_types: typing.Optional[typing.Sequence[ApidataEdgeType]] = OMIT,
-        entity_types: typing.Optional[typing.Sequence[ApidataEntityType]] = OMIT,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
+    ) -> AsyncHttpResponse[SuccessResponse]:
         """
         Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
-        edge_types : typing.Optional[typing.Sequence[ApidataEdgeType]]
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
-        entity_types : typing.Optional[typing.Sequence[ApidataEntityType]]
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         graph_ids : typing.Optional[typing.Sequence[str]]
 
@@ -1978,7 +2056,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataSuccessResponse]
+        AsyncHttpResponse[SuccessResponse]
             Entity types set successfully
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1986,10 +2064,10 @@ class AsyncRawGraphClient:
             method="PUT",
             json={
                 "edge_types": convert_and_respect_annotation_metadata(
-                    object_=edge_types, annotation=typing.Sequence[ApidataEdgeType], direction="write"
+                    object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
                 ),
                 "entity_types": convert_and_respect_annotation_metadata(
-                    object_=entity_types, annotation=typing.Sequence[ApidataEntityType], direction="write"
+                    object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
                 "graph_ids": graph_ids,
                 "user_ids": user_ids,
@@ -2003,9 +2081,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2014,9 +2092,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2025,9 +2103,9 @@ class AsyncRawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2036,30 +2114,34 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def add(
         self,
         *,
         data: str,
-        type: ModelsGraphDataType,
+        type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataGraphEpisode]:
+    ) -> AsyncHttpResponse[Episode]:
         """
         Add data to the graph.
 
@@ -2067,7 +2149,7 @@ class AsyncRawGraphClient:
         ----------
         data : str
 
-        type : ModelsGraphDataType
+        type : GraphDataType
 
         created_at : typing.Optional[str]
 
@@ -2087,7 +2169,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGraphEpisode]
+        AsyncHttpResponse[Episode]
             Added episode
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2111,9 +2193,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphEpisode,
+                    Episode,
                     parse_obj_as(
-                        type_=ApidataGraphEpisode,  # type: ignore
+                        type_=Episode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2122,9 +2204,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2133,32 +2215,36 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def add_batch(
         self,
         *,
-        episodes: typing.Sequence[ApidataEpisodeData],
+        episodes: typing.Sequence[EpisodeData],
         graph_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[ApidataGraphEpisode]]:
+    ) -> AsyncHttpResponse[typing.List[Episode]]:
         """
         Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
-        episodes : typing.Sequence[ApidataEpisodeData]
+        episodes : typing.Sequence[EpisodeData]
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -2171,7 +2257,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[ApidataGraphEpisode]]
+        AsyncHttpResponse[typing.List[Episode]]
             Added episodes
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2179,7 +2265,7 @@ class AsyncRawGraphClient:
             method="POST",
             json={
                 "episodes": convert_and_respect_annotation_metadata(
-                    object_=episodes, annotation=typing.Sequence[ApidataEpisodeData], direction="write"
+                    object_=episodes, annotation=typing.Sequence[EpisodeData], direction="write"
                 ),
                 "graph_id": graph_id,
                 "user_id": user_id,
@@ -2193,9 +2279,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ApidataGraphEpisode],
+                    typing.List[Episode],
                     parse_obj_as(
-                        type_=typing.List[ApidataGraphEpisode],  # type: ignore
+                        type_=typing.List[Episode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2204,9 +2290,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2215,17 +2301,21 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def add_fact_triple(
         self,
@@ -2252,7 +2342,7 @@ class AsyncRawGraphClient:
         user_id: typing.Optional[str] = OMIT,
         valid_at: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[GraphitiAddTripleResponse]:
+    ) -> AsyncHttpResponse[AddTripleResponse]:
         """
         Add a fact triple for a user or group
 
@@ -2328,7 +2418,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[GraphitiAddTripleResponse]
+        AsyncHttpResponse[AddTripleResponse]
             Resulting triple
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2366,9 +2456,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiAddTripleResponse,
+                    AddTripleResponse,
                     parse_obj_as(
-                        type_=GraphitiAddTripleResponse,  # type: ignore
+                        type_=AddTripleResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2377,9 +2467,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2388,17 +2478,21 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def clone(
         self,
@@ -2408,7 +2502,7 @@ class AsyncRawGraphClient:
         target_graph_id: typing.Optional[str] = OMIT,
         target_user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataCloneGraphResponse]:
+    ) -> AsyncHttpResponse[CloneGraphResponse]:
         """
         Clone a user or group graph.
 
@@ -2431,7 +2525,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataCloneGraphResponse]
+        AsyncHttpResponse[CloneGraphResponse]
             Response object containing graph_id or user_id pointing to the new graph
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2452,9 +2546,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataCloneGraphResponse,
+                    CloneGraphResponse,
                     parse_obj_as(
-                        type_=ApidataCloneGraphResponse,  # type: ignore
+                        type_=CloneGraphResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2463,9 +2557,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2474,17 +2568,21 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def create(
         self,
@@ -2493,7 +2591,7 @@ class AsyncRawGraphClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataGraph]:
+    ) -> AsyncHttpResponse[Graph]:
         """
         Creates a new graph.
 
@@ -2510,7 +2608,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGraph]
+        AsyncHttpResponse[Graph]
             The added graph
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2530,9 +2628,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraph,
+                    Graph,
                     parse_obj_as(
-                        type_=ApidataGraph,  # type: ignore
+                        type_=Graph,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2541,9 +2639,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2552,17 +2650,21 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def list_all(
         self,
@@ -2573,7 +2675,7 @@ class AsyncRawGraphClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataGraphListResponse]:
+    ) -> AsyncHttpResponse[GraphListResponse]:
         """
         Returns all graphs. In order to list users, use user.list_ordered instead
 
@@ -2599,7 +2701,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGraphListResponse]
+        AsyncHttpResponse[GraphListResponse]
             Successfully retrieved list of graphs.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2617,9 +2719,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphListResponse,
+                    GraphListResponse,
                     parse_obj_as(
-                        type_=ApidataGraphListResponse,  # type: ignore
+                        type_=GraphListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2628,9 +2730,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2639,34 +2741,38 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def detect_patterns(
         self,
         *,
-        detect: typing.Optional[ApidataDetectConfig] = OMIT,
+        detect: typing.Optional[DetectConfig] = OMIT,
         edge_limit: typing.Optional[int] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_occurrences: typing.Optional[int] = OMIT,
         query: typing.Optional[str] = OMIT,
         query_limit: typing.Optional[int] = OMIT,
-        recency_weight: typing.Optional[ApidataRecencyWeight] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
-        seeds: typing.Optional[ApidataPatternSeeds] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataDetectPatternsResponse]:
+    ) -> AsyncHttpResponse[DetectPatternsResponse]:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
@@ -2675,7 +2781,7 @@ class AsyncRawGraphClient:
 
         Parameters
         ----------
-        detect : typing.Optional[ApidataDetectConfig]
+        detect : typing.Optional[DetectConfig]
             Which pattern types to detect with type-specific configuration.
             Omit to detect all types with defaults. Ignored when query is set.
 
@@ -2699,15 +2805,15 @@ class AsyncRawGraphClient:
         query_limit : typing.Optional[int]
             Max seed nodes from search. Default: 10, Max: 50. Only used with query.
 
-        recency_weight : typing.Optional[ApidataRecencyWeight]
+        recency_weight : typing.Optional[RecencyWeight]
             Exponential half-life decay applied to edge created_at timestamps.
             Valid values: none, 7_days, 30_days, 90_days. Default: none
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Filters which edges/nodes participate in pattern detection.
             Reuses the same filter format as /graph/search.
 
-        seeds : typing.Optional[ApidataPatternSeeds]
+        seeds : typing.Optional[PatternSeeds]
             Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
 
         user_id : typing.Optional[str]
@@ -2718,7 +2824,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataDetectPatternsResponse]
+        AsyncHttpResponse[DetectPatternsResponse]
             Detected patterns
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2726,7 +2832,7 @@ class AsyncRawGraphClient:
             method="POST",
             json={
                 "detect": convert_and_respect_annotation_metadata(
-                    object_=detect, annotation=ApidataDetectConfig, direction="write"
+                    object_=detect, annotation=DetectConfig, direction="write"
                 ),
                 "edge_limit": edge_limit,
                 "graph_id": graph_id,
@@ -2736,10 +2842,10 @@ class AsyncRawGraphClient:
                 "query_limit": query_limit,
                 "recency_weight": recency_weight,
                 "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=GraphitiSearchFilters, direction="write"
+                    object_=search_filters, annotation=SearchFilters, direction="write"
                 ),
                 "seeds": convert_and_respect_annotation_metadata(
-                    object_=seeds, annotation=ApidataPatternSeeds, direction="write"
+                    object_=seeds, annotation=PatternSeeds, direction="write"
                 ),
                 "user_id": user_id,
             },
@@ -2752,9 +2858,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataDetectPatternsResponse,
+                    DetectPatternsResponse,
                     parse_obj_as(
-                        type_=ApidataDetectPatternsResponse,  # type: ignore
+                        type_=DetectPatternsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2763,9 +2869,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2774,9 +2880,9 @@ class AsyncRawGraphClient:
                 raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2785,9 +2891,9 @@ class AsyncRawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2796,17 +2902,21 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def search(
         self,
@@ -2817,12 +2927,12 @@ class AsyncRawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[GraphitiReranker] = OMIT,
-        scope: typing.Optional[GraphitiGraphSearchScope] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
+        reranker: typing.Optional[Reranker] = OMIT,
+        scope: typing.Optional[GraphSearchScope] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataGraphSearchResults]:
+    ) -> AsyncHttpResponse[GraphSearchResults]:
         """
         Perform a graph search query.
 
@@ -2846,13 +2956,13 @@ class AsyncRawGraphClient:
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
-        reranker : typing.Optional[GraphitiReranker]
+        reranker : typing.Optional[Reranker]
             Defaults to RRF
 
-        scope : typing.Optional[GraphitiGraphSearchScope]
+        scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
@@ -2863,7 +2973,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGraphSearchResults]
+        AsyncHttpResponse[GraphSearchResults]
             Graph search results
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2879,7 +2989,7 @@ class AsyncRawGraphClient:
                 "reranker": reranker,
                 "scope": scope,
                 "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=GraphitiSearchFilters, direction="write"
+                    object_=search_filters, annotation=SearchFilters, direction="write"
                 ),
                 "user_id": user_id,
             },
@@ -2892,9 +3002,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraphSearchResults,
+                    GraphSearchResults,
                     parse_obj_as(
-                        type_=ApidataGraphSearchResults,  # type: ignore
+                        type_=GraphSearchResults,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2903,9 +3013,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2914,21 +3024,25 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get(
         self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataGraph]:
+    ) -> AsyncHttpResponse[Graph]:
         """
         Returns a graph.
 
@@ -2942,7 +3056,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGraph]
+        AsyncHttpResponse[Graph]
             The graph that was retrieved.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2953,9 +3067,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraph,
+                    Graph,
                     parse_obj_as(
-                        type_=ApidataGraph,  # type: ignore
+                        type_=Graph,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2964,9 +3078,9 @@ class AsyncRawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2975,21 +3089,25 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def delete(
         self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataSuccessResponse]:
+    ) -> AsyncHttpResponse[SuccessResponse]:
         """
         Deletes a graph. If you would like to delete a user graph, make sure to use user.delete instead.
 
@@ -3003,7 +3121,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataSuccessResponse]
+        AsyncHttpResponse[SuccessResponse]
             Deleted
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -3014,9 +3132,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataSuccessResponse,
+                    SuccessResponse,
                     parse_obj_as(
-                        type_=ApidataSuccessResponse,  # type: ignore
+                        type_=SuccessResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -3025,9 +3143,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3036,9 +3154,9 @@ class AsyncRawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3047,17 +3165,21 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def update(
         self,
@@ -3066,7 +3188,7 @@ class AsyncRawGraphClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataGraph]:
+    ) -> AsyncHttpResponse[Graph]:
         """
         Updates information about a graph.
 
@@ -3084,7 +3206,7 @@ class AsyncRawGraphClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGraph]
+        AsyncHttpResponse[Graph]
             The updated graph object
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -3103,9 +3225,9 @@ class AsyncRawGraphClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGraph,
+                    Graph,
                     parse_obj_as(
-                        type_=ApidataGraph,  # type: ignore
+                        type_=Graph,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -3114,9 +3236,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3125,9 +3247,9 @@ class AsyncRawGraphClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3136,14 +3258,18 @@ class AsyncRawGraphClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )

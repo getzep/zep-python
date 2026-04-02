@@ -4,27 +4,27 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.apidata_clone_graph_response import ApidataCloneGraphResponse
-from ..types.apidata_custom_instruction import ApidataCustomInstruction
-from ..types.apidata_detect_config import ApidataDetectConfig
-from ..types.apidata_detect_patterns_response import ApidataDetectPatternsResponse
-from ..types.apidata_edge_type import ApidataEdgeType
-from ..types.apidata_entity_type import ApidataEntityType
-from ..types.apidata_entity_type_response import ApidataEntityTypeResponse
-from ..types.apidata_episode_data import ApidataEpisodeData
-from ..types.apidata_graph import ApidataGraph
-from ..types.apidata_graph_episode import ApidataGraphEpisode
-from ..types.apidata_graph_list_response import ApidataGraphListResponse
-from ..types.apidata_graph_search_results import ApidataGraphSearchResults
-from ..types.apidata_list_custom_instructions_response import ApidataListCustomInstructionsResponse
-from ..types.apidata_pattern_seeds import ApidataPatternSeeds
-from ..types.apidata_recency_weight import ApidataRecencyWeight
-from ..types.apidata_success_response import ApidataSuccessResponse
-from ..types.graphiti_add_triple_response import GraphitiAddTripleResponse
-from ..types.graphiti_graph_search_scope import GraphitiGraphSearchScope
-from ..types.graphiti_reranker import GraphitiReranker
-from ..types.graphiti_search_filters import GraphitiSearchFilters
-from ..types.models_graph_data_type import ModelsGraphDataType
+from ..types.add_triple_response import AddTripleResponse
+from ..types.clone_graph_response import CloneGraphResponse
+from ..types.custom_instruction import CustomInstruction
+from ..types.detect_config import DetectConfig
+from ..types.detect_patterns_response import DetectPatternsResponse
+from ..types.edge_type import EdgeType
+from ..types.entity_type import EntityType
+from ..types.entity_type_response import EntityTypeResponse
+from ..types.episode import Episode
+from ..types.episode_data import EpisodeData
+from ..types.graph import Graph
+from ..types.graph_data_type import GraphDataType
+from ..types.graph_list_response import GraphListResponse
+from ..types.graph_search_results import GraphSearchResults
+from ..types.graph_search_scope import GraphSearchScope
+from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
+from ..types.pattern_seeds import PatternSeeds
+from ..types.recency_weight import RecencyWeight
+from ..types.reranker import Reranker
+from ..types.search_filters import SearchFilters
+from ..types.success_response import SuccessResponse
 from .community.client import AsyncCommunityClient, CommunityClient
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
@@ -66,7 +66,7 @@ class GraphClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataListCustomInstructionsResponse:
+    ) -> ListCustomInstructionsResponse:
         """
         Lists all custom instructions for a project, user, or graph.
 
@@ -83,7 +83,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataListCustomInstructionsResponse
+        ListCustomInstructionsResponse
             The list of instructions.
 
         Examples
@@ -106,17 +106,17 @@ class GraphClient:
     def add_custom_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataCustomInstruction],
+        instructions: typing.Sequence[CustomInstruction],
         graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataCustomInstruction]
+        instructions : typing.Sequence[CustomInstruction]
             Instructions to add to the graph.
 
         graph_ids : typing.Optional[typing.Sequence[str]]
@@ -130,19 +130,19 @@ class GraphClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Instructions added successfully
 
         Examples
         --------
-        from zep_cloud import ApidataCustomInstruction, Zep
+        from zep_cloud import CustomInstruction, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.graph.add_custom_instructions(
             instructions=[
-                ApidataCustomInstruction(
+                CustomInstruction(
                     name="name",
                     text="text",
                 )
@@ -161,7 +161,7 @@ class GraphClient:
         instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Deletes custom instructions for graphs or project wide defaults.
 
@@ -181,7 +181,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Instructions deleted successfully
 
         Examples
@@ -204,7 +204,7 @@ class GraphClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataEntityTypeResponse:
+    ) -> EntityTypeResponse:
         """
         Returns all entity types for a project, user, or graph.
 
@@ -221,7 +221,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataEntityTypeResponse
+        EntityTypeResponse
             The list of entity types.
 
         Examples
@@ -244,20 +244,20 @@ class GraphClient:
     def set_entity_types_internal(
         self,
         *,
-        edge_types: typing.Optional[typing.Sequence[ApidataEdgeType]] = OMIT,
-        entity_types: typing.Optional[typing.Sequence[ApidataEntityType]] = OMIT,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
-        edge_types : typing.Optional[typing.Sequence[ApidataEdgeType]]
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
-        entity_types : typing.Optional[typing.Sequence[ApidataEntityType]]
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         graph_ids : typing.Optional[typing.Sequence[str]]
 
@@ -268,7 +268,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Entity types set successfully
 
         Examples
@@ -293,14 +293,14 @@ class GraphClient:
         self,
         *,
         data: str,
-        type: ModelsGraphDataType,
+        type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphEpisode:
+    ) -> Episode:
         """
         Add data to the graph.
 
@@ -308,7 +308,7 @@ class GraphClient:
         ----------
         data : str
 
-        type : ModelsGraphDataType
+        type : GraphDataType
 
         created_at : typing.Optional[str]
 
@@ -328,7 +328,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataGraphEpisode
+        Episode
             Added episode
 
         Examples
@@ -358,17 +358,17 @@ class GraphClient:
     def add_batch(
         self,
         *,
-        episodes: typing.Sequence[ApidataEpisodeData],
+        episodes: typing.Sequence[EpisodeData],
         graph_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ApidataGraphEpisode]:
+    ) -> typing.List[Episode]:
         """
         Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
-        episodes : typing.Sequence[ApidataEpisodeData]
+        episodes : typing.Sequence[EpisodeData]
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -381,19 +381,19 @@ class GraphClient:
 
         Returns
         -------
-        typing.List[ApidataGraphEpisode]
+        typing.List[Episode]
             Added episodes
 
         Examples
         --------
-        from zep_cloud import ApidataEpisodeData, Zep
+        from zep_cloud import EpisodeData, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.graph.add_batch(
             episodes=[
-                ApidataEpisodeData(
+                EpisodeData(
                     data="data",
                     type="text",
                 )
@@ -430,7 +430,7 @@ class GraphClient:
         user_id: typing.Optional[str] = OMIT,
         valid_at: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> GraphitiAddTripleResponse:
+    ) -> AddTripleResponse:
         """
         Add a fact triple for a user or group
 
@@ -506,7 +506,7 @@ class GraphClient:
 
         Returns
         -------
-        GraphitiAddTripleResponse
+        AddTripleResponse
             Resulting triple
 
         Examples
@@ -555,7 +555,7 @@ class GraphClient:
         target_graph_id: typing.Optional[str] = OMIT,
         target_user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataCloneGraphResponse:
+    ) -> CloneGraphResponse:
         """
         Clone a user or group graph.
 
@@ -578,7 +578,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataCloneGraphResponse
+        CloneGraphResponse
             Response object containing graph_id or user_id pointing to the new graph
 
         Examples
@@ -606,7 +606,7 @@ class GraphClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraph:
+    ) -> Graph:
         """
         Creates a new graph.
 
@@ -623,7 +623,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The added graph
 
         Examples
@@ -651,7 +651,7 @@ class GraphClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphListResponse:
+    ) -> GraphListResponse:
         """
         Returns all graphs. In order to list users, use user.list_ordered instead
 
@@ -677,7 +677,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataGraphListResponse
+        GraphListResponse
             Successfully retrieved list of graphs.
 
         Examples
@@ -708,19 +708,19 @@ class GraphClient:
     def detect_patterns(
         self,
         *,
-        detect: typing.Optional[ApidataDetectConfig] = OMIT,
+        detect: typing.Optional[DetectConfig] = OMIT,
         edge_limit: typing.Optional[int] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_occurrences: typing.Optional[int] = OMIT,
         query: typing.Optional[str] = OMIT,
         query_limit: typing.Optional[int] = OMIT,
-        recency_weight: typing.Optional[ApidataRecencyWeight] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
-        seeds: typing.Optional[ApidataPatternSeeds] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataDetectPatternsResponse:
+    ) -> DetectPatternsResponse:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
@@ -729,7 +729,7 @@ class GraphClient:
 
         Parameters
         ----------
-        detect : typing.Optional[ApidataDetectConfig]
+        detect : typing.Optional[DetectConfig]
             Which pattern types to detect with type-specific configuration.
             Omit to detect all types with defaults. Ignored when query is set.
 
@@ -753,15 +753,15 @@ class GraphClient:
         query_limit : typing.Optional[int]
             Max seed nodes from search. Default: 10, Max: 50. Only used with query.
 
-        recency_weight : typing.Optional[ApidataRecencyWeight]
+        recency_weight : typing.Optional[RecencyWeight]
             Exponential half-life decay applied to edge created_at timestamps.
             Valid values: none, 7_days, 30_days, 90_days. Default: none
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Filters which edges/nodes participate in pattern detection.
             Reuses the same filter format as /graph/search.
 
-        seeds : typing.Optional[ApidataPatternSeeds]
+        seeds : typing.Optional[PatternSeeds]
             Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
 
         user_id : typing.Optional[str]
@@ -772,7 +772,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataDetectPatternsResponse
+        DetectPatternsResponse
             Detected patterns
 
         Examples
@@ -809,12 +809,12 @@ class GraphClient:
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[GraphitiReranker] = OMIT,
-        scope: typing.Optional[GraphitiGraphSearchScope] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
+        reranker: typing.Optional[Reranker] = OMIT,
+        scope: typing.Optional[GraphSearchScope] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphSearchResults:
+    ) -> GraphSearchResults:
         """
         Perform a graph search query.
 
@@ -838,13 +838,13 @@ class GraphClient:
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
-        reranker : typing.Optional[GraphitiReranker]
+        reranker : typing.Optional[Reranker]
             Defaults to RRF
 
-        scope : typing.Optional[GraphitiGraphSearchScope]
+        scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
@@ -855,7 +855,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataGraphSearchResults
+        GraphSearchResults
             Graph search results
 
         Examples
@@ -884,7 +884,7 @@ class GraphClient:
         )
         return _response.data
 
-    def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataGraph:
+    def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Graph:
         """
         Returns a graph.
 
@@ -898,7 +898,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The graph that was retrieved.
 
         Examples
@@ -915,9 +915,7 @@ class GraphClient:
         _response = self._raw_client.get(graph_id, request_options=request_options)
         return _response.data
 
-    def delete(
-        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    def delete(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes a graph. If you would like to delete a user graph, make sure to use user.delete instead.
 
@@ -931,7 +929,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Deleted
 
         Examples
@@ -955,7 +953,7 @@ class GraphClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraph:
+    ) -> Graph:
         """
         Updates information about a graph.
 
@@ -973,7 +971,7 @@ class GraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The updated graph object
 
         Examples
@@ -1023,7 +1021,7 @@ class AsyncGraphClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataListCustomInstructionsResponse:
+    ) -> ListCustomInstructionsResponse:
         """
         Lists all custom instructions for a project, user, or graph.
 
@@ -1040,7 +1038,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataListCustomInstructionsResponse
+        ListCustomInstructionsResponse
             The list of instructions.
 
         Examples
@@ -1071,17 +1069,17 @@ class AsyncGraphClient:
     async def add_custom_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataCustomInstruction],
+        instructions: typing.Sequence[CustomInstruction],
         graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataCustomInstruction]
+        instructions : typing.Sequence[CustomInstruction]
             Instructions to add to the graph.
 
         graph_ids : typing.Optional[typing.Sequence[str]]
@@ -1095,14 +1093,14 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Instructions added successfully
 
         Examples
         --------
         import asyncio
 
-        from zep_cloud import ApidataCustomInstruction, AsyncZep
+        from zep_cloud import AsyncZep, CustomInstruction
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1112,7 +1110,7 @@ class AsyncGraphClient:
         async def main() -> None:
             await client.graph.add_custom_instructions(
                 instructions=[
-                    ApidataCustomInstruction(
+                    CustomInstruction(
                         name="name",
                         text="text",
                     )
@@ -1134,7 +1132,7 @@ class AsyncGraphClient:
         instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Deletes custom instructions for graphs or project wide defaults.
 
@@ -1154,7 +1152,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Instructions deleted successfully
 
         Examples
@@ -1185,7 +1183,7 @@ class AsyncGraphClient:
         user_id: typing.Optional[str] = None,
         graph_id: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataEntityTypeResponse:
+    ) -> EntityTypeResponse:
         """
         Returns all entity types for a project, user, or graph.
 
@@ -1202,7 +1200,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataEntityTypeResponse
+        EntityTypeResponse
             The list of entity types.
 
         Examples
@@ -1233,20 +1231,20 @@ class AsyncGraphClient:
     async def set_entity_types_internal(
         self,
         *,
-        edge_types: typing.Optional[typing.Sequence[ApidataEdgeType]] = OMIT,
-        entity_types: typing.Optional[typing.Sequence[ApidataEntityType]] = OMIT,
+        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Sets the entity types for multiple users and graphs, replacing any existing ones.
 
         Parameters
         ----------
-        edge_types : typing.Optional[typing.Sequence[ApidataEdgeType]]
+        edge_types : typing.Optional[typing.Sequence[EdgeType]]
 
-        entity_types : typing.Optional[typing.Sequence[ApidataEntityType]]
+        entity_types : typing.Optional[typing.Sequence[EntityType]]
 
         graph_ids : typing.Optional[typing.Sequence[str]]
 
@@ -1257,7 +1255,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Entity types set successfully
 
         Examples
@@ -1290,14 +1288,14 @@ class AsyncGraphClient:
         self,
         *,
         data: str,
-        type: ModelsGraphDataType,
+        type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphEpisode:
+    ) -> Episode:
         """
         Add data to the graph.
 
@@ -1305,7 +1303,7 @@ class AsyncGraphClient:
         ----------
         data : str
 
-        type : ModelsGraphDataType
+        type : GraphDataType
 
         created_at : typing.Optional[str]
 
@@ -1325,7 +1323,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataGraphEpisode
+        Episode
             Added episode
 
         Examples
@@ -1363,17 +1361,17 @@ class AsyncGraphClient:
     async def add_batch(
         self,
         *,
-        episodes: typing.Sequence[ApidataEpisodeData],
+        episodes: typing.Sequence[EpisodeData],
         graph_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ApidataGraphEpisode]:
+    ) -> typing.List[Episode]:
         """
         Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
-        episodes : typing.Sequence[ApidataEpisodeData]
+        episodes : typing.Sequence[EpisodeData]
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -1386,14 +1384,14 @@ class AsyncGraphClient:
 
         Returns
         -------
-        typing.List[ApidataGraphEpisode]
+        typing.List[Episode]
             Added episodes
 
         Examples
         --------
         import asyncio
 
-        from zep_cloud import ApidataEpisodeData, AsyncZep
+        from zep_cloud import AsyncZep, EpisodeData
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -1403,7 +1401,7 @@ class AsyncGraphClient:
         async def main() -> None:
             await client.graph.add_batch(
                 episodes=[
-                    ApidataEpisodeData(
+                    EpisodeData(
                         data="data",
                         type="text",
                     )
@@ -1443,7 +1441,7 @@ class AsyncGraphClient:
         user_id: typing.Optional[str] = OMIT,
         valid_at: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> GraphitiAddTripleResponse:
+    ) -> AddTripleResponse:
         """
         Add a fact triple for a user or group
 
@@ -1519,7 +1517,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        GraphitiAddTripleResponse
+        AddTripleResponse
             Resulting triple
 
         Examples
@@ -1576,7 +1574,7 @@ class AsyncGraphClient:
         target_graph_id: typing.Optional[str] = OMIT,
         target_user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataCloneGraphResponse:
+    ) -> CloneGraphResponse:
         """
         Clone a user or group graph.
 
@@ -1599,7 +1597,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataCloneGraphResponse
+        CloneGraphResponse
             Response object containing graph_id or user_id pointing to the new graph
 
         Examples
@@ -1635,7 +1633,7 @@ class AsyncGraphClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraph:
+    ) -> Graph:
         """
         Creates a new graph.
 
@@ -1652,7 +1650,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The added graph
 
         Examples
@@ -1688,7 +1686,7 @@ class AsyncGraphClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphListResponse:
+    ) -> GraphListResponse:
         """
         Returns all graphs. In order to list users, use user.list_ordered instead
 
@@ -1714,7 +1712,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataGraphListResponse
+        GraphListResponse
             Successfully retrieved list of graphs.
 
         Examples
@@ -1753,19 +1751,19 @@ class AsyncGraphClient:
     async def detect_patterns(
         self,
         *,
-        detect: typing.Optional[ApidataDetectConfig] = OMIT,
+        detect: typing.Optional[DetectConfig] = OMIT,
         edge_limit: typing.Optional[int] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         min_occurrences: typing.Optional[int] = OMIT,
         query: typing.Optional[str] = OMIT,
         query_limit: typing.Optional[int] = OMIT,
-        recency_weight: typing.Optional[ApidataRecencyWeight] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
-        seeds: typing.Optional[ApidataPatternSeeds] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataDetectPatternsResponse:
+    ) -> DetectPatternsResponse:
         """
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
@@ -1774,7 +1772,7 @@ class AsyncGraphClient:
 
         Parameters
         ----------
-        detect : typing.Optional[ApidataDetectConfig]
+        detect : typing.Optional[DetectConfig]
             Which pattern types to detect with type-specific configuration.
             Omit to detect all types with defaults. Ignored when query is set.
 
@@ -1798,15 +1796,15 @@ class AsyncGraphClient:
         query_limit : typing.Optional[int]
             Max seed nodes from search. Default: 10, Max: 50. Only used with query.
 
-        recency_weight : typing.Optional[ApidataRecencyWeight]
+        recency_weight : typing.Optional[RecencyWeight]
             Exponential half-life decay applied to edge created_at timestamps.
             Valid values: none, 7_days, 30_days, 90_days. Default: none
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Filters which edges/nodes participate in pattern detection.
             Reuses the same filter format as /graph/search.
 
-        seeds : typing.Optional[ApidataPatternSeeds]
+        seeds : typing.Optional[PatternSeeds]
             Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
 
         user_id : typing.Optional[str]
@@ -1817,7 +1815,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataDetectPatternsResponse
+        DetectPatternsResponse
             Detected patterns
 
         Examples
@@ -1862,12 +1860,12 @@ class AsyncGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[GraphitiReranker] = OMIT,
-        scope: typing.Optional[GraphitiGraphSearchScope] = OMIT,
-        search_filters: typing.Optional[GraphitiSearchFilters] = OMIT,
+        reranker: typing.Optional[Reranker] = OMIT,
+        scope: typing.Optional[GraphSearchScope] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphSearchResults:
+    ) -> GraphSearchResults:
         """
         Perform a graph search query.
 
@@ -1891,13 +1889,13 @@ class AsyncGraphClient:
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
-        reranker : typing.Optional[GraphitiReranker]
+        reranker : typing.Optional[Reranker]
             Defaults to RRF
 
-        scope : typing.Optional[GraphitiGraphSearchScope]
+        scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
 
-        search_filters : typing.Optional[GraphitiSearchFilters]
+        search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
 
         user_id : typing.Optional[str]
@@ -1908,7 +1906,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataGraphSearchResults
+        GraphSearchResults
             Graph search results
 
         Examples
@@ -1945,7 +1943,7 @@ class AsyncGraphClient:
         )
         return _response.data
 
-    async def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataGraph:
+    async def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Graph:
         """
         Returns a graph.
 
@@ -1959,7 +1957,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The graph that was retrieved.
 
         Examples
@@ -1986,7 +1984,7 @@ class AsyncGraphClient:
 
     async def delete(
         self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Deletes a graph. If you would like to delete a user graph, make sure to use user.delete instead.
 
@@ -2000,7 +1998,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Deleted
 
         Examples
@@ -2032,7 +2030,7 @@ class AsyncGraphClient:
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraph:
+    ) -> Graph:
         """
         Updates information about a graph.
 
@@ -2050,7 +2048,7 @@ class AsyncGraphClient:
 
         Returns
         -------
-        ApidataGraph
+        Graph
             The updated graph object
 
         Examples

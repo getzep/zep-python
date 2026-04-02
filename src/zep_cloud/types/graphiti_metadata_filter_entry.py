@@ -6,11 +6,11 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update_forward_refs
-from .graphiti_comparison_operator import GraphitiComparisonOperator
+from .comparison_operator import ComparisonOperator
 
 
 class GraphitiMetadataFilterEntry(UniversalBaseModel):
-    comparison_operator: GraphitiComparisonOperator = pydantic.Field()
+    comparison_operator: ComparisonOperator = pydantic.Field()
     """
     Comparison operator: =, <>, >, <, >=, <=, IS NULL, IS NOT NULL, IN, CONTAINS
     """

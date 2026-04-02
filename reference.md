@@ -465,14 +465,14 @@ Adds new custom instructions for graphs without removing existing ones. If user_
 <dd>
 
 ```python
-from zep_cloud import ApidataCustomInstruction, Zep
+from zep_cloud import CustomInstruction, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.graph.add_custom_instructions(
     instructions=[
-        ApidataCustomInstruction(
+        CustomInstruction(
             name="name",
             text="text",
         )
@@ -493,7 +493,7 @@ client.graph.add_custom_instructions(
 <dl>
 <dd>
 
-**instructions:** `typing.Sequence[ApidataCustomInstruction]` — Instructions to add to the graph.
+**instructions:** `typing.Sequence[CustomInstruction]` — Instructions to add to the graph.
     
 </dd>
 </dl>
@@ -740,7 +740,7 @@ client.graph.set_entity_types_internal()
 <dl>
 <dd>
 
-**edge_types:** `typing.Optional[typing.Sequence[ApidataEdgeType]]` 
+**edge_types:** `typing.Optional[typing.Sequence[EdgeType]]` 
     
 </dd>
 </dl>
@@ -748,7 +748,7 @@ client.graph.set_entity_types_internal()
 <dl>
 <dd>
 
-**entity_types:** `typing.Optional[typing.Sequence[ApidataEntityType]]` 
+**entity_types:** `typing.Optional[typing.Sequence[EntityType]]` 
     
 </dd>
 </dl>
@@ -843,7 +843,7 @@ client.graph.add(
 <dl>
 <dd>
 
-**type:** `ModelsGraphDataType` 
+**type:** `GraphDataType` 
     
 </dd>
 </dl>
@@ -930,14 +930,14 @@ Add data to the graph in batch mode. Episodes are processed sequentially in the 
 <dd>
 
 ```python
-from zep_cloud import ApidataEpisodeData, Zep
+from zep_cloud import EpisodeData, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.graph.add_batch(
     episodes=[
-        ApidataEpisodeData(
+        EpisodeData(
             data="data",
             type="text",
         )
@@ -958,7 +958,7 @@ client.graph.add_batch(
 <dl>
 <dd>
 
-**episodes:** `typing.Sequence[ApidataEpisodeData]` 
+**episodes:** `typing.Sequence[EpisodeData]` 
     
 </dd>
 </dl>
@@ -1572,7 +1572,7 @@ client.graph.detect_patterns()
 <dl>
 <dd>
 
-**detect:** `typing.Optional[ApidataDetectConfig]` 
+**detect:** `typing.Optional[DetectConfig]` 
 
 Which pattern types to detect with type-specific configuration.
 Omit to detect all types with defaults. Ignored when query is set.
@@ -1635,7 +1635,7 @@ with cross-encoder reranking. Mutually exclusive with seeds.
 <dl>
 <dd>
 
-**recency_weight:** `typing.Optional[ApidataRecencyWeight]` 
+**recency_weight:** `typing.Optional[RecencyWeight]` 
 
 Exponential half-life decay applied to edge created_at timestamps.
 Valid values: none, 7_days, 30_days, 90_days. Default: none
@@ -1646,7 +1646,7 @@ Valid values: none, 7_days, 30_days, 90_days. Default: none
 <dl>
 <dd>
 
-**search_filters:** `typing.Optional[GraphitiSearchFilters]` 
+**search_filters:** `typing.Optional[SearchFilters]` 
 
 Filters which edges/nodes participate in pattern detection.
 Reuses the same filter format as /graph/search.
@@ -1657,7 +1657,7 @@ Reuses the same filter format as /graph/search.
 <dl>
 <dd>
 
-**seeds:** `typing.Optional[ApidataPatternSeeds]` — Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
+**seeds:** `typing.Optional[PatternSeeds]` — Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
     
 </dd>
 </dl>
@@ -1783,7 +1783,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**reranker:** `typing.Optional[GraphitiReranker]` — Defaults to RRF
+**reranker:** `typing.Optional[Reranker]` — Defaults to RRF
     
 </dd>
 </dl>
@@ -1791,7 +1791,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**scope:** `typing.Optional[GraphitiGraphSearchScope]` — Defaults to Edges.
+**scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges.
     
 </dd>
 </dl>
@@ -1799,7 +1799,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**search_filters:** `typing.Optional[GraphitiSearchFilters]` — Search filters to apply to the search
+**search_filters:** `typing.Optional[SearchFilters]` — Search filters to apply to the search
     
 </dd>
 </dl>
@@ -2635,7 +2635,7 @@ Add messages to a thread.
 <dd>
 
 ```python
-from zep_cloud import ApidataThreadMessage, Zep
+from zep_cloud import Message, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
@@ -2643,7 +2643,7 @@ client = Zep(
 client.thread.add_messages(
     thread_id="threadId",
     messages=[
-        ApidataThreadMessage(
+        Message(
             content="content",
             role="norole",
         )
@@ -2672,7 +2672,7 @@ client.thread.add_messages(
 <dl>
 <dd>
 
-**messages:** `typing.Sequence[ApidataThreadMessage]` — A list of message objects, where each message contains a role and content.
+**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content.
     
 </dd>
 </dl>
@@ -2680,7 +2680,7 @@ client.thread.add_messages(
 <dl>
 <dd>
 
-**ignore_roles:** `typing.Optional[typing.Sequence[ApidataRoleType]]` 
+**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
 
 Optional list of role types to ignore when adding messages to graph memory.
 The message itself will still be added, retained and used as context for messages
@@ -2739,7 +2739,7 @@ Add messages to a thread in batch mode. This will process messages concurrently,
 <dd>
 
 ```python
-from zep_cloud import ApidataThreadMessage, Zep
+from zep_cloud import Message, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
@@ -2747,7 +2747,7 @@ client = Zep(
 client.thread.add_messages_batch(
     thread_id="threadId",
     messages=[
-        ApidataThreadMessage(
+        Message(
             content="content",
             role="norole",
         )
@@ -2776,7 +2776,7 @@ client.thread.add_messages_batch(
 <dl>
 <dd>
 
-**messages:** `typing.Sequence[ApidataThreadMessage]` — A list of message objects, where each message contains a role and content.
+**messages:** `typing.Sequence[Message]` — A list of message objects, where each message contains a role and content.
     
 </dd>
 </dl>
@@ -2784,7 +2784,7 @@ client.thread.add_messages_batch(
 <dl>
 <dd>
 
-**ignore_roles:** `typing.Optional[typing.Sequence[ApidataRoleType]]` 
+**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
 
 Optional list of role types to ignore when adding messages to graph memory.
 The message itself will still be added, retained and used as context for messages
@@ -2914,14 +2914,14 @@ Adds new summary instructions for users graphs without removing existing ones. I
 <dd>
 
 ```python
-from zep_cloud import ApidataUserInstruction, Zep
+from zep_cloud import UserInstruction, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
 )
 client.user.add_user_summary_instructions(
     instructions=[
-        ApidataUserInstruction(
+        UserInstruction(
             name="name",
             text="text",
         )
@@ -2942,7 +2942,7 @@ client.user.add_user_summary_instructions(
 <dl>
 <dd>
 
-**instructions:** `typing.Sequence[ApidataUserInstruction]` — Instructions to add to the user summary generation.
+**instructions:** `typing.Sequence[UserInstruction]` — Instructions to add to the user summary generation.
     
 </dd>
 </dl>

@@ -4,10 +4,10 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.apidata_graph_episode_response import ApidataGraphEpisodeResponse
-from ...types.apidata_success_response import ApidataSuccessResponse
-from ...types.graphiti_entity_edge import GraphitiEntityEdge
-from ...types.graphiti_entity_node import GraphitiEntityNode
+from ...types.entity_edge import EntityEdge
+from ...types.entity_node import EntityNode
+from ...types.episode_response import EpisodeResponse
+from ...types.success_response import SuccessResponse
 from .raw_client import AsyncRawNodeClient, RawNodeClient
 
 # this is used as the default value for optional parameters
@@ -36,7 +36,7 @@ class NodeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEntityNode]:
+    ) -> typing.List[EntityNode]:
         """
         Returns all nodes for a graph.
 
@@ -56,7 +56,7 @@ class NodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityNode]
+        typing.List[EntityNode]
             Nodes
 
         Examples
@@ -82,7 +82,7 @@ class NodeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEntityNode]:
+    ) -> typing.List[EntityNode]:
         """
         Returns all nodes for a user
 
@@ -102,7 +102,7 @@ class NodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityNode]
+        typing.List[EntityNode]
             Nodes
 
         Examples
@@ -123,7 +123,7 @@ class NodeClient:
 
     def get_edges(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Returns all edges for a node
 
@@ -137,7 +137,7 @@ class NodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -156,7 +156,7 @@ class NodeClient:
 
     def get_episodes(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataGraphEpisodeResponse:
+    ) -> EpisodeResponse:
         """
         Returns all episodes that mentioned a given node
 
@@ -170,7 +170,7 @@ class NodeClient:
 
         Returns
         -------
-        ApidataGraphEpisodeResponse
+        EpisodeResponse
             Episodes
 
         Examples
@@ -187,7 +187,7 @@ class NodeClient:
         _response = self._raw_client.get_episodes(node_uuid, request_options=request_options)
         return _response.data
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiEntityNode:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
         """
         Returns a specific node by its UUID.
 
@@ -201,7 +201,7 @@ class NodeClient:
 
         Returns
         -------
-        GraphitiEntityNode
+        EntityNode
             Node
 
         Examples
@@ -218,7 +218,7 @@ class NodeClient:
         _response = self._raw_client.get(uuid_, request_options=request_options)
         return _response.data
 
-    def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataSuccessResponse:
+    def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes a node by UUID.
 
@@ -232,7 +232,7 @@ class NodeClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Node deleted
 
         Examples
@@ -258,7 +258,7 @@ class NodeClient:
         name: typing.Optional[str] = OMIT,
         summary: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> GraphitiEntityNode:
+    ) -> EntityNode:
         """
         Updates an entity node by UUID.
 
@@ -284,7 +284,7 @@ class NodeClient:
 
         Returns
         -------
-        GraphitiEntityNode
+        EntityNode
             Updated node
 
         Examples
@@ -326,7 +326,7 @@ class AsyncNodeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEntityNode]:
+    ) -> typing.List[EntityNode]:
         """
         Returns all nodes for a graph.
 
@@ -346,7 +346,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityNode]
+        typing.List[EntityNode]
             Nodes
 
         Examples
@@ -380,7 +380,7 @@ class AsyncNodeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiEntityNode]:
+    ) -> typing.List[EntityNode]:
         """
         Returns all nodes for a user
 
@@ -400,7 +400,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityNode]
+        typing.List[EntityNode]
             Nodes
 
         Examples
@@ -429,7 +429,7 @@ class AsyncNodeClient:
 
     async def get_edges(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[GraphitiEntityEdge]:
+    ) -> typing.List[EntityEdge]:
         """
         Returns all edges for a node
 
@@ -443,7 +443,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        typing.List[GraphitiEntityEdge]
+        typing.List[EntityEdge]
             Edges
 
         Examples
@@ -470,7 +470,7 @@ class AsyncNodeClient:
 
     async def get_episodes(
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataGraphEpisodeResponse:
+    ) -> EpisodeResponse:
         """
         Returns all episodes that mentioned a given node
 
@@ -484,7 +484,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        ApidataGraphEpisodeResponse
+        EpisodeResponse
             Episodes
 
         Examples
@@ -509,7 +509,7 @@ class AsyncNodeClient:
         _response = await self._raw_client.get_episodes(node_uuid, request_options=request_options)
         return _response.data
 
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiEntityNode:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
         """
         Returns a specific node by its UUID.
 
@@ -523,7 +523,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        GraphitiEntityNode
+        EntityNode
             Node
 
         Examples
@@ -548,9 +548,7 @@ class AsyncNodeClient:
         _response = await self._raw_client.get(uuid_, request_options=request_options)
         return _response.data
 
-    async def delete(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    async def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes a node by UUID.
 
@@ -564,7 +562,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Node deleted
 
         Examples
@@ -598,7 +596,7 @@ class AsyncNodeClient:
         name: typing.Optional[str] = OMIT,
         summary: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> GraphitiEntityNode:
+    ) -> EntityNode:
         """
         Updates an entity node by UUID.
 
@@ -624,7 +622,7 @@ class AsyncNodeClient:
 
         Returns
         -------
-        GraphitiEntityNode
+        EntityNode
             Updated node
 
         Examples

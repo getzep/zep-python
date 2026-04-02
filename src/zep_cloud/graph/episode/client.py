@@ -4,10 +4,10 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.apidata_episode_mentions import ApidataEpisodeMentions
-from ...types.apidata_graph_episode import ApidataGraphEpisode
-from ...types.apidata_graph_episode_response import ApidataGraphEpisodeResponse
-from ...types.apidata_success_response import ApidataSuccessResponse
+from ...types.episode import Episode
+from ...types.episode_mentions import EpisodeMentions
+from ...types.episode_response import EpisodeResponse
+from ...types.success_response import SuccessResponse
 from .raw_client import AsyncRawEpisodeClient, RawEpisodeClient
 
 
@@ -32,7 +32,7 @@ class EpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphEpisodeResponse:
+    ) -> EpisodeResponse:
         """
         Returns episodes by graph id.
 
@@ -49,7 +49,7 @@ class EpisodeClient:
 
         Returns
         -------
-        ApidataGraphEpisodeResponse
+        EpisodeResponse
             Episodes
 
         Examples
@@ -73,7 +73,7 @@ class EpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphEpisodeResponse:
+    ) -> EpisodeResponse:
         """
         Returns episodes by user id.
 
@@ -90,7 +90,7 @@ class EpisodeClient:
 
         Returns
         -------
-        ApidataGraphEpisodeResponse
+        EpisodeResponse
             Episodes
 
         Examples
@@ -108,7 +108,7 @@ class EpisodeClient:
         _response = self._raw_client.get_by_user_id(user_id, lastn=lastn, request_options=request_options)
         return _response.data
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataGraphEpisode:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
         """
         Returns episodes by UUID
 
@@ -122,7 +122,7 @@ class EpisodeClient:
 
         Returns
         -------
-        ApidataGraphEpisode
+        Episode
             Episode
 
         Examples
@@ -139,7 +139,7 @@ class EpisodeClient:
         _response = self._raw_client.get(uuid_, request_options=request_options)
         return _response.data
 
-    def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataSuccessResponse:
+    def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes an episode by its UUID.
 
@@ -153,7 +153,7 @@ class EpisodeClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Episode deleted
 
         Examples
@@ -172,7 +172,7 @@ class EpisodeClient:
 
     def get_nodes_and_edges(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataEpisodeMentions:
+    ) -> EpisodeMentions:
         """
         Returns nodes and edges mentioned in an episode
 
@@ -186,7 +186,7 @@ class EpisodeClient:
 
         Returns
         -------
-        ApidataEpisodeMentions
+        EpisodeMentions
             Edges and nodes mentioned in an episode
 
         Examples
@@ -225,7 +225,7 @@ class AsyncEpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphEpisodeResponse:
+    ) -> EpisodeResponse:
         """
         Returns episodes by graph id.
 
@@ -242,7 +242,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        ApidataGraphEpisodeResponse
+        EpisodeResponse
             Episodes
 
         Examples
@@ -274,7 +274,7 @@ class AsyncEpisodeClient:
         *,
         lastn: typing.Optional[int] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataGraphEpisodeResponse:
+    ) -> EpisodeResponse:
         """
         Returns episodes by user id.
 
@@ -291,7 +291,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        ApidataGraphEpisodeResponse
+        EpisodeResponse
             Episodes
 
         Examples
@@ -317,7 +317,7 @@ class AsyncEpisodeClient:
         _response = await self._raw_client.get_by_user_id(user_id, lastn=lastn, request_options=request_options)
         return _response.data
 
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataGraphEpisode:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
         """
         Returns episodes by UUID
 
@@ -331,7 +331,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        ApidataGraphEpisode
+        Episode
             Episode
 
         Examples
@@ -356,9 +356,7 @@ class AsyncEpisodeClient:
         _response = await self._raw_client.get(uuid_, request_options=request_options)
         return _response.data
 
-    async def delete(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    async def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes an episode by its UUID.
 
@@ -372,7 +370,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Episode deleted
 
         Examples
@@ -399,7 +397,7 @@ class AsyncEpisodeClient:
 
     async def get_nodes_and_edges(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataEpisodeMentions:
+    ) -> EpisodeMentions:
         """
         Returns nodes and edges mentioned in an episode
 
@@ -413,7 +411,7 @@ class AsyncEpisodeClient:
 
         Returns
         -------
-        ApidataEpisodeMentions
+        EpisodeMentions
             Edges and nodes mentioned in an episode
 
         Examples

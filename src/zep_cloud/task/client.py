@@ -4,7 +4,7 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.apidata_get_task_response import ApidataGetTaskResponse
+from ..types.get_task_response import GetTaskResponse
 from .raw_client import AsyncRawTaskClient, RawTaskClient
 
 
@@ -23,7 +23,7 @@ class TaskClient:
         """
         return self._raw_client
 
-    def get(self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataGetTaskResponse:
+    def get(self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> GetTaskResponse:
         """
         Gets a task by its ID
 
@@ -37,7 +37,7 @@ class TaskClient:
 
         Returns
         -------
-        ApidataGetTaskResponse
+        GetTaskResponse
             Task
 
         Examples
@@ -70,9 +70,7 @@ class AsyncTaskClient:
         """
         return self._raw_client
 
-    async def get(
-        self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataGetTaskResponse:
+    async def get(self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> GetTaskResponse:
         """
         Gets a task by its ID
 
@@ -86,7 +84,7 @@ class AsyncTaskClient:
 
         Returns
         -------
-        ApidataGetTaskResponse
+        GetTaskResponse
             Task
 
         Examples

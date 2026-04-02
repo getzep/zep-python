@@ -4,13 +4,13 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.apidata_list_user_instructions_response import ApidataListUserInstructionsResponse
-from ..types.apidata_success_response import ApidataSuccessResponse
-from ..types.apidata_thread import ApidataThread
-from ..types.apidata_user import ApidataUser
-from ..types.apidata_user_instruction import ApidataUserInstruction
-from ..types.apidata_user_list_response import ApidataUserListResponse
-from ..types.apidata_user_node_response import ApidataUserNodeResponse
+from ..types.list_user_instructions_response import ListUserInstructionsResponse
+from ..types.success_response import SuccessResponse
+from ..types.thread import Thread
+from ..types.user import User
+from ..types.user_instruction import UserInstruction
+from ..types.user_list_response import UserListResponse
+from ..types.user_node_response import UserNodeResponse
 from .raw_client import AsyncRawUserClient, RawUserClient
 
 # this is used as the default value for optional parameters
@@ -34,7 +34,7 @@ class UserClient:
 
     def list_user_summary_instructions(
         self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataListUserInstructionsResponse:
+    ) -> ListUserInstructionsResponse:
         """
         Lists all user summary instructions for a project, user.
 
@@ -48,7 +48,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataListUserInstructionsResponse
+        ListUserInstructionsResponse
             The list of instructions.
 
         Examples
@@ -68,16 +68,16 @@ class UserClient:
     def add_user_summary_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataUserInstruction],
+        instructions: typing.Sequence[UserInstruction],
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataUserInstruction]
+        instructions : typing.Sequence[UserInstruction]
             Instructions to add to the user summary generation.
 
         user_ids : typing.Optional[typing.Sequence[str]]
@@ -88,19 +88,19 @@ class UserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Instructions added successfully
 
         Examples
         --------
-        from zep_cloud import ApidataUserInstruction, Zep
+        from zep_cloud import UserInstruction, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.user.add_user_summary_instructions(
             instructions=[
-                ApidataUserInstruction(
+                UserInstruction(
                     name="name",
                     text="text",
                 )
@@ -118,7 +118,7 @@ class UserClient:
         instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Deletes user summary/instructions for users or project wide defaults.
 
@@ -135,7 +135,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Instructions deleted successfully
 
         Examples
@@ -162,7 +162,7 @@ class UserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Adds a user.
 
@@ -191,7 +191,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was added.
 
         Examples
@@ -225,7 +225,7 @@ class UserClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUserListResponse:
+    ) -> UserListResponse:
         """
         Returns all users.
 
@@ -251,7 +251,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUserListResponse
+        UserListResponse
             Successfully retrieved list of users
 
         Examples
@@ -279,7 +279,7 @@ class UserClient:
         )
         return _response.data
 
-    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataUser:
+    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
         Returns a user.
 
@@ -293,7 +293,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was retrieved.
 
         Examples
@@ -310,9 +310,7 @@ class UserClient:
         _response = self._raw_client.get(user_id, request_options=request_options)
         return _response.data
 
-    def delete(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes a user.
 
@@ -326,7 +324,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             OK
 
         Examples
@@ -353,7 +351,7 @@ class UserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Updates a user.
 
@@ -382,7 +380,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was updated.
 
         Examples
@@ -407,9 +405,7 @@ class UserClient:
         )
         return _response.data
 
-    def get_node(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataUserNodeResponse:
+    def get_node(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> UserNodeResponse:
         """
         Returns a user's node.
 
@@ -423,7 +419,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataUserNodeResponse
+        UserNodeResponse
             Response object containing the User node.
 
         Examples
@@ -442,7 +438,7 @@ class UserClient:
 
     def get_threads(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[ApidataThread]:
+    ) -> typing.List[Thread]:
         """
         Returns all threads for a user.
 
@@ -456,7 +452,7 @@ class UserClient:
 
         Returns
         -------
-        typing.List[ApidataThread]
+        typing.List[Thread]
             OK
 
         Examples
@@ -473,7 +469,7 @@ class UserClient:
         _response = self._raw_client.get_threads(user_id, request_options=request_options)
         return _response.data
 
-    def warm(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataSuccessResponse:
+    def warm(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Hints Zep to warm a user's graph for low-latency search
 
@@ -487,7 +483,7 @@ class UserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Warm hint accepted
 
         Examples
@@ -522,7 +518,7 @@ class AsyncUserClient:
 
     async def list_user_summary_instructions(
         self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataListUserInstructionsResponse:
+    ) -> ListUserInstructionsResponse:
         """
         Lists all user summary instructions for a project, user.
 
@@ -536,7 +532,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataListUserInstructionsResponse
+        ListUserInstructionsResponse
             The list of instructions.
 
         Examples
@@ -566,16 +562,16 @@ class AsyncUserClient:
     async def add_user_summary_instructions(
         self,
         *,
-        instructions: typing.Sequence[ApidataUserInstruction],
+        instructions: typing.Sequence[UserInstruction],
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
 
         Parameters
         ----------
-        instructions : typing.Sequence[ApidataUserInstruction]
+        instructions : typing.Sequence[UserInstruction]
             Instructions to add to the user summary generation.
 
         user_ids : typing.Optional[typing.Sequence[str]]
@@ -586,14 +582,14 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Instructions added successfully
 
         Examples
         --------
         import asyncio
 
-        from zep_cloud import ApidataUserInstruction, AsyncZep
+        from zep_cloud import AsyncZep, UserInstruction
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -603,7 +599,7 @@ class AsyncUserClient:
         async def main() -> None:
             await client.user.add_user_summary_instructions(
                 instructions=[
-                    ApidataUserInstruction(
+                    UserInstruction(
                         name="name",
                         text="text",
                     )
@@ -624,7 +620,7 @@ class AsyncUserClient:
         instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
         user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataSuccessResponse:
+    ) -> SuccessResponse:
         """
         Deletes user summary/instructions for users or project wide defaults.
 
@@ -641,7 +637,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Instructions deleted successfully
 
         Examples
@@ -676,7 +672,7 @@ class AsyncUserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Adds a user.
 
@@ -705,7 +701,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was added.
 
         Examples
@@ -747,7 +743,7 @@ class AsyncUserClient:
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUserListResponse:
+    ) -> UserListResponse:
         """
         Returns all users.
 
@@ -773,7 +769,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUserListResponse
+        UserListResponse
             Successfully retrieved list of users
 
         Examples
@@ -809,7 +805,7 @@ class AsyncUserClient:
         )
         return _response.data
 
-    async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataUser:
+    async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
         """
         Returns a user.
 
@@ -823,7 +819,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was retrieved.
 
         Examples
@@ -848,9 +844,7 @@ class AsyncUserClient:
         _response = await self._raw_client.get(user_id, request_options=request_options)
         return _response.data
 
-    async def delete(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    async def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Deletes a user.
 
@@ -864,7 +858,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             OK
 
         Examples
@@ -899,7 +893,7 @@ class AsyncUserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataUser:
+    ) -> User:
         """
         Updates a user.
 
@@ -928,7 +922,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUser
+        User
             The user that was updated.
 
         Examples
@@ -963,7 +957,7 @@ class AsyncUserClient:
 
     async def get_node(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataUserNodeResponse:
+    ) -> UserNodeResponse:
         """
         Returns a user's node.
 
@@ -977,7 +971,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataUserNodeResponse
+        UserNodeResponse
             Response object containing the User node.
 
         Examples
@@ -1004,7 +998,7 @@ class AsyncUserClient:
 
     async def get_threads(
         self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[ApidataThread]:
+    ) -> typing.List[Thread]:
         """
         Returns all threads for a user.
 
@@ -1018,7 +1012,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        typing.List[ApidataThread]
+        typing.List[Thread]
             OK
 
         Examples
@@ -1043,9 +1037,7 @@ class AsyncUserClient:
         _response = await self._raw_client.get_threads(user_id, request_options=request_options)
         return _response.data
 
-    async def warm(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataSuccessResponse:
+    async def warm(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
         """
         Hints Zep to warm a user's graph for low-latency search
 
@@ -1059,7 +1051,7 @@ class AsyncUserClient:
 
         Returns
         -------
-        ApidataSuccessResponse
+        SuccessResponse
             Warm hint accepted
 
         Examples

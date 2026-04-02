@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ...core.api_error import ApiError
+from ...core.api_error import ApiError as core_api_error_ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
 from ...core.jsonable_encoder import jsonable_encoder
@@ -12,8 +12,8 @@ from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
-from ...types.apidata_api_error import ApidataApiError
-from ...types.graphiti_community_node import GraphitiCommunityNode
+from ...types.api_error import ApiError as types_api_error_ApiError
+from ...types.community_node import CommunityNode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,7 +30,7 @@ class RawThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiCommunityNode]]:
+    ) -> HttpResponse[typing.List[CommunityNode]]:
         """
         Returns read-only theme nodes for a graph.
 
@@ -50,7 +50,7 @@ class RawThemeClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiCommunityNode]]
+        HttpResponse[typing.List[CommunityNode]]
             Themes
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -69,9 +69,9 @@ class RawThemeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiCommunityNode],
+                    typing.List[CommunityNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiCommunityNode],  # type: ignore
+                        type_=typing.List[CommunityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -80,9 +80,9 @@ class RawThemeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -91,9 +91,9 @@ class RawThemeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -102,17 +102,21 @@ class RawThemeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def get_by_user_id(
         self,
@@ -121,7 +125,7 @@ class RawThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiCommunityNode]]:
+    ) -> HttpResponse[typing.List[CommunityNode]]:
         """
         Returns read-only theme nodes for a user's graph.
 
@@ -141,7 +145,7 @@ class RawThemeClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiCommunityNode]]
+        HttpResponse[typing.List[CommunityNode]]
             Themes
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -160,9 +164,9 @@ class RawThemeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiCommunityNode],
+                    typing.List[CommunityNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiCommunityNode],  # type: ignore
+                        type_=typing.List[CommunityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -171,9 +175,9 @@ class RawThemeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -182,9 +186,9 @@ class RawThemeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -193,21 +197,25 @@ class RawThemeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     def get(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[GraphitiCommunityNode]:
+    ) -> HttpResponse[CommunityNode]:
         """
         Returns a specific theme node by UUID. Theme nodes are read-only.
 
@@ -221,7 +229,7 @@ class RawThemeClient:
 
         Returns
         -------
-        HttpResponse[GraphitiCommunityNode]
+        HttpResponse[CommunityNode]
             Theme
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -232,9 +240,9 @@ class RawThemeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiCommunityNode,
+                    CommunityNode,
                     parse_obj_as(
-                        type_=GraphitiCommunityNode,  # type: ignore
+                        type_=CommunityNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -243,9 +251,9 @@ class RawThemeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -254,9 +262,9 @@ class RawThemeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -265,17 +273,21 @@ class RawThemeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
 
 class AsyncRawThemeClient:
@@ -289,7 +301,7 @@ class AsyncRawThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiCommunityNode]]:
+    ) -> AsyncHttpResponse[typing.List[CommunityNode]]:
         """
         Returns read-only theme nodes for a graph.
 
@@ -309,7 +321,7 @@ class AsyncRawThemeClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiCommunityNode]]
+        AsyncHttpResponse[typing.List[CommunityNode]]
             Themes
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -328,9 +340,9 @@ class AsyncRawThemeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiCommunityNode],
+                    typing.List[CommunityNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiCommunityNode],  # type: ignore
+                        type_=typing.List[CommunityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -339,9 +351,9 @@ class AsyncRawThemeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -350,9 +362,9 @@ class AsyncRawThemeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -361,17 +373,21 @@ class AsyncRawThemeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get_by_user_id(
         self,
@@ -380,7 +396,7 @@ class AsyncRawThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiCommunityNode]]:
+    ) -> AsyncHttpResponse[typing.List[CommunityNode]]:
         """
         Returns read-only theme nodes for a user's graph.
 
@@ -400,7 +416,7 @@ class AsyncRawThemeClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiCommunityNode]]
+        AsyncHttpResponse[typing.List[CommunityNode]]
             Themes
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -419,9 +435,9 @@ class AsyncRawThemeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiCommunityNode],
+                    typing.List[CommunityNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiCommunityNode],  # type: ignore
+                        type_=typing.List[CommunityNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -430,9 +446,9 @@ class AsyncRawThemeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -441,9 +457,9 @@ class AsyncRawThemeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -452,21 +468,25 @@ class AsyncRawThemeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
     async def get(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[GraphitiCommunityNode]:
+    ) -> AsyncHttpResponse[CommunityNode]:
         """
         Returns a specific theme node by UUID. Theme nodes are read-only.
 
@@ -480,7 +500,7 @@ class AsyncRawThemeClient:
 
         Returns
         -------
-        AsyncHttpResponse[GraphitiCommunityNode]
+        AsyncHttpResponse[CommunityNode]
             Theme
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -491,9 +511,9 @@ class AsyncRawThemeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiCommunityNode,
+                    CommunityNode,
                     parse_obj_as(
-                        type_=GraphitiCommunityNode,  # type: ignore
+                        type_=CommunityNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -502,9 +522,9 @@ class AsyncRawThemeClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -513,9 +533,9 @@ class AsyncRawThemeClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -524,14 +544,18 @@ class AsyncRawThemeClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )

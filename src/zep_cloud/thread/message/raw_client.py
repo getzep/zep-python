@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ...core.api_error import ApiError
+from ...core.api_error import ApiError as core_api_error_ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
 from ...core.jsonable_encoder import jsonable_encoder
@@ -11,8 +11,8 @@ from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
-from ...types.apidata_api_error import ApidataApiError
-from ...types.apidata_thread_message import ApidataThreadMessage
+from ...types.api_error import ApiError as types_api_error_ApiError
+from ...types.message import Message
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -28,7 +28,7 @@ class RawMessageClient:
         *,
         metadata: typing.Dict[str, typing.Optional[typing.Any]],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataThreadMessage]:
+    ) -> HttpResponse[Message]:
         """
         Updates a message.
 
@@ -44,7 +44,7 @@ class RawMessageClient:
 
         Returns
         -------
-        HttpResponse[ApidataThreadMessage]
+        HttpResponse[Message]
             The updated message.
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -62,9 +62,9 @@ class RawMessageClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadMessage,
+                    Message,
                     parse_obj_as(
-                        type_=ApidataThreadMessage,  # type: ignore
+                        type_=Message,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -73,9 +73,9 @@ class RawMessageClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -84,17 +84,21 @@ class RawMessageClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
 
 class AsyncRawMessageClient:
@@ -107,7 +111,7 @@ class AsyncRawMessageClient:
         *,
         metadata: typing.Dict[str, typing.Optional[typing.Any]],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataThreadMessage]:
+    ) -> AsyncHttpResponse[Message]:
         """
         Updates a message.
 
@@ -123,7 +127,7 @@ class AsyncRawMessageClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataThreadMessage]
+        AsyncHttpResponse[Message]
             The updated message.
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -141,9 +145,9 @@ class AsyncRawMessageClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadMessage,
+                    Message,
                     parse_obj_as(
-                        type_=ApidataThreadMessage,  # type: ignore
+                        type_=Message,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -152,9 +156,9 @@ class AsyncRawMessageClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -163,14 +167,18 @@ class AsyncRawMessageClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )

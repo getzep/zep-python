@@ -4,7 +4,7 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.graphiti_community_node import GraphitiCommunityNode
+from ...types.community_node import CommunityNode
 from .raw_client import AsyncRawThemeClient, RawThemeClient
 
 # this is used as the default value for optional parameters
@@ -33,7 +33,7 @@ class ThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiCommunityNode]:
+    ) -> typing.List[CommunityNode]:
         """
         Returns read-only theme nodes for a graph.
 
@@ -53,7 +53,7 @@ class ThemeClient:
 
         Returns
         -------
-        typing.List[GraphitiCommunityNode]
+        typing.List[CommunityNode]
             Themes
 
         Examples
@@ -79,7 +79,7 @@ class ThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiCommunityNode]:
+    ) -> typing.List[CommunityNode]:
         """
         Returns read-only theme nodes for a user's graph.
 
@@ -99,7 +99,7 @@ class ThemeClient:
 
         Returns
         -------
-        typing.List[GraphitiCommunityNode]
+        typing.List[CommunityNode]
             Themes
 
         Examples
@@ -118,7 +118,7 @@ class ThemeClient:
         )
         return _response.data
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiCommunityNode:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> CommunityNode:
         """
         Returns a specific theme node by UUID. Theme nodes are read-only.
 
@@ -132,7 +132,7 @@ class ThemeClient:
 
         Returns
         -------
-        GraphitiCommunityNode
+        CommunityNode
             Theme
 
         Examples
@@ -172,7 +172,7 @@ class AsyncThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiCommunityNode]:
+    ) -> typing.List[CommunityNode]:
         """
         Returns read-only theme nodes for a graph.
 
@@ -192,7 +192,7 @@ class AsyncThemeClient:
 
         Returns
         -------
-        typing.List[GraphitiCommunityNode]
+        typing.List[CommunityNode]
             Themes
 
         Examples
@@ -226,7 +226,7 @@ class AsyncThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiCommunityNode]:
+    ) -> typing.List[CommunityNode]:
         """
         Returns read-only theme nodes for a user's graph.
 
@@ -246,7 +246,7 @@ class AsyncThemeClient:
 
         Returns
         -------
-        typing.List[GraphitiCommunityNode]
+        typing.List[CommunityNode]
             Themes
 
         Examples
@@ -273,9 +273,7 @@ class AsyncThemeClient:
         )
         return _response.data
 
-    async def get(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> GraphitiCommunityNode:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> CommunityNode:
         """
         Returns a specific theme node by UUID. Theme nodes are read-only.
 
@@ -289,7 +287,7 @@ class AsyncThemeClient:
 
         Returns
         -------
-        GraphitiCommunityNode
+        CommunityNode
             Theme
 
         Examples

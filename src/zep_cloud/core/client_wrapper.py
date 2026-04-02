@@ -22,13 +22,13 @@ class BaseClientWrapper:
 
     def get_headers(self) -> typing.Dict[str, str]:
         headers: typing.Dict[str, str] = {
-            "User-Agent": "zep-cloud/3.19.0",
+            "User-Agent": "zep-cloud/3.20.0",
             "X-Fern-Language": "Python",
             "X-Fern-SDK-Name": "zep-cloud",
-            "X-Fern-SDK-Version": "3.19.0",
+            "X-Fern-SDK-Version": "3.20.0",
             **(self.get_custom_headers() or {}),
         }
-        headers["Authorization"] = self.api_key
+        headers["Authorization"] = f"Api-Key {self.api_key}"
         return headers
 
     def get_custom_headers(self) -> typing.Optional[typing.Dict[str, str]]:

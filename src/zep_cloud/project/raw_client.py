@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError
+from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.pydantic_utilities import parse_obj_as
@@ -11,17 +11,15 @@ from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.apidata_api_error import ApidataApiError
-from ..types.apidata_project_info_response import ApidataProjectInfoResponse
+from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.project_info_response import ProjectInfoResponse
 
 
 class RawProjectClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataProjectInfoResponse]:
+    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[ProjectInfoResponse]:
         """
         Retrieve project info based on the provided api key.
 
@@ -32,7 +30,7 @@ class RawProjectClient:
 
         Returns
         -------
-        HttpResponse[ApidataProjectInfoResponse]
+        HttpResponse[ProjectInfoResponse]
             Retrieved
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -43,9 +41,9 @@ class RawProjectClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataProjectInfoResponse,
+                    ProjectInfoResponse,
                     parse_obj_as(
-                        type_=ApidataProjectInfoResponse,  # type: ignore
+                        type_=ProjectInfoResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -54,9 +52,9 @@ class RawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -65,9 +63,9 @@ class RawProjectClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -76,17 +74,21 @@ class RawProjectClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
 
 class AsyncRawProjectClient:
@@ -95,7 +97,7 @@ class AsyncRawProjectClient:
 
     async def get(
         self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataProjectInfoResponse]:
+    ) -> AsyncHttpResponse[ProjectInfoResponse]:
         """
         Retrieve project info based on the provided api key.
 
@@ -106,7 +108,7 @@ class AsyncRawProjectClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataProjectInfoResponse]
+        AsyncHttpResponse[ProjectInfoResponse]
             Retrieved
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -117,9 +119,9 @@ class AsyncRawProjectClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataProjectInfoResponse,
+                    ProjectInfoResponse,
                     parse_obj_as(
-                        type_=ApidataProjectInfoResponse,  # type: ignore
+                        type_=ProjectInfoResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -128,9 +130,9 @@ class AsyncRawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -139,9 +141,9 @@ class AsyncRawProjectClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -150,14 +152,18 @@ class AsyncRawProjectClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )

@@ -3,7 +3,7 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError
+from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.jsonable_encoder import jsonable_encoder
@@ -11,8 +11,8 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.apidata_api_error import ApidataApiError
-from ..types.apidata_get_task_response import ApidataGetTaskResponse
+from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.get_task_response import GetTaskResponse
 
 
 class RawTaskClient:
@@ -21,7 +21,7 @@ class RawTaskClient:
 
     def get(
         self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataGetTaskResponse]:
+    ) -> HttpResponse[GetTaskResponse]:
         """
         Gets a task by its ID
 
@@ -35,7 +35,7 @@ class RawTaskClient:
 
         Returns
         -------
-        HttpResponse[ApidataGetTaskResponse]
+        HttpResponse[GetTaskResponse]
             Task
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -46,9 +46,9 @@ class RawTaskClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGetTaskResponse,
+                    GetTaskResponse,
                     parse_obj_as(
-                        type_=ApidataGetTaskResponse,  # type: ignore
+                        type_=GetTaskResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -57,9 +57,9 @@ class RawTaskClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -68,17 +68,21 @@ class RawTaskClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
 
 
 class AsyncRawTaskClient:
@@ -87,7 +91,7 @@ class AsyncRawTaskClient:
 
     async def get(
         self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataGetTaskResponse]:
+    ) -> AsyncHttpResponse[GetTaskResponse]:
         """
         Gets a task by its ID
 
@@ -101,7 +105,7 @@ class AsyncRawTaskClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataGetTaskResponse]
+        AsyncHttpResponse[GetTaskResponse]
             Task
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -112,9 +116,9 @@ class AsyncRawTaskClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataGetTaskResponse,
+                    GetTaskResponse,
                     parse_obj_as(
-                        type_=ApidataGetTaskResponse,  # type: ignore
+                        type_=GetTaskResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -123,9 +127,9 @@ class AsyncRawTaskClient:
                 raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -134,14 +138,18 @@ class AsyncRawTaskClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ApidataApiError,
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=ApidataApiError,  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
