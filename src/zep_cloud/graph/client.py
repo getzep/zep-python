@@ -30,7 +30,6 @@ from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
 from .node.client import AsyncNodeClient, NodeClient
 from .raw_client import AsyncRawGraphClient, RawGraphClient
-from .theme.client import AsyncThemeClient, ThemeClient
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -46,8 +45,6 @@ class GraphClient:
         self.episode = EpisodeClient(client_wrapper=client_wrapper)
 
         self.node = NodeClient(client_wrapper=client_wrapper)
-
-        self.theme = ThemeClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawGraphClient:
@@ -296,7 +293,6 @@ class GraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -314,9 +310,6 @@ class GraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
-
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, or booleans.
 
         source_description : typing.Optional[str]
 
@@ -348,7 +341,6 @@ class GraphClient:
             type=type,
             created_at=created_at,
             graph_id=graph_id,
-            metadata=metadata,
             source_description=source_description,
             user_id=user_id,
             request_options=request_options,
@@ -416,7 +408,6 @@ class GraphClient:
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
@@ -459,10 +450,6 @@ class GraphClient:
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
-
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs for the shadow episode created for this fact triple.
-            Max 10 keys. Values must be strings, numbers, or booleans.
 
         source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
@@ -530,7 +517,6 @@ class GraphClient:
             fact_uuid=fact_uuid,
             graph_id=graph_id,
             invalid_at=invalid_at,
-            metadata=metadata,
             source_node_attributes=source_node_attributes,
             source_node_labels=source_node_labels,
             source_node_name=source_node_name,
@@ -1002,8 +988,6 @@ class AsyncGraphClient:
 
         self.node = AsyncNodeClient(client_wrapper=client_wrapper)
 
-        self.theme = AsyncThemeClient(client_wrapper=client_wrapper)
-
     @property
     def with_raw_response(self) -> AsyncRawGraphClient:
         """
@@ -1291,7 +1275,6 @@ class AsyncGraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1309,9 +1292,6 @@ class AsyncGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
-
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, or booleans.
 
         source_description : typing.Optional[str]
 
@@ -1351,7 +1331,6 @@ class AsyncGraphClient:
             type=type,
             created_at=created_at,
             graph_id=graph_id,
-            metadata=metadata,
             source_description=source_description,
             user_id=user_id,
             request_options=request_options,
@@ -1427,7 +1406,6 @@ class AsyncGraphClient:
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
@@ -1470,10 +1448,6 @@ class AsyncGraphClient:
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
-
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs for the shadow episode created for this fact triple.
-            Max 10 keys. Values must be strings, numbers, or booleans.
 
         source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
@@ -1549,7 +1523,6 @@ class AsyncGraphClient:
             fact_uuid=fact_uuid,
             graph_id=graph_id,
             invalid_at=invalid_at,
-            metadata=metadata,
             source_node_attributes=source_node_attributes,
             source_node_labels=source_node_labels,
             source_node_name=source_node_name,

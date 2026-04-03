@@ -19,7 +19,7 @@ class PatternSeeds(UniversalBaseModel):
 
     node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Specific node UUIDs to analyze around. Max 10000 to align with pattern detection seed limits.
+    Specific node UUIDs to analyze around
     """
 
     if IS_PYDANTIC_V2:

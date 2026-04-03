@@ -2,4 +2,4 @@
 
 import typing
 
-GraphDataType = typing.Union[typing.Literal["text", "json", "message", "fact_triple"], typing.Any]
+GraphDataType = typing.Union[typing.Literal["text", "json", "message"], typing.Any]

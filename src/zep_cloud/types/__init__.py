@@ -37,7 +37,6 @@ from .graph_list_response import GraphListResponse
 from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
-from .graph_themes_request import GraphThemesRequest
 from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
 from .hub_detect_config import HubDetectConfig
 from .list_context_templates_response import ListContextTemplatesResponse
@@ -106,7 +105,6 @@ __all__ = [
     "GraphNodesRequest",
     "GraphSearchResults",
     "GraphSearchScope",
-    "GraphThemesRequest",
     "GraphitiMetadataFilterGroupType",
     "HubDetectConfig",
     "ListContextTemplatesResponse",

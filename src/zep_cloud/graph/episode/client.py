@@ -10,6 +10,9 @@ from ...types.episode_response import EpisodeResponse
 from ...types.success_response import SuccessResponse
 from .raw_client import AsyncRawEpisodeClient, RawEpisodeClient
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class EpisodeClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
@@ -168,6 +171,47 @@ class EpisodeClient:
         )
         """
         _response = self._raw_client.delete(uuid_, request_options=request_options)
+        return _response.data
+
+    def update(
+        self,
+        uuid_: str,
+        *,
+        metadata: typing.Dict[str, typing.Optional[typing.Any]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Episode:
+        """
+        Update episode metadata with merge semantics. Supplied keys overwrite or add to existing metadata; keys set to null are removed.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Episode UUID
+
+        metadata : typing.Dict[str, typing.Optional[typing.Any]]
+            Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, or null).
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Episode
+            Updated episode
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.episode.update(
+            uuid_="uuid",
+            metadata={"key": "value"},
+        )
+        """
+        _response = self._raw_client.update(uuid_, metadata=metadata, request_options=request_options)
         return _response.data
 
     def get_nodes_and_edges(
@@ -393,6 +437,55 @@ class AsyncEpisodeClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.delete(uuid_, request_options=request_options)
+        return _response.data
+
+    async def update(
+        self,
+        uuid_: str,
+        *,
+        metadata: typing.Dict[str, typing.Optional[typing.Any]],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Episode:
+        """
+        Update episode metadata with merge semantics. Supplied keys overwrite or add to existing metadata; keys set to null are removed.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Episode UUID
+
+        metadata : typing.Dict[str, typing.Optional[typing.Any]]
+            Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, or null).
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Episode
+            Updated episode
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.episode.update(
+                uuid_="uuid",
+                metadata={"key": "value"},
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.update(uuid_, metadata=metadata, request_options=request_options)
         return _response.data
 
     async def get_nodes_and_edges(
