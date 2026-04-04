@@ -8,40 +8,25 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
-class EntityEdge(UniversalBaseModel):
+class CommunityNode(UniversalBaseModel):
     attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
     """
-    Additional attributes of the edge. Dependent on edge types
+    Additional attributes of the community node.
     """
 
     created_at: str = pydantic.Field()
     """
-    Creation time of the edge
+    Creation time of the node
     """
 
-    episodes: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    List of episode ids that reference these entity edges
-    """
-
-    expired_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Datetime of when the node was invalidated
-    """
-
-    fact: str = pydantic.Field()
-    """
-    Fact representing the edge and nodes that it connects
-    """
-
-    invalid_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Datetime of when the fact stopped being true
+    Labels associated with the node
     """
 
     name: str = pydantic.Field()
     """
-    Name of the edge, relation name
+    Name of the node
     """
 
     relevance: typing.Optional[float] = pydantic.Field(default=None)
@@ -50,34 +35,19 @@ class EntityEdge(UniversalBaseModel):
     Only populated when using cross_encoder reranker; omitted for other reranker types (e.g., RRF).
     """
 
-    scope: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Scope of the edge (e.g. "entity", "maybe_related")
-    """
-
     score: typing.Optional[float] = pydantic.Field(default=None)
     """
     Score is the reranker output: sigmoid-distributed logits [0,1] when using cross_encoder reranker, or RRF ordinal rank when using rrf reranker
     """
 
-    source_node_uuid: str = pydantic.Field()
+    summary: typing.Optional[str] = pydantic.Field(default=None)
     """
-    UUID of the source node
-    """
-
-    target_node_uuid: str = pydantic.Field()
-    """
-    UUID of the target node
+    Region summary of member nodes
     """
 
     uuid_: typing_extensions.Annotated[str, FieldMetadata(alias="uuid")] = pydantic.Field()
     """
-    UUID of the edge
-    """
-
-    valid_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Datetime of when the fact became true
+    UUID of the node
     """
 
     if IS_PYDANTIC_V2:

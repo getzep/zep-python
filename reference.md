@@ -867,6 +867,14 @@ client.graph.add(
 <dl>
 <dd>
 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` — Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **source_description:** `typing.Optional[str]` 
     
 </dd>
@@ -1431,6 +1439,7 @@ client = Zep(
 client.graph.list_all(
     page_number=1,
     page_size=1,
+    search="search",
     order_by="order_by",
     asc=True,
 )
@@ -1458,6 +1467,14 @@ client.graph.list_all(
 <dd>
 
 **page_size:** `typing.Optional[int]` — Number of graphs to retrieve per page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `typing.Optional[str]` — Search term for filtering graphs by graph_id.
     
 </dd>
 </dl>
@@ -1763,7 +1780,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges. Communities will be added in the future.
+**scope:** `typing.Optional[GraphSearchScope]` — Defaults to Edges.
     
 </dd>
 </dl>
@@ -3694,6 +3711,249 @@ client.user.warm(
 </dl>
 </details>
 
+## Graph Community
+<details><summary><code>client.graph.community.<a href="src/zep_cloud/graph/community/client.py">get_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns read-only community nodes for a graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.community.get_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.community.<a href="src/zep_cloud/graph/community/client.py">get_by_user_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns read-only community nodes for a user's graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.community.get_by_user_id(
+    user_id="user_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.community.<a href="src/zep_cloud/graph/community/client.py">get</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a specific community node by UUID. Community nodes are read-only.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.community.get(
+    uuid_="uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**uuid_:** `str` — Community UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Graph Edge
 <details><summary><code>client.graph.edge.<a href="src/zep_cloud/graph/edge/client.py">get_by_graph_id</a>(...)</code></summary>
 <dl>
@@ -4405,6 +4665,85 @@ client.graph.episode.delete(
 <dd>
 
 **uuid_:** `str` — Episode UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update episode metadata with merge semantics. Supplied keys overwrite or add to existing metadata; keys set to null are removed.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.episode.update(
+    uuid_="uuid",
+    metadata={"key": "value"},
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**uuid_:** `str` — Episode UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Dict[str, typing.Optional[typing.Any]]` — Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, or null).
     
 </dd>
 </dl>

@@ -521,6 +521,7 @@ class RawGraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -538,6 +539,9 @@ class RawGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -559,6 +563,7 @@ class RawGraphClient:
                 "created_at": created_at,
                 "data": data,
                 "graph_id": graph_id,
+                "metadata": metadata,
                 "source_description": source_description,
                 "type": type,
                 "user_id": user_id,
@@ -1044,6 +1049,7 @@ class RawGraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1058,6 +1064,9 @@ class RawGraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        search : typing.Optional[str]
+            Search term for filtering graphs by graph_id.
 
         order_by : typing.Optional[str]
             Column to sort by (created_at, group_id, name).
@@ -1079,6 +1088,7 @@ class RawGraphClient:
             params={
                 "pageNumber": page_number,
                 "pageSize": page_size,
+                "search": search,
                 "order_by": order_by,
                 "asc": asc,
             },
@@ -1328,7 +1338,7 @@ class RawGraphClient:
             Defaults to RRF
 
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Communities will be added in the future.
+            Defaults to Edges.
 
         search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
@@ -2121,6 +2131,7 @@ class AsyncRawGraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -2138,6 +2149,9 @@ class AsyncRawGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -2159,6 +2173,7 @@ class AsyncRawGraphClient:
                 "created_at": created_at,
                 "data": data,
                 "graph_id": graph_id,
+                "metadata": metadata,
                 "source_description": source_description,
                 "type": type,
                 "user_id": user_id,
@@ -2644,6 +2659,7 @@ class AsyncRawGraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
         asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -2658,6 +2674,9 @@ class AsyncRawGraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        search : typing.Optional[str]
+            Search term for filtering graphs by graph_id.
 
         order_by : typing.Optional[str]
             Column to sort by (created_at, group_id, name).
@@ -2679,6 +2698,7 @@ class AsyncRawGraphClient:
             params={
                 "pageNumber": page_number,
                 "pageSize": page_size,
+                "search": search,
                 "order_by": order_by,
                 "asc": asc,
             },
@@ -2928,7 +2948,7 @@ class AsyncRawGraphClient:
             Defaults to RRF
 
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Communities will be added in the future.
+            Defaults to Edges.
 
         search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
