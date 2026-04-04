@@ -867,6 +867,14 @@ client.graph.add(
 <dl>
 <dd>
 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` — Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **source_description:** `typing.Optional[str]` 
     
 </dd>

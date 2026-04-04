@@ -521,6 +521,7 @@ class RawGraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -538,6 +539,9 @@ class RawGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -559,6 +563,7 @@ class RawGraphClient:
                 "created_at": created_at,
                 "data": data,
                 "graph_id": graph_id,
+                "metadata": metadata,
                 "source_description": source_description,
                 "type": type,
                 "user_id": user_id,
@@ -2126,6 +2131,7 @@ class AsyncRawGraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -2143,6 +2149,9 @@ class AsyncRawGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -2164,6 +2173,7 @@ class AsyncRawGraphClient:
                 "created_at": created_at,
                 "data": data,
                 "graph_id": graph_id,
+                "metadata": metadata,
                 "source_description": source_description,
                 "type": type,
                 "user_id": user_id,
