@@ -189,7 +189,7 @@ class EpisodeClient:
             Episode UUID
 
         metadata : typing.Dict[str, typing.Optional[typing.Any]]
-            Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, or null).
+            Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, null) or arrays of scalars.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -455,7 +455,7 @@ class AsyncEpisodeClient:
             Episode UUID
 
         metadata : typing.Dict[str, typing.Optional[typing.Any]]
-            Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, or null).
+            Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, null) or arrays of scalars.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

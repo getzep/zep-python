@@ -12,9 +12,11 @@ from .episode import Episode
 
 class GraphSearchResults(UniversalBaseModel):
     communities: typing.Optional[typing.List[CommunityNode]] = None
+    context: typing.Optional[str] = None
     edges: typing.Optional[typing.List[EntityEdge]] = None
     episodes: typing.Optional[typing.List[Episode]] = None
     nodes: typing.Optional[typing.List[EntityNode]] = None
+    sagas: typing.Optional[typing.List[typing.Optional[typing.Any]]] = None
     themes: typing.Optional[typing.List[CommunityNode]] = None
 
     if IS_PYDANTIC_V2:

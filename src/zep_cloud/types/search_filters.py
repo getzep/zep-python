@@ -93,7 +93,6 @@ class SearchFilters(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-from .metadata_filter_entry import MetadataFilterEntry  # noqa: E402, F401, I001
 from .metadata_filter_group import MetadataFilterGroup  # noqa: E402, F401, I001
 
 update_forward_refs(SearchFilters)

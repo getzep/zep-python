@@ -867,14 +867,6 @@ client.graph.add(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` — Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **source_description:** `typing.Optional[str]` 
     
 </dd>
@@ -4743,7 +4735,7 @@ client.graph.episode.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Dict[str, typing.Optional[typing.Any]]` — Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, or null).
+**metadata:** `typing.Dict[str, typing.Optional[typing.Any]]` — Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, null) or arrays of scalars.
     
 </dd>
 </dl>
