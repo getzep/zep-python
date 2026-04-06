@@ -521,6 +521,7 @@ class RawGraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -538,6 +539,9 @@ class RawGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -559,6 +563,7 @@ class RawGraphClient:
                 "created_at": created_at,
                 "data": data,
                 "graph_id": graph_id,
+                "metadata": metadata,
                 "source_description": source_description,
                 "type": type,
                 "user_id": user_id,
@@ -707,6 +712,7 @@ class RawGraphClient:
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
@@ -749,6 +755,10 @@ class RawGraphClient:
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs for the shadow episode created for this fact triple.
+            Max 10 keys. Values must be strings, numbers, or booleans.
 
         source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
@@ -807,6 +817,7 @@ class RawGraphClient:
                 "fact_uuid": fact_uuid,
                 "graph_id": graph_id,
                 "invalid_at": invalid_at,
+                "metadata": metadata,
                 "source_node_attributes": source_node_attributes,
                 "source_node_labels": source_node_labels,
                 "source_node_name": source_node_name,
@@ -1299,8 +1310,10 @@ class RawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
+        return_raw_results: typing.Optional[bool] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -1326,11 +1339,17 @@ class RawGraphClient:
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
+        max_characters : typing.Optional[int]
+            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
+
+        return_raw_results : typing.Optional[bool]
+            When scope=auto, include the selected raw graph results alongside the materialized context block.
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
@@ -1347,7 +1366,7 @@ class RawGraphClient:
         Returns
         -------
         HttpResponse[GraphSearchResults]
-            Graph search results
+            Graph search results or auto-context block
         """
         _response = self._client_wrapper.httpx_client.request(
             "graph/search",
@@ -1357,9 +1376,11 @@ class RawGraphClient:
                 "center_node_uuid": center_node_uuid,
                 "graph_id": graph_id,
                 "limit": limit,
+                "max_characters": max_characters,
                 "mmr_lambda": mmr_lambda,
                 "query": query,
                 "reranker": reranker,
+                "return_raw_results": return_raw_results,
                 "scope": scope,
                 "search_filters": convert_and_respect_annotation_metadata(
                     object_=search_filters, annotation=SearchFilters, direction="write"
@@ -2126,6 +2147,7 @@ class AsyncRawGraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -2143,6 +2165,9 @@ class AsyncRawGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -2164,6 +2189,7 @@ class AsyncRawGraphClient:
                 "created_at": created_at,
                 "data": data,
                 "graph_id": graph_id,
+                "metadata": metadata,
                 "source_description": source_description,
                 "type": type,
                 "user_id": user_id,
@@ -2312,6 +2338,7 @@ class AsyncRawGraphClient:
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
@@ -2354,6 +2381,10 @@ class AsyncRawGraphClient:
 
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs for the shadow episode created for this fact triple.
+            Max 10 keys. Values must be strings, numbers, or booleans.
 
         source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
@@ -2412,6 +2443,7 @@ class AsyncRawGraphClient:
                 "fact_uuid": fact_uuid,
                 "graph_id": graph_id,
                 "invalid_at": invalid_at,
+                "metadata": metadata,
                 "source_node_attributes": source_node_attributes,
                 "source_node_labels": source_node_labels,
                 "source_node_name": source_node_name,
@@ -2904,8 +2936,10 @@ class AsyncRawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
+        return_raw_results: typing.Optional[bool] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -2931,11 +2965,17 @@ class AsyncRawGraphClient:
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
+        max_characters : typing.Optional[int]
+            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
+
+        return_raw_results : typing.Optional[bool]
+            When scope=auto, include the selected raw graph results alongside the materialized context block.
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
@@ -2952,7 +2992,7 @@ class AsyncRawGraphClient:
         Returns
         -------
         AsyncHttpResponse[GraphSearchResults]
-            Graph search results
+            Graph search results or auto-context block
         """
         _response = await self._client_wrapper.httpx_client.request(
             "graph/search",
@@ -2962,9 +3002,11 @@ class AsyncRawGraphClient:
                 "center_node_uuid": center_node_uuid,
                 "graph_id": graph_id,
                 "limit": limit,
+                "max_characters": max_characters,
                 "mmr_lambda": mmr_lambda,
                 "query": query,
                 "reranker": reranker,
+                "return_raw_results": return_raw_results,
                 "scope": scope,
                 "search_filters": convert_and_respect_annotation_metadata(
                     object_=search_filters, annotation=SearchFilters, direction="write"

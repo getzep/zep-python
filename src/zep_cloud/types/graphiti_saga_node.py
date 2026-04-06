@@ -8,12 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
-class EntityNode(UniversalBaseModel):
-    attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
-    """
-    Additional attributes of the node. Dependent on node labels
-    """
-
+class GraphitiSagaNode(UniversalBaseModel):
     created_at: str = pydantic.Field()
     """
     Creation time of the node
@@ -22,6 +17,11 @@ class EntityNode(UniversalBaseModel):
     labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     Labels associated with the node
+    """
+
+    last_summarized_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Timestamp of the most recent summary update.
     """
 
     name: str = pydantic.Field()
@@ -45,9 +45,9 @@ class EntityNode(UniversalBaseModel):
     SelectionRank is the global cross-scope rank assigned by auto scope selection.
     """
 
-    summary: str = pydantic.Field()
+    summary: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Regional summary of surrounding edges
+    Incremental summary of the thread.
     """
 
     uuid_: typing_extensions.Annotated[str, FieldMetadata(alias="uuid")] = pydantic.Field()
