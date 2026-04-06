@@ -32,8 +32,8 @@ class SearchFilters(UniversalBaseModel):
 
     episode_metadata_filters: typing.Optional["MetadataFilterGroup"] = pydantic.Field(default=None)
     """
-    Episode metadata filter. Restricts results to edges/nodes derived from episodes
-    matching the metadata predicates. Uses explicit AND/OR groups.
+    [Experimental] Episode metadata filter. Restricts results to edges/nodes derived from episodes
+    matching the metadata predicates. Uses explicit AND/OR groups. This feature is experimental and may change in future releases.
     """
 
     exclude_edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
@@ -93,7 +93,6 @@ class SearchFilters(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-from .metadata_filter_entry import MetadataFilterEntry  # noqa: E402, F401, I001
 from .metadata_filter_group import MetadataFilterGroup  # noqa: E402, F401, I001
 
 update_forward_refs(SearchFilters)

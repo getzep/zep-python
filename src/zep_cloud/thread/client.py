@@ -243,7 +243,7 @@ class ThreadClient:
         client.thread.get(
             thread_id="threadId",
             limit=1,
-            cursor=1,
+            cursor=1000000,
             lastn=1,
         )
         """
@@ -640,7 +640,7 @@ class AsyncThreadClient:
             await client.thread.get(
                 thread_id="threadId",
                 limit=1,
-                cursor=1,
+                cursor=1000000,
                 lastn=1,
             )
 

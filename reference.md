@@ -1112,6 +1112,17 @@ Nested objects and arrays are not allowed.
 <dl>
 <dd>
 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` 
+
+Optional metadata key-value pairs for the shadow episode created for this fact triple.
+Max 10 keys. Values must be strings, numbers, or booleans.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **source_node_attributes:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` 
 
 Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
@@ -1764,6 +1775,14 @@ client.graph.search(
 <dl>
 <dd>
 
+**max_characters:** `typing.Optional[int]` — Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **mmr_lambda:** `typing.Optional[float]` — weighting for maximal marginal relevance
     
 </dd>
@@ -1773,6 +1792,14 @@ client.graph.search(
 <dd>
 
 **reranker:** `typing.Optional[Reranker]` — Defaults to RRF
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**return_raw_results:** `typing.Optional[bool]` — When scope=auto, include the selected raw graph results alongside the materialized context block.
     
 </dd>
 </dl>
@@ -2535,7 +2562,7 @@ client = Zep(
 client.thread.get(
     thread_id="threadId",
     limit=1,
-    cursor=1,
+    cursor=1000000,
     lastn=1,
 )
 
@@ -4743,7 +4770,7 @@ client.graph.episode.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Dict[str, typing.Optional[typing.Any]]` — Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, or null).
+**metadata:** `typing.Dict[str, typing.Optional[typing.Any]]` — Updated metadata. Merged with existing metadata: supplied keys overwrite/add, keys set to null are removed. Maximum 10 keys. Values must be scalars (string, number, boolean, null) or arrays of scalars.
     
 </dd>
 </dl>
@@ -5369,6 +5396,422 @@ client.graph.node.update(
 <dd>
 
 **summary:** `typing.Optional[str]` — Updated summary for the node
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Graph Saga
+<details><summary><code>client.graph.saga.<a href="src/zep_cloud/graph/saga/client.py">get_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns read-only saga nodes for a graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.saga.get_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.saga.<a href="src/zep_cloud/graph/saga/client.py">get_by_user_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns read-only saga nodes for a user's graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.saga.get_by_user_id(
+    user_id="user_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Graph Theme
+<details><summary><code>client.graph.theme.<a href="src/zep_cloud/graph/theme/client.py">get_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns read-only theme nodes for a graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.theme.get_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.theme.<a href="src/zep_cloud/graph/theme/client.py">get_by_user_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns read-only theme nodes for a user's graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.theme.get_by_user_id(
+    user_id="user_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.theme.<a href="src/zep_cloud/graph/theme/client.py">get</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a specific theme node by UUID. Theme nodes are read-only.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.theme.get(
+    uuid_="uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**uuid_:** `str` — Theme UUID
     
 </dd>
 </dl>

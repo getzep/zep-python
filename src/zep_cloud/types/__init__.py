@@ -27,6 +27,7 @@ from .entity_type_response import EntityTypeResponse
 from .episode import Episode
 from .episode_data import EpisodeData
 from .episode_mentions import EpisodeMentions
+from .episode_metadata_filter import EpisodeMetadataFilter
 from .episode_response import EpisodeResponse
 from .get_task_response import GetTaskResponse
 from .graph import Graph
@@ -35,16 +36,18 @@ from .graph_data_type import GraphDataType
 from .graph_edges_request import GraphEdgesRequest
 from .graph_list_response import GraphListResponse
 from .graph_nodes_request import GraphNodesRequest
+from .graph_sagas_request import GraphSagasRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
+from .graph_themes_request import GraphThemesRequest
 from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
+from .graphiti_saga_node import GraphitiSagaNode
 from .hub_detect_config import HubDetectConfig
 from .list_context_templates_response import ListContextTemplatesResponse
 from .list_custom_instructions_response import ListCustomInstructionsResponse
 from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
-from .metadata_filter_entry import MetadataFilterEntry
 from .metadata_filter_group import MetadataFilterGroup
 from .path_detect_config import PathDetectConfig
 from .pattern_metadata import PatternMetadata
@@ -95,6 +98,7 @@ __all__ = [
     "Episode",
     "EpisodeData",
     "EpisodeMentions",
+    "EpisodeMetadataFilter",
     "EpisodeResponse",
     "GetTaskResponse",
     "Graph",
@@ -103,16 +107,18 @@ __all__ = [
     "GraphEdgesRequest",
     "GraphListResponse",
     "GraphNodesRequest",
+    "GraphSagasRequest",
     "GraphSearchResults",
     "GraphSearchScope",
+    "GraphThemesRequest",
     "GraphitiMetadataFilterGroupType",
+    "GraphitiSagaNode",
     "HubDetectConfig",
     "ListContextTemplatesResponse",
     "ListCustomInstructionsResponse",
     "ListUserInstructionsResponse",
     "Message",
     "MessageListResponse",
-    "MetadataFilterEntry",
     "MetadataFilterGroup",
     "PathDetectConfig",
     "PatternMetadata",

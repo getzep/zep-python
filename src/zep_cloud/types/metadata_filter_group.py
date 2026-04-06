@@ -6,13 +6,19 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update_forward_refs
+from .episode_metadata_filter import EpisodeMetadataFilter
 from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
 
 
 class MetadataFilterGroup(UniversalBaseModel):
-    filters: typing.List["MetadataFilterEntry"] = pydantic.Field()
+    filters: typing.Optional[typing.List[EpisodeMetadataFilter]] = pydantic.Field(default=None)
     """
-    Leaf filters and/or nested groups
+    Leaf filters (predicates on metadata key-value pairs)
+    """
+
+    groups: typing.Optional[typing.List["MetadataFilterGroup"]] = pydantic.Field(default=None)
+    """
+    Nested sub-groups for composing complex boolean expressions
     """
 
     type: GraphitiMetadataFilterGroupType = pydantic.Field()
@@ -29,7 +35,5 @@ class MetadataFilterGroup(UniversalBaseModel):
             smart_union = True
             extra = pydantic.Extra.allow
 
-
-from .metadata_filter_entry import MetadataFilterEntry  # noqa: E402, F401, I001
 
 update_forward_refs(MetadataFilterGroup)

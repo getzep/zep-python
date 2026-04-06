@@ -6,20 +6,15 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class PatternSeeds(UniversalBaseModel):
-    edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+class GraphThemesRequest(UniversalBaseModel):
+    limit: typing.Optional[int] = pydantic.Field(default=None)
     """
-    All endpoints of these edge types become seeds
-    """
-
-    node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
-    """
-    All nodes with these labels become seeds
+    Maximum number of items to return
     """
 
-    node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    uuid_cursor: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Specific node UUIDs to analyze around. Max 10000 to align with pattern detection seed limits.
+    UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
     """
 
     if IS_PYDANTIC_V2:

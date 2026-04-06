@@ -12,7 +12,7 @@ class EpisodeData(UniversalBaseModel):
     data: str
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
     """
-    Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, or booleans.
+    Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
     """
 
     source_description: typing.Optional[str] = None
