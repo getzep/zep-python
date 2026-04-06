@@ -6,7 +6,7 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ApidataGraphSagasRequest(UniversalBaseModel):
+class GraphSagasRequest(UniversalBaseModel):
     limit: typing.Optional[int] = pydantic.Field(default=None)
     """
     Maximum number of items to return
