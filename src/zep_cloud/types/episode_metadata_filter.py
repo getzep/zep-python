@@ -7,7 +7,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .comparison_operator import ComparisonOperator
 
 
-class GraphitiEpisodeMetadataFilter(UniversalBaseModel):
+class EpisodeMetadataFilter(UniversalBaseModel):
     comparison_operator: ComparisonOperator = pydantic.Field()
     """
     Comparison operator: =, <>, >, <, >=, <=, IS NULL, IS NOT NULL, IN, CONTAINS

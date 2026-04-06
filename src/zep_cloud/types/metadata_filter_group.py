@@ -6,12 +6,12 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update_forward_refs
-from .graphiti_episode_metadata_filter import GraphitiEpisodeMetadataFilter
+from .episode_metadata_filter import EpisodeMetadataFilter
 from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
 
 
 class MetadataFilterGroup(UniversalBaseModel):
-    filters: typing.Optional[typing.List[GraphitiEpisodeMetadataFilter]] = pydantic.Field(default=None)
+    filters: typing.Optional[typing.List[EpisodeMetadataFilter]] = pydantic.Field(default=None)
     """
     Leaf filters (predicates on metadata key-value pairs)
     """

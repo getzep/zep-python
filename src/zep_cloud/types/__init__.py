@@ -27,6 +27,7 @@ from .entity_type_response import EntityTypeResponse
 from .episode import Episode
 from .episode_data import EpisodeData
 from .episode_mentions import EpisodeMentions
+from .episode_metadata_filter import EpisodeMetadataFilter
 from .episode_response import EpisodeResponse
 from .get_task_response import GetTaskResponse
 from .graph import Graph
@@ -37,7 +38,6 @@ from .graph_list_response import GraphListResponse
 from .graph_nodes_request import GraphNodesRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
-from .graphiti_episode_metadata_filter import GraphitiEpisodeMetadataFilter
 from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
 from .hub_detect_config import HubDetectConfig
 from .list_context_templates_response import ListContextTemplatesResponse
@@ -95,6 +95,7 @@ __all__ = [
     "Episode",
     "EpisodeData",
     "EpisodeMentions",
+    "EpisodeMetadataFilter",
     "EpisodeResponse",
     "GetTaskResponse",
     "Graph",
@@ -105,7 +106,6 @@ __all__ = [
     "GraphNodesRequest",
     "GraphSearchResults",
     "GraphSearchScope",
-    "GraphitiEpisodeMetadataFilter",
     "GraphitiMetadataFilterGroupType",
     "HubDetectConfig",
     "ListContextTemplatesResponse",
