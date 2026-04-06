@@ -30,6 +30,7 @@ from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
 from .node.client import AsyncNodeClient, NodeClient
 from .raw_client import AsyncRawGraphClient, RawGraphClient
+from .saga.client import AsyncSagaClient, SagaClient
 from .theme.client import AsyncThemeClient, ThemeClient
 
 # this is used as the default value for optional parameters
@@ -46,6 +47,8 @@ class GraphClient:
         self.episode = EpisodeClient(client_wrapper=client_wrapper)
 
         self.node = NodeClient(client_wrapper=client_wrapper)
+
+        self.saga = SagaClient(client_wrapper=client_wrapper)
 
         self.theme = ThemeClient(client_wrapper=client_wrapper)
 
@@ -316,7 +319,7 @@ class GraphClient:
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, or booleans.
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -808,8 +811,10 @@ class GraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
+        return_raw_results: typing.Optional[bool] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -835,11 +840,17 @@ class GraphClient:
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
+        max_characters : typing.Optional[int]
+            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
+
+        return_raw_results : typing.Optional[bool]
+            When scope=auto, include the selected raw graph results alongside the materialized context block.
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
@@ -856,7 +867,7 @@ class GraphClient:
         Returns
         -------
         GraphSearchResults
-            Graph search results
+            Graph search results or auto-context block
 
         Examples
         --------
@@ -875,8 +886,10 @@ class GraphClient:
             center_node_uuid=center_node_uuid,
             graph_id=graph_id,
             limit=limit,
+            max_characters=max_characters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
+            return_raw_results=return_raw_results,
             scope=scope,
             search_filters=search_filters,
             user_id=user_id,
@@ -1001,6 +1014,8 @@ class AsyncGraphClient:
         self.episode = AsyncEpisodeClient(client_wrapper=client_wrapper)
 
         self.node = AsyncNodeClient(client_wrapper=client_wrapper)
+
+        self.saga = AsyncSagaClient(client_wrapper=client_wrapper)
 
         self.theme = AsyncThemeClient(client_wrapper=client_wrapper)
 
@@ -1311,7 +1326,7 @@ class AsyncGraphClient:
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, or booleans.
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -1859,8 +1874,10 @@ class AsyncGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
+        return_raw_results: typing.Optional[bool] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -1886,11 +1903,17 @@ class AsyncGraphClient:
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
+        max_characters : typing.Optional[int]
+            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
+
+        return_raw_results : typing.Optional[bool]
+            When scope=auto, include the selected raw graph results alongside the materialized context block.
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
@@ -1907,7 +1930,7 @@ class AsyncGraphClient:
         Returns
         -------
         GraphSearchResults
-            Graph search results
+            Graph search results or auto-context block
 
         Examples
         --------
@@ -1934,8 +1957,10 @@ class AsyncGraphClient:
             center_node_uuid=center_node_uuid,
             graph_id=graph_id,
             limit=limit,
+            max_characters=max_characters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
+            return_raw_results=return_raw_results,
             scope=scope,
             search_filters=search_filters,
             user_id=user_id,

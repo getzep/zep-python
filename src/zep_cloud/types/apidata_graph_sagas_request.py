@@ -4,19 +4,18 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .graph_data_type import GraphDataType
 
 
-class EpisodeData(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    data: str
-    metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
+class ApidataGraphSagasRequest(UniversalBaseModel):
+    limit: typing.Optional[int] = pydantic.Field(default=None)
     """
-    Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
+    Maximum number of items to return
     """
 
-    source_description: typing.Optional[str] = None
-    type: GraphDataType
+    uuid_cursor: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

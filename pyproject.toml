@@ -1,5 +1,6 @@
 [project]
 name = "zep-cloud"
+version = "3.19.0"
 
 [tool.poetry]
 name = "zep-cloud"

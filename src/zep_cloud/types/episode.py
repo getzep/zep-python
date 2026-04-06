@@ -36,6 +36,11 @@ class Episode(UniversalBaseModel):
     Score is the reranker output: sigmoid-distributed logits [0,1] when using cross_encoder reranker, or RRF ordinal rank when using rrf reranker
     """
 
+    selection_rank: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    SelectionRank is the global cross-scope rank assigned by auto scope selection.
+    """
+
     source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
     task_id: typing.Optional[str] = pydantic.Field(default=None)

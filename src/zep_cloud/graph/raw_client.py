@@ -541,7 +541,7 @@ class RawGraphClient:
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, or booleans.
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -1310,8 +1310,10 @@ class RawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
+        return_raw_results: typing.Optional[bool] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -1337,11 +1339,17 @@ class RawGraphClient:
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
+        max_characters : typing.Optional[int]
+            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
+
+        return_raw_results : typing.Optional[bool]
+            When scope=auto, include the selected raw graph results alongside the materialized context block.
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
@@ -1358,7 +1366,7 @@ class RawGraphClient:
         Returns
         -------
         HttpResponse[GraphSearchResults]
-            Graph search results
+            Graph search results or auto-context block
         """
         _response = self._client_wrapper.httpx_client.request(
             "graph/search",
@@ -1368,9 +1376,11 @@ class RawGraphClient:
                 "center_node_uuid": center_node_uuid,
                 "graph_id": graph_id,
                 "limit": limit,
+                "max_characters": max_characters,
                 "mmr_lambda": mmr_lambda,
                 "query": query,
                 "reranker": reranker,
+                "return_raw_results": return_raw_results,
                 "scope": scope,
                 "search_filters": convert_and_respect_annotation_metadata(
                     object_=search_filters, annotation=SearchFilters, direction="write"
@@ -2157,7 +2167,7 @@ class AsyncRawGraphClient:
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, or booleans.
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -2926,8 +2936,10 @@ class AsyncRawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
+        return_raw_results: typing.Optional[bool] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -2953,11 +2965,17 @@ class AsyncRawGraphClient:
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
+        max_characters : typing.Optional[int]
+            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
             Defaults to RRF
+
+        return_raw_results : typing.Optional[bool]
+            When scope=auto, include the selected raw graph results alongside the materialized context block.
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
@@ -2974,7 +2992,7 @@ class AsyncRawGraphClient:
         Returns
         -------
         AsyncHttpResponse[GraphSearchResults]
-            Graph search results
+            Graph search results or auto-context block
         """
         _response = await self._client_wrapper.httpx_client.request(
             "graph/search",
@@ -2984,9 +3002,11 @@ class AsyncRawGraphClient:
                 "center_node_uuid": center_node_uuid,
                 "graph_id": graph_id,
                 "limit": limit,
+                "max_characters": max_characters,
                 "mmr_lambda": mmr_lambda,
                 "query": query,
                 "reranker": reranker,
+                "return_raw_results": return_raw_results,
                 "scope": scope,
                 "search_filters": convert_and_respect_annotation_metadata(
                     object_=search_filters, annotation=SearchFilters, direction="write"

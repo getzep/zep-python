@@ -8,12 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
-class CommunityNode(UniversalBaseModel):
-    attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
-    """
-    Additional attributes of the community node.
-    """
-
+class GraphitiSagaNode(UniversalBaseModel):
     created_at: str = pydantic.Field()
     """
     Creation time of the node
@@ -22,6 +17,11 @@ class CommunityNode(UniversalBaseModel):
     labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     Labels associated with the node
+    """
+
+    last_summarized_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Timestamp of the most recent summary update.
     """
 
     name: str = pydantic.Field()
@@ -47,7 +47,7 @@ class CommunityNode(UniversalBaseModel):
 
     summary: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Region summary of member nodes
+    Incremental summary of the thread.
     """
 
     uuid_: typing_extensions.Annotated[str, FieldMetadata(alias="uuid")] = pydantic.Field()

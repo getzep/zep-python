@@ -8,13 +8,16 @@ from .community_node import CommunityNode
 from .entity_edge import EntityEdge
 from .entity_node import EntityNode
 from .episode import Episode
+from .graphiti_saga_node import GraphitiSagaNode
 
 
 class GraphSearchResults(UniversalBaseModel):
     communities: typing.Optional[typing.List[CommunityNode]] = None
+    context: typing.Optional[str] = None
     edges: typing.Optional[typing.List[EntityEdge]] = None
     episodes: typing.Optional[typing.List[Episode]] = None
     nodes: typing.Optional[typing.List[EntityNode]] = None
+    sagas: typing.Optional[typing.List[GraphitiSagaNode]] = None
     themes: typing.Optional[typing.List[CommunityNode]] = None
 
     if IS_PYDANTIC_V2:
