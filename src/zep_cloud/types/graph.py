@@ -6,13 +6,11 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
-from .fact_rating_instruction import FactRatingInstruction
 
 
 class Graph(UniversalBaseModel):
     created_at: typing.Optional[str] = None
     description: typing.Optional[str] = None
-    fact_rating_instruction: typing.Optional[FactRatingInstruction] = None
     graph_id: typing.Optional[str] = None
     id: typing.Optional[int] = None
     name: typing.Optional[str] = None

@@ -6,10 +6,9 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ModelsFactRatingExamples(UniversalBaseModel):
-    high: typing.Optional[str] = None
-    low: typing.Optional[str] = None
-    medium: typing.Optional[str] = None
+class TaskProgress(UniversalBaseModel):
+    message: typing.Optional[str] = None
+    stage: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -50,9 +50,19 @@ class EntityEdge(UniversalBaseModel):
     Only populated when using cross_encoder reranker; omitted for other reranker types (e.g., RRF).
     """
 
+    scope: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Scope of the edge (e.g. "entity", "maybe_related")
+    """
+
     score: typing.Optional[float] = pydantic.Field(default=None)
     """
     Score is the reranker output: sigmoid-distributed logits [0,1] when using cross_encoder reranker, or RRF ordinal rank when using rrf reranker
+    """
+
+    selection_rank: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    SelectionRank is the global cross-scope rank assigned by auto scope selection.
     """
 
     source_node_uuid: str = pydantic.Field()

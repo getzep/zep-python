@@ -14,7 +14,6 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.list_user_instructions_response import ListUserInstructionsResponse
 from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
@@ -70,6 +69,17 @@ class RawUserClient:
                 return HttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -161,6 +171,17 @@ class RawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -241,6 +262,17 @@ class RawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -267,7 +299,6 @@ class RawUserClient:
         user_id: str,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -286,9 +317,6 @@ class RawUserClient:
 
         email : typing.Optional[str]
             The email address of the user.
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -313,9 +341,6 @@ class RawUserClient:
             json={
                 "disable_default_ontology": disable_default_ontology,
                 "email": email,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
@@ -373,6 +398,9 @@ class RawUserClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[UserListResponse]:
         """
@@ -385,6 +413,15 @@ class RawUserClient:
 
         page_size : typing.Optional[int]
             Number of users to retrieve per page
+
+        search : typing.Optional[str]
+            Search term for filtering users by user_id, name, or email
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, user_id, email)
+
+        asc : typing.Optional[bool]
+            Sort in ascending order
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -400,6 +437,9 @@ class RawUserClient:
             params={
                 "pageNumber": page_number,
                 "pageSize": page_size,
+                "search": search,
+                "order_by": order_by,
+                "asc": asc,
             },
             request_options=request_options,
         )
@@ -578,7 +618,6 @@ class RawUserClient:
         *,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -597,9 +636,6 @@ class RawUserClient:
 
         email : typing.Optional[str]
             The email address of the user.
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -624,9 +660,6 @@ class RawUserClient:
             json={
                 "disable_default_ontology": disable_default_ontology,
                 "email": email,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
@@ -926,6 +959,17 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -999,6 +1043,17 @@ class AsyncRawUserClient:
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1088,6 +1143,17 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -1114,7 +1180,6 @@ class AsyncRawUserClient:
         user_id: str,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -1133,9 +1198,6 @@ class AsyncRawUserClient:
 
         email : typing.Optional[str]
             The email address of the user.
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -1160,9 +1222,6 @@ class AsyncRawUserClient:
             json={
                 "disable_default_ontology": disable_default_ontology,
                 "email": email,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
@@ -1220,6 +1279,9 @@ class AsyncRawUserClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[UserListResponse]:
         """
@@ -1232,6 +1294,15 @@ class AsyncRawUserClient:
 
         page_size : typing.Optional[int]
             Number of users to retrieve per page
+
+        search : typing.Optional[str]
+            Search term for filtering users by user_id, name, or email
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, user_id, email)
+
+        asc : typing.Optional[bool]
+            Sort in ascending order
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1247,6 +1318,9 @@ class AsyncRawUserClient:
             params={
                 "pageNumber": page_number,
                 "pageSize": page_size,
+                "search": search,
+                "order_by": order_by,
+                "asc": asc,
             },
             request_options=request_options,
         )
@@ -1427,7 +1501,6 @@ class AsyncRawUserClient:
         *,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -1446,9 +1519,6 @@ class AsyncRawUserClient:
 
         email : typing.Optional[str]
             The email address of the user.
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -1473,9 +1543,6 @@ class AsyncRawUserClient:
             json={
                 "disable_default_ontology": disable_default_ontology,
                 "email": email,
-                "fact_rating_instruction": convert_and_respect_annotation_metadata(
-                    object_=fact_rating_instruction, annotation=FactRatingInstruction, direction="write"
-                ),
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,

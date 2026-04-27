@@ -6,24 +6,32 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_triple_response import AddTripleResponse
 from ..types.clone_graph_response import CloneGraphResponse
+from ..types.custom_instruction import CustomInstruction
+from ..types.detect_config import DetectConfig
+from ..types.detect_patterns_response import DetectPatternsResponse
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.episode_data import EpisodeData
-from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.graph import Graph
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
+from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
+from ..types.pattern_seeds import PatternSeeds
+from ..types.recency_weight import RecencyWeight
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
+from .community.client import AsyncCommunityClient, CommunityClient
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
 from .node.client import AsyncNodeClient, NodeClient
 from .raw_client import AsyncRawGraphClient, RawGraphClient
+from .saga.client import AsyncSagaClient, SagaClient
+from .theme.client import AsyncThemeClient, ThemeClient
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -32,11 +40,17 @@ OMIT = typing.cast(typing.Any, ...)
 class GraphClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawGraphClient(client_wrapper=client_wrapper)
+        self.community = CommunityClient(client_wrapper=client_wrapper)
+
         self.edge = EdgeClient(client_wrapper=client_wrapper)
 
         self.episode = EpisodeClient(client_wrapper=client_wrapper)
 
         self.node = NodeClient(client_wrapper=client_wrapper)
+
+        self.saga = SagaClient(client_wrapper=client_wrapper)
+
+        self.theme = ThemeClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawGraphClient:
@@ -48,6 +62,144 @@ class GraphClient:
         RawGraphClient
         """
         return self._raw_client
+
+    def list_custom_instructions(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ListCustomInstructionsResponse:
+        """
+        Lists all custom instructions for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ListCustomInstructionsResponse
+            The list of instructions.
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.list_custom_instructions(
+            user_id="user_id",
+            graph_id="graph_id",
+        )
+        """
+        _response = self._raw_client.list_custom_instructions(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    def add_custom_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[CustomInstruction],
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[CustomInstruction]
+            Instructions to add to the graph.
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Graph IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions added successfully
+
+        Examples
+        --------
+        from zep_cloud import CustomInstruction, Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.add_custom_instructions(
+            instructions=[
+                CustomInstruction(
+                    name="name",
+                    text="text",
+                )
+            ],
+        )
+        """
+        _response = self._raw_client.add_custom_instructions(
+            instructions=instructions, graph_ids=graph_ids, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
+
+    def delete_custom_instructions(
+        self,
+        *,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Deletes custom instructions for graphs or project wide defaults.
+
+        Parameters
+        ----------
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Determines which group graphs will have their custom instructions deleted. If no graphs are provided, the project-wide custom instructions will be affected.
+
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which user graphs will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be affected.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions deleted successfully
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.delete_custom_instructions()
+        """
+        _response = self._raw_client.delete_custom_instructions(
+            graph_ids=graph_ids, instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
 
     def list_entity_types(
         self,
@@ -147,6 +299,7 @@ class GraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -164,6 +317,9 @@ class GraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -195,6 +351,7 @@ class GraphClient:
             type=type,
             created_at=created_at,
             graph_id=graph_id,
+            metadata=metadata,
             source_description=source_description,
             user_id=user_id,
             request_options=request_options,
@@ -210,7 +367,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
         """
-        Add data to the graph in batch mode, processing episodes concurrently. Use only for data that is insensitive to processing order.
+        Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
@@ -256,15 +413,21 @@ class GraphClient:
         *,
         fact: str,
         fact_name: str,
-        target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
+        edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
+        target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        target_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
+        target_node_name: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -282,11 +445,12 @@ class GraphClient:
         fact_name : str
             The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
 
-        target_node_name : str
-            The name of the target node to add
-
         created_at : typing.Optional[str]
             The timestamp of the message
+
+        edge_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the edge. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
 
         expired_at : typing.Optional[str]
             The time (if any) at which the edge expires
@@ -299,6 +463,17 @@ class GraphClient:
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
 
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs for the shadow episode created for this fact triple.
+            Max 10 keys. Values must be strings, numbers, or booleans.
+
+        source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
+
+        source_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the source node
+
         source_node_name : typing.Optional[str]
             The name of the source node to add
 
@@ -307,6 +482,16 @@ class GraphClient:
 
         source_node_uuid : typing.Optional[str]
             The source node uuid
+
+        target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
+
+        target_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the target node
+
+        target_node_name : typing.Optional[str]
+            The name of the target node to add
 
         target_node_summary : typing.Optional[str]
             The summary of the target node to add
@@ -337,21 +522,26 @@ class GraphClient:
         client.graph.add_fact_triple(
             fact="fact",
             fact_name="fact_name",
-            target_node_name="target_node_name",
         )
         """
         _response = self._raw_client.add_fact_triple(
             fact=fact,
             fact_name=fact_name,
-            target_node_name=target_node_name,
             created_at=created_at,
+            edge_attributes=edge_attributes,
             expired_at=expired_at,
             fact_uuid=fact_uuid,
             graph_id=graph_id,
             invalid_at=invalid_at,
+            metadata=metadata,
+            source_node_attributes=source_node_attributes,
+            source_node_labels=source_node_labels,
             source_node_name=source_node_name,
             source_node_summary=source_node_summary,
             source_node_uuid=source_node_uuid,
+            target_node_attributes=target_node_attributes,
+            target_node_labels=target_node_labels,
+            target_node_name=target_node_name,
             target_node_summary=target_node_summary,
             target_node_uuid=target_node_uuid,
             user_id=user_id,
@@ -417,7 +607,6 @@ class GraphClient:
         *,
         graph_id: str,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
@@ -429,8 +618,6 @@ class GraphClient:
         graph_id : str
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -454,11 +641,7 @@ class GraphClient:
         )
         """
         _response = self._raw_client.create(
-            graph_id=graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
+            graph_id=graph_id, description=description, name=name, request_options=request_options
         )
         return _response.data
 
@@ -467,6 +650,9 @@ class GraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
@@ -479,6 +665,15 @@ class GraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        search : typing.Optional[str]
+            Search term for filtering graphs by graph_id.
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, group_id, name).
+
+        asc : typing.Optional[bool]
+            Sort in ascending order.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -498,10 +693,113 @@ class GraphClient:
         client.graph.list_all(
             page_number=1,
             page_size=1,
+            search="search",
+            order_by="order_by",
+            asc=True,
         )
         """
         _response = self._raw_client.list_all(
-            page_number=page_number, page_size=page_size, request_options=request_options
+            page_number=page_number,
+            page_size=page_size,
+            search=search,
+            order_by=order_by,
+            asc=asc,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def detect_patterns(
+        self,
+        *,
+        detect: typing.Optional[DetectConfig] = OMIT,
+        edge_limit: typing.Optional[int] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        min_occurrences: typing.Optional[int] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        query_limit: typing.Optional[int] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> DetectPatternsResponse:
+        """
+        Detects structural patterns in a knowledge graph including relationship frequencies,
+        multi-hop paths, co-occurrences, hubs, and clusters.
+        When a query is provided, uses hybrid search to discover seed nodes,
+        detects triple-frequency patterns, and returns resolved edges ranked by relevance.
+
+        Parameters
+        ----------
+        detect : typing.Optional[DetectConfig]
+            Which pattern types to detect with type-specific configuration.
+            Omit to detect all types with defaults. Ignored when query is set.
+
+        edge_limit : typing.Optional[int]
+            Max resolved edges per pattern. Default: 10, Max: 100. Only used with query.
+
+        graph_id : typing.Optional[str]
+            Graph ID when detecting patterns on a named graph
+
+        limit : typing.Optional[int]
+            Max patterns to return. Default: 50, Max: 200
+
+        min_occurrences : typing.Optional[int]
+            Minimum occurrence count to report a pattern. Default: 2
+
+        query : typing.Optional[str]
+            Search query for discovering seed nodes via hybrid search.
+            When set, forces triple-frequency detection only and enables edge resolution
+            with cross-encoder reranking. Mutually exclusive with seeds.
+
+        query_limit : typing.Optional[int]
+            Max seed nodes from search. Default: 10, Max: 50. Only used with query.
+
+        recency_weight : typing.Optional[RecencyWeight]
+            Exponential half-life decay applied to edge created_at timestamps.
+            Valid values: none, 7_days, 30_days, 90_days. Default: none
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters which edges/nodes participate in pattern detection.
+            Reuses the same filter format as /graph/search.
+
+        seeds : typing.Optional[PatternSeeds]
+            Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
+
+        user_id : typing.Optional[str]
+            User ID when detecting patterns on a user graph
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DetectPatternsResponse
+            Detected patterns
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.detect_patterns()
+        """
+        _response = self._raw_client.detect_patterns(
+            detect=detect,
+            edge_limit=edge_limit,
+            graph_id=graph_id,
+            limit=limit,
+            min_occurrences=min_occurrences,
+            query=query,
+            query_limit=query_limit,
+            recency_weight=recency_weight,
+            search_filters=search_filters,
+            seeds=seeds,
+            user_id=user_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -513,10 +811,10 @@ class GraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
-        min_fact_rating: typing.Optional[float] = OMIT,
-        min_score: typing.Optional[float] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
+        return_raw_results: typing.Optional[bool] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -542,11 +840,8 @@ class GraphClient:
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
-        min_fact_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts
-
-        min_score : typing.Optional[float]
-            Deprecated
+        max_characters : typing.Optional[int]
+            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
@@ -554,8 +849,11 @@ class GraphClient:
         reranker : typing.Optional[Reranker]
             Defaults to RRF
 
+        return_raw_results : typing.Optional[bool]
+            When scope=auto, include the selected raw graph results alongside the materialized context block.
+
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Communities will be added in the future.
+            Defaults to Edges.
 
         search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
@@ -569,7 +867,7 @@ class GraphClient:
         Returns
         -------
         GraphSearchResults
-            Graph search results
+            Graph search results or auto-context block
 
         Examples
         --------
@@ -588,10 +886,10 @@ class GraphClient:
             center_node_uuid=center_node_uuid,
             graph_id=graph_id,
             limit=limit,
-            min_fact_rating=min_fact_rating,
-            min_score=min_score,
+            max_characters=max_characters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
+            return_raw_results=return_raw_results,
             scope=scope,
             search_filters=search_filters,
             user_id=user_id,
@@ -666,7 +964,6 @@ class GraphClient:
         graph_id: str,
         *,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
@@ -679,8 +976,6 @@ class GraphClient:
             Graph ID
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -704,11 +999,7 @@ class GraphClient:
         )
         """
         _response = self._raw_client.update(
-            graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
+            graph_id, description=description, name=name, request_options=request_options
         )
         return _response.data
 
@@ -716,11 +1007,17 @@ class GraphClient:
 class AsyncGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._raw_client = AsyncRawGraphClient(client_wrapper=client_wrapper)
+        self.community = AsyncCommunityClient(client_wrapper=client_wrapper)
+
         self.edge = AsyncEdgeClient(client_wrapper=client_wrapper)
 
         self.episode = AsyncEpisodeClient(client_wrapper=client_wrapper)
 
         self.node = AsyncNodeClient(client_wrapper=client_wrapper)
+
+        self.saga = AsyncSagaClient(client_wrapper=client_wrapper)
+
+        self.theme = AsyncThemeClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawGraphClient:
@@ -732,6 +1029,168 @@ class AsyncGraphClient:
         AsyncRawGraphClient
         """
         return self._raw_client
+
+    async def list_custom_instructions(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ListCustomInstructionsResponse:
+        """
+        Lists all custom instructions for a project, user, or graph.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID to get user-specific instructions
+
+        graph_id : typing.Optional[str]
+            Graph ID to get graph-specific instructions
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ListCustomInstructionsResponse
+            The list of instructions.
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.list_custom_instructions(
+                user_id="user_id",
+                graph_id="graph_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_custom_instructions(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    async def add_custom_instructions(
+        self,
+        *,
+        instructions: typing.Sequence[CustomInstruction],
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
+
+        Parameters
+        ----------
+        instructions : typing.Sequence[CustomInstruction]
+            Instructions to add to the graph.
+
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Graph IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions added successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep, CustomInstruction
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.add_custom_instructions(
+                instructions=[
+                    CustomInstruction(
+                        name="name",
+                        text="text",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.add_custom_instructions(
+            instructions=instructions, graph_ids=graph_ids, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
+
+    async def delete_custom_instructions(
+        self,
+        *,
+        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
+        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SuccessResponse:
+        """
+        Deletes custom instructions for graphs or project wide defaults.
+
+        Parameters
+        ----------
+        graph_ids : typing.Optional[typing.Sequence[str]]
+            Determines which group graphs will have their custom instructions deleted. If no graphs are provided, the project-wide custom instructions will be affected.
+
+        instruction_names : typing.Optional[typing.Sequence[str]]
+            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
+
+        user_ids : typing.Optional[typing.Sequence[str]]
+            Determines which user graphs will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be affected.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Instructions deleted successfully
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.delete_custom_instructions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.delete_custom_instructions(
+            graph_ids=graph_ids, instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
+        )
+        return _response.data
 
     async def list_entity_types(
         self,
@@ -847,6 +1306,7 @@ class AsyncGraphClient:
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -864,6 +1324,9 @@ class AsyncGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
 
@@ -903,6 +1366,7 @@ class AsyncGraphClient:
             type=type,
             created_at=created_at,
             graph_id=graph_id,
+            metadata=metadata,
             source_description=source_description,
             user_id=user_id,
             request_options=request_options,
@@ -918,7 +1382,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
         """
-        Add data to the graph in batch mode, processing episodes concurrently. Use only for data that is insensitive to processing order.
+        Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
 
         Parameters
         ----------
@@ -972,15 +1436,21 @@ class AsyncGraphClient:
         *,
         fact: str,
         fact_name: str,
-        target_node_name: str,
         created_at: typing.Optional[str] = OMIT,
+        edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
         fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
         source_node_name: typing.Optional[str] = OMIT,
         source_node_summary: typing.Optional[str] = OMIT,
         source_node_uuid: typing.Optional[str] = OMIT,
+        target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        target_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
+        target_node_name: typing.Optional[str] = OMIT,
         target_node_summary: typing.Optional[str] = OMIT,
         target_node_uuid: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -998,11 +1468,12 @@ class AsyncGraphClient:
         fact_name : str
             The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
 
-        target_node_name : str
-            The name of the target node to add
-
         created_at : typing.Optional[str]
             The timestamp of the message
+
+        edge_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the edge. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
 
         expired_at : typing.Optional[str]
             The time (if any) at which the edge expires
@@ -1015,6 +1486,17 @@ class AsyncGraphClient:
         invalid_at : typing.Optional[str]
             The time (if any) at which the fact stops being true
 
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Optional metadata key-value pairs for the shadow episode created for this fact triple.
+            Max 10 keys. Values must be strings, numbers, or booleans.
+
+        source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
+
+        source_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the source node
+
         source_node_name : typing.Optional[str]
             The name of the source node to add
 
@@ -1023,6 +1505,16 @@ class AsyncGraphClient:
 
         source_node_uuid : typing.Optional[str]
             The source node uuid
+
+        target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
+            Nested objects and arrays are not allowed.
+
+        target_node_labels : typing.Optional[typing.Sequence[str]]
+            The labels for the target node
+
+        target_node_name : typing.Optional[str]
+            The name of the target node to add
 
         target_node_summary : typing.Optional[str]
             The summary of the target node to add
@@ -1058,7 +1550,6 @@ class AsyncGraphClient:
             await client.graph.add_fact_triple(
                 fact="fact",
                 fact_name="fact_name",
-                target_node_name="target_node_name",
             )
 
 
@@ -1067,15 +1558,21 @@ class AsyncGraphClient:
         _response = await self._raw_client.add_fact_triple(
             fact=fact,
             fact_name=fact_name,
-            target_node_name=target_node_name,
             created_at=created_at,
+            edge_attributes=edge_attributes,
             expired_at=expired_at,
             fact_uuid=fact_uuid,
             graph_id=graph_id,
             invalid_at=invalid_at,
+            metadata=metadata,
+            source_node_attributes=source_node_attributes,
+            source_node_labels=source_node_labels,
             source_node_name=source_node_name,
             source_node_summary=source_node_summary,
             source_node_uuid=source_node_uuid,
+            target_node_attributes=target_node_attributes,
+            target_node_labels=target_node_labels,
+            target_node_name=target_node_name,
             target_node_summary=target_node_summary,
             target_node_uuid=target_node_uuid,
             user_id=user_id,
@@ -1149,7 +1646,6 @@ class AsyncGraphClient:
         *,
         graph_id: str,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
@@ -1161,8 +1657,6 @@ class AsyncGraphClient:
         graph_id : str
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -1194,11 +1688,7 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            graph_id=graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
+            graph_id=graph_id, description=description, name=name, request_options=request_options
         )
         return _response.data
 
@@ -1207,6 +1697,9 @@ class AsyncGraphClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
@@ -1219,6 +1712,15 @@ class AsyncGraphClient:
 
         page_size : typing.Optional[int]
             Number of graphs to retrieve per page.
+
+        search : typing.Optional[str]
+            Search term for filtering graphs by graph_id.
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, group_id, name).
+
+        asc : typing.Optional[bool]
+            Sort in ascending order.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1243,13 +1745,124 @@ class AsyncGraphClient:
             await client.graph.list_all(
                 page_number=1,
                 page_size=1,
+                search="search",
+                order_by="order_by",
+                asc=True,
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.list_all(
-            page_number=page_number, page_size=page_size, request_options=request_options
+            page_number=page_number,
+            page_size=page_size,
+            search=search,
+            order_by=order_by,
+            asc=asc,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def detect_patterns(
+        self,
+        *,
+        detect: typing.Optional[DetectConfig] = OMIT,
+        edge_limit: typing.Optional[int] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        min_occurrences: typing.Optional[int] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        query_limit: typing.Optional[int] = OMIT,
+        recency_weight: typing.Optional[RecencyWeight] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        seeds: typing.Optional[PatternSeeds] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> DetectPatternsResponse:
+        """
+        Detects structural patterns in a knowledge graph including relationship frequencies,
+        multi-hop paths, co-occurrences, hubs, and clusters.
+        When a query is provided, uses hybrid search to discover seed nodes,
+        detects triple-frequency patterns, and returns resolved edges ranked by relevance.
+
+        Parameters
+        ----------
+        detect : typing.Optional[DetectConfig]
+            Which pattern types to detect with type-specific configuration.
+            Omit to detect all types with defaults. Ignored when query is set.
+
+        edge_limit : typing.Optional[int]
+            Max resolved edges per pattern. Default: 10, Max: 100. Only used with query.
+
+        graph_id : typing.Optional[str]
+            Graph ID when detecting patterns on a named graph
+
+        limit : typing.Optional[int]
+            Max patterns to return. Default: 50, Max: 200
+
+        min_occurrences : typing.Optional[int]
+            Minimum occurrence count to report a pattern. Default: 2
+
+        query : typing.Optional[str]
+            Search query for discovering seed nodes via hybrid search.
+            When set, forces triple-frequency detection only and enables edge resolution
+            with cross-encoder reranking. Mutually exclusive with seeds.
+
+        query_limit : typing.Optional[int]
+            Max seed nodes from search. Default: 10, Max: 50. Only used with query.
+
+        recency_weight : typing.Optional[RecencyWeight]
+            Exponential half-life decay applied to edge created_at timestamps.
+            Valid values: none, 7_days, 30_days, 90_days. Default: none
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters which edges/nodes participate in pattern detection.
+            Reuses the same filter format as /graph/search.
+
+        seeds : typing.Optional[PatternSeeds]
+            Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
+
+        user_id : typing.Optional[str]
+            User ID when detecting patterns on a user graph
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        DetectPatternsResponse
+            Detected patterns
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.detect_patterns()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.detect_patterns(
+            detect=detect,
+            edge_limit=edge_limit,
+            graph_id=graph_id,
+            limit=limit,
+            min_occurrences=min_occurrences,
+            query=query,
+            query_limit=query_limit,
+            recency_weight=recency_weight,
+            search_filters=search_filters,
+            seeds=seeds,
+            user_id=user_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -1261,10 +1874,10 @@ class AsyncGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         limit: typing.Optional[int] = OMIT,
-        min_fact_rating: typing.Optional[float] = OMIT,
-        min_score: typing.Optional[float] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[Reranker] = OMIT,
+        return_raw_results: typing.Optional[bool] = OMIT,
         scope: typing.Optional[GraphSearchScope] = OMIT,
         search_filters: typing.Optional[SearchFilters] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -1290,11 +1903,8 @@ class AsyncGraphClient:
         limit : typing.Optional[int]
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
-        min_fact_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts
-
-        min_score : typing.Optional[float]
-            Deprecated
+        max_characters : typing.Optional[int]
+            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
@@ -1302,8 +1912,11 @@ class AsyncGraphClient:
         reranker : typing.Optional[Reranker]
             Defaults to RRF
 
+        return_raw_results : typing.Optional[bool]
+            When scope=auto, include the selected raw graph results alongside the materialized context block.
+
         scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges. Communities will be added in the future.
+            Defaults to Edges.
 
         search_filters : typing.Optional[SearchFilters]
             Search filters to apply to the search
@@ -1317,7 +1930,7 @@ class AsyncGraphClient:
         Returns
         -------
         GraphSearchResults
-            Graph search results
+            Graph search results or auto-context block
 
         Examples
         --------
@@ -1344,10 +1957,10 @@ class AsyncGraphClient:
             center_node_uuid=center_node_uuid,
             graph_id=graph_id,
             limit=limit,
-            min_fact_rating=min_fact_rating,
-            min_score=min_score,
+            max_characters=max_characters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
+            return_raw_results=return_raw_results,
             scope=scope,
             search_filters=search_filters,
             user_id=user_id,
@@ -1440,7 +2053,6 @@ class AsyncGraphClient:
         graph_id: str,
         *,
         description: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
@@ -1453,8 +2065,6 @@ class AsyncGraphClient:
             Graph ID
 
         description : typing.Optional[str]
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
 
         name : typing.Optional[str]
 
@@ -1486,10 +2096,6 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            graph_id,
-            description=description,
-            fact_rating_instruction=fact_rating_instruction,
-            name=name,
-            request_options=request_options,
+            graph_id, description=description, name=name, request_options=request_options
         )
         return _response.data

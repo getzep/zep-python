@@ -22,7 +22,6 @@ from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
-from .types.thread_get_user_context_request_mode import ThreadGetUserContextRequestMode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -263,9 +262,7 @@ class RawThreadClient:
         self,
         thread_id: str,
         *,
-        min_rating: typing.Optional[float] = None,
         template_id: typing.Optional[str] = None,
-        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ThreadContextResponse]:
         """
@@ -276,14 +273,8 @@ class RawThreadClient:
         thread_id : str
             The ID of the current thread (for which context is being retrieved).
 
-        min_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts.
-
         template_id : typing.Optional[str]
             Optional template ID to use for custom context rendering.
-
-        mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -297,9 +288,7 @@ class RawThreadClient:
             f"threads/{jsonable_encoder(thread_id)}/context",
             method="GET",
             params={
-                "minRating": min_rating,
                 "template_id": template_id,
-                "mode": mode,
             },
             request_options=request_options,
         )
@@ -829,9 +818,7 @@ class AsyncRawThreadClient:
         self,
         thread_id: str,
         *,
-        min_rating: typing.Optional[float] = None,
         template_id: typing.Optional[str] = None,
-        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ThreadContextResponse]:
         """
@@ -842,14 +829,8 @@ class AsyncRawThreadClient:
         thread_id : str
             The ID of the current thread (for which context is being retrieved).
 
-        min_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts.
-
         template_id : typing.Optional[str]
             Optional template ID to use for custom context rendering.
-
-        mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -863,9 +844,7 @@ class AsyncRawThreadClient:
             f"threads/{jsonable_encoder(thread_id)}/context",
             method="GET",
             params={
-                "minRating": min_rating,
                 "template_id": template_id,
-                "mode": mode,
             },
             request_options=request_options,
         )

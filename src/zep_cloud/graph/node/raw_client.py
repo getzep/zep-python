@@ -16,6 +16,7 @@ from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.entity_edge import EntityEdge
 from ...types.entity_node import EntityNode
 from ...types.episode_response import EpisodeResponse
+from ...types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -397,6 +398,187 @@ class RawNodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def delete(
+        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[SuccessResponse]:
+        """
+        Deletes a node by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Node UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[SuccessResponse]
+            Node deleted
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(uuid_)}",
+            method="DELETE",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def update(
+        self,
+        uuid_: str,
+        *,
+        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        labels: typing.Optional[typing.Sequence[str]] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        summary: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[EntityNode]:
+        """
+        Updates an entity node by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Node UUID
+
+        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+
+        labels : typing.Optional[typing.Sequence[str]]
+            Updated labels for the node
+
+        name : typing.Optional[str]
+            Updated name for the node
+
+        summary : typing.Optional[str]
+            Updated summary for the node
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[EntityNode]
+            Updated node
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(uuid_)}",
+            method="PATCH",
+            json={
+                "attributes": attributes,
+                "labels": labels,
+                "name": name,
+                "summary": summary,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EntityNode,
+                    parse_obj_as(
+                        type_=EntityNode,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
 
 class AsyncRawNodeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -723,6 +905,187 @@ class AsyncRawNodeClient:
             f"graph/node/{jsonable_encoder(uuid_)}",
             method="GET",
             request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EntityNode,
+                    parse_obj_as(
+                        type_=EntityNode,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def delete(
+        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[SuccessResponse]:
+        """
+        Deletes a node by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Node UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[SuccessResponse]
+            Node deleted
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(uuid_)}",
+            method="DELETE",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def update(
+        self,
+        uuid_: str,
+        *,
+        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        labels: typing.Optional[typing.Sequence[str]] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        summary: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[EntityNode]:
+        """
+        Updates an entity node by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Node UUID
+
+        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+
+        labels : typing.Optional[typing.Sequence[str]]
+            Updated labels for the node
+
+        name : typing.Optional[str]
+            Updated name for the node
+
+        summary : typing.Optional[str]
+            Updated summary for the node
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[EntityNode]
+            Updated node
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(uuid_)}",
+            method="PATCH",
+            json={
+                "attributes": attributes,
+                "labels": labels,
+                "name": name,
+                "summary": summary,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:

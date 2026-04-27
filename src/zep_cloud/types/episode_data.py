@@ -10,6 +10,11 @@ from .graph_data_type import GraphDataType
 class EpisodeData(UniversalBaseModel):
     created_at: typing.Optional[str] = None
     data: str
+    metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
+    """
+    Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
+    """
+
     source_description: typing.Optional[str] = None
     type: GraphDataType
 

@@ -6,10 +6,16 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class FactRatingExamples(UniversalBaseModel):
-    high: typing.Optional[str] = None
-    low: typing.Optional[str] = None
-    medium: typing.Optional[str] = None
+class GraphCommunitiesRequest(UniversalBaseModel):
+    limit: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Maximum number of items to return
+    """
+
+    uuid_cursor: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

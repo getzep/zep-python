@@ -7,6 +7,7 @@ from ...core.request_options import RequestOptions
 from ...types.entity_edge import EntityEdge
 from ...types.entity_node import EntityNode
 from ...types.episode_response import EpisodeResponse
+from ...types.success_response import SuccessResponse
 from .raw_client import AsyncRawNodeClient, RawNodeClient
 
 # this is used as the default value for optional parameters
@@ -215,6 +216,91 @@ class NodeClient:
         )
         """
         _response = self._raw_client.get(uuid_, request_options=request_options)
+        return _response.data
+
+    def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+        """
+        Deletes a node by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Node UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Node deleted
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.node.delete(
+            uuid_="uuid",
+        )
+        """
+        _response = self._raw_client.delete(uuid_, request_options=request_options)
+        return _response.data
+
+    def update(
+        self,
+        uuid_: str,
+        *,
+        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        labels: typing.Optional[typing.Sequence[str]] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        summary: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EntityNode:
+        """
+        Updates an entity node by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Node UUID
+
+        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+
+        labels : typing.Optional[typing.Sequence[str]]
+            Updated labels for the node
+
+        name : typing.Optional[str]
+            Updated name for the node
+
+        summary : typing.Optional[str]
+            Updated summary for the node
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityNode
+            Updated node
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.node.update(
+            uuid_="uuid",
+        )
+        """
+        _response = self._raw_client.update(
+            uuid_, attributes=attributes, labels=labels, name=name, summary=summary, request_options=request_options
+        )
         return _response.data
 
 
@@ -460,4 +546,105 @@ class AsyncNodeClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get(uuid_, request_options=request_options)
+        return _response.data
+
+    async def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+        """
+        Deletes a node by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Node UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Node deleted
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.node.delete(
+                uuid_="uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.delete(uuid_, request_options=request_options)
+        return _response.data
+
+    async def update(
+        self,
+        uuid_: str,
+        *,
+        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        labels: typing.Optional[typing.Sequence[str]] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        summary: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EntityNode:
+        """
+        Updates an entity node by UUID.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Node UUID
+
+        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
+
+        labels : typing.Optional[typing.Sequence[str]]
+            Updated labels for the node
+
+        name : typing.Optional[str]
+            Updated name for the node
+
+        summary : typing.Optional[str]
+            Updated summary for the node
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EntityNode
+            Updated node
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.node.update(
+                uuid_="uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.update(
+            uuid_, attributes=attributes, labels=labels, name=name, summary=summary, request_options=request_options
+        )
         return _response.data

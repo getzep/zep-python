@@ -18,9 +18,19 @@ class MessageListResponse(UniversalBaseModel):
     The number of messages returned.
     """
 
+    thread_created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The thread creation timestamp.
+    """
+
     total_count: typing.Optional[int] = pydantic.Field(default=None)
     """
     The total number of messages.
+    """
+
+    user_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The user ID associated with this thread.
     """
 
     if IS_PYDANTIC_V2:

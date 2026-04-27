@@ -13,9 +13,10 @@ class DateFilter(UniversalBaseModel):
     Comparison operator for date filter
     """
 
-    date: str = pydantic.Field()
+    date: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Date to filter on
+    Date to filter on. Required for non-null operators (=, \<\>, \>, \<, \>=, \<=).
+    Should be omitted for IS NULL and IS NOT NULL operators.
     """
 
     if IS_PYDANTIC_V2:

@@ -12,6 +12,11 @@ class CloneGraphResponse(UniversalBaseModel):
     graph_id is the ID of the cloned graph
     """
 
+    task_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Task ID of the clone graph task
+    """
+
     user_id: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:

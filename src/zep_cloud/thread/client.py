@@ -14,7 +14,6 @@ from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
 from .message.client import AsyncMessageClient, MessageClient
 from .raw_client import AsyncRawThreadClient, RawThreadClient
-from .types.thread_get_user_context_request_mode import ThreadGetUserContextRequestMode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -161,9 +160,7 @@ class ThreadClient:
         self,
         thread_id: str,
         *,
-        min_rating: typing.Optional[float] = None,
         template_id: typing.Optional[str] = None,
-        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
         """
@@ -174,14 +171,8 @@ class ThreadClient:
         thread_id : str
             The ID of the current thread (for which context is being retrieved).
 
-        min_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts.
-
         template_id : typing.Optional[str]
             Optional template ID to use for custom context rendering.
-
-        mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -200,13 +191,11 @@ class ThreadClient:
         )
         client.thread.get_user_context(
             thread_id="threadId",
-            min_rating=1.1,
             template_id="template_id",
-            mode="basic",
         )
         """
         _response = self._raw_client.get_user_context(
-            thread_id, min_rating=min_rating, template_id=template_id, mode=mode, request_options=request_options
+            thread_id, template_id=template_id, request_options=request_options
         )
         return _response.data
 
@@ -254,7 +243,7 @@ class ThreadClient:
         client.thread.get(
             thread_id="threadId",
             limit=1,
-            cursor=1,
+            cursor=1000000,
             lastn=1,
         )
         """
@@ -555,9 +544,7 @@ class AsyncThreadClient:
         self,
         thread_id: str,
         *,
-        min_rating: typing.Optional[float] = None,
         template_id: typing.Optional[str] = None,
-        mode: typing.Optional[ThreadGetUserContextRequestMode] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ThreadContextResponse:
         """
@@ -568,14 +555,8 @@ class AsyncThreadClient:
         thread_id : str
             The ID of the current thread (for which context is being retrieved).
 
-        min_rating : typing.Optional[float]
-            The minimum rating by which to filter relevant facts.
-
         template_id : typing.Optional[str]
             Optional template ID to use for custom context rendering.
-
-        mode : typing.Optional[ThreadGetUserContextRequestMode]
-            Deprecated, this field will be removed in a future release. Defaults to summary mode. Use basic for lower latency
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -599,16 +580,14 @@ class AsyncThreadClient:
         async def main() -> None:
             await client.thread.get_user_context(
                 thread_id="threadId",
-                min_rating=1.1,
                 template_id="template_id",
-                mode="basic",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.get_user_context(
-            thread_id, min_rating=min_rating, template_id=template_id, mode=mode, request_options=request_options
+            thread_id, template_id=template_id, request_options=request_options
         )
         return _response.data
 
@@ -661,7 +640,7 @@ class AsyncThreadClient:
             await client.thread.get(
                 thread_id="threadId",
                 limit=1,
-                cursor=1,
+                cursor=1000000,
                 lastn=1,
             )
 

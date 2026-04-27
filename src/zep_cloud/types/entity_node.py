@@ -40,6 +40,11 @@ class EntityNode(UniversalBaseModel):
     Score is the reranker output: sigmoid-distributed logits [0,1] when using cross_encoder reranker, or RRF ordinal rank when using rrf reranker
     """
 
+    selection_rank: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    SelectionRank is the global cross-scope rank assigned by auto scope selection.
+    """
+
     summary: str = pydantic.Field()
     """
     Regional summary of surrounding edges

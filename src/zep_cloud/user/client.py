@@ -4,7 +4,6 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.fact_rating_instruction import FactRatingInstruction
 from ..types.list_user_instructions_response import ListUserInstructionsResponse
 from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
@@ -159,7 +158,6 @@ class UserClient:
         user_id: str,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -178,9 +176,6 @@ class UserClient:
 
         email : typing.Optional[str]
             The email address of the user.
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -214,7 +209,6 @@ class UserClient:
             user_id=user_id,
             disable_default_ontology=disable_default_ontology,
             email=email,
-            fact_rating_instruction=fact_rating_instruction,
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
@@ -227,6 +221,9 @@ class UserClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UserListResponse:
         """
@@ -239,6 +236,15 @@ class UserClient:
 
         page_size : typing.Optional[int]
             Number of users to retrieve per page
+
+        search : typing.Optional[str]
+            Search term for filtering users by user_id, name, or email
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, user_id, email)
+
+        asc : typing.Optional[bool]
+            Sort in ascending order
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -258,10 +264,18 @@ class UserClient:
         client.user.list_ordered(
             page_number=1,
             page_size=1,
+            search="search",
+            order_by="order_by",
+            asc=True,
         )
         """
         _response = self._raw_client.list_ordered(
-            page_number=page_number, page_size=page_size, request_options=request_options
+            page_number=page_number,
+            page_size=page_size,
+            search=search,
+            order_by=order_by,
+            asc=asc,
+            request_options=request_options,
         )
         return _response.data
 
@@ -333,7 +347,6 @@ class UserClient:
         *,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -352,9 +365,6 @@ class UserClient:
 
         email : typing.Optional[str]
             The email address of the user.
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -388,7 +398,6 @@ class UserClient:
             user_id,
             disable_default_ontology=disable_default_ontology,
             email=email,
-            fact_rating_instruction=fact_rating_instruction,
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
@@ -659,7 +668,6 @@ class AsyncUserClient:
         user_id: str,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -678,9 +686,6 @@ class AsyncUserClient:
 
         email : typing.Optional[str]
             The email address of the user.
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -722,7 +727,6 @@ class AsyncUserClient:
             user_id=user_id,
             disable_default_ontology=disable_default_ontology,
             email=email,
-            fact_rating_instruction=fact_rating_instruction,
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
@@ -735,6 +739,9 @@ class AsyncUserClient:
         *,
         page_number: typing.Optional[int] = None,
         page_size: typing.Optional[int] = None,
+        search: typing.Optional[str] = None,
+        order_by: typing.Optional[str] = None,
+        asc: typing.Optional[bool] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UserListResponse:
         """
@@ -747,6 +754,15 @@ class AsyncUserClient:
 
         page_size : typing.Optional[int]
             Number of users to retrieve per page
+
+        search : typing.Optional[str]
+            Search term for filtering users by user_id, name, or email
+
+        order_by : typing.Optional[str]
+            Column to sort by (created_at, user_id, email)
+
+        asc : typing.Optional[bool]
+            Sort in ascending order
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -771,13 +787,21 @@ class AsyncUserClient:
             await client.user.list_ordered(
                 page_number=1,
                 page_size=1,
+                search="search",
+                order_by="order_by",
+                asc=True,
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.list_ordered(
-            page_number=page_number, page_size=page_size, request_options=request_options
+            page_number=page_number,
+            page_size=page_size,
+            search=search,
+            order_by=order_by,
+            asc=asc,
+            request_options=request_options,
         )
         return _response.data
 
@@ -865,7 +889,6 @@ class AsyncUserClient:
         *,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
-        fact_rating_instruction: typing.Optional[FactRatingInstruction] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -884,9 +907,6 @@ class AsyncUserClient:
 
         email : typing.Optional[str]
             The email address of the user.
-
-        fact_rating_instruction : typing.Optional[FactRatingInstruction]
-            Optional instruction to use for fact rating.
 
         first_name : typing.Optional[str]
             The first name of the user.
@@ -928,7 +948,6 @@ class AsyncUserClient:
             user_id,
             disable_default_ontology=disable_default_ontology,
             email=email,
-            fact_rating_instruction=fact_rating_instruction,
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,

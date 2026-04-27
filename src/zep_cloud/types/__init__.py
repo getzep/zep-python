@@ -7,9 +7,15 @@ from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
 from .clone_graph_response import CloneGraphResponse
+from .cluster_detect_config import ClusterDetectConfig
+from .co_occurrence_detect_config import CoOccurrenceDetectConfig
+from .community_node import CommunityNode
 from .comparison_operator import ComparisonOperator
 from .context_template_response import ContextTemplateResponse
+from .custom_instruction import CustomInstruction
 from .date_filter import DateFilter
+from .detect_config import DetectConfig
+from .detect_patterns_response import DetectPatternsResponse
 from .edge_type import EdgeType
 from .entity_edge import EntityEdge
 from .entity_edge_source_target import EntityEdgeSourceTarget
@@ -21,28 +27,43 @@ from .entity_type_response import EntityTypeResponse
 from .episode import Episode
 from .episode_data import EpisodeData
 from .episode_mentions import EpisodeMentions
+from .episode_metadata_filter import EpisodeMetadataFilter
 from .episode_response import EpisodeResponse
-from .fact_rating_examples import FactRatingExamples
-from .fact_rating_instruction import FactRatingInstruction
+from .get_task_response import GetTaskResponse
 from .graph import Graph
+from .graph_communities_request import GraphCommunitiesRequest
 from .graph_data_type import GraphDataType
 from .graph_edges_request import GraphEdgesRequest
 from .graph_list_response import GraphListResponse
 from .graph_nodes_request import GraphNodesRequest
+from .graph_sagas_request import GraphSagasRequest
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
+from .graph_themes_request import GraphThemesRequest
+from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
+from .graphiti_saga_node import GraphitiSagaNode
+from .hub_detect_config import HubDetectConfig
 from .list_context_templates_response import ListContextTemplatesResponse
+from .list_custom_instructions_response import ListCustomInstructionsResponse
 from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
-from .models_fact_rating_examples import ModelsFactRatingExamples
-from .models_fact_rating_instruction import ModelsFactRatingInstruction
+from .metadata_filter_group import MetadataFilterGroup
+from .path_detect_config import PathDetectConfig
+from .pattern_metadata import PatternMetadata
+from .pattern_result import PatternResult
+from .pattern_seeds import PatternSeeds
 from .project_info import ProjectInfo
 from .project_info_response import ProjectInfoResponse
+from .property_filter import PropertyFilter
+from .recency_weight import RecencyWeight
+from .relationship_detect_config import RelationshipDetectConfig
 from .reranker import Reranker
 from .role_type import RoleType
 from .search_filters import SearchFilters
 from .success_response import SuccessResponse
+from .task_error_response import TaskErrorResponse
+from .task_progress import TaskProgress
 from .thread import Thread
 from .thread_context_response import ThreadContextResponse
 from .thread_list_response import ThreadListResponse
@@ -57,9 +78,15 @@ __all__ = [
     "AddTripleResponse",
     "ApiError",
     "CloneGraphResponse",
+    "ClusterDetectConfig",
+    "CoOccurrenceDetectConfig",
+    "CommunityNode",
     "ComparisonOperator",
     "ContextTemplateResponse",
+    "CustomInstruction",
     "DateFilter",
+    "DetectConfig",
+    "DetectPatternsResponse",
     "EdgeType",
     "EntityEdge",
     "EntityEdgeSourceTarget",
@@ -71,28 +98,43 @@ __all__ = [
     "Episode",
     "EpisodeData",
     "EpisodeMentions",
+    "EpisodeMetadataFilter",
     "EpisodeResponse",
-    "FactRatingExamples",
-    "FactRatingInstruction",
+    "GetTaskResponse",
     "Graph",
+    "GraphCommunitiesRequest",
     "GraphDataType",
     "GraphEdgesRequest",
     "GraphListResponse",
     "GraphNodesRequest",
+    "GraphSagasRequest",
     "GraphSearchResults",
     "GraphSearchScope",
+    "GraphThemesRequest",
+    "GraphitiMetadataFilterGroupType",
+    "GraphitiSagaNode",
+    "HubDetectConfig",
     "ListContextTemplatesResponse",
+    "ListCustomInstructionsResponse",
     "ListUserInstructionsResponse",
     "Message",
     "MessageListResponse",
-    "ModelsFactRatingExamples",
-    "ModelsFactRatingInstruction",
+    "MetadataFilterGroup",
+    "PathDetectConfig",
+    "PatternMetadata",
+    "PatternResult",
+    "PatternSeeds",
     "ProjectInfo",
     "ProjectInfoResponse",
+    "PropertyFilter",
+    "RecencyWeight",
+    "RelationshipDetectConfig",
     "Reranker",
     "RoleType",
     "SearchFilters",
     "SuccessResponse",
+    "TaskErrorResponse",
+    "TaskProgress",
     "Thread",
     "ThreadContextResponse",
     "ThreadListResponse",
