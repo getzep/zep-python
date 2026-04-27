@@ -13,13 +13,13 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.community_node import CommunityNode
+from ...types.derived_node import DerivedNode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawCommunityClient:
+class RawObservationClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -30,9 +30,9 @@ class RawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[CommunityNode]]:
+    ) -> HttpResponse[typing.List[DerivedNode]]:
         """
-        Returns read-only community nodes for a graph.
+        Returns read-only observation nodes for a graph.
 
         Parameters
         ----------
@@ -50,11 +50,11 @@ class RawCommunityClient:
 
         Returns
         -------
-        HttpResponse[typing.List[CommunityNode]]
-            Communities
+        HttpResponse[typing.List[DerivedNode]]
+            Observations
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/community/graph/{jsonable_encoder(graph_id)}",
+            f"graph/observation/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -69,9 +69,9 @@ class RawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[DerivedNode],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[DerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -125,9 +125,9 @@ class RawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[CommunityNode]]:
+    ) -> HttpResponse[typing.List[DerivedNode]]:
         """
-        Returns read-only community nodes for a user's graph.
+        Returns read-only observation nodes for a user's graph.
 
         Parameters
         ----------
@@ -145,11 +145,11 @@ class RawCommunityClient:
 
         Returns
         -------
-        HttpResponse[typing.List[CommunityNode]]
-            Communities
+        HttpResponse[typing.List[DerivedNode]]
+            Observations
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/community/user/{jsonable_encoder(user_id)}",
+            f"graph/observation/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -164,9 +164,9 @@ class RawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[DerivedNode],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[DerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -213,36 +213,34 @@ class RawCommunityClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[CommunityNode]:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[DerivedNode]:
         """
-        Returns a specific community node by UUID. Community nodes are read-only.
+        Returns a specific observation node by UUID. Observation nodes are read-only.
 
         Parameters
         ----------
         uuid_ : str
-            Community UUID
+            Observation UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[CommunityNode]
-            Community
+        HttpResponse[DerivedNode]
+            Observation
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/community/{jsonable_encoder(uuid_)}",
+            f"graph/observation/{jsonable_encoder(uuid_)}",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    CommunityNode,
+                    DerivedNode,
                     parse_obj_as(
-                        type_=CommunityNode,  # type: ignore
+                        type_=DerivedNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -290,7 +288,7 @@ class RawCommunityClient:
         )
 
 
-class AsyncRawCommunityClient:
+class AsyncRawObservationClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -301,9 +299,9 @@ class AsyncRawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[CommunityNode]]:
+    ) -> AsyncHttpResponse[typing.List[DerivedNode]]:
         """
-        Returns read-only community nodes for a graph.
+        Returns read-only observation nodes for a graph.
 
         Parameters
         ----------
@@ -321,11 +319,11 @@ class AsyncRawCommunityClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[CommunityNode]]
-            Communities
+        AsyncHttpResponse[typing.List[DerivedNode]]
+            Observations
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/community/graph/{jsonable_encoder(graph_id)}",
+            f"graph/observation/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -340,9 +338,9 @@ class AsyncRawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[DerivedNode],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[DerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -396,9 +394,9 @@ class AsyncRawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[CommunityNode]]:
+    ) -> AsyncHttpResponse[typing.List[DerivedNode]]:
         """
-        Returns read-only community nodes for a user's graph.
+        Returns read-only observation nodes for a user's graph.
 
         Parameters
         ----------
@@ -416,11 +414,11 @@ class AsyncRawCommunityClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[CommunityNode]]
-            Communities
+        AsyncHttpResponse[typing.List[DerivedNode]]
+            Observations
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/community/user/{jsonable_encoder(user_id)}",
+            f"graph/observation/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -435,9 +433,9 @@ class AsyncRawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[DerivedNode],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[DerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -486,34 +484,34 @@ class AsyncRawCommunityClient:
 
     async def get(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[CommunityNode]:
+    ) -> AsyncHttpResponse[DerivedNode]:
         """
-        Returns a specific community node by UUID. Community nodes are read-only.
+        Returns a specific observation node by UUID. Observation nodes are read-only.
 
         Parameters
         ----------
         uuid_ : str
-            Community UUID
+            Observation UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[CommunityNode]
-            Community
+        AsyncHttpResponse[DerivedNode]
+            Observation
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/community/{jsonable_encoder(uuid_)}",
+            f"graph/observation/{jsonable_encoder(uuid_)}",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    CommunityNode,
+                    DerivedNode,
                     parse_obj_as(
-                        type_=CommunityNode,  # type: ignore
+                        type_=DerivedNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

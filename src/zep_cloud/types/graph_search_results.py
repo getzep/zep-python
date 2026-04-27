@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .community_node import CommunityNode
+from .derived_node import DerivedNode
 from .entity_edge import EntityEdge
 from .entity_node import EntityNode
 from .episode import Episode
@@ -12,13 +12,12 @@ from .graphiti_saga_node import GraphitiSagaNode
 
 
 class GraphSearchResults(UniversalBaseModel):
-    communities: typing.Optional[typing.List[CommunityNode]] = None
     context: typing.Optional[str] = None
     edges: typing.Optional[typing.List[EntityEdge]] = None
     episodes: typing.Optional[typing.List[Episode]] = None
     nodes: typing.Optional[typing.List[EntityNode]] = None
-    sagas: typing.Optional[typing.List[GraphitiSagaNode]] = None
-    themes: typing.Optional[typing.List[CommunityNode]] = None
+    observations: typing.Optional[typing.List[DerivedNode]] = None
+    thread_summaries: typing.Optional[typing.List[GraphitiSagaNode]] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
