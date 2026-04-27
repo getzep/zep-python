@@ -8,15 +8,20 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
-class CommunityNode(UniversalBaseModel):
+class DerivedNode(UniversalBaseModel):
     attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
     """
-    Additional attributes of the community node.
+    Additional attributes of the derived node.
     """
 
     created_at: str = pydantic.Field()
     """
     Creation time of the node
+    """
+
+    episode_ids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Episode UUIDs that support this observation. Only populated for observation nodes in web API responses.
     """
 
     labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)

@@ -2562,7 +2562,7 @@ client = Zep(
 client.thread.get(
     thread_id="threadId",
     limit=1,
-    cursor=1000000,
+    cursor=1,
     lastn=1,
 )
 
@@ -2813,6 +2813,76 @@ that are added to a user's graph.
 <dd>
 
 **return_context:** `typing.Optional[bool]` — Optionally return context block relevant to the most recent messages.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">get_summary</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the incremental summary generated from messages in the thread. Returns 404 if no summary exists for the thread.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.thread.get_summary(
+    thread_id="threadId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**thread_id:** `str` — The thread ID.
     
 </dd>
 </dl>
@@ -3719,249 +3789,6 @@ client.user.warm(
 <dd>
 
 **user_id:** `str` — User ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Graph Community
-<details><summary><code>client.graph.community.<a href="src/zep_cloud/graph/community/client.py">get_by_graph_id</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns read-only community nodes for a graph.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.community.get_by_graph_id(
-    graph_id="graph_id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**graph_id:** `str` — Graph ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `typing.Optional[int]` — Maximum number of items to return
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.graph.community.<a href="src/zep_cloud/graph/community/client.py">get_by_user_id</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns read-only community nodes for a user's graph.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.community.get_by_user_id(
-    user_id="user_id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**user_id:** `str` — User ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `typing.Optional[int]` — Maximum number of items to return
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.graph.community.<a href="src/zep_cloud/graph/community/client.py">get</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a specific community node by UUID. Community nodes are read-only.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.community.get(
-    uuid_="uuid",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**uuid_:** `str` — Community UUID
     
 </dd>
 </dl>
@@ -5415,8 +5242,8 @@ client.graph.node.update(
 </dl>
 </details>
 
-## Graph Saga
-<details><summary><code>client.graph.saga.<a href="src/zep_cloud/graph/saga/client.py">get_by_graph_id</a>(...)</code></summary>
+## Graph Observation
+<details><summary><code>client.graph.observation.<a href="src/zep_cloud/graph/observation/client.py">get_by_graph_id</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -5428,7 +5255,7 @@ client.graph.node.update(
 <dl>
 <dd>
 
-Returns read-only saga nodes for a graph.
+Returns read-only observation nodes for a graph.
 </dd>
 </dl>
 </dd>
@@ -5448,7 +5275,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.saga.get_by_graph_id(
+client.graph.observation.get_by_graph_id(
     graph_id="graph_id",
 )
 
@@ -5502,7 +5329,7 @@ client.graph.saga.get_by_graph_id(
 </dl>
 </details>
 
-<details><summary><code>client.graph.saga.<a href="src/zep_cloud/graph/saga/client.py">get_by_user_id</a>(...)</code></summary>
+<details><summary><code>client.graph.observation.<a href="src/zep_cloud/graph/observation/client.py">get_by_user_id</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -5514,7 +5341,7 @@ client.graph.saga.get_by_graph_id(
 <dl>
 <dd>
 
-Returns read-only saga nodes for a user's graph.
+Returns read-only observation nodes for a user's graph.
 </dd>
 </dl>
 </dd>
@@ -5534,7 +5361,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.saga.get_by_user_id(
+client.graph.observation.get_by_user_id(
     user_id="user_id",
 )
 
@@ -5588,8 +5415,7 @@ client.graph.saga.get_by_user_id(
 </dl>
 </details>
 
-## Graph Theme
-<details><summary><code>client.graph.theme.<a href="src/zep_cloud/graph/theme/client.py">get_by_graph_id</a>(...)</code></summary>
+<details><summary><code>client.graph.observation.<a href="src/zep_cloud/graph/observation/client.py">get</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -5601,7 +5427,7 @@ client.graph.saga.get_by_user_id(
 <dl>
 <dd>
 
-Returns read-only theme nodes for a graph.
+Returns a specific observation node by UUID. Observation nodes are read-only.
 </dd>
 </dl>
 </dd>
@@ -5621,179 +5447,7 @@ from zep_cloud import Zep
 client = Zep(
     api_key="YOUR_API_KEY",
 )
-client.graph.theme.get_by_graph_id(
-    graph_id="graph_id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**graph_id:** `str` — Graph ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `typing.Optional[int]` — Maximum number of items to return
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.graph.theme.<a href="src/zep_cloud/graph/theme/client.py">get_by_user_id</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns read-only theme nodes for a user's graph.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.theme.get_by_user_id(
-    user_id="user_id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**user_id:** `str` — User ID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `typing.Optional[int]` — Maximum number of items to return
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.graph.theme.<a href="src/zep_cloud/graph/theme/client.py">get</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a specific theme node by UUID. Theme nodes are read-only.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.theme.get(
+client.graph.observation.get(
     uuid_="uuid",
 )
 
@@ -5811,7 +5465,180 @@ client.graph.theme.get(
 <dl>
 <dd>
 
-**uuid_:** `str` — Theme UUID
+**uuid_:** `str` — Observation UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Graph ThreadSummary
+<details><summary><code>client.graph.thread_summary.<a href="src/zep_cloud/graph/thread_summary/client.py">get_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns incremental thread summaries associated with the graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.thread_summary.get_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.thread_summary.<a href="src/zep_cloud/graph/thread_summary/client.py">get_by_user_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.thread_summary.get_by_user_id(
+    user_id="user_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
     
 </dd>
 </dl>

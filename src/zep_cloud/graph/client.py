@@ -25,13 +25,12 @@ from ..types.recency_weight import RecencyWeight
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
-from .community.client import AsyncCommunityClient, CommunityClient
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
 from .node.client import AsyncNodeClient, NodeClient
+from .observation.client import AsyncObservationClient, ObservationClient
 from .raw_client import AsyncRawGraphClient, RawGraphClient
-from .saga.client import AsyncSagaClient, SagaClient
-from .theme.client import AsyncThemeClient, ThemeClient
+from .thread_summary.client import AsyncThreadSummaryClient, ThreadSummaryClient
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -40,17 +39,15 @@ OMIT = typing.cast(typing.Any, ...)
 class GraphClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawGraphClient(client_wrapper=client_wrapper)
-        self.community = CommunityClient(client_wrapper=client_wrapper)
-
         self.edge = EdgeClient(client_wrapper=client_wrapper)
 
         self.episode = EpisodeClient(client_wrapper=client_wrapper)
 
         self.node = NodeClient(client_wrapper=client_wrapper)
 
-        self.saga = SagaClient(client_wrapper=client_wrapper)
+        self.observation = ObservationClient(client_wrapper=client_wrapper)
 
-        self.theme = ThemeClient(client_wrapper=client_wrapper)
+        self.thread_summary = ThreadSummaryClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> RawGraphClient:
@@ -1007,17 +1004,15 @@ class GraphClient:
 class AsyncGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._raw_client = AsyncRawGraphClient(client_wrapper=client_wrapper)
-        self.community = AsyncCommunityClient(client_wrapper=client_wrapper)
-
         self.edge = AsyncEdgeClient(client_wrapper=client_wrapper)
 
         self.episode = AsyncEpisodeClient(client_wrapper=client_wrapper)
 
         self.node = AsyncNodeClient(client_wrapper=client_wrapper)
 
-        self.saga = AsyncSagaClient(client_wrapper=client_wrapper)
+        self.observation = AsyncObservationClient(client_wrapper=client_wrapper)
 
-        self.theme = AsyncThemeClient(client_wrapper=client_wrapper)
+        self.thread_summary = AsyncThreadSummaryClient(client_wrapper=client_wrapper)
 
     @property
     def with_raw_response(self) -> AsyncRawGraphClient:

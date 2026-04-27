@@ -4,25 +4,25 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.community_node import CommunityNode
-from .raw_client import AsyncRawThemeClient, RawThemeClient
+from ...types.thread_summary import ThreadSummary
+from .raw_client import AsyncRawThreadSummaryClient, RawThreadSummaryClient
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class ThemeClient:
+class ThreadSummaryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
-        self._raw_client = RawThemeClient(client_wrapper=client_wrapper)
+        self._raw_client = RawThreadSummaryClient(client_wrapper=client_wrapper)
 
     @property
-    def with_raw_response(self) -> RawThemeClient:
+    def with_raw_response(self) -> RawThreadSummaryClient:
         """
         Retrieves a raw implementation of this client that returns raw responses.
 
         Returns
         -------
-        RawThemeClient
+        RawThreadSummaryClient
         """
         return self._raw_client
 
@@ -33,9 +33,9 @@ class ThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[ThreadSummary]:
         """
-        Returns read-only theme nodes for a graph.
+        Returns incremental thread summaries associated with the graph.
 
         Parameters
         ----------
@@ -53,8 +53,8 @@ class ThemeClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Themes
+        typing.List[ThreadSummary]
+            Thread summaries
 
         Examples
         --------
@@ -63,7 +63,7 @@ class ThemeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.theme.get_by_graph_id(
+        client.graph.thread_summary.get_by_graph_id(
             graph_id="graph_id",
         )
         """
@@ -79,9 +79,9 @@ class ThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[ThreadSummary]:
         """
-        Returns read-only theme nodes for a user's graph.
+        Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
         Parameters
         ----------
@@ -99,8 +99,8 @@ class ThemeClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Themes
+        typing.List[ThreadSummary]
+            Thread summaries
 
         Examples
         --------
@@ -109,7 +109,7 @@ class ThemeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.theme.get_by_user_id(
+        client.graph.thread_summary.get_by_user_id(
             user_id="user_id",
         )
         """
@@ -118,50 +118,19 @@ class ThemeClient:
         )
         return _response.data
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> CommunityNode:
-        """
-        Returns a specific theme node by UUID. Theme nodes are read-only.
 
-        Parameters
-        ----------
-        uuid_ : str
-            Theme UUID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        CommunityNode
-            Theme
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.graph.theme.get(
-            uuid_="uuid",
-        )
-        """
-        _response = self._raw_client.get(uuid_, request_options=request_options)
-        return _response.data
-
-
-class AsyncThemeClient:
+class AsyncThreadSummaryClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        self._raw_client = AsyncRawThemeClient(client_wrapper=client_wrapper)
+        self._raw_client = AsyncRawThreadSummaryClient(client_wrapper=client_wrapper)
 
     @property
-    def with_raw_response(self) -> AsyncRawThemeClient:
+    def with_raw_response(self) -> AsyncRawThreadSummaryClient:
         """
         Retrieves a raw implementation of this client that returns raw responses.
 
         Returns
         -------
-        AsyncRawThemeClient
+        AsyncRawThreadSummaryClient
         """
         return self._raw_client
 
@@ -172,9 +141,9 @@ class AsyncThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[ThreadSummary]:
         """
-        Returns read-only theme nodes for a graph.
+        Returns incremental thread summaries associated with the graph.
 
         Parameters
         ----------
@@ -192,8 +161,8 @@ class AsyncThemeClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Themes
+        typing.List[ThreadSummary]
+            Thread summaries
 
         Examples
         --------
@@ -207,7 +176,7 @@ class AsyncThemeClient:
 
 
         async def main() -> None:
-            await client.graph.theme.get_by_graph_id(
+            await client.graph.thread_summary.get_by_graph_id(
                 graph_id="graph_id",
             )
 
@@ -226,9 +195,9 @@ class AsyncThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[ThreadSummary]:
         """
-        Returns read-only theme nodes for a user's graph.
+        Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
         Parameters
         ----------
@@ -246,8 +215,8 @@ class AsyncThemeClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Themes
+        typing.List[ThreadSummary]
+            Thread summaries
 
         Examples
         --------
@@ -261,7 +230,7 @@ class AsyncThemeClient:
 
 
         async def main() -> None:
-            await client.graph.theme.get_by_user_id(
+            await client.graph.thread_summary.get_by_user_id(
                 user_id="user_id",
             )
 
@@ -271,43 +240,4 @@ class AsyncThemeClient:
         _response = await self._raw_client.get_by_user_id(
             user_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
         )
-        return _response.data
-
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> CommunityNode:
-        """
-        Returns a specific theme node by UUID. Theme nodes are read-only.
-
-        Parameters
-        ----------
-        uuid_ : str
-            Theme UUID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        CommunityNode
-            Theme
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.graph.theme.get(
-                uuid_="uuid",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get(uuid_, request_options=request_options)
         return _response.data

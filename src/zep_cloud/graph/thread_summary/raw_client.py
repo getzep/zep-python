@@ -13,13 +13,13 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.graphiti_saga_node import GraphitiSagaNode
+from ...types.thread_summary import ThreadSummary
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawSagaClient:
+class RawThreadSummaryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -30,9 +30,9 @@ class RawSagaClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiSagaNode]]:
+    ) -> HttpResponse[typing.List[ThreadSummary]]:
         """
-        Returns read-only saga nodes for a graph.
+        Returns incremental thread summaries associated with the graph.
 
         Parameters
         ----------
@@ -50,11 +50,11 @@ class RawSagaClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiSagaNode]]
+        HttpResponse[typing.List[ThreadSummary]]
             Thread summaries
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/saga/graph/{jsonable_encoder(graph_id)}",
+            f"graph/thread-summary/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -69,9 +69,9 @@ class RawSagaClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiSagaNode],
+                    typing.List[ThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[GraphitiSagaNode],  # type: ignore
+                        type_=typing.List[ThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -125,9 +125,9 @@ class RawSagaClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiSagaNode]]:
+    ) -> HttpResponse[typing.List[ThreadSummary]]:
         """
-        Returns read-only saga nodes for a user's graph.
+        Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
         Parameters
         ----------
@@ -145,11 +145,11 @@ class RawSagaClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiSagaNode]]
+        HttpResponse[typing.List[ThreadSummary]]
             Thread summaries
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/saga/user/{jsonable_encoder(user_id)}",
+            f"graph/thread-summary/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -164,9 +164,9 @@ class RawSagaClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiSagaNode],
+                    typing.List[ThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[GraphitiSagaNode],  # type: ignore
+                        type_=typing.List[ThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -214,7 +214,7 @@ class RawSagaClient:
         )
 
 
-class AsyncRawSagaClient:
+class AsyncRawThreadSummaryClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -225,9 +225,9 @@ class AsyncRawSagaClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiSagaNode]]:
+    ) -> AsyncHttpResponse[typing.List[ThreadSummary]]:
         """
-        Returns read-only saga nodes for a graph.
+        Returns incremental thread summaries associated with the graph.
 
         Parameters
         ----------
@@ -245,11 +245,11 @@ class AsyncRawSagaClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiSagaNode]]
+        AsyncHttpResponse[typing.List[ThreadSummary]]
             Thread summaries
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/saga/graph/{jsonable_encoder(graph_id)}",
+            f"graph/thread-summary/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -264,9 +264,9 @@ class AsyncRawSagaClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiSagaNode],
+                    typing.List[ThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[GraphitiSagaNode],  # type: ignore
+                        type_=typing.List[ThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -320,9 +320,9 @@ class AsyncRawSagaClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiSagaNode]]:
+    ) -> AsyncHttpResponse[typing.List[ThreadSummary]]:
         """
-        Returns read-only saga nodes for a user's graph.
+        Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
         Parameters
         ----------
@@ -340,11 +340,11 @@ class AsyncRawSagaClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiSagaNode]]
+        AsyncHttpResponse[typing.List[ThreadSummary]]
             Thread summaries
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/saga/user/{jsonable_encoder(user_id)}",
+            f"graph/thread-summary/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -359,9 +359,9 @@ class AsyncRawSagaClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiSagaNode],
+                    typing.List[ThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[GraphitiSagaNode],  # type: ignore
+                        type_=typing.List[ThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )

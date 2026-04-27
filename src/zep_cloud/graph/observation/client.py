@@ -4,25 +4,25 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.community_node import CommunityNode
-from .raw_client import AsyncRawCommunityClient, RawCommunityClient
+from ...types.derived_node import DerivedNode
+from .raw_client import AsyncRawObservationClient, RawObservationClient
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class CommunityClient:
+class ObservationClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
-        self._raw_client = RawCommunityClient(client_wrapper=client_wrapper)
+        self._raw_client = RawObservationClient(client_wrapper=client_wrapper)
 
     @property
-    def with_raw_response(self) -> RawCommunityClient:
+    def with_raw_response(self) -> RawObservationClient:
         """
         Retrieves a raw implementation of this client that returns raw responses.
 
         Returns
         -------
-        RawCommunityClient
+        RawObservationClient
         """
         return self._raw_client
 
@@ -33,9 +33,9 @@ class CommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[DerivedNode]:
         """
-        Returns read-only community nodes for a graph.
+        Returns read-only observation nodes for a graph.
 
         Parameters
         ----------
@@ -53,8 +53,8 @@ class CommunityClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Communities
+        typing.List[DerivedNode]
+            Observations
 
         Examples
         --------
@@ -63,7 +63,7 @@ class CommunityClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.community.get_by_graph_id(
+        client.graph.observation.get_by_graph_id(
             graph_id="graph_id",
         )
         """
@@ -79,9 +79,9 @@ class CommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[DerivedNode]:
         """
-        Returns read-only community nodes for a user's graph.
+        Returns read-only observation nodes for a user's graph.
 
         Parameters
         ----------
@@ -99,8 +99,8 @@ class CommunityClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Communities
+        typing.List[DerivedNode]
+            Observations
 
         Examples
         --------
@@ -109,7 +109,7 @@ class CommunityClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.community.get_by_user_id(
+        client.graph.observation.get_by_user_id(
             user_id="user_id",
         )
         """
@@ -118,22 +118,22 @@ class CommunityClient:
         )
         return _response.data
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> CommunityNode:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> DerivedNode:
         """
-        Returns a specific community node by UUID. Community nodes are read-only.
+        Returns a specific observation node by UUID. Observation nodes are read-only.
 
         Parameters
         ----------
         uuid_ : str
-            Community UUID
+            Observation UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        CommunityNode
-            Community
+        DerivedNode
+            Observation
 
         Examples
         --------
@@ -142,7 +142,7 @@ class CommunityClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.community.get(
+        client.graph.observation.get(
             uuid_="uuid",
         )
         """
@@ -150,18 +150,18 @@ class CommunityClient:
         return _response.data
 
 
-class AsyncCommunityClient:
+class AsyncObservationClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        self._raw_client = AsyncRawCommunityClient(client_wrapper=client_wrapper)
+        self._raw_client = AsyncRawObservationClient(client_wrapper=client_wrapper)
 
     @property
-    def with_raw_response(self) -> AsyncRawCommunityClient:
+    def with_raw_response(self) -> AsyncRawObservationClient:
         """
         Retrieves a raw implementation of this client that returns raw responses.
 
         Returns
         -------
-        AsyncRawCommunityClient
+        AsyncRawObservationClient
         """
         return self._raw_client
 
@@ -172,9 +172,9 @@ class AsyncCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[DerivedNode]:
         """
-        Returns read-only community nodes for a graph.
+        Returns read-only observation nodes for a graph.
 
         Parameters
         ----------
@@ -192,8 +192,8 @@ class AsyncCommunityClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Communities
+        typing.List[DerivedNode]
+            Observations
 
         Examples
         --------
@@ -207,7 +207,7 @@ class AsyncCommunityClient:
 
 
         async def main() -> None:
-            await client.graph.community.get_by_graph_id(
+            await client.graph.observation.get_by_graph_id(
                 graph_id="graph_id",
             )
 
@@ -226,9 +226,9 @@ class AsyncCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[DerivedNode]:
         """
-        Returns read-only community nodes for a user's graph.
+        Returns read-only observation nodes for a user's graph.
 
         Parameters
         ----------
@@ -246,8 +246,8 @@ class AsyncCommunityClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Communities
+        typing.List[DerivedNode]
+            Observations
 
         Examples
         --------
@@ -261,7 +261,7 @@ class AsyncCommunityClient:
 
 
         async def main() -> None:
-            await client.graph.community.get_by_user_id(
+            await client.graph.observation.get_by_user_id(
                 user_id="user_id",
             )
 
@@ -273,22 +273,22 @@ class AsyncCommunityClient:
         )
         return _response.data
 
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> CommunityNode:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> DerivedNode:
         """
-        Returns a specific community node by UUID. Community nodes are read-only.
+        Returns a specific observation node by UUID. Observation nodes are read-only.
 
         Parameters
         ----------
         uuid_ : str
-            Community UUID
+            Observation UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        CommunityNode
-            Community
+        DerivedNode
+            Observation
 
         Examples
         --------
@@ -302,7 +302,7 @@ class AsyncCommunityClient:
 
 
         async def main() -> None:
-            await client.graph.community.get(
+            await client.graph.observation.get(
                 uuid_="uuid",
             )
 
