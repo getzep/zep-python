@@ -16,7 +16,6 @@ from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.add_thread_messages_response import AddThreadMessagesResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_thread_summary import ApidataThreadSummary
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.role_type import RoleType
@@ -24,6 +23,7 @@ from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
+from ..types.thread_summary import ThreadSummary
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -586,7 +586,7 @@ class RawThreadClient:
 
     def get_summary(
         self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataThreadSummary]:
+    ) -> HttpResponse[ThreadSummary]:
         """
         Returns the incremental summary generated from messages in the thread. Returns 404 if no summary exists for the thread.
 
@@ -600,7 +600,7 @@ class RawThreadClient:
 
         Returns
         -------
-        HttpResponse[ApidataThreadSummary]
+        HttpResponse[ThreadSummary]
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -611,9 +611,9 @@ class RawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadSummary,
+                    ThreadSummary,
                     parse_obj_as(
-                        type_=ApidataThreadSummary,  # type: ignore
+                        type_=ThreadSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1218,7 +1218,7 @@ class AsyncRawThreadClient:
 
     async def get_summary(
         self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataThreadSummary]:
+    ) -> AsyncHttpResponse[ThreadSummary]:
         """
         Returns the incremental summary generated from messages in the thread. Returns 404 if no summary exists for the thread.
 
@@ -1232,7 +1232,7 @@ class AsyncRawThreadClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataThreadSummary]
+        AsyncHttpResponse[ThreadSummary]
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1243,9 +1243,9 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataThreadSummary,
+                    ThreadSummary,
                     parse_obj_as(
-                        type_=ApidataThreadSummary,  # type: ignore
+                        type_=ThreadSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

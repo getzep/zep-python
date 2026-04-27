@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
-class ApidataThreadSummary(UniversalBaseModel):
+class ThreadSummary(UniversalBaseModel):
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     CreatedAt is when the summary node was first created.

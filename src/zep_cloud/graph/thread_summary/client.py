@@ -4,7 +4,7 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.apidata_thread_summary import ApidataThreadSummary
+from ...types.thread_summary import ThreadSummary
 from .raw_client import AsyncRawThreadSummaryClient, RawThreadSummaryClient
 
 # this is used as the default value for optional parameters
@@ -33,7 +33,7 @@ class ThreadSummaryClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ApidataThreadSummary]:
+    ) -> typing.List[ThreadSummary]:
         """
         Returns incremental thread summaries associated with the graph.
 
@@ -53,7 +53,7 @@ class ThreadSummaryClient:
 
         Returns
         -------
-        typing.List[ApidataThreadSummary]
+        typing.List[ThreadSummary]
             Thread summaries
 
         Examples
@@ -79,7 +79,7 @@ class ThreadSummaryClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ApidataThreadSummary]:
+    ) -> typing.List[ThreadSummary]:
         """
         Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
@@ -99,7 +99,7 @@ class ThreadSummaryClient:
 
         Returns
         -------
-        typing.List[ApidataThreadSummary]
+        typing.List[ThreadSummary]
             Thread summaries
 
         Examples
@@ -141,7 +141,7 @@ class AsyncThreadSummaryClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ApidataThreadSummary]:
+    ) -> typing.List[ThreadSummary]:
         """
         Returns incremental thread summaries associated with the graph.
 
@@ -161,7 +161,7 @@ class AsyncThreadSummaryClient:
 
         Returns
         -------
-        typing.List[ApidataThreadSummary]
+        typing.List[ThreadSummary]
             Thread summaries
 
         Examples
@@ -195,7 +195,7 @@ class AsyncThreadSummaryClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ApidataThreadSummary]:
+    ) -> typing.List[ThreadSummary]:
         """
         Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
@@ -215,7 +215,7 @@ class AsyncThreadSummaryClient:
 
         Returns
         -------
-        typing.List[ApidataThreadSummary]
+        typing.List[ThreadSummary]
             Thread summaries
 
         Examples

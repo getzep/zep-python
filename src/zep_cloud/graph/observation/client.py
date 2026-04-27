@@ -4,7 +4,7 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.graphiti_derived_node import GraphitiDerivedNode
+from ...types.derived_node import DerivedNode
 from .raw_client import AsyncRawObservationClient, RawObservationClient
 
 # this is used as the default value for optional parameters
@@ -33,7 +33,7 @@ class ObservationClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiDerivedNode]:
+    ) -> typing.List[DerivedNode]:
         """
         Returns read-only observation nodes for a graph.
 
@@ -53,7 +53,7 @@ class ObservationClient:
 
         Returns
         -------
-        typing.List[GraphitiDerivedNode]
+        typing.List[DerivedNode]
             Observations
 
         Examples
@@ -79,7 +79,7 @@ class ObservationClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiDerivedNode]:
+    ) -> typing.List[DerivedNode]:
         """
         Returns read-only observation nodes for a user's graph.
 
@@ -99,7 +99,7 @@ class ObservationClient:
 
         Returns
         -------
-        typing.List[GraphitiDerivedNode]
+        typing.List[DerivedNode]
             Observations
 
         Examples
@@ -118,7 +118,7 @@ class ObservationClient:
         )
         return _response.data
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiDerivedNode:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> DerivedNode:
         """
         Returns a specific observation node by UUID. Observation nodes are read-only.
 
@@ -132,7 +132,7 @@ class ObservationClient:
 
         Returns
         -------
-        GraphitiDerivedNode
+        DerivedNode
             Observation
 
         Examples
@@ -172,7 +172,7 @@ class AsyncObservationClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiDerivedNode]:
+    ) -> typing.List[DerivedNode]:
         """
         Returns read-only observation nodes for a graph.
 
@@ -192,7 +192,7 @@ class AsyncObservationClient:
 
         Returns
         -------
-        typing.List[GraphitiDerivedNode]
+        typing.List[DerivedNode]
             Observations
 
         Examples
@@ -226,7 +226,7 @@ class AsyncObservationClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[GraphitiDerivedNode]:
+    ) -> typing.List[DerivedNode]:
         """
         Returns read-only observation nodes for a user's graph.
 
@@ -246,7 +246,7 @@ class AsyncObservationClient:
 
         Returns
         -------
-        typing.List[GraphitiDerivedNode]
+        typing.List[DerivedNode]
             Observations
 
         Examples
@@ -273,7 +273,7 @@ class AsyncObservationClient:
         )
         return _response.data
 
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiDerivedNode:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> DerivedNode:
         """
         Returns a specific observation node by UUID. Observation nodes are read-only.
 
@@ -287,7 +287,7 @@ class AsyncObservationClient:
 
         Returns
         -------
-        GraphitiDerivedNode
+        DerivedNode
             Observation
 
         Examples

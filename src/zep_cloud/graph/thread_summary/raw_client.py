@@ -13,7 +13,7 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.apidata_thread_summary import ApidataThreadSummary
+from ...types.thread_summary import ThreadSummary
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,7 +30,7 @@ class RawThreadSummaryClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[ApidataThreadSummary]]:
+    ) -> HttpResponse[typing.List[ThreadSummary]]:
         """
         Returns incremental thread summaries associated with the graph.
 
@@ -50,7 +50,7 @@ class RawThreadSummaryClient:
 
         Returns
         -------
-        HttpResponse[typing.List[ApidataThreadSummary]]
+        HttpResponse[typing.List[ThreadSummary]]
             Thread summaries
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -69,9 +69,9 @@ class RawThreadSummaryClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ApidataThreadSummary],
+                    typing.List[ThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[ApidataThreadSummary],  # type: ignore
+                        type_=typing.List[ThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -125,7 +125,7 @@ class RawThreadSummaryClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[ApidataThreadSummary]]:
+    ) -> HttpResponse[typing.List[ThreadSummary]]:
         """
         Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
@@ -145,7 +145,7 @@ class RawThreadSummaryClient:
 
         Returns
         -------
-        HttpResponse[typing.List[ApidataThreadSummary]]
+        HttpResponse[typing.List[ThreadSummary]]
             Thread summaries
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -164,9 +164,9 @@ class RawThreadSummaryClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ApidataThreadSummary],
+                    typing.List[ThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[ApidataThreadSummary],  # type: ignore
+                        type_=typing.List[ThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -225,7 +225,7 @@ class AsyncRawThreadSummaryClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[ApidataThreadSummary]]:
+    ) -> AsyncHttpResponse[typing.List[ThreadSummary]]:
         """
         Returns incremental thread summaries associated with the graph.
 
@@ -245,7 +245,7 @@ class AsyncRawThreadSummaryClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[ApidataThreadSummary]]
+        AsyncHttpResponse[typing.List[ThreadSummary]]
             Thread summaries
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -264,9 +264,9 @@ class AsyncRawThreadSummaryClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ApidataThreadSummary],
+                    typing.List[ThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[ApidataThreadSummary],  # type: ignore
+                        type_=typing.List[ThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -320,7 +320,7 @@ class AsyncRawThreadSummaryClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[ApidataThreadSummary]]:
+    ) -> AsyncHttpResponse[typing.List[ThreadSummary]]:
         """
         Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
@@ -340,7 +340,7 @@ class AsyncRawThreadSummaryClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[ApidataThreadSummary]]
+        AsyncHttpResponse[typing.List[ThreadSummary]]
             Thread summaries
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -359,9 +359,9 @@ class AsyncRawThreadSummaryClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ApidataThreadSummary],
+                    typing.List[ThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[ApidataThreadSummary],  # type: ignore
+                        type_=typing.List[ThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )

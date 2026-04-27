@@ -13,7 +13,7 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.graphiti_derived_node import GraphitiDerivedNode
+from ...types.derived_node import DerivedNode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,7 +30,7 @@ class RawObservationClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiDerivedNode]]:
+    ) -> HttpResponse[typing.List[DerivedNode]]:
         """
         Returns read-only observation nodes for a graph.
 
@@ -50,7 +50,7 @@ class RawObservationClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiDerivedNode]]
+        HttpResponse[typing.List[DerivedNode]]
             Observations
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -69,9 +69,9 @@ class RawObservationClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiDerivedNode],
+                    typing.List[DerivedNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiDerivedNode],  # type: ignore
+                        type_=typing.List[DerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -125,7 +125,7 @@ class RawObservationClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiDerivedNode]]:
+    ) -> HttpResponse[typing.List[DerivedNode]]:
         """
         Returns read-only observation nodes for a user's graph.
 
@@ -145,7 +145,7 @@ class RawObservationClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiDerivedNode]]
+        HttpResponse[typing.List[DerivedNode]]
             Observations
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -164,9 +164,9 @@ class RawObservationClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiDerivedNode],
+                    typing.List[DerivedNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiDerivedNode],  # type: ignore
+                        type_=typing.List[DerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -213,9 +213,7 @@ class RawObservationClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[GraphitiDerivedNode]:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[DerivedNode]:
         """
         Returns a specific observation node by UUID. Observation nodes are read-only.
 
@@ -229,7 +227,7 @@ class RawObservationClient:
 
         Returns
         -------
-        HttpResponse[GraphitiDerivedNode]
+        HttpResponse[DerivedNode]
             Observation
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -240,9 +238,9 @@ class RawObservationClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiDerivedNode,
+                    DerivedNode,
                     parse_obj_as(
-                        type_=GraphitiDerivedNode,  # type: ignore
+                        type_=DerivedNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -301,7 +299,7 @@ class AsyncRawObservationClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiDerivedNode]]:
+    ) -> AsyncHttpResponse[typing.List[DerivedNode]]:
         """
         Returns read-only observation nodes for a graph.
 
@@ -321,7 +319,7 @@ class AsyncRawObservationClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiDerivedNode]]
+        AsyncHttpResponse[typing.List[DerivedNode]]
             Observations
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -340,9 +338,9 @@ class AsyncRawObservationClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiDerivedNode],
+                    typing.List[DerivedNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiDerivedNode],  # type: ignore
+                        type_=typing.List[DerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -396,7 +394,7 @@ class AsyncRawObservationClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiDerivedNode]]:
+    ) -> AsyncHttpResponse[typing.List[DerivedNode]]:
         """
         Returns read-only observation nodes for a user's graph.
 
@@ -416,7 +414,7 @@ class AsyncRawObservationClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiDerivedNode]]
+        AsyncHttpResponse[typing.List[DerivedNode]]
             Observations
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -435,9 +433,9 @@ class AsyncRawObservationClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiDerivedNode],
+                    typing.List[DerivedNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiDerivedNode],  # type: ignore
+                        type_=typing.List[DerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -486,7 +484,7 @@ class AsyncRawObservationClient:
 
     async def get(
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[GraphitiDerivedNode]:
+    ) -> AsyncHttpResponse[DerivedNode]:
         """
         Returns a specific observation node by UUID. Observation nodes are read-only.
 
@@ -500,7 +498,7 @@ class AsyncRawObservationClient:
 
         Returns
         -------
-        AsyncHttpResponse[GraphitiDerivedNode]
+        AsyncHttpResponse[DerivedNode]
             Observation
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -511,9 +509,9 @@ class AsyncRawObservationClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GraphitiDerivedNode,
+                    DerivedNode,
                     parse_obj_as(
-                        type_=GraphitiDerivedNode,  # type: ignore
+                        type_=DerivedNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

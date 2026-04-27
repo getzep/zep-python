@@ -5,7 +5,6 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_thread_messages_response import AddThreadMessagesResponse
-from ..types.apidata_thread_summary import ApidataThreadSummary
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.role_type import RoleType
@@ -13,6 +12,7 @@ from ..types.success_response import SuccessResponse
 from ..types.thread import Thread
 from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_list_response import ThreadListResponse
+from ..types.thread_summary import ThreadSummary
 from .message.client import AsyncMessageClient, MessageClient
 from .raw_client import AsyncRawThreadClient, RawThreadClient
 
@@ -377,9 +377,7 @@ class ThreadClient:
         )
         return _response.data
 
-    def get_summary(
-        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataThreadSummary:
+    def get_summary(self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ThreadSummary:
         """
         Returns the incremental summary generated from messages in the thread. Returns 404 if no summary exists for the thread.
 
@@ -393,7 +391,7 @@ class ThreadClient:
 
         Returns
         -------
-        ApidataThreadSummary
+        ThreadSummary
             OK
 
         Examples
@@ -828,7 +826,7 @@ class AsyncThreadClient:
 
     async def get_summary(
         self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataThreadSummary:
+    ) -> ThreadSummary:
         """
         Returns the incremental summary generated from messages in the thread. Returns 404 if no summary exists for the thread.
 
@@ -842,7 +840,7 @@ class AsyncThreadClient:
 
         Returns
         -------
-        ApidataThreadSummary
+        ThreadSummary
             OK
 
         Examples

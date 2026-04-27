@@ -4,10 +4,10 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .derived_node import DerivedNode
 from .entity_edge import EntityEdge
 from .entity_node import EntityNode
 from .episode import Episode
-from .graphiti_derived_node import GraphitiDerivedNode
 from .graphiti_saga_node import GraphitiSagaNode
 
 
@@ -16,7 +16,7 @@ class GraphSearchResults(UniversalBaseModel):
     edges: typing.Optional[typing.List[EntityEdge]] = None
     episodes: typing.Optional[typing.List[Episode]] = None
     nodes: typing.Optional[typing.List[EntityNode]] = None
-    observations: typing.Optional[typing.List[GraphitiDerivedNode]] = None
+    observations: typing.Optional[typing.List[DerivedNode]] = None
     thread_summaries: typing.Optional[typing.List[GraphitiSagaNode]] = None
 
     if IS_PYDANTIC_V2:
