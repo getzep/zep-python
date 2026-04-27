@@ -3,5 +3,5 @@
 import typing
 
 GraphSearchScope = typing.Union[
-    typing.Literal["edges", "nodes", "episodes", "communities", "sagas", "themes", "auto"], typing.Any
+    typing.Literal["edges", "nodes", "episodes", "thread_summaries", "observations", "auto"], typing.Any
 ]

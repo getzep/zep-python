@@ -4,25 +4,25 @@ import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
-from ...types.community_node import CommunityNode
-from .raw_client import AsyncRawThemeClient, RawThemeClient
+from ...types.graphiti_derived_node import GraphitiDerivedNode
+from .raw_client import AsyncRawObservationClient, RawObservationClient
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class ThemeClient:
+class ObservationClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
-        self._raw_client = RawThemeClient(client_wrapper=client_wrapper)
+        self._raw_client = RawObservationClient(client_wrapper=client_wrapper)
 
     @property
-    def with_raw_response(self) -> RawThemeClient:
+    def with_raw_response(self) -> RawObservationClient:
         """
         Retrieves a raw implementation of this client that returns raw responses.
 
         Returns
         -------
-        RawThemeClient
+        RawObservationClient
         """
         return self._raw_client
 
@@ -33,9 +33,9 @@ class ThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[GraphitiDerivedNode]:
         """
-        Returns read-only theme nodes for a graph.
+        Returns read-only observation nodes for a graph.
 
         Parameters
         ----------
@@ -53,8 +53,8 @@ class ThemeClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Themes
+        typing.List[GraphitiDerivedNode]
+            Observations
 
         Examples
         --------
@@ -63,7 +63,7 @@ class ThemeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.theme.get_by_graph_id(
+        client.graph.observation.get_by_graph_id(
             graph_id="graph_id",
         )
         """
@@ -79,9 +79,9 @@ class ThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[GraphitiDerivedNode]:
         """
-        Returns read-only theme nodes for a user's graph.
+        Returns read-only observation nodes for a user's graph.
 
         Parameters
         ----------
@@ -99,8 +99,8 @@ class ThemeClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Themes
+        typing.List[GraphitiDerivedNode]
+            Observations
 
         Examples
         --------
@@ -109,7 +109,7 @@ class ThemeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.theme.get_by_user_id(
+        client.graph.observation.get_by_user_id(
             user_id="user_id",
         )
         """
@@ -118,22 +118,22 @@ class ThemeClient:
         )
         return _response.data
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> CommunityNode:
+    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiDerivedNode:
         """
-        Returns a specific theme node by UUID. Theme nodes are read-only.
+        Returns a specific observation node by UUID. Observation nodes are read-only.
 
         Parameters
         ----------
         uuid_ : str
-            Theme UUID
+            Observation UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        CommunityNode
-            Theme
+        GraphitiDerivedNode
+            Observation
 
         Examples
         --------
@@ -142,7 +142,7 @@ class ThemeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.theme.get(
+        client.graph.observation.get(
             uuid_="uuid",
         )
         """
@@ -150,18 +150,18 @@ class ThemeClient:
         return _response.data
 
 
-class AsyncThemeClient:
+class AsyncObservationClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        self._raw_client = AsyncRawThemeClient(client_wrapper=client_wrapper)
+        self._raw_client = AsyncRawObservationClient(client_wrapper=client_wrapper)
 
     @property
-    def with_raw_response(self) -> AsyncRawThemeClient:
+    def with_raw_response(self) -> AsyncRawObservationClient:
         """
         Retrieves a raw implementation of this client that returns raw responses.
 
         Returns
         -------
-        AsyncRawThemeClient
+        AsyncRawObservationClient
         """
         return self._raw_client
 
@@ -172,9 +172,9 @@ class AsyncThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[GraphitiDerivedNode]:
         """
-        Returns read-only theme nodes for a graph.
+        Returns read-only observation nodes for a graph.
 
         Parameters
         ----------
@@ -192,8 +192,8 @@ class AsyncThemeClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Themes
+        typing.List[GraphitiDerivedNode]
+            Observations
 
         Examples
         --------
@@ -207,7 +207,7 @@ class AsyncThemeClient:
 
 
         async def main() -> None:
-            await client.graph.theme.get_by_graph_id(
+            await client.graph.observation.get_by_graph_id(
                 graph_id="graph_id",
             )
 
@@ -226,9 +226,9 @@ class AsyncThemeClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[CommunityNode]:
+    ) -> typing.List[GraphitiDerivedNode]:
         """
-        Returns read-only theme nodes for a user's graph.
+        Returns read-only observation nodes for a user's graph.
 
         Parameters
         ----------
@@ -246,8 +246,8 @@ class AsyncThemeClient:
 
         Returns
         -------
-        typing.List[CommunityNode]
-            Themes
+        typing.List[GraphitiDerivedNode]
+            Observations
 
         Examples
         --------
@@ -261,7 +261,7 @@ class AsyncThemeClient:
 
 
         async def main() -> None:
-            await client.graph.theme.get_by_user_id(
+            await client.graph.observation.get_by_user_id(
                 user_id="user_id",
             )
 
@@ -273,22 +273,22 @@ class AsyncThemeClient:
         )
         return _response.data
 
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> CommunityNode:
+    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> GraphitiDerivedNode:
         """
-        Returns a specific theme node by UUID. Theme nodes are read-only.
+        Returns a specific observation node by UUID. Observation nodes are read-only.
 
         Parameters
         ----------
         uuid_ : str
-            Theme UUID
+            Observation UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        CommunityNode
-            Theme
+        GraphitiDerivedNode
+            Observation
 
         Examples
         --------
@@ -302,7 +302,7 @@ class AsyncThemeClient:
 
 
         async def main() -> None:
-            await client.graph.theme.get(
+            await client.graph.observation.get(
                 uuid_="uuid",
             )
 

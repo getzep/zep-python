@@ -13,13 +13,13 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.graphiti_saga_node import GraphitiSagaNode
+from ...types.graphiti_derived_node import GraphitiDerivedNode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawSagaClient:
+class RawObservationClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -30,9 +30,9 @@ class RawSagaClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiSagaNode]]:
+    ) -> HttpResponse[typing.List[GraphitiDerivedNode]]:
         """
-        Returns read-only saga nodes for a graph.
+        Returns read-only observation nodes for a graph.
 
         Parameters
         ----------
@@ -50,11 +50,11 @@ class RawSagaClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiSagaNode]]
-            Thread summaries
+        HttpResponse[typing.List[GraphitiDerivedNode]]
+            Observations
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/saga/graph/{jsonable_encoder(graph_id)}",
+            f"graph/observation/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -69,9 +69,9 @@ class RawSagaClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiSagaNode],
+                    typing.List[GraphitiDerivedNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiSagaNode],  # type: ignore
+                        type_=typing.List[GraphitiDerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -125,9 +125,9 @@ class RawSagaClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[GraphitiSagaNode]]:
+    ) -> HttpResponse[typing.List[GraphitiDerivedNode]]:
         """
-        Returns read-only saga nodes for a user's graph.
+        Returns read-only observation nodes for a user's graph.
 
         Parameters
         ----------
@@ -145,11 +145,11 @@ class RawSagaClient:
 
         Returns
         -------
-        HttpResponse[typing.List[GraphitiSagaNode]]
-            Thread summaries
+        HttpResponse[typing.List[GraphitiDerivedNode]]
+            Observations
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/saga/user/{jsonable_encoder(user_id)}",
+            f"graph/observation/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -164,9 +164,85 @@ class RawSagaClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiSagaNode],
+                    typing.List[GraphitiDerivedNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiSagaNode],  # type: ignore
+                        type_=typing.List[GraphitiDerivedNode],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get(
+        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[GraphitiDerivedNode]:
+        """
+        Returns a specific observation node by UUID. Observation nodes are read-only.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Observation UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[GraphitiDerivedNode]
+            Observation
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/observation/{jsonable_encoder(uuid_)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphitiDerivedNode,
+                    parse_obj_as(
+                        type_=GraphitiDerivedNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -214,7 +290,7 @@ class RawSagaClient:
         )
 
 
-class AsyncRawSagaClient:
+class AsyncRawObservationClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -225,9 +301,9 @@ class AsyncRawSagaClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiSagaNode]]:
+    ) -> AsyncHttpResponse[typing.List[GraphitiDerivedNode]]:
         """
-        Returns read-only saga nodes for a graph.
+        Returns read-only observation nodes for a graph.
 
         Parameters
         ----------
@@ -245,11 +321,11 @@ class AsyncRawSagaClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiSagaNode]]
-            Thread summaries
+        AsyncHttpResponse[typing.List[GraphitiDerivedNode]]
+            Observations
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/saga/graph/{jsonable_encoder(graph_id)}",
+            f"graph/observation/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -264,9 +340,9 @@ class AsyncRawSagaClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiSagaNode],
+                    typing.List[GraphitiDerivedNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiSagaNode],  # type: ignore
+                        type_=typing.List[GraphitiDerivedNode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -320,9 +396,9 @@ class AsyncRawSagaClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[GraphitiSagaNode]]:
+    ) -> AsyncHttpResponse[typing.List[GraphitiDerivedNode]]:
         """
-        Returns read-only saga nodes for a user's graph.
+        Returns read-only observation nodes for a user's graph.
 
         Parameters
         ----------
@@ -340,11 +416,11 @@ class AsyncRawSagaClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[GraphitiSagaNode]]
-            Thread summaries
+        AsyncHttpResponse[typing.List[GraphitiDerivedNode]]
+            Observations
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/saga/user/{jsonable_encoder(user_id)}",
+            f"graph/observation/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -359,9 +435,85 @@ class AsyncRawSagaClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[GraphitiSagaNode],
+                    typing.List[GraphitiDerivedNode],
                     parse_obj_as(
-                        type_=typing.List[GraphitiSagaNode],  # type: ignore
+                        type_=typing.List[GraphitiDerivedNode],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get(
+        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[GraphitiDerivedNode]:
+        """
+        Returns a specific observation node by UUID. Observation nodes are read-only.
+
+        Parameters
+        ----------
+        uuid_ : str
+            Observation UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[GraphitiDerivedNode]
+            Observation
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/observation/{jsonable_encoder(uuid_)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphitiDerivedNode,
+                    parse_obj_as(
+                        type_=GraphitiDerivedNode,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

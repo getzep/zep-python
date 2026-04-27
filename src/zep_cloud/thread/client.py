@@ -5,6 +5,7 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_thread_messages_response import AddThreadMessagesResponse
+from ..types.apidata_thread_summary import ApidataThreadSummary
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.role_type import RoleType
@@ -243,7 +244,7 @@ class ThreadClient:
         client.thread.get(
             thread_id="threadId",
             limit=1,
-            cursor=1000000,
+            cursor=1,
             lastn=1,
         )
         """
@@ -374,6 +375,39 @@ class ThreadClient:
             return_context=return_context,
             request_options=request_options,
         )
+        return _response.data
+
+    def get_summary(
+        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataThreadSummary:
+        """
+        Returns the incremental summary generated from messages in the thread. Returns 404 if no summary exists for the thread.
+
+        Parameters
+        ----------
+        thread_id : str
+            The thread ID.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataThreadSummary
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.thread.get_summary(
+            thread_id="threadId",
+        )
+        """
+        _response = self._raw_client.get_summary(thread_id, request_options=request_options)
         return _response.data
 
 
@@ -640,7 +674,7 @@ class AsyncThreadClient:
             await client.thread.get(
                 thread_id="threadId",
                 limit=1,
-                cursor=1000000,
+                cursor=1,
                 lastn=1,
             )
 
@@ -790,4 +824,45 @@ class AsyncThreadClient:
             return_context=return_context,
             request_options=request_options,
         )
+        return _response.data
+
+    async def get_summary(
+        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ApidataThreadSummary:
+        """
+        Returns the incremental summary generated from messages in the thread. Returns 404 if no summary exists for the thread.
+
+        Parameters
+        ----------
+        thread_id : str
+            The thread ID.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ApidataThreadSummary
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.thread.get_summary(
+                thread_id="threadId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_summary(thread_id, request_options=request_options)
         return _response.data

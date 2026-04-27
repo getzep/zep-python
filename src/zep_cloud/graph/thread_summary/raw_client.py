@@ -13,13 +13,13 @@ from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
 from ...types.api_error import ApiError as types_api_error_ApiError
-from ...types.community_node import CommunityNode
+from ...types.apidata_thread_summary import ApidataThreadSummary
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawCommunityClient:
+class RawThreadSummaryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -30,9 +30,9 @@ class RawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[CommunityNode]]:
+    ) -> HttpResponse[typing.List[ApidataThreadSummary]]:
         """
-        Returns read-only community nodes for a graph.
+        Returns incremental thread summaries associated with the graph.
 
         Parameters
         ----------
@@ -50,11 +50,11 @@ class RawCommunityClient:
 
         Returns
         -------
-        HttpResponse[typing.List[CommunityNode]]
-            Communities
+        HttpResponse[typing.List[ApidataThreadSummary]]
+            Thread summaries
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/community/graph/{jsonable_encoder(graph_id)}",
+            f"graph/thread-summary/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -69,9 +69,9 @@ class RawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[ApidataThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[ApidataThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -125,9 +125,9 @@ class RawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[CommunityNode]]:
+    ) -> HttpResponse[typing.List[ApidataThreadSummary]]:
         """
-        Returns read-only community nodes for a user's graph.
+        Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
         Parameters
         ----------
@@ -145,11 +145,11 @@ class RawCommunityClient:
 
         Returns
         -------
-        HttpResponse[typing.List[CommunityNode]]
-            Communities
+        HttpResponse[typing.List[ApidataThreadSummary]]
+            Thread summaries
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/community/user/{jsonable_encoder(user_id)}",
+            f"graph/thread-summary/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -164,85 +164,9 @@ class RawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[ApidataThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def get(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[CommunityNode]:
-        """
-        Returns a specific community node by UUID. Community nodes are read-only.
-
-        Parameters
-        ----------
-        uuid_ : str
-            Community UUID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[CommunityNode]
-            Community
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"graph/community/{jsonable_encoder(uuid_)}",
-            method="GET",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CommunityNode,
-                    parse_obj_as(
-                        type_=CommunityNode,  # type: ignore
+                        type_=typing.List[ApidataThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -290,7 +214,7 @@ class RawCommunityClient:
         )
 
 
-class AsyncRawCommunityClient:
+class AsyncRawThreadSummaryClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
@@ -301,9 +225,9 @@ class AsyncRawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[CommunityNode]]:
+    ) -> AsyncHttpResponse[typing.List[ApidataThreadSummary]]:
         """
-        Returns read-only community nodes for a graph.
+        Returns incremental thread summaries associated with the graph.
 
         Parameters
         ----------
@@ -321,11 +245,11 @@ class AsyncRawCommunityClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[CommunityNode]]
-            Communities
+        AsyncHttpResponse[typing.List[ApidataThreadSummary]]
+            Thread summaries
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/community/graph/{jsonable_encoder(graph_id)}",
+            f"graph/thread-summary/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -340,9 +264,9 @@ class AsyncRawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[ApidataThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
+                        type_=typing.List[ApidataThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -396,9 +320,9 @@ class AsyncRawCommunityClient:
         limit: typing.Optional[int] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[CommunityNode]]:
+    ) -> AsyncHttpResponse[typing.List[ApidataThreadSummary]]:
         """
-        Returns read-only community nodes for a user's graph.
+        Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
 
         Parameters
         ----------
@@ -416,11 +340,11 @@ class AsyncRawCommunityClient:
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[CommunityNode]]
-            Communities
+        AsyncHttpResponse[typing.List[ApidataThreadSummary]]
+            Thread summaries
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/community/user/{jsonable_encoder(user_id)}",
+            f"graph/thread-summary/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
                 "limit": limit,
@@ -435,85 +359,9 @@ class AsyncRawCommunityClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[CommunityNode],
+                    typing.List[ApidataThreadSummary],
                     parse_obj_as(
-                        type_=typing.List[CommunityNode],  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def get(
-        self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[CommunityNode]:
-        """
-        Returns a specific community node by UUID. Community nodes are read-only.
-
-        Parameters
-        ----------
-        uuid_ : str
-            Community UUID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[CommunityNode]
-            Community
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"graph/community/{jsonable_encoder(uuid_)}",
-            method="GET",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CommunityNode,
-                    parse_obj_as(
-                        type_=CommunityNode,  # type: ignore
+                        type_=typing.List[ApidataThreadSummary],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
