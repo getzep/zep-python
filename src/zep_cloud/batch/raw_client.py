@@ -11,79 +11,71 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
-from ..errors.forbidden_error import ForbiddenError
+from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.add_thread_messages_response import AddThreadMessagesResponse
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.message import Message
-from ..types.message_list_response import MessageListResponse
-from ..types.role_type import RoleType
+from ..types.apidata_batch_add_item import ApidataBatchAddItem
+from ..types.apidata_batch_item_detail import ApidataBatchItemDetail
+from ..types.apidata_batch_item_list_response import ApidataBatchItemListResponse
+from ..types.apidata_batch_list_response import ApidataBatchListResponse
+from ..types.apidata_batch_summary import ApidataBatchSummary
 from ..types.success_response import SuccessResponse
-from ..types.thread import Thread
-from ..types.thread_context_response import ThreadContextResponse
-from ..types.thread_list_response import ThreadListResponse
-from ..types.thread_summary import ThreadSummary
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawThreadClient:
+class RawBatchClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_all(
+    def list(
         self,
         *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ThreadListResponse]:
+    ) -> HttpResponse[ApidataBatchListResponse]:
         """
-        Returns all threads.
+        List batches for the current project, optionally filtered by batch status.
 
         Parameters
         ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1
+        limit : typing.Optional[int]
+            Maximum number of batches to return.
 
-        page_size : typing.Optional[int]
-            Number of threads to retrieve per page.
+        cursor : typing.Optional[int]
+            Pagination cursor from a previous response.
 
-        order_by : typing.Optional[str]
-            Field to order the results by: created_at, updated_at, user_id, thread_id.
-
-        asc : typing.Optional[bool]
-            Order direction: true for ascending, false for descending.
+        status : typing.Optional[str]
+            Batch status filter.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ThreadListResponse]
-            List of threads
+        HttpResponse[ApidataBatchListResponse]
+            Batch list
         """
         _response = self._client_wrapper.httpx_client.request(
-            "threads",
+            "batches",
             method="GET",
             params={
-                "page_number": page_number,
-                "page_size": page_size,
-                "order_by": order_by,
-                "asc": asc,
+                "limit": limit,
+                "cursor": cursor,
+                "status": status,
             },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ThreadListResponse,
+                    ApidataBatchListResponse,
                     parse_obj_as(
-                        type_=ThreadListResponse,  # type: ignore
+                        type_=ApidataBatchListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -120,33 +112,31 @@ class RawThreadClient:
         )
 
     def create(
-        self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[Thread]:
+        self,
+        *,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[ApidataBatchSummary]:
         """
-        Start a new thread.
+        Create a draft batch that can be filled with graph episodes and thread messages.
 
         Parameters
         ----------
-        thread_id : str
-            The unique identifier of the thread.
-
-        user_id : str
-            The unique identifier of the user associated with the thread
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[Thread]
-            The thread object.
+        HttpResponse[ApidataBatchSummary]
+            Created batch
         """
         _response = self._client_wrapper.httpx_client.request(
-            "threads",
+            "batches",
             method="POST",
             json={
-                "thread_id": thread_id,
-                "user_id": user_id,
+                "metadata": metadata,
             },
             headers={
                 "content-type": "application/json",
@@ -157,9 +147,9 @@ class RawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    Thread,
+                    ApidataBatchSummary,
                     parse_obj_as(
-                        type_=Thread,  # type: ignore
+                        type_=ApidataBatchSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -195,16 +185,92 @@ class RawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def delete(
-        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[SuccessResponse]:
+    def get(
+        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[ApidataBatchSummary]:
         """
-        Deletes a thread.
+        Get a batch summary, including runtime progress when the batch has been processed.
 
         Parameters
         ----------
-        thread_id : str
-            The ID of the thread for which memory should be deleted.
+        batch_id : str
+            The batch ID.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ApidataBatchSummary]
+            Batch summary
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"batches/{jsonable_encoder(batch_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ApidataBatchSummary,
+                    parse_obj_as(
+                        type_=ApidataBatchSummary,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def delete(
+        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[SuccessResponse]:
+        """
+        Delete a draft or invalid unprocessed batch. Processed batches cannot be deleted.
+
+        Parameters
+        ----------
+        batch_id : str
+            The batch ID.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -212,10 +278,10 @@ class RawThreadClient:
         Returns
         -------
         HttpResponse[SuccessResponse]
-            OK
+            Deleted batch
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}",
+            f"batches/{jsonable_encoder(batch_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -229,8 +295,30 @@ class RawThreadClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -260,371 +348,67 @@ class RawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get_user_context(
+    def list_items(
         self,
-        thread_id: str,
-        *,
-        template_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ThreadContextResponse]:
-        """
-        Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
-
-        Parameters
-        ----------
-        thread_id : str
-            The ID of the current thread (for which context is being retrieved).
-
-        template_id : typing.Optional[str]
-            Optional template ID to use for custom context rendering.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[ThreadContextResponse]
-            OK
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/context",
-            method="GET",
-            params={
-                "template_id": template_id,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ThreadContextResponse,
-                    parse_obj_as(
-                        type_=ThreadContextResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def get(
-        self,
-        thread_id: str,
+        batch_id: str,
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
-        lastn: typing.Optional[int] = None,
+        status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[MessageListResponse]:
+    ) -> HttpResponse[ApidataBatchItemListResponse]:
         """
-        Returns messages for a thread.
+        List items in a batch, including derived runtime status when the batch has been processed.
 
         Parameters
         ----------
-        thread_id : str
-            Thread ID
+        batch_id : str
+            The batch ID.
 
         limit : typing.Optional[int]
-            Limit the number of results returned
+            Maximum number of batch items to return.
 
         cursor : typing.Optional[int]
-            Cursor for pagination
+            Pagination cursor from a previous response.
 
-        lastn : typing.Optional[int]
-            Number of most recent messages to return (overrides limit and cursor)
+        status : typing.Optional[str]
+            Batch item status filter.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[MessageListResponse]
-            OK
+        HttpResponse[ApidataBatchItemListResponse]
+            Batch item list
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/messages",
+            f"batches/{jsonable_encoder(batch_id)}/items",
             method="GET",
             params={
                 "limit": limit,
                 "cursor": cursor,
-                "lastn": lastn,
+                "status": status,
             },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    MessageListResponse,
+                    ApidataBatchItemListResponse,
                     parse_obj_as(
-                        type_=MessageListResponse,  # type: ignore
+                        type_=ApidataBatchItemListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def add_messages(
-        self,
-        thread_id: str,
-        *,
-        messages: typing.Sequence[Message],
-        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
-        return_context: typing.Optional[bool] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[AddThreadMessagesResponse]:
-        """
-        Add messages to a thread.
-
-        Parameters
-        ----------
-        thread_id : str
-            The ID of the thread to which messages should be added.
-
-        messages : typing.Sequence[Message]
-            A list of message objects, where each message contains a role and content.
-
-        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
-            Optional list of role types to ignore when adding messages to graph memory.
-            The message itself will still be added, retained and used as context for messages
-            that are added to a user's graph.
-
-        return_context : typing.Optional[bool]
-            Optionally return context block relevant to the most recent messages.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[AddThreadMessagesResponse]
-            An object, optionally containing user context retrieved for the last thread message
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/messages",
-            method="POST",
-            json={
-                "ignore_roles": ignore_roles,
-                "messages": convert_and_respect_annotation_metadata(
-                    object_=messages, annotation=typing.Sequence[Message], direction="write"
-                ),
-                "return_context": return_context,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    AddThreadMessagesResponse,
-                    parse_obj_as(
-                        type_=AddThreadMessagesResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def add_messages_batch(
-        self,
-        thread_id: str,
-        *,
-        messages: typing.Sequence[Message],
-        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
-        return_context: typing.Optional[bool] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[AddThreadMessagesResponse]:
-        """
-        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
-
-        Parameters
-        ----------
-        thread_id : str
-            The ID of the thread to which messages should be added.
-
-        messages : typing.Sequence[Message]
-            A list of message objects, where each message contains a role and content.
-
-        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
-            Optional list of role types to ignore when adding messages to graph memory.
-            The message itself will still be added, retained and used as context for messages
-            that are added to a user's graph.
-
-        return_context : typing.Optional[bool]
-            Optionally return context block relevant to the most recent messages.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[AddThreadMessagesResponse]
-            An object, optionally containing user context retrieved for the last thread message
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/messages-batch",
-            method="POST",
-            json={
-                "ignore_roles": ignore_roles,
-                "messages": convert_and_respect_annotation_metadata(
-                    object_=messages, annotation=typing.Sequence[Message], direction="write"
-                ),
-                "return_context": return_context,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    AddThreadMessagesResponse,
-                    parse_obj_as(
-                        type_=AddThreadMessagesResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def get_summary(
-        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ThreadSummary]:
-        """
-        Returns the incremental summary generated from messages in the thread. Returns 404 if no summary exists for the thread.
-
-        Parameters
-        ----------
-        thread_id : str
-            The thread ID.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[ThreadSummary]
-            OK
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/summary",
-            method="GET",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ThreadSummary,
-                    parse_obj_as(
-                        type_=ThreadSummary,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -660,62 +444,246 @@ class RawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def add(
+        self,
+        batch_id: str,
+        *,
+        items: typing.Sequence[ApidataBatchAddItem],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[typing.List[ApidataBatchItemDetail]]:
+        """
+        Add graph episodes and thread messages to a draft batch. Items are appended in request order.
 
-class AsyncRawThreadClient:
+        Parameters
+        ----------
+        batch_id : str
+            The batch ID.
+
+        items : typing.Sequence[ApidataBatchAddItem]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[typing.List[ApidataBatchItemDetail]]
+            Added batch items
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"batches/{jsonable_encoder(batch_id)}/items",
+            method="POST",
+            json={
+                "items": convert_and_respect_annotation_metadata(
+                    object_=items, annotation=typing.Sequence[ApidataBatchAddItem], direction="write"
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[ApidataBatchItemDetail],
+                    parse_obj_as(
+                        type_=typing.List[ApidataBatchItemDetail],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def process(
+        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[ApidataBatchSummary]:
+        """
+        Start processing a filled batch. Repeated calls return the existing batch run.
+
+        Parameters
+        ----------
+        batch_id : str
+            The batch ID.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ApidataBatchSummary]
+            Batch processing state
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"batches/{jsonable_encoder(batch_id)}/process",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ApidataBatchSummary,
+                    parse_obj_as(
+                        type_=ApidataBatchSummary,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+
+class AsyncRawBatchClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_all(
+    async def list(
         self,
         *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[int] = None,
+        status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ThreadListResponse]:
+    ) -> AsyncHttpResponse[ApidataBatchListResponse]:
         """
-        Returns all threads.
+        List batches for the current project, optionally filtered by batch status.
 
         Parameters
         ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1
+        limit : typing.Optional[int]
+            Maximum number of batches to return.
 
-        page_size : typing.Optional[int]
-            Number of threads to retrieve per page.
+        cursor : typing.Optional[int]
+            Pagination cursor from a previous response.
 
-        order_by : typing.Optional[str]
-            Field to order the results by: created_at, updated_at, user_id, thread_id.
-
-        asc : typing.Optional[bool]
-            Order direction: true for ascending, false for descending.
+        status : typing.Optional[str]
+            Batch status filter.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ThreadListResponse]
-            List of threads
+        AsyncHttpResponse[ApidataBatchListResponse]
+            Batch list
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "threads",
+            "batches",
             method="GET",
             params={
-                "page_number": page_number,
-                "page_size": page_size,
-                "order_by": order_by,
-                "asc": asc,
+                "limit": limit,
+                "cursor": cursor,
+                "status": status,
             },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ThreadListResponse,
+                    ApidataBatchListResponse,
                     parse_obj_as(
-                        type_=ThreadListResponse,  # type: ignore
+                        type_=ApidataBatchListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -752,33 +720,31 @@ class AsyncRawThreadClient:
         )
 
     async def create(
-        self, *, thread_id: str, user_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[Thread]:
+        self,
+        *,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[ApidataBatchSummary]:
         """
-        Start a new thread.
+        Create a draft batch that can be filled with graph episodes and thread messages.
 
         Parameters
         ----------
-        thread_id : str
-            The unique identifier of the thread.
-
-        user_id : str
-            The unique identifier of the user associated with the thread
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[Thread]
-            The thread object.
+        AsyncHttpResponse[ApidataBatchSummary]
+            Created batch
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "threads",
+            "batches",
             method="POST",
             json={
-                "thread_id": thread_id,
-                "user_id": user_id,
+                "metadata": metadata,
             },
             headers={
                 "content-type": "application/json",
@@ -789,9 +755,9 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    Thread,
+                    ApidataBatchSummary,
                     parse_obj_as(
-                        type_=Thread,  # type: ignore
+                        type_=ApidataBatchSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -827,16 +793,92 @@ class AsyncRawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def delete(
-        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    async def get(
+        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[ApidataBatchSummary]:
         """
-        Deletes a thread.
+        Get a batch summary, including runtime progress when the batch has been processed.
 
         Parameters
         ----------
-        thread_id : str
-            The ID of the thread for which memory should be deleted.
+        batch_id : str
+            The batch ID.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ApidataBatchSummary]
+            Batch summary
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"batches/{jsonable_encoder(batch_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ApidataBatchSummary,
+                    parse_obj_as(
+                        type_=ApidataBatchSummary,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def delete(
+        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[SuccessResponse]:
+        """
+        Delete a draft or invalid unprocessed batch. Processed batches cannot be deleted.
+
+        Parameters
+        ----------
+        batch_id : str
+            The batch ID.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -844,10 +886,10 @@ class AsyncRawThreadClient:
         Returns
         -------
         AsyncHttpResponse[SuccessResponse]
-            OK
+            Deleted batch
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}",
+            f"batches/{jsonable_encoder(batch_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -861,8 +903,30 @@ class AsyncRawThreadClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -892,135 +956,71 @@ class AsyncRawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def get_user_context(
+    async def list_items(
         self,
-        thread_id: str,
-        *,
-        template_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ThreadContextResponse]:
-        """
-        Returns most relevant context from the user graph (including memory from any/all past threads) based on the content of the past few messages of the given thread.
-
-        Parameters
-        ----------
-        thread_id : str
-            The ID of the current thread (for which context is being retrieved).
-
-        template_id : typing.Optional[str]
-            Optional template ID to use for custom context rendering.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[ThreadContextResponse]
-            OK
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/context",
-            method="GET",
-            params={
-                "template_id": template_id,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ThreadContextResponse,
-                    parse_obj_as(
-                        type_=ThreadContextResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def get(
-        self,
-        thread_id: str,
+        batch_id: str,
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[int] = None,
-        lastn: typing.Optional[int] = None,
+        status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[MessageListResponse]:
+    ) -> AsyncHttpResponse[ApidataBatchItemListResponse]:
         """
-        Returns messages for a thread.
+        List items in a batch, including derived runtime status when the batch has been processed.
 
         Parameters
         ----------
-        thread_id : str
-            Thread ID
+        batch_id : str
+            The batch ID.
 
         limit : typing.Optional[int]
-            Limit the number of results returned
+            Maximum number of batch items to return.
 
         cursor : typing.Optional[int]
-            Cursor for pagination
+            Pagination cursor from a previous response.
 
-        lastn : typing.Optional[int]
-            Number of most recent messages to return (overrides limit and cursor)
+        status : typing.Optional[str]
+            Batch item status filter.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[MessageListResponse]
-            OK
+        AsyncHttpResponse[ApidataBatchItemListResponse]
+            Batch item list
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/messages",
+            f"batches/{jsonable_encoder(batch_id)}/items",
             method="GET",
             params={
                 "limit": limit,
                 "cursor": cursor,
-                "lastn": lastn,
+                "status": status,
             },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    MessageListResponse,
+                    ApidataBatchItemListResponse,
                     parse_obj_as(
-                        type_=MessageListResponse,  # type: ignore
+                        type_=ApidataBatchItemListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
@@ -1052,51 +1052,38 @@ class AsyncRawThreadClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def add_messages(
+    async def add(
         self,
-        thread_id: str,
+        batch_id: str,
         *,
-        messages: typing.Sequence[Message],
-        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
-        return_context: typing.Optional[bool] = OMIT,
+        items: typing.Sequence[ApidataBatchAddItem],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[AddThreadMessagesResponse]:
+    ) -> AsyncHttpResponse[typing.List[ApidataBatchItemDetail]]:
         """
-        Add messages to a thread.
+        Add graph episodes and thread messages to a draft batch. Items are appended in request order.
 
         Parameters
         ----------
-        thread_id : str
-            The ID of the thread to which messages should be added.
+        batch_id : str
+            The batch ID.
 
-        messages : typing.Sequence[Message]
-            A list of message objects, where each message contains a role and content.
-
-        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
-            Optional list of role types to ignore when adding messages to graph memory.
-            The message itself will still be added, retained and used as context for messages
-            that are added to a user's graph.
-
-        return_context : typing.Optional[bool]
-            Optionally return context block relevant to the most recent messages.
+        items : typing.Sequence[ApidataBatchAddItem]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[AddThreadMessagesResponse]
-            An object, optionally containing user context retrieved for the last thread message
+        AsyncHttpResponse[typing.List[ApidataBatchItemDetail]]
+            Added batch items
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/messages",
+            f"batches/{jsonable_encoder(batch_id)}/items",
             method="POST",
             json={
-                "ignore_roles": ignore_roles,
-                "messages": convert_and_respect_annotation_metadata(
-                    object_=messages, annotation=typing.Sequence[Message], direction="write"
+                "items": convert_and_respect_annotation_metadata(
+                    object_=items, annotation=typing.Sequence[ApidataBatchAddItem], direction="write"
                 ),
-                "return_context": return_context,
             },
             headers={
                 "content-type": "application/json",
@@ -1107,162 +1094,124 @@ class AsyncRawThreadClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    AddThreadMessagesResponse,
+                    typing.List[ApidataBatchItemDetail],
                     parse_obj_as(
-                        type_=AddThreadMessagesResponse,  # type: ignore
+                        type_=typing.List[ApidataBatchItemDetail],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def add_messages_batch(
-        self,
-        thread_id: str,
-        *,
-        messages: typing.Sequence[Message],
-        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
-        return_context: typing.Optional[bool] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[AddThreadMessagesResponse]:
-        """
-        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
-
-        Parameters
-        ----------
-        thread_id : str
-            The ID of the thread to which messages should be added.
-
-        messages : typing.Sequence[Message]
-            A list of message objects, where each message contains a role and content.
-
-        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
-            Optional list of role types to ignore when adding messages to graph memory.
-            The message itself will still be added, retained and used as context for messages
-            that are added to a user's graph.
-
-        return_context : typing.Optional[bool]
-            Optionally return context block relevant to the most recent messages.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[AddThreadMessagesResponse]
-            An object, optionally containing user context retrieved for the last thread message
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/messages-batch",
-            method="POST",
-            json={
-                "ignore_roles": ignore_roles,
-                "messages": convert_and_respect_annotation_metadata(
-                    object_=messages, annotation=typing.Sequence[Message], direction="write"
-                ),
-                "return_context": return_context,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    AddThreadMessagesResponse,
-                    parse_obj_as(
-                        type_=AddThreadMessagesResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def get_summary(
-        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ThreadSummary]:
-        """
-        Returns the incremental summary generated from messages in the thread. Returns 404 if no summary exists for the thread.
-
-        Parameters
-        ----------
-        thread_id : str
-            The thread ID.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[ThreadSummary]
-            OK
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_id)}/summary",
-            method="GET",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ThreadSummary,
-                    parse_obj_as(
-                        type_=ThreadSummary,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def process(
+        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[ApidataBatchSummary]:
+        """
+        Start processing a filled batch. Repeated calls return the existing batch run.
+
+        Parameters
+        ----------
+        batch_id : str
+            The batch ID.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ApidataBatchSummary]
+            Batch processing state
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"batches/{jsonable_encoder(batch_id)}/process",
+            method="POST",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ApidataBatchSummary,
+                    parse_obj_as(
+                        type_=ApidataBatchSummary,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

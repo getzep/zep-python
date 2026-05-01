@@ -94,9 +94,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -192,9 +192,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -288,9 +288,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -375,9 +375,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -476,9 +476,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -588,9 +588,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -674,9 +674,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -851,9 +851,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -941,9 +941,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1023,9 +1023,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1114,9 +1114,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1253,9 +1253,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1407,9 +1407,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1535,9 +1535,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1628,9 +1628,9 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1720,9 +1720,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1818,9 +1818,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1914,9 +1914,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2001,9 +2001,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2102,9 +2102,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2214,9 +2214,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2300,9 +2300,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2477,9 +2477,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2567,9 +2567,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2649,9 +2649,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2740,9 +2740,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2879,9 +2879,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3033,9 +3033,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3163,9 +3163,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3256,9 +3256,9 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        types_api_error_ApiError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

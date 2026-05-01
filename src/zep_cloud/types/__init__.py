@@ -6,6 +6,14 @@ from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
+from .apidata_batch_add_item import ApidataBatchAddItem
+from .apidata_batch_add_item_role import ApidataBatchAddItemRole
+from .apidata_batch_add_item_type import ApidataBatchAddItemType
+from .apidata_batch_item_detail import ApidataBatchItemDetail
+from .apidata_batch_item_list_response import ApidataBatchItemListResponse
+from .apidata_batch_list_response import ApidataBatchListResponse
+from .apidata_batch_progress import ApidataBatchProgress
+from .apidata_batch_summary import ApidataBatchSummary
 from .clone_graph_response import CloneGraphResponse
 from .cluster_detect_config import ClusterDetectConfig
 from .co_occurrence_detect_config import CoOccurrenceDetectConfig
@@ -48,6 +56,9 @@ from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
 from .metadata_filter_group import MetadataFilterGroup
+from .models_batch_item_kind import ModelsBatchItemKind
+from .models_batch_item_status import ModelsBatchItemStatus
+from .models_batch_status import ModelsBatchStatus
 from .path_detect_config import PathDetectConfig
 from .pattern_metadata import PatternMetadata
 from .pattern_result import PatternResult
@@ -77,6 +88,14 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
+    "ApidataBatchAddItem",
+    "ApidataBatchAddItemRole",
+    "ApidataBatchAddItemType",
+    "ApidataBatchItemDetail",
+    "ApidataBatchItemListResponse",
+    "ApidataBatchListResponse",
+    "ApidataBatchProgress",
+    "ApidataBatchSummary",
     "CloneGraphResponse",
     "ClusterDetectConfig",
     "CoOccurrenceDetectConfig",
@@ -119,6 +138,9 @@ __all__ = [
     "Message",
     "MessageListResponse",
     "MetadataFilterGroup",
+    "ModelsBatchItemKind",
+    "ModelsBatchItemStatus",
+    "ModelsBatchStatus",
     "PathDetectConfig",
     "PatternMetadata",
     "PatternResult",
