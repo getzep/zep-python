@@ -420,7 +420,7 @@ Add graph episodes and thread messages to a draft batch. Items are appended in r
 <dd>
 
 ```python
-from zep_cloud import ApidataBatchAddItem, Zep
+from zep_cloud import BatchAddItem, Zep
 
 client = Zep(
     api_key="YOUR_API_KEY",
@@ -428,7 +428,7 @@ client = Zep(
 client.batch.add(
     batch_id="batchId",
     items=[
-        ApidataBatchAddItem(
+        BatchAddItem(
             type="graph_episode",
         )
     ],
@@ -456,7 +456,7 @@ client.batch.add(
 <dl>
 <dd>
 
-**items:** `typing.Sequence[ApidataBatchAddItem]` 
+**items:** `typing.Sequence[BatchAddItem]` 
     
 </dd>
 </dl>

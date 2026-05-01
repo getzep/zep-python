@@ -4,11 +4,11 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.apidata_batch_add_item import ApidataBatchAddItem
-from ..types.apidata_batch_item_detail import ApidataBatchItemDetail
-from ..types.apidata_batch_item_list_response import ApidataBatchItemListResponse
 from ..types.apidata_batch_list_response import ApidataBatchListResponse
-from ..types.apidata_batch_summary import ApidataBatchSummary
+from ..types.batch_add_item import BatchAddItem
+from ..types.batch_item_detail import BatchItemDetail
+from ..types.batch_item_list_response import BatchItemListResponse
+from ..types.batch_summary import BatchSummary
 from ..types.success_response import SuccessResponse
 from .raw_client import AsyncRawBatchClient, RawBatchClient
 
@@ -82,7 +82,7 @@ class BatchClient:
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataBatchSummary:
+    ) -> BatchSummary:
         """
         Create a draft batch that can be filled with graph episodes and thread messages.
 
@@ -95,7 +95,7 @@ class BatchClient:
 
         Returns
         -------
-        ApidataBatchSummary
+        BatchSummary
             Created batch
 
         Examples
@@ -110,7 +110,7 @@ class BatchClient:
         _response = self._raw_client.create(metadata=metadata, request_options=request_options)
         return _response.data
 
-    def get(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataBatchSummary:
+    def get(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> BatchSummary:
         """
         Get a batch summary, including runtime progress when the batch has been processed.
 
@@ -124,7 +124,7 @@ class BatchClient:
 
         Returns
         -------
-        ApidataBatchSummary
+        BatchSummary
             Batch summary
 
         Examples
@@ -180,7 +180,7 @@ class BatchClient:
         cursor: typing.Optional[int] = None,
         status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataBatchItemListResponse:
+    ) -> BatchItemListResponse:
         """
         List items in a batch, including derived runtime status when the batch has been processed.
 
@@ -203,7 +203,7 @@ class BatchClient:
 
         Returns
         -------
-        ApidataBatchItemListResponse
+        BatchItemListResponse
             Batch item list
 
         Examples
@@ -229,9 +229,9 @@ class BatchClient:
         self,
         batch_id: str,
         *,
-        items: typing.Sequence[ApidataBatchAddItem],
+        items: typing.Sequence[BatchAddItem],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ApidataBatchItemDetail]:
+    ) -> typing.List[BatchItemDetail]:
         """
         Add graph episodes and thread messages to a draft batch. Items are appended in request order.
 
@@ -240,19 +240,19 @@ class BatchClient:
         batch_id : str
             The batch ID.
 
-        items : typing.Sequence[ApidataBatchAddItem]
+        items : typing.Sequence[BatchAddItem]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[ApidataBatchItemDetail]
+        typing.List[BatchItemDetail]
             Added batch items
 
         Examples
         --------
-        from zep_cloud import ApidataBatchAddItem, Zep
+        from zep_cloud import BatchAddItem, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
@@ -260,7 +260,7 @@ class BatchClient:
         client.batch.add(
             batch_id="batchId",
             items=[
-                ApidataBatchAddItem(
+                BatchAddItem(
                     type="graph_episode",
                 )
             ],
@@ -269,7 +269,7 @@ class BatchClient:
         _response = self._raw_client.add(batch_id, items=items, request_options=request_options)
         return _response.data
 
-    def process(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ApidataBatchSummary:
+    def process(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> BatchSummary:
         """
         Start processing a filled batch. Repeated calls return the existing batch run.
 
@@ -283,7 +283,7 @@ class BatchClient:
 
         Returns
         -------
-        ApidataBatchSummary
+        BatchSummary
             Batch processing state
 
         Examples
@@ -377,7 +377,7 @@ class AsyncBatchClient:
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataBatchSummary:
+    ) -> BatchSummary:
         """
         Create a draft batch that can be filled with graph episodes and thread messages.
 
@@ -390,7 +390,7 @@ class AsyncBatchClient:
 
         Returns
         -------
-        ApidataBatchSummary
+        BatchSummary
             Created batch
 
         Examples
@@ -413,9 +413,7 @@ class AsyncBatchClient:
         _response = await self._raw_client.create(metadata=metadata, request_options=request_options)
         return _response.data
 
-    async def get(
-        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataBatchSummary:
+    async def get(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> BatchSummary:
         """
         Get a batch summary, including runtime progress when the batch has been processed.
 
@@ -429,7 +427,7 @@ class AsyncBatchClient:
 
         Returns
         -------
-        ApidataBatchSummary
+        BatchSummary
             Batch summary
 
         Examples
@@ -503,7 +501,7 @@ class AsyncBatchClient:
         cursor: typing.Optional[int] = None,
         status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataBatchItemListResponse:
+    ) -> BatchItemListResponse:
         """
         List items in a batch, including derived runtime status when the batch has been processed.
 
@@ -526,7 +524,7 @@ class AsyncBatchClient:
 
         Returns
         -------
-        ApidataBatchItemListResponse
+        BatchItemListResponse
             Batch item list
 
         Examples
@@ -560,9 +558,9 @@ class AsyncBatchClient:
         self,
         batch_id: str,
         *,
-        items: typing.Sequence[ApidataBatchAddItem],
+        items: typing.Sequence[BatchAddItem],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ApidataBatchItemDetail]:
+    ) -> typing.List[BatchItemDetail]:
         """
         Add graph episodes and thread messages to a draft batch. Items are appended in request order.
 
@@ -571,21 +569,21 @@ class AsyncBatchClient:
         batch_id : str
             The batch ID.
 
-        items : typing.Sequence[ApidataBatchAddItem]
+        items : typing.Sequence[BatchAddItem]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[ApidataBatchItemDetail]
+        typing.List[BatchItemDetail]
             Added batch items
 
         Examples
         --------
         import asyncio
 
-        from zep_cloud import ApidataBatchAddItem, AsyncZep
+        from zep_cloud import AsyncZep, BatchAddItem
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -596,7 +594,7 @@ class AsyncBatchClient:
             await client.batch.add(
                 batch_id="batchId",
                 items=[
-                    ApidataBatchAddItem(
+                    BatchAddItem(
                         type="graph_episode",
                     )
                 ],
@@ -608,9 +606,7 @@ class AsyncBatchClient:
         _response = await self._raw_client.add(batch_id, items=items, request_options=request_options)
         return _response.data
 
-    async def process(
-        self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApidataBatchSummary:
+    async def process(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> BatchSummary:
         """
         Start processing a filled batch. Repeated calls return the existing batch run.
 
@@ -624,7 +620,7 @@ class AsyncBatchClient:
 
         Returns
         -------
-        ApidataBatchSummary
+        BatchSummary
             Batch processing state
 
         Examples

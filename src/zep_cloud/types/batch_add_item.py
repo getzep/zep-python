@@ -9,7 +9,7 @@ from .apidata_batch_add_item_type import ApidataBatchAddItemType
 from .graph_data_type import GraphDataType
 
 
-class ApidataBatchAddItem(UniversalBaseModel):
+class BatchAddItem(UniversalBaseModel):
     content: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
     data: typing.Optional[str] = None

@@ -4,16 +4,12 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .batch_item_detail import BatchItemDetail
 
 
-class ApidataBatchProgress(UniversalBaseModel):
-    failed_items: typing.Optional[int] = None
-    percent_complete: typing.Optional[float] = None
-    processing_items: typing.Optional[int] = None
-    queued_items: typing.Optional[int] = None
-    skipped_items: typing.Optional[int] = None
-    succeeded_items: typing.Optional[int] = None
-    total_items: typing.Optional[int] = None
+class BatchItemListResponse(UniversalBaseModel):
+    items: typing.Optional[typing.List[BatchItemDetail]] = None
+    next_cursor: typing.Optional[int] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

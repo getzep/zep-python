@@ -8,7 +8,7 @@ from .models_batch_item_kind import ModelsBatchItemKind
 from .models_batch_item_status import ModelsBatchItemStatus
 
 
-class ApidataBatchItemDetail(UniversalBaseModel):
+class BatchItemDetail(UniversalBaseModel):
     created_at: typing.Optional[str] = None
     episode_uuid: typing.Optional[str] = None
     error: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
@@ -17,7 +17,6 @@ class ApidataBatchItemDetail(UniversalBaseModel):
     kind: typing.Optional[ModelsBatchItemKind] = None
     sequence_index: typing.Optional[int] = None
     source_uuid: typing.Optional[str] = None
-    stage: typing.Optional[str] = None
     status: typing.Optional[ModelsBatchItemStatus] = None
     thread_id: typing.Optional[str] = None
     updated_at: typing.Optional[str] = None

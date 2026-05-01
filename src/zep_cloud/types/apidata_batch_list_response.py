@@ -4,11 +4,11 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .apidata_batch_summary import ApidataBatchSummary
+from .batch_summary import BatchSummary
 
 
 class ApidataBatchListResponse(UniversalBaseModel):
-    batches: typing.Optional[typing.List[ApidataBatchSummary]] = None
+    batches: typing.Optional[typing.List[BatchSummary]] = None
     next_cursor: typing.Optional[int] = None
 
     if IS_PYDANTIC_V2:

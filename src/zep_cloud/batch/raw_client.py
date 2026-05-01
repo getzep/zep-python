@@ -15,11 +15,11 @@ from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.apidata_batch_add_item import ApidataBatchAddItem
-from ..types.apidata_batch_item_detail import ApidataBatchItemDetail
-from ..types.apidata_batch_item_list_response import ApidataBatchItemListResponse
 from ..types.apidata_batch_list_response import ApidataBatchListResponse
-from ..types.apidata_batch_summary import ApidataBatchSummary
+from ..types.batch_add_item import BatchAddItem
+from ..types.batch_item_detail import BatchItemDetail
+from ..types.batch_item_list_response import BatchItemListResponse
+from ..types.batch_summary import BatchSummary
 from ..types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
@@ -116,7 +116,7 @@ class RawBatchClient:
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataBatchSummary]:
+    ) -> HttpResponse[BatchSummary]:
         """
         Create a draft batch that can be filled with graph episodes and thread messages.
 
@@ -129,7 +129,7 @@ class RawBatchClient:
 
         Returns
         -------
-        HttpResponse[ApidataBatchSummary]
+        HttpResponse[BatchSummary]
             Created batch
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -147,9 +147,9 @@ class RawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataBatchSummary,
+                    BatchSummary,
                     parse_obj_as(
-                        type_=ApidataBatchSummary,  # type: ignore
+                        type_=BatchSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -187,7 +187,7 @@ class RawBatchClient:
 
     def get(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataBatchSummary]:
+    ) -> HttpResponse[BatchSummary]:
         """
         Get a batch summary, including runtime progress when the batch has been processed.
 
@@ -201,7 +201,7 @@ class RawBatchClient:
 
         Returns
         -------
-        HttpResponse[ApidataBatchSummary]
+        HttpResponse[BatchSummary]
             Batch summary
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -212,9 +212,9 @@ class RawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataBatchSummary,
+                    BatchSummary,
                     parse_obj_as(
-                        type_=ApidataBatchSummary,  # type: ignore
+                        type_=BatchSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -356,7 +356,7 @@ class RawBatchClient:
         cursor: typing.Optional[int] = None,
         status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ApidataBatchItemListResponse]:
+    ) -> HttpResponse[BatchItemListResponse]:
         """
         List items in a batch, including derived runtime status when the batch has been processed.
 
@@ -379,7 +379,7 @@ class RawBatchClient:
 
         Returns
         -------
-        HttpResponse[ApidataBatchItemListResponse]
+        HttpResponse[BatchItemListResponse]
             Batch item list
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -395,9 +395,9 @@ class RawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataBatchItemListResponse,
+                    BatchItemListResponse,
                     parse_obj_as(
-                        type_=ApidataBatchItemListResponse,  # type: ignore
+                        type_=BatchItemListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -448,9 +448,9 @@ class RawBatchClient:
         self,
         batch_id: str,
         *,
-        items: typing.Sequence[ApidataBatchAddItem],
+        items: typing.Sequence[BatchAddItem],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[ApidataBatchItemDetail]]:
+    ) -> HttpResponse[typing.List[BatchItemDetail]]:
         """
         Add graph episodes and thread messages to a draft batch. Items are appended in request order.
 
@@ -459,14 +459,14 @@ class RawBatchClient:
         batch_id : str
             The batch ID.
 
-        items : typing.Sequence[ApidataBatchAddItem]
+        items : typing.Sequence[BatchAddItem]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[typing.List[ApidataBatchItemDetail]]
+        HttpResponse[typing.List[BatchItemDetail]]
             Added batch items
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -474,7 +474,7 @@ class RawBatchClient:
             method="POST",
             json={
                 "items": convert_and_respect_annotation_metadata(
-                    object_=items, annotation=typing.Sequence[ApidataBatchAddItem], direction="write"
+                    object_=items, annotation=typing.Sequence[BatchAddItem], direction="write"
                 ),
             },
             headers={
@@ -486,9 +486,9 @@ class RawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ApidataBatchItemDetail],
+                    typing.List[BatchItemDetail],
                     parse_obj_as(
-                        type_=typing.List[ApidataBatchItemDetail],  # type: ignore
+                        type_=typing.List[BatchItemDetail],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -548,7 +548,7 @@ class RawBatchClient:
 
     def process(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApidataBatchSummary]:
+    ) -> HttpResponse[BatchSummary]:
         """
         Start processing a filled batch. Repeated calls return the existing batch run.
 
@@ -562,7 +562,7 @@ class RawBatchClient:
 
         Returns
         -------
-        HttpResponse[ApidataBatchSummary]
+        HttpResponse[BatchSummary]
             Batch processing state
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -573,9 +573,9 @@ class RawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataBatchSummary,
+                    BatchSummary,
                     parse_obj_as(
-                        type_=ApidataBatchSummary,  # type: ignore
+                        type_=BatchSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -724,7 +724,7 @@ class AsyncRawBatchClient:
         *,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataBatchSummary]:
+    ) -> AsyncHttpResponse[BatchSummary]:
         """
         Create a draft batch that can be filled with graph episodes and thread messages.
 
@@ -737,7 +737,7 @@ class AsyncRawBatchClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataBatchSummary]
+        AsyncHttpResponse[BatchSummary]
             Created batch
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -755,9 +755,9 @@ class AsyncRawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataBatchSummary,
+                    BatchSummary,
                     parse_obj_as(
-                        type_=ApidataBatchSummary,  # type: ignore
+                        type_=BatchSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -795,7 +795,7 @@ class AsyncRawBatchClient:
 
     async def get(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataBatchSummary]:
+    ) -> AsyncHttpResponse[BatchSummary]:
         """
         Get a batch summary, including runtime progress when the batch has been processed.
 
@@ -809,7 +809,7 @@ class AsyncRawBatchClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataBatchSummary]
+        AsyncHttpResponse[BatchSummary]
             Batch summary
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -820,9 +820,9 @@ class AsyncRawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataBatchSummary,
+                    BatchSummary,
                     parse_obj_as(
-                        type_=ApidataBatchSummary,  # type: ignore
+                        type_=BatchSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -964,7 +964,7 @@ class AsyncRawBatchClient:
         cursor: typing.Optional[int] = None,
         status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ApidataBatchItemListResponse]:
+    ) -> AsyncHttpResponse[BatchItemListResponse]:
         """
         List items in a batch, including derived runtime status when the batch has been processed.
 
@@ -987,7 +987,7 @@ class AsyncRawBatchClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataBatchItemListResponse]
+        AsyncHttpResponse[BatchItemListResponse]
             Batch item list
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1003,9 +1003,9 @@ class AsyncRawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataBatchItemListResponse,
+                    BatchItemListResponse,
                     parse_obj_as(
-                        type_=ApidataBatchItemListResponse,  # type: ignore
+                        type_=BatchItemListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1056,9 +1056,9 @@ class AsyncRawBatchClient:
         self,
         batch_id: str,
         *,
-        items: typing.Sequence[ApidataBatchAddItem],
+        items: typing.Sequence[BatchAddItem],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[ApidataBatchItemDetail]]:
+    ) -> AsyncHttpResponse[typing.List[BatchItemDetail]]:
         """
         Add graph episodes and thread messages to a draft batch. Items are appended in request order.
 
@@ -1067,14 +1067,14 @@ class AsyncRawBatchClient:
         batch_id : str
             The batch ID.
 
-        items : typing.Sequence[ApidataBatchAddItem]
+        items : typing.Sequence[BatchAddItem]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[ApidataBatchItemDetail]]
+        AsyncHttpResponse[typing.List[BatchItemDetail]]
             Added batch items
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1082,7 +1082,7 @@ class AsyncRawBatchClient:
             method="POST",
             json={
                 "items": convert_and_respect_annotation_metadata(
-                    object_=items, annotation=typing.Sequence[ApidataBatchAddItem], direction="write"
+                    object_=items, annotation=typing.Sequence[BatchAddItem], direction="write"
                 ),
             },
             headers={
@@ -1094,9 +1094,9 @@ class AsyncRawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ApidataBatchItemDetail],
+                    typing.List[BatchItemDetail],
                     parse_obj_as(
-                        type_=typing.List[ApidataBatchItemDetail],  # type: ignore
+                        type_=typing.List[BatchItemDetail],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1156,7 +1156,7 @@ class AsyncRawBatchClient:
 
     async def process(
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApidataBatchSummary]:
+    ) -> AsyncHttpResponse[BatchSummary]:
         """
         Start processing a filled batch. Repeated calls return the existing batch run.
 
@@ -1170,7 +1170,7 @@ class AsyncRawBatchClient:
 
         Returns
         -------
-        AsyncHttpResponse[ApidataBatchSummary]
+        AsyncHttpResponse[BatchSummary]
             Batch processing state
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1181,9 +1181,9 @@ class AsyncRawBatchClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApidataBatchSummary,
+                    BatchSummary,
                     parse_obj_as(
-                        type_=ApidataBatchSummary,  # type: ignore
+                        type_=BatchSummary,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

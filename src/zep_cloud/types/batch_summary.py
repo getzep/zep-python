@@ -4,19 +4,18 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .apidata_batch_progress import ApidataBatchProgress
+from .batch_progress import BatchProgress
 from .models_batch_status import ModelsBatchStatus
 
 
-class ApidataBatchSummary(UniversalBaseModel):
+class BatchSummary(UniversalBaseModel):
     batch_id: typing.Optional[str] = None
     completed_at: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
-    current_stage: typing.Optional[str] = None
     item_count: typing.Optional[int] = None
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     processed_at: typing.Optional[str] = None
-    progress: typing.Optional[ApidataBatchProgress] = None
+    progress: typing.Optional[BatchProgress] = None
     status: typing.Optional[ModelsBatchStatus] = None
     updated_at: typing.Optional[str] = None
 
