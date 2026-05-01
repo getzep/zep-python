@@ -8,10 +8,10 @@ from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
 from .apidata_batch_add_item_role import ApidataBatchAddItemRole
 from .apidata_batch_add_item_type import ApidataBatchAddItemType
-from .apidata_batch_list_response import ApidataBatchListResponse
 from .batch_add_item import BatchAddItem
 from .batch_item_detail import BatchItemDetail
 from .batch_item_list_response import BatchItemListResponse
+from .batch_list_response import BatchListResponse
 from .batch_progress import BatchProgress
 from .batch_summary import BatchSummary
 from .clone_graph_response import CloneGraphResponse
@@ -90,10 +90,10 @@ __all__ = [
     "ApiError",
     "ApidataBatchAddItemRole",
     "ApidataBatchAddItemType",
-    "ApidataBatchListResponse",
     "BatchAddItem",
     "BatchItemDetail",
     "BatchItemListResponse",
+    "BatchListResponse",
     "BatchProgress",
     "BatchSummary",
     "CloneGraphResponse",

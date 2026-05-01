@@ -7,7 +7,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .batch_summary import BatchSummary
 
 
-class ApidataBatchListResponse(UniversalBaseModel):
+class BatchListResponse(UniversalBaseModel):
     batches: typing.Optional[typing.List[BatchSummary]] = None
     next_cursor: typing.Optional[int] = None
 

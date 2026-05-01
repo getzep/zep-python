@@ -2322,7 +2322,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**max_characters:** `typing.Optional[int]` — Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+**max_characters:** `typing.Optional[int]` — Maximum total characters across all selected results when scope=auto. Defaults to 2500. Limited to 50000.
     
 </dd>
 </dl>
@@ -2338,7 +2338,11 @@ client.graph.search(
 <dl>
 <dd>
 
-**reranker:** `typing.Optional[Reranker]` — Defaults to RRF
+**reranker:** `typing.Optional[Reranker]` 
+
+Defaults to RRF. When scope=auto, this only affects graph-service retrieval
+shape for graph facts, observations, and thread summaries; source-episode
+retrieval uses RRF, and auto search applies its own internal rerank after retrieval.
     
 </dd>
 </dl>
@@ -2346,7 +2350,11 @@ client.graph.search(
 <dl>
 <dd>
 
-**return_raw_results:** `typing.Optional[bool]` — When scope=auto, include the selected raw graph results alongside the materialized context block.
+**return_raw_results:** `typing.Optional[bool]` 
+
+When scope=auto, include the selected raw graph results alongside the materialized context block.
+For graph-service-backed auto mode, selected raw results may include episodes,
+edges, nodes, observations, and thread_summaries.
     
 </dd>
 </dl>

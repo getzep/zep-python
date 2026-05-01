@@ -1340,16 +1340,20 @@ class RawGraphClient:
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
         max_characters : typing.Optional[int]
-            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+            Maximum total characters across all selected results when scope=auto. Defaults to 2500. Limited to 50000.
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
-            Defaults to RRF
+            Defaults to RRF. When scope=auto, this only affects graph-service retrieval
+            shape for graph facts, observations, and thread summaries; source-episode
+            retrieval uses RRF, and auto search applies its own internal rerank after retrieval.
 
         return_raw_results : typing.Optional[bool]
             When scope=auto, include the selected raw graph results alongside the materialized context block.
+            For graph-service-backed auto mode, selected raw results may include episodes,
+            edges, nodes, observations, and thread_summaries.
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.
@@ -2966,16 +2970,20 @@ class AsyncRawGraphClient:
             The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
 
         max_characters : typing.Optional[int]
-            Maximum total characters across all selected results when scope=auto. Defaults to 2000. Limited to 50000.
+            Maximum total characters across all selected results when scope=auto. Defaults to 2500. Limited to 50000.
 
         mmr_lambda : typing.Optional[float]
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
-            Defaults to RRF
+            Defaults to RRF. When scope=auto, this only affects graph-service retrieval
+            shape for graph facts, observations, and thread summaries; source-episode
+            retrieval uses RRF, and auto search applies its own internal rerank after retrieval.
 
         return_raw_results : typing.Optional[bool]
             When scope=auto, include the selected raw graph results alongside the materialized context block.
+            For graph-service-backed auto mode, selected raw results may include episodes,
+            edges, nodes, observations, and thread_summaries.
 
         scope : typing.Optional[GraphSearchScope]
             Defaults to Edges.

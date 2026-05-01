@@ -4,10 +4,10 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.apidata_batch_list_response import ApidataBatchListResponse
 from ..types.batch_add_item import BatchAddItem
 from ..types.batch_item_detail import BatchItemDetail
 from ..types.batch_item_list_response import BatchItemListResponse
+from ..types.batch_list_response import BatchListResponse
 from ..types.batch_summary import BatchSummary
 from ..types.success_response import SuccessResponse
 from .raw_client import AsyncRawBatchClient, RawBatchClient
@@ -38,7 +38,7 @@ class BatchClient:
         cursor: typing.Optional[int] = None,
         status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataBatchListResponse:
+    ) -> BatchListResponse:
         """
         List batches for the current project, optionally filtered by batch status.
 
@@ -58,7 +58,7 @@ class BatchClient:
 
         Returns
         -------
-        ApidataBatchListResponse
+        BatchListResponse
             Batch list
 
         Examples
@@ -323,7 +323,7 @@ class AsyncBatchClient:
         cursor: typing.Optional[int] = None,
         status: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ApidataBatchListResponse:
+    ) -> BatchListResponse:
         """
         List batches for the current project, optionally filtered by batch status.
 
@@ -343,7 +343,7 @@ class AsyncBatchClient:
 
         Returns
         -------
-        ApidataBatchListResponse
+        BatchListResponse
             Batch list
 
         Examples
