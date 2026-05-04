@@ -4,6 +4,7 @@ import os
 import typing
 
 import httpx
+from .batch.client import AsyncBatchClient, BatchClient
 from .context.client import AsyncContextClient, ContextClient
 from .core.api_error import ApiError
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
@@ -82,6 +83,7 @@ class BaseClient:
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
+        self.batch = BatchClient(client_wrapper=self._client_wrapper)
         self.context = ContextClient(client_wrapper=self._client_wrapper)
         self.graph = GraphClient(client_wrapper=self._client_wrapper)
         self.project = ProjectClient(client_wrapper=self._client_wrapper)
@@ -157,6 +159,7 @@ class AsyncBaseClient:
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
+        self.batch = AsyncBatchClient(client_wrapper=self._client_wrapper)
         self.context = AsyncContextClient(client_wrapper=self._client_wrapper)
         self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
         self.project = AsyncProjectClient(client_wrapper=self._client_wrapper)

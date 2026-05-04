@@ -7,6 +7,17 @@ from .types import (
     AddThreadMessagesResponse,
     AddTripleResponse,
     ApiError,
+    ApidataBatchAddItemRole,
+    ApidataBatchAddItemType,
+    BatchAddItem,
+    BatchItemDetail,
+    BatchItemKind,
+    BatchItemListResponse,
+    BatchItemStatus,
+    BatchListResponse,
+    BatchProgress,
+    BatchStatus,
+    BatchSummary,
     CloneGraphResponse,
     ClusterDetectConfig,
     CoOccurrenceDetectConfig,
@@ -73,8 +84,8 @@ from .types import (
     UserListResponse,
     UserNodeResponse,
 )
-from .errors import BadRequestError, ForbiddenError, InternalServerError, NotFoundError
-from . import context, graph, project, task, thread, user
+from .errors import BadRequestError, ConflictError, ForbiddenError, InternalServerError, NotFoundError
+from . import batch, context, graph, project, task, thread, user
 from .client import AsyncZep, Zep
 from .environment import ZepEnvironment
 from .version import __version__
@@ -84,12 +95,24 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
+    "ApidataBatchAddItemRole",
+    "ApidataBatchAddItemType",
     "AsyncZep",
     "BadRequestError",
+    "BatchAddItem",
+    "BatchItemDetail",
+    "BatchItemKind",
+    "BatchItemListResponse",
+    "BatchItemStatus",
+    "BatchListResponse",
+    "BatchProgress",
+    "BatchStatus",
+    "BatchSummary",
     "CloneGraphResponse",
     "ClusterDetectConfig",
     "CoOccurrenceDetectConfig",
     "ComparisonOperator",
+    "ConflictError",
     "ContextTemplateResponse",
     "CustomInstruction",
     "DateFilter",
@@ -157,6 +180,7 @@ __all__ = [
     "Zep",
     "ZepEnvironment",
     "__version__",
+    "batch",
     "context",
     "graph",
     "project",

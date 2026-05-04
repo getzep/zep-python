@@ -6,6 +6,17 @@ from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
 from .api_error import ApiError
+from .apidata_batch_add_item_role import ApidataBatchAddItemRole
+from .apidata_batch_add_item_type import ApidataBatchAddItemType
+from .batch_add_item import BatchAddItem
+from .batch_item_detail import BatchItemDetail
+from .batch_item_kind import BatchItemKind
+from .batch_item_list_response import BatchItemListResponse
+from .batch_item_status import BatchItemStatus
+from .batch_list_response import BatchListResponse
+from .batch_progress import BatchProgress
+from .batch_status import BatchStatus
+from .batch_summary import BatchSummary
 from .clone_graph_response import CloneGraphResponse
 from .cluster_detect_config import ClusterDetectConfig
 from .co_occurrence_detect_config import CoOccurrenceDetectConfig
@@ -77,6 +88,17 @@ __all__ = [
     "AddThreadMessagesResponse",
     "AddTripleResponse",
     "ApiError",
+    "ApidataBatchAddItemRole",
+    "ApidataBatchAddItemType",
+    "BatchAddItem",
+    "BatchItemDetail",
+    "BatchItemKind",
+    "BatchItemListResponse",
+    "BatchItemStatus",
+    "BatchListResponse",
+    "BatchProgress",
+    "BatchStatus",
+    "BatchSummary",
     "CloneGraphResponse",
     "ClusterDetectConfig",
     "CoOccurrenceDetectConfig",
