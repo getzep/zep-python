@@ -5,7 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .batch_progress import BatchProgress
-from .models_batch_status import ModelsBatchStatus
+from .batch_status import BatchStatus
 
 
 class BatchSummary(UniversalBaseModel):
@@ -16,7 +16,7 @@ class BatchSummary(UniversalBaseModel):
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     processed_at: typing.Optional[str] = None
     progress: typing.Optional[BatchProgress] = None
-    status: typing.Optional[ModelsBatchStatus] = None
+    status: typing.Optional[BatchStatus] = None
     updated_at: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:

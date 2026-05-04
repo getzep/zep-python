@@ -4,8 +4,8 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .models_batch_item_kind import ModelsBatchItemKind
-from .models_batch_item_status import ModelsBatchItemStatus
+from .batch_item_kind import BatchItemKind
+from .batch_item_status import BatchItemStatus
 
 
 class BatchItemDetail(UniversalBaseModel):
@@ -14,10 +14,10 @@ class BatchItemDetail(UniversalBaseModel):
     error: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     graph_id: typing.Optional[str] = None
     item_id: typing.Optional[str] = None
-    kind: typing.Optional[ModelsBatchItemKind] = None
+    kind: typing.Optional[BatchItemKind] = None
     sequence_index: typing.Optional[int] = None
     source_uuid: typing.Optional[str] = None
-    status: typing.Optional[ModelsBatchItemStatus] = None
+    status: typing.Optional[BatchItemStatus] = None
     thread_id: typing.Optional[str] = None
     updated_at: typing.Optional[str] = None
     user_id: typing.Optional[str] = None

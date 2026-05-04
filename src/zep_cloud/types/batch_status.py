@@ -2,6 +2,6 @@
 
 import typing
 
-ModelsBatchStatus = typing.Union[
+BatchStatus = typing.Union[
     typing.Literal["draft", "invalid", "queued", "processing", "succeeded", "partial", "failed"], typing.Any
 ]
