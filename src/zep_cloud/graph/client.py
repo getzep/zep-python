@@ -364,7 +364,9 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
         """
-        Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
+        Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*`) instead.
+
+        Adds data to the graph in batch mode, processing episodes concurrently.
 
         Parameters
         ----------
@@ -469,7 +471,11 @@ class GraphClient:
             Nested objects and arrays are not allowed.
 
         source_node_labels : typing.Optional[typing.Sequence[str]]
-            The labels for the source node
+            The labels for the source node. At most one entity-type label may be
+            provided so that manually-added triples remain consistent with automatic
+            episode extraction, which assigns one best-match entity type per node.
+            The base "Entity" label is added implicitly by the graph layer on save
+            and does not need to be supplied here.
 
         source_node_name : typing.Optional[str]
             The name of the source node to add
@@ -485,7 +491,11 @@ class GraphClient:
             Nested objects and arrays are not allowed.
 
         target_node_labels : typing.Optional[typing.Sequence[str]]
-            The labels for the target node
+            The labels for the target node. At most one entity-type label may be
+            provided so that manually-added triples remain consistent with automatic
+            episode extraction, which assigns one best-match entity type per node.
+            The base "Entity" label is added implicitly by the graph layer on save
+            and does not need to be supplied here.
 
         target_node_name : typing.Optional[str]
             The name of the target node to add
@@ -835,7 +845,7 @@ class GraphClient:
             The graph_id to search in. When searching user graph, please use user_id instead.
 
         limit : typing.Optional[int]
-            The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
+            The maximum number of facts to retrieve for non-auto scopes. Defaults to 10. Limited to 50. Ignored when scope=auto.
 
         max_characters : typing.Optional[int]
             Maximum total characters across all selected results when scope=auto. Defaults to 2500. Limited to 50000.
@@ -844,9 +854,8 @@ class GraphClient:
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
-            Defaults to RRF. When scope=auto, this only affects graph-service retrieval
-            shape for graph facts, observations, and thread summaries; source-episode
-            retrieval uses RRF, and auto search applies its own internal rerank after retrieval.
+            Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
+            auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
 
         return_raw_results : typing.Optional[bool]
             When scope=auto, include the selected raw graph results alongside the materialized context block.
@@ -1381,7 +1390,9 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
         """
-        Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
+        Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*`) instead.
+
+        Adds data to the graph in batch mode, processing episodes concurrently.
 
         Parameters
         ----------
@@ -1494,7 +1505,11 @@ class AsyncGraphClient:
             Nested objects and arrays are not allowed.
 
         source_node_labels : typing.Optional[typing.Sequence[str]]
-            The labels for the source node
+            The labels for the source node. At most one entity-type label may be
+            provided so that manually-added triples remain consistent with automatic
+            episode extraction, which assigns one best-match entity type per node.
+            The base "Entity" label is added implicitly by the graph layer on save
+            and does not need to be supplied here.
 
         source_node_name : typing.Optional[str]
             The name of the source node to add
@@ -1510,7 +1525,11 @@ class AsyncGraphClient:
             Nested objects and arrays are not allowed.
 
         target_node_labels : typing.Optional[typing.Sequence[str]]
-            The labels for the target node
+            The labels for the target node. At most one entity-type label may be
+            provided so that manually-added triples remain consistent with automatic
+            episode extraction, which assigns one best-match entity type per node.
+            The base "Entity" label is added implicitly by the graph layer on save
+            and does not need to be supplied here.
 
         target_node_name : typing.Optional[str]
             The name of the target node to add
@@ -1900,7 +1919,7 @@ class AsyncGraphClient:
             The graph_id to search in. When searching user graph, please use user_id instead.
 
         limit : typing.Optional[int]
-            The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
+            The maximum number of facts to retrieve for non-auto scopes. Defaults to 10. Limited to 50. Ignored when scope=auto.
 
         max_characters : typing.Optional[int]
             Maximum total characters across all selected results when scope=auto. Defaults to 2500. Limited to 50000.
@@ -1909,9 +1928,8 @@ class AsyncGraphClient:
             weighting for maximal marginal relevance
 
         reranker : typing.Optional[Reranker]
-            Defaults to RRF. When scope=auto, this only affects graph-service retrieval
-            shape for graph facts, observations, and thread summaries; source-episode
-            retrieval uses RRF, and auto search applies its own internal rerank after retrieval.
+            Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
+            auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
 
         return_raw_results : typing.Optional[bool]
             When scope=auto, include the selected raw graph results alongside the materialized context block.

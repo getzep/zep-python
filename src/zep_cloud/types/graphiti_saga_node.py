@@ -21,7 +21,15 @@ class GraphitiSagaNode(UniversalBaseModel):
 
     last_summarized_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Timestamp of the most recent summary update.
+    Wall-clock timestamp of the most recent summary update. Used internally
+    as the watermark for filtering new episodes by ingestion time.
+    """
+
+    last_summarized_episode_valid_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Maximum episode reference time (valid_at) covered by the most recent
+    summary. Use this field — not LastSummarizedAt — when answering "how
+    recent is this summary's content in event-time?".
     """
 
     name: str = pydantic.Field()

@@ -512,7 +512,9 @@ class RawThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AddThreadMessagesResponse]:
         """
-        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+        Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*` with `type: "thread_message"`) instead.
+
+        Adds messages to a thread in batch mode, processing messages concurrently.
 
         Parameters
         ----------
@@ -1144,7 +1146,9 @@ class AsyncRawThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AddThreadMessagesResponse]:
         """
-        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+        Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*` with `type: "thread_message"`) instead.
+
+        Adds messages to a thread in batch mode, processing messages concurrently.
 
         Parameters
         ----------

@@ -1462,7 +1462,9 @@ client.graph.add(
 <dl>
 <dd>
 
-Add data to the graph in batch mode. Episodes are processed sequentially in the order provided.
+Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*`) instead.
+
+Adds data to the graph in batch mode, processing episodes concurrently.
 </dd>
 </dl>
 </dd>
@@ -1681,7 +1683,13 @@ Nested objects and arrays are not allowed.
 <dl>
 <dd>
 
-**source_node_labels:** `typing.Optional[typing.Sequence[str]]` — The labels for the source node
+**source_node_labels:** `typing.Optional[typing.Sequence[str]]` 
+
+The labels for the source node. At most one entity-type label may be
+provided so that manually-added triples remain consistent with automatic
+episode extraction, which assigns one best-match entity type per node.
+The base "Entity" label is added implicitly by the graph layer on save
+and does not need to be supplied here.
     
 </dd>
 </dl>
@@ -1724,7 +1732,13 @@ Nested objects and arrays are not allowed.
 <dl>
 <dd>
 
-**target_node_labels:** `typing.Optional[typing.Sequence[str]]` — The labels for the target node
+**target_node_labels:** `typing.Optional[typing.Sequence[str]]` 
+
+The labels for the target node. At most one entity-type label may be
+provided so that manually-added triples remain consistent with automatic
+episode extraction, which assigns one best-match entity type per node.
+The base "Entity" label is added implicitly by the graph layer on save
+and does not need to be supplied here.
     
 </dd>
 </dl>
@@ -2314,7 +2328,7 @@ client.graph.search(
 <dl>
 <dd>
 
-**limit:** `typing.Optional[int]` — The maximum number of facts to retrieve. Defaults to 10. Limited to 50.
+**limit:** `typing.Optional[int]` — The maximum number of facts to retrieve for non-auto scopes. Defaults to 10. Limited to 50. Ignored when scope=auto.
     
 </dd>
 </dl>
@@ -2340,9 +2354,8 @@ client.graph.search(
 
 **reranker:** `typing.Optional[Reranker]` 
 
-Defaults to RRF. When scope=auto, this only affects graph-service retrieval
-shape for graph facts, observations, and thread summaries; source-episode
-retrieval uses RRF, and auto search applies its own internal rerank after retrieval.
+Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
+auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
     
 </dd>
 </dl>
@@ -3117,7 +3130,7 @@ client = Zep(
 client.thread.get(
     thread_id="threadId",
     limit=1,
-    cursor=1,
+    cursor=1000000,
     lastn=1,
 )
 
@@ -3295,7 +3308,9 @@ that are added to a user's graph.
 <dl>
 <dd>
 
-Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*` with `type: "thread_message"`) instead.
+
+Adds messages to a thread in batch mode, processing messages concurrently.
 </dd>
 </dl>
 </dd>

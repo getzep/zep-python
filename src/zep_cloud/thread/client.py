@@ -244,7 +244,7 @@ class ThreadClient:
         client.thread.get(
             thread_id="threadId",
             limit=1,
-            cursor=1,
+            cursor=1000000,
             lastn=1,
         )
         """
@@ -325,7 +325,9 @@ class ThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddThreadMessagesResponse:
         """
-        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+        Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*` with `type: "thread_message"`) instead.
+
+        Adds messages to a thread in batch mode, processing messages concurrently.
 
         Parameters
         ----------
@@ -672,7 +674,7 @@ class AsyncThreadClient:
             await client.thread.get(
                 thread_id="threadId",
                 limit=1,
-                cursor=1,
+                cursor=1000000,
                 lastn=1,
             )
 
@@ -764,7 +766,9 @@ class AsyncThreadClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddThreadMessagesResponse:
         """
-        Add messages to a thread in batch mode. This will process messages concurrently, which is useful for data migrations.
+        Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*` with `type: "thread_message"`) instead.
+
+        Adds messages to a thread in batch mode, processing messages concurrently.
 
         Parameters
         ----------
