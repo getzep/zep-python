@@ -16,7 +16,17 @@ class ThreadSummary(UniversalBaseModel):
 
     last_summarized_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    LastSummarizedAt is the timestamp of the most recent summary update.
+    LastSummarizedAt is the wall-clock timestamp of the most recent
+    summary update. This is an ingestion-time watermark; for the
+    event-time recency of the summary's content, use
+    LastSummarizedEpisodeValidAt instead.
+    """
+
+    last_summarized_episode_valid_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    LastSummarizedEpisodeValidAt is the maximum episode reference time
+    (valid_at) covered by the most recent summary. Use this when
+    answering "how recent is this summary's content in event-time?".
     """
 
     summary: typing.Optional[str] = pydantic.Field(default=None)

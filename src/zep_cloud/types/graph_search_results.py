@@ -8,6 +8,7 @@ from .derived_node import DerivedNode
 from .entity_edge import EntityEdge
 from .entity_node import EntityNode
 from .episode import Episode
+from .graph_search_response_metadata import GraphSearchResponseMetadata
 from .graphiti_saga_node import GraphitiSagaNode
 
 
@@ -17,6 +18,7 @@ class GraphSearchResults(UniversalBaseModel):
     episodes: typing.Optional[typing.List[Episode]] = None
     nodes: typing.Optional[typing.List[EntityNode]] = None
     observations: typing.Optional[typing.List[DerivedNode]] = None
+    response: typing.Optional[GraphSearchResponseMetadata] = None
     thread_summaries: typing.Optional[typing.List[GraphitiSagaNode]] = None
 
     if IS_PYDANTIC_V2:

@@ -19,6 +19,13 @@ class DerivedNode(UniversalBaseModel):
     Creation time of the node
     """
 
+    end_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    EndAt is the close timestamp of the evidence window. Set when the
+    underlying pattern is no longer supported (closed observations);
+    nil for active observations.
+    """
+
     episode_ids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     Episode UUIDs that support this observation. Only populated for observation nodes in web API responses.
@@ -27,6 +34,12 @@ class DerivedNode(UniversalBaseModel):
     labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     Labels associated with the node
+    """
+
+    latest_evidence_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    LatestEvidenceAt is the most recent source-episode timestamp from
+    which this observation drew evidence.
     """
 
     name: str = pydantic.Field()
@@ -48,6 +61,12 @@ class DerivedNode(UniversalBaseModel):
     selection_rank: typing.Optional[int] = pydantic.Field(default=None)
     """
     SelectionRank is the global cross-scope rank assigned by auto scope selection.
+    """
+
+    start_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    StartAt is the earliest source-episode timestamp from which this
+    observation was derived. Only populated for observation nodes.
     """
 
     summary: typing.Optional[str] = pydantic.Field(default=None)

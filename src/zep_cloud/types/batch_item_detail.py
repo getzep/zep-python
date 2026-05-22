@@ -10,7 +10,14 @@ from .batch_item_status import BatchItemStatus
 
 class BatchItemDetail(UniversalBaseModel):
     created_at: typing.Optional[str] = None
-    episode_uuid: typing.Optional[str] = None
+    episode_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    EpisodeUUID is the UUID of the episode that will be (or has been) created
+    for this batch item. Populated for every item kind and always equal to
+    SourceUUID — the underlying source row's UUID is reused as the episode
+    UUID during processing.
+    """
+
     error: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     graph_id: typing.Optional[str] = None
     item_id: typing.Optional[str] = None

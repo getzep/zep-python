@@ -47,6 +47,7 @@ from .graph_edges_request import GraphEdgesRequest
 from .graph_list_response import GraphListResponse
 from .graph_nodes_request import GraphNodesRequest
 from .graph_observations_request import GraphObservationsRequest
+from .graph_search_response_metadata import GraphSearchResponseMetadata
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
 from .graph_thread_summaries_request import GraphThreadSummariesRequest
@@ -129,6 +130,7 @@ __all__ = [
     "GraphListResponse",
     "GraphNodesRequest",
     "GraphObservationsRequest",
+    "GraphSearchResponseMetadata",
     "GraphSearchResults",
     "GraphSearchScope",
     "GraphThreadSummariesRequest",
