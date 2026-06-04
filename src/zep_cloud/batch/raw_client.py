@@ -21,6 +21,7 @@ from ..types.batch_item_detail import BatchItemDetail
 from ..types.batch_item_list_response import BatchItemListResponse
 from ..types.batch_list_response import BatchListResponse
 from ..types.batch_summary import BatchSummary
+from ..types.role_type import RoleType
 from ..types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
@@ -126,6 +127,7 @@ class RawBatchClient:
     def create(
         self,
         *,
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[BatchSummary]:
@@ -134,6 +136,12 @@ class RawBatchClient:
 
         Parameters
         ----------
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of message role types to skip during graph ingestion for
+            thread_message items in this batch. The messages are still stored and
+            retained as context, but no graph extraction is performed for them.
+            Has no effect on graph_episode items.
+
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
@@ -148,6 +156,7 @@ class RawBatchClient:
             "batches",
             method="POST",
             json={
+                "ignore_roles": ignore_roles,
                 "metadata": metadata,
             },
             headers={
@@ -811,6 +820,7 @@ class AsyncRawBatchClient:
     async def create(
         self,
         *,
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[BatchSummary]:
@@ -819,6 +829,12 @@ class AsyncRawBatchClient:
 
         Parameters
         ----------
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of message role types to skip during graph ingestion for
+            thread_message items in this batch. The messages are still stored and
+            retained as context, but no graph extraction is performed for them.
+            Has no effect on graph_episode items.
+
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
@@ -833,6 +849,7 @@ class AsyncRawBatchClient:
             "batches",
             method="POST",
             json={
+                "ignore_roles": ignore_roles,
                 "metadata": metadata,
             },
             headers={

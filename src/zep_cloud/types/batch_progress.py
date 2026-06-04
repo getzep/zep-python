@@ -7,6 +7,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class BatchProgress(UniversalBaseModel):
+    canceled_items: typing.Optional[int] = None
     failed_items: typing.Optional[int] = None
     percent_complete: typing.Optional[float] = None
     processing_items: typing.Optional[int] = None

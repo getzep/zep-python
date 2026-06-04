@@ -1013,6 +1013,37 @@ class GraphClient:
         )
         return _response.data
 
+    def warm(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+        """
+        Hints Zep to warm a graph for low-latency search
+
+        Parameters
+        ----------
+        graph_id : str
+            The graph_id of the graph to warm.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Warm hint accepted
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.warm(
+            graph_id="graphId",
+        )
+        """
+        _response = self._raw_client.warm(graph_id, request_options=request_options)
+        return _response.data
+
 
 class AsyncGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -2119,4 +2150,43 @@ class AsyncGraphClient:
         _response = await self._raw_client.update(
             graph_id, description=description, name=name, request_options=request_options
         )
+        return _response.data
+
+    async def warm(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+        """
+        Hints Zep to warm a graph for low-latency search
+
+        Parameters
+        ----------
+        graph_id : str
+            The graph_id of the graph to warm.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SuccessResponse
+            Warm hint accepted
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.warm(
+                graph_id="graphId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.warm(graph_id, request_options=request_options)
         return _response.data

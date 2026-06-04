@@ -1679,6 +1679,71 @@ class RawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def warm(
+        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[SuccessResponse]:
+        """
+        Hints Zep to warm a graph for low-latency search
+
+        Parameters
+        ----------
+        graph_id : str
+            The graph_id of the graph to warm.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[SuccessResponse]
+            Warm hint accepted
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/{jsonable_encoder(graph_id)}/warm",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
 
 class AsyncRawGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -3289,6 +3354,71 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def warm(
+        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[SuccessResponse]:
+        """
+        Hints Zep to warm a graph for low-latency search
+
+        Parameters
+        ----------
+        graph_id : str
+            The graph_id of the graph to warm.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[SuccessResponse]
+            Warm hint accepted
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/{jsonable_encoder(graph_id)}/warm",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    SuccessResponse,
+                    parse_obj_as(
+                        type_=SuccessResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 404:
                 raise NotFoundError(
                     headers=dict(_response.headers),
