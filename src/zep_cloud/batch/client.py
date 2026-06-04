@@ -9,6 +9,7 @@ from ..types.batch_item_detail import BatchItemDetail
 from ..types.batch_item_list_response import BatchItemListResponse
 from ..types.batch_list_response import BatchListResponse
 from ..types.batch_summary import BatchSummary
+from ..types.role_type import RoleType
 from ..types.success_response import SuccessResponse
 from .raw_client import AsyncRawBatchClient, RawBatchClient
 
@@ -80,6 +81,7 @@ class BatchClient:
     def create(
         self,
         *,
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchSummary:
@@ -88,6 +90,12 @@ class BatchClient:
 
         Parameters
         ----------
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of message role types to skip during graph ingestion for
+            thread_message items in this batch. The messages are still stored and
+            retained as context, but no graph extraction is performed for them.
+            Has no effect on graph_episode items.
+
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
@@ -107,7 +115,9 @@ class BatchClient:
         )
         client.batch.create()
         """
-        _response = self._raw_client.create(metadata=metadata, request_options=request_options)
+        _response = self._raw_client.create(
+            ignore_roles=ignore_roles, metadata=metadata, request_options=request_options
+        )
         return _response.data
 
     def get(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> BatchSummary:
@@ -375,6 +385,7 @@ class AsyncBatchClient:
     async def create(
         self,
         *,
+        ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchSummary:
@@ -383,6 +394,12 @@ class AsyncBatchClient:
 
         Parameters
         ----------
+        ignore_roles : typing.Optional[typing.Sequence[RoleType]]
+            Optional list of message role types to skip during graph ingestion for
+            thread_message items in this batch. The messages are still stored and
+            retained as context, but no graph extraction is performed for them.
+            Has no effect on graph_episode items.
+
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
@@ -410,7 +427,9 @@ class AsyncBatchClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.create(metadata=metadata, request_options=request_options)
+        _response = await self._raw_client.create(
+            ignore_roles=ignore_roles, metadata=metadata, request_options=request_options
+        )
         return _response.data
 
     async def get(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> BatchSummary:

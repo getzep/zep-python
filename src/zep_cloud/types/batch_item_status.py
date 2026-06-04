@@ -3,5 +3,5 @@
 import typing
 
 BatchItemStatus = typing.Union[
-    typing.Literal["pending", "queued", "processing", "succeeded", "failed", "skipped"], typing.Any
+    typing.Literal["pending", "queued", "processing", "succeeded", "failed", "skipped", "canceled"], typing.Any
 ]

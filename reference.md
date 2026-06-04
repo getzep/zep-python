@@ -136,6 +136,19 @@ client.batch.create()
 <dl>
 <dd>
 
+**ignore_roles:** `typing.Optional[typing.Sequence[RoleType]]` 
+
+Optional list of message role types to skip during graph ingestion for
+thread_message items in this batch. The messages are still stored and
+retained as context, but no graph extraction is performed for them.
+Has no effect on graph_episode items.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **metadata:** `typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]` 
     
 </dd>
@@ -2618,6 +2631,76 @@ client.graph.update(
 <dd>
 
 **name:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">warm</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Hints Zep to warm a graph for low-latency search
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.warm(
+    graph_id="graphId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — The graph_id of the graph to warm.
     
 </dd>
 </dl>

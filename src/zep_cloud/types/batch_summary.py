@@ -6,12 +6,14 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .batch_progress import BatchProgress
 from .batch_status import BatchStatus
+from .role_type import RoleType
 
 
 class BatchSummary(UniversalBaseModel):
     batch_id: typing.Optional[str] = None
     completed_at: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
+    ignore_roles: typing.Optional[typing.List[RoleType]] = None
     item_count: typing.Optional[int] = None
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     processed_at: typing.Optional[str] = None
