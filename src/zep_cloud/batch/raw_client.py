@@ -626,7 +626,7 @@ class RawBatchClient:
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[BatchSummary]:
         """
-        Start processing a filled batch. Repeated calls return the existing batch run.
+        Start processing a filled batch. Repeated calls return a conflict.
 
         Parameters
         ----------
@@ -1319,7 +1319,7 @@ class AsyncRawBatchClient:
         self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[BatchSummary]:
         """
-        Start processing a filled batch. Repeated calls return the existing batch run.
+        Start processing a filled batch. Repeated calls return a conflict.
 
         Parameters
         ----------

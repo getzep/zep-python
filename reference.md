@@ -501,7 +501,7 @@ client.batch.add(
 <dl>
 <dd>
 
-Start processing a filled batch. Repeated calls return the existing batch run.
+Start processing a filled batch. Repeated calls return a conflict.
 </dd>
 </dl>
 </dd>
