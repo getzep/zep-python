@@ -30,6 +30,8 @@ from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
+from ..types.graphiti_add_node_item import GraphitiAddNodeItem
+from ..types.graphiti_add_nodes_response import GraphitiAddNodesResponse
 from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
 from ..types.pattern_seeds import PatternSeeds
 from ..types.recency_weight import RecencyWeight
@@ -523,6 +525,7 @@ class RawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Episode]:
@@ -545,6 +548,9 @@ class RawGraphClient:
 
         source_description : typing.Optional[str]
 
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+
         user_id : typing.Optional[str]
             User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
 
@@ -565,6 +571,7 @@ class RawGraphClient:
                 "graph_id": graph_id,
                 "metadata": metadata,
                 "source_description": source_description,
+                "strict_ontology": strict_ontology,
                 "type": type,
                 "user_id": user_id,
             },
@@ -620,6 +627,7 @@ class RawGraphClient:
         *,
         episodes: typing.Sequence[EpisodeData],
         graph_id: typing.Optional[str] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[typing.List[Episode]]:
@@ -634,6 +642,9 @@ class RawGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         user_id : typing.Optional[str]
             User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
@@ -654,6 +665,7 @@ class RawGraphClient:
                     object_=episodes, annotation=typing.Sequence[EpisodeData], direction="write"
                 ),
                 "graph_id": graph_id,
+                "strict_ontology": strict_ontology,
                 "user_id": user_id,
             },
             headers={
@@ -1116,6 +1128,91 @@ class RawGraphClient:
                     GraphListResponse,
                     parse_obj_as(
                         type_=GraphListResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def add_nodes(
+        self,
+        *,
+        nodes: typing.Sequence[GraphitiAddNodeItem],
+        graph_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[GraphitiAddNodesResponse]:
+        """
+        Add entity nodes to a user or graph directly, without episode ingestion. Up to 100 nodes per request.
+
+        Parameters
+        ----------
+        nodes : typing.Sequence[GraphitiAddNodeItem]
+            The nodes to add. 1 to 100 items.
+
+        graph_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[GraphitiAddNodesResponse]
+            Accepted
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph/nodes",
+            method="POST",
+            json={
+                "graph_id": graph_id,
+                "nodes": convert_and_respect_annotation_metadata(
+                    object_=nodes, annotation=typing.Sequence[GraphitiAddNodeItem], direction="write"
+                ),
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphitiAddNodesResponse,
+                    parse_obj_as(
+                        type_=GraphitiAddNodesResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2227,6 +2324,7 @@ class AsyncRawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Episode]:
@@ -2249,6 +2347,9 @@ class AsyncRawGraphClient:
 
         source_description : typing.Optional[str]
 
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+
         user_id : typing.Optional[str]
             User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
 
@@ -2269,6 +2370,7 @@ class AsyncRawGraphClient:
                 "graph_id": graph_id,
                 "metadata": metadata,
                 "source_description": source_description,
+                "strict_ontology": strict_ontology,
                 "type": type,
                 "user_id": user_id,
             },
@@ -2324,6 +2426,7 @@ class AsyncRawGraphClient:
         *,
         episodes: typing.Sequence[EpisodeData],
         graph_id: typing.Optional[str] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[typing.List[Episode]]:
@@ -2338,6 +2441,9 @@ class AsyncRawGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         user_id : typing.Optional[str]
             User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
@@ -2358,6 +2464,7 @@ class AsyncRawGraphClient:
                     object_=episodes, annotation=typing.Sequence[EpisodeData], direction="write"
                 ),
                 "graph_id": graph_id,
+                "strict_ontology": strict_ontology,
                 "user_id": user_id,
             },
             headers={
@@ -2820,6 +2927,91 @@ class AsyncRawGraphClient:
                     GraphListResponse,
                     parse_obj_as(
                         type_=GraphListResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def add_nodes(
+        self,
+        *,
+        nodes: typing.Sequence[GraphitiAddNodeItem],
+        graph_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[GraphitiAddNodesResponse]:
+        """
+        Add entity nodes to a user or graph directly, without episode ingestion. Up to 100 nodes per request.
+
+        Parameters
+        ----------
+        nodes : typing.Sequence[GraphitiAddNodeItem]
+            The nodes to add. 1 to 100 items.
+
+        graph_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[GraphitiAddNodesResponse]
+            Accepted
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph/nodes",
+            method="POST",
+            json={
+                "graph_id": graph_id,
+                "nodes": convert_and_respect_annotation_metadata(
+                    object_=nodes, annotation=typing.Sequence[GraphitiAddNodeItem], direction="write"
+                ),
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphitiAddNodesResponse,
+                    parse_obj_as(
+                        type_=GraphitiAddNodesResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

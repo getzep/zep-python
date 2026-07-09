@@ -1443,6 +1443,14 @@ client.graph.add(
 <dl>
 <dd>
 
+**strict_ontology:** `typing.Optional[bool]` — When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **user_id:** `typing.Optional[str]` — User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
     
 </dd>
@@ -1529,6 +1537,14 @@ client.graph.add_batch(
 <dd>
 
 **graph_id:** `typing.Optional[str]` — graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**strict_ontology:** `typing.Optional[bool]` — When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
     
 </dd>
 </dl>
@@ -2076,6 +2092,96 @@ client.graph.list_all(
 <dd>
 
 **asc:** `typing.Optional[bool]` — Sort in ascending order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">add_nodes</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add entity nodes to a user or graph directly, without episode ingestion. Up to 100 nodes per request.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import GraphitiAddNodeItem, Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.add_nodes(
+    nodes=[
+        GraphitiAddNodeItem(
+            name="name",
+        )
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**nodes:** `typing.Sequence[GraphitiAddNodeItem]` — The nodes to add. 1 to 100 items.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -3367,6 +3473,14 @@ that are added to a user's graph.
 <dl>
 <dd>
 
+**strict_ontology:** `typing.Optional[bool]` — When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -3466,6 +3580,14 @@ that are added to a user's graph.
 <dd>
 
 **return_context:** `typing.Optional[bool]` — Optionally return context block relevant to the most recent messages.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**strict_ontology:** `typing.Optional[bool]` — When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
     
 </dd>
 </dl>

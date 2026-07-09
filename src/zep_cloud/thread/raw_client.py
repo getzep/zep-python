@@ -427,6 +427,7 @@ class RawThreadClient:
         messages: typing.Sequence[Message],
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AddThreadMessagesResponse]:
         """
@@ -448,6 +449,9 @@ class RawThreadClient:
         return_context : typing.Optional[bool]
             Optionally return context block relevant to the most recent messages.
 
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -465,6 +469,7 @@ class RawThreadClient:
                     object_=messages, annotation=typing.Sequence[Message], direction="write"
                 ),
                 "return_context": return_context,
+                "strict_ontology": strict_ontology,
             },
             headers={
                 "content-type": "application/json",
@@ -509,6 +514,7 @@ class RawThreadClient:
         messages: typing.Sequence[Message],
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AddThreadMessagesResponse]:
         """
@@ -532,6 +538,9 @@ class RawThreadClient:
         return_context : typing.Optional[bool]
             Optionally return context block relevant to the most recent messages.
 
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -549,6 +558,7 @@ class RawThreadClient:
                     object_=messages, annotation=typing.Sequence[Message], direction="write"
                 ),
                 "return_context": return_context,
+                "strict_ontology": strict_ontology,
             },
             headers={
                 "content-type": "application/json",
@@ -1061,6 +1071,7 @@ class AsyncRawThreadClient:
         messages: typing.Sequence[Message],
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AddThreadMessagesResponse]:
         """
@@ -1082,6 +1093,9 @@ class AsyncRawThreadClient:
         return_context : typing.Optional[bool]
             Optionally return context block relevant to the most recent messages.
 
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -1099,6 +1113,7 @@ class AsyncRawThreadClient:
                     object_=messages, annotation=typing.Sequence[Message], direction="write"
                 ),
                 "return_context": return_context,
+                "strict_ontology": strict_ontology,
             },
             headers={
                 "content-type": "application/json",
@@ -1143,6 +1158,7 @@ class AsyncRawThreadClient:
         messages: typing.Sequence[Message],
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AddThreadMessagesResponse]:
         """
@@ -1166,6 +1182,9 @@ class AsyncRawThreadClient:
         return_context : typing.Optional[bool]
             Optionally return context block relevant to the most recent messages.
 
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -1183,6 +1202,7 @@ class AsyncRawThreadClient:
                     object_=messages, annotation=typing.Sequence[Message], direction="write"
                 ),
                 "return_context": return_context,
+                "strict_ontology": strict_ontology,
             },
             headers={
                 "content-type": "application/json",

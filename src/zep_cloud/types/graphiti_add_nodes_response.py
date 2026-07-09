@@ -4,14 +4,20 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .entity_property import EntityProperty
+from .graphiti_add_node_item import GraphitiAddNodeItem
 
 
-class EntityType(UniversalBaseModel):
-    description: str
-    identity_properties: typing.Optional[typing.List[str]] = None
-    name: str
-    properties: typing.Optional[typing.List[EntityProperty]] = None
+class GraphitiAddNodesResponse(UniversalBaseModel):
+    nodes: typing.Optional[typing.List[GraphitiAddNodeItem]] = pydantic.Field(default=None)
+    """
+    The accepted nodes, each carrying its resolved (server-assigned or
+    caller-supplied) UUID, in request order.
+    """
+
+    task_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Task ID of the async add-nodes task.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
