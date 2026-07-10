@@ -281,7 +281,7 @@ class BatchClient:
 
     def process(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> BatchSummary:
         """
-        Start processing a filled batch. Repeated calls return the existing batch run.
+        Start processing a filled batch. Repeated calls return a conflict.
 
         Parameters
         ----------
@@ -627,7 +627,7 @@ class AsyncBatchClient:
 
     async def process(self, batch_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> BatchSummary:
         """
-        Start processing a filled batch. Repeated calls return the existing batch run.
+        Start processing a filled batch. Repeated calls return a conflict.
 
         Parameters
         ----------
