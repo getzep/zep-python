@@ -5,6 +5,7 @@ import typing
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.request_options import RequestOptions
 from ...types.derived_node import DerivedNode
+from ...types.search_filters import SearchFilters
 from .raw_client import AsyncRawObservationClient, RawObservationClient
 
 # this is used as the default value for optional parameters
@@ -30,7 +31,11 @@ class ObservationClient:
         self,
         graph_id: str,
         *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[DerivedNode]:
@@ -42,11 +47,26 @@ class ObservationClient:
         graph_id : str
             Graph ID
 
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+            of the previous page. Encodes the sort field, direction, and continuation position.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc" (default "desc").
+
+        filters : typing.Optional[SearchFilters]
+            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+
         limit : typing.Optional[int]
             Maximum number of items to return
 
+        order_by : typing.Optional[str]
+            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+
         uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -68,7 +88,14 @@ class ObservationClient:
         )
         """
         _response = self._raw_client.get_by_graph_id(
-            graph_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
+            graph_id,
+            cursor=cursor,
+            direction=direction,
+            filters=filters,
+            limit=limit,
+            order_by=order_by,
+            uuid_cursor=uuid_cursor,
+            request_options=request_options,
         )
         return _response.data
 
@@ -76,7 +103,11 @@ class ObservationClient:
         self,
         user_id: str,
         *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[DerivedNode]:
@@ -88,11 +119,26 @@ class ObservationClient:
         user_id : str
             User ID
 
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+            of the previous page. Encodes the sort field, direction, and continuation position.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc" (default "desc").
+
+        filters : typing.Optional[SearchFilters]
+            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+
         limit : typing.Optional[int]
             Maximum number of items to return
 
+        order_by : typing.Optional[str]
+            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+
         uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -114,7 +160,14 @@ class ObservationClient:
         )
         """
         _response = self._raw_client.get_by_user_id(
-            user_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
+            user_id,
+            cursor=cursor,
+            direction=direction,
+            filters=filters,
+            limit=limit,
+            order_by=order_by,
+            uuid_cursor=uuid_cursor,
+            request_options=request_options,
         )
         return _response.data
 
@@ -169,7 +222,11 @@ class AsyncObservationClient:
         self,
         graph_id: str,
         *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[DerivedNode]:
@@ -181,11 +238,26 @@ class AsyncObservationClient:
         graph_id : str
             Graph ID
 
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+            of the previous page. Encodes the sort field, direction, and continuation position.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc" (default "desc").
+
+        filters : typing.Optional[SearchFilters]
+            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+
         limit : typing.Optional[int]
             Maximum number of items to return
 
+        order_by : typing.Optional[str]
+            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+
         uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -215,7 +287,14 @@ class AsyncObservationClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_by_graph_id(
-            graph_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
+            graph_id,
+            cursor=cursor,
+            direction=direction,
+            filters=filters,
+            limit=limit,
+            order_by=order_by,
+            uuid_cursor=uuid_cursor,
+            request_options=request_options,
         )
         return _response.data
 
@@ -223,7 +302,11 @@ class AsyncObservationClient:
         self,
         user_id: str,
         *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[DerivedNode]:
@@ -235,11 +318,26 @@ class AsyncObservationClient:
         user_id : str
             User ID
 
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+            of the previous page. Encodes the sort field, direction, and continuation position.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc" (default "desc").
+
+        filters : typing.Optional[SearchFilters]
+            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+
         limit : typing.Optional[int]
             Maximum number of items to return
 
+        order_by : typing.Optional[str]
+            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+
         uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -269,7 +367,14 @@ class AsyncObservationClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_by_user_id(
-            user_id, limit=limit, uuid_cursor=uuid_cursor, request_options=request_options
+            user_id,
+            cursor=cursor,
+            direction=direction,
+            filters=filters,
+            limit=limit,
+            order_by=order_by,
+            uuid_cursor=uuid_cursor,
+            request_options=request_options,
         )
         return _response.data
 

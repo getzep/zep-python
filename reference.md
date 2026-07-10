@@ -1443,14 +1443,6 @@ client.graph.add(
 <dl>
 <dd>
 
-**strict_ontology:** `typing.Optional[bool]` — When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **user_id:** `typing.Optional[str]` — User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
     
 </dd>
@@ -1537,14 +1529,6 @@ client.graph.add_batch(
 <dd>
 
 **graph_id:** `typing.Optional[str]` — graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**strict_ontology:** `typing.Optional[bool]` — When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
     
 </dd>
 </dl>
@@ -2092,96 +2076,6 @@ client.graph.list_all(
 <dd>
 
 **asc:** `typing.Optional[bool]` — Sort in ascending order.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">add_nodes</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Add entity nodes to a user or graph directly, without episode ingestion. Up to 100 nodes per request.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import GraphitiAddNodeItem, Zep
-
-client = Zep(
-    api_key="YOUR_API_KEY",
-)
-client.graph.add_nodes(
-    nodes=[
-        GraphitiAddNodeItem(
-            name="name",
-        )
-    ],
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**nodes:** `typing.Sequence[GraphitiAddNodeItem]` — The nodes to add. 1 to 100 items.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**graph_id:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**user_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -3473,14 +3367,6 @@ that are added to a user's graph.
 <dl>
 <dd>
 
-**strict_ontology:** `typing.Optional[bool]` — When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -3580,14 +3466,6 @@ that are added to a user's graph.
 <dd>
 
 **return_context:** `typing.Optional[bool]` — Optionally return context block relevant to the most recent messages.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**strict_ontology:** `typing.Optional[bool]` — When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
     
 </dd>
 </dl>
@@ -4642,6 +4520,33 @@ client.graph.edge.get_by_graph_id(
 <dl>
 <dd>
 
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+of the previous page. Encodes the sort field, direction, and continuation position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc" (default "desc").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` — Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
@@ -4650,7 +4555,19 @@ client.graph.edge.get_by_graph_id(
 <dl>
 <dd>
 
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` 
+
+UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
     
 </dd>
 </dl>
@@ -4728,6 +4645,33 @@ client.graph.edge.get_by_user_id(
 <dl>
 <dd>
 
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+of the previous page. Encodes the sort field, direction, and continuation position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc" (default "desc").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` — Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
@@ -4736,7 +4680,19 @@ client.graph.edge.get_by_user_id(
 <dl>
 <dd>
 
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` 
+
+UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
     
 </dd>
 </dl>
@@ -5521,6 +5477,33 @@ client.graph.node.get_by_graph_id(
 <dl>
 <dd>
 
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+of the previous page. Encodes the sort field, direction, and continuation position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc" (default "desc").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` — Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
@@ -5529,7 +5512,19 @@ client.graph.node.get_by_graph_id(
 <dl>
 <dd>
 
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` 
+
+UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
     
 </dd>
 </dl>
@@ -5607,6 +5602,33 @@ client.graph.node.get_by_user_id(
 <dl>
 <dd>
 
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+of the previous page. Encodes the sort field, direction, and continuation position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc" (default "desc").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` — Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
@@ -5615,7 +5637,19 @@ client.graph.node.get_by_user_id(
 <dl>
 <dd>
 
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` 
+
+UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
     
 </dd>
 </dl>
@@ -6076,6 +6110,33 @@ client.graph.observation.get_by_graph_id(
 <dl>
 <dd>
 
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+of the previous page. Encodes the sort field, direction, and continuation position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc" (default "desc").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` — Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
@@ -6084,7 +6145,19 @@ client.graph.observation.get_by_graph_id(
 <dl>
 <dd>
 
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` 
+
+UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
     
 </dd>
 </dl>
@@ -6162,6 +6235,33 @@ client.graph.observation.get_by_user_id(
 <dl>
 <dd>
 
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+of the previous page. Encodes the sort field, direction, and continuation position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc" (default "desc").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` — Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
@@ -6170,7 +6270,19 @@ client.graph.observation.get_by_user_id(
 <dl>
 <dd>
 
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` 
+
+UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
     
 </dd>
 </dl>
@@ -6319,6 +6431,33 @@ client.graph.thread_summary.get_by_graph_id(
 <dl>
 <dd>
 
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+of the previous page. Encodes the sort field, direction, and continuation position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc" (default "desc").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` — Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
@@ -6327,7 +6466,19 @@ client.graph.thread_summary.get_by_graph_id(
 <dl>
 <dd>
 
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` 
+
+UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
     
 </dd>
 </dl>
@@ -6405,6 +6556,33 @@ client.graph.thread_summary.get_by_user_id(
 <dl>
 <dd>
 
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+of the previous page. Encodes the sort field, direction, and continuation position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc" (default "desc").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` — Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` — Maximum number of items to return
     
 </dd>
@@ -6413,7 +6591,19 @@ client.graph.thread_summary.get_by_user_id(
 <dl>
 <dd>
 
-**uuid_cursor:** `typing.Optional[str]` — UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` 
+
+UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
     
 </dd>
 </dl>

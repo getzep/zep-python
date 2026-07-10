@@ -9,6 +9,7 @@ from ...core.http_response import AsyncHttpResponse, HttpResponse
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
+from ...core.serialization import convert_and_respect_annotation_metadata
 from ...errors.bad_request_error import BadRequestError
 from ...errors.internal_server_error import InternalServerError
 from ...errors.not_found_error import NotFoundError
@@ -16,6 +17,7 @@ from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.entity_edge import EntityEdge
 from ...types.entity_node import EntityNode
 from ...types.episode_response import EpisodeResponse
+from ...types.search_filters import SearchFilters
 from ...types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
@@ -30,7 +32,11 @@ class RawNodeClient:
         self,
         graph_id: str,
         *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[typing.List[EntityNode]]:
@@ -42,11 +48,26 @@ class RawNodeClient:
         graph_id : str
             Graph ID
 
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+            of the previous page. Encodes the sort field, direction, and continuation position.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc" (default "desc").
+
+        filters : typing.Optional[SearchFilters]
+            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+
         limit : typing.Optional[int]
             Maximum number of items to return
 
+        order_by : typing.Optional[str]
+            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+
         uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -60,7 +81,13 @@ class RawNodeClient:
             f"graph/node/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
+                "cursor": cursor,
+                "direction": direction,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=SearchFilters, direction="write"
+                ),
                 "limit": limit,
+                "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
             headers={
@@ -114,7 +141,11 @@ class RawNodeClient:
         self,
         user_id: str,
         *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[typing.List[EntityNode]]:
@@ -126,11 +157,26 @@ class RawNodeClient:
         user_id : str
             User ID
 
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+            of the previous page. Encodes the sort field, direction, and continuation position.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc" (default "desc").
+
+        filters : typing.Optional[SearchFilters]
+            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+
         limit : typing.Optional[int]
             Maximum number of items to return
 
+        order_by : typing.Optional[str]
+            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+
         uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -144,7 +190,13 @@ class RawNodeClient:
             f"graph/node/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
+                "cursor": cursor,
+                "direction": direction,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=SearchFilters, direction="write"
+                ),
                 "limit": limit,
+                "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
             headers={
@@ -588,7 +640,11 @@ class AsyncRawNodeClient:
         self,
         graph_id: str,
         *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[typing.List[EntityNode]]:
@@ -600,11 +656,26 @@ class AsyncRawNodeClient:
         graph_id : str
             Graph ID
 
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+            of the previous page. Encodes the sort field, direction, and continuation position.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc" (default "desc").
+
+        filters : typing.Optional[SearchFilters]
+            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+
         limit : typing.Optional[int]
             Maximum number of items to return
 
+        order_by : typing.Optional[str]
+            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+
         uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -618,7 +689,13 @@ class AsyncRawNodeClient:
             f"graph/node/graph/{jsonable_encoder(graph_id)}",
             method="POST",
             json={
+                "cursor": cursor,
+                "direction": direction,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=SearchFilters, direction="write"
+                ),
                 "limit": limit,
+                "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
             headers={
@@ -672,7 +749,11 @@ class AsyncRawNodeClient:
         self,
         user_id: str,
         *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
         uuid_cursor: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[typing.List[EntityNode]]:
@@ -684,11 +765,26 @@ class AsyncRawNodeClient:
         user_id : str
             User ID
 
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+            of the previous page. Encodes the sort field, direction, and continuation position.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc" (default "desc").
+
+        filters : typing.Optional[SearchFilters]
+            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+
         limit : typing.Optional[int]
             Maximum number of items to return
 
+        order_by : typing.Optional[str]
+            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+
         uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page
+            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -702,7 +798,13 @@ class AsyncRawNodeClient:
             f"graph/node/user/{jsonable_encoder(user_id)}",
             method="POST",
             json={
+                "cursor": cursor,
+                "direction": direction,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=SearchFilters, direction="write"
+                ),
                 "limit": limit,
+                "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
             headers={

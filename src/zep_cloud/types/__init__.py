@@ -51,8 +51,6 @@ from .graph_search_response_metadata import GraphSearchResponseMetadata
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
 from .graph_thread_summaries_request import GraphThreadSummariesRequest
-from .graphiti_add_node_item import GraphitiAddNodeItem
-from .graphiti_add_nodes_response import GraphitiAddNodesResponse
 from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
 from .graphiti_saga_node import GraphitiSagaNode
 from .hub_detect_config import HubDetectConfig
@@ -136,8 +134,6 @@ __all__ = [
     "GraphSearchResults",
     "GraphSearchScope",
     "GraphThreadSummariesRequest",
-    "GraphitiAddNodeItem",
-    "GraphitiAddNodesResponse",
     "GraphitiMetadataFilterGroupType",
     "GraphitiSagaNode",
     "HubDetectConfig",

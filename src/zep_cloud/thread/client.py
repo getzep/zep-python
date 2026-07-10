@@ -260,7 +260,6 @@ class ThreadClient:
         messages: typing.Sequence[Message],
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
-        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddThreadMessagesResponse:
         """
@@ -281,9 +280,6 @@ class ThreadClient:
 
         return_context : typing.Optional[bool]
             Optionally return context block relevant to the most recent messages.
-
-        strict_ontology : typing.Optional[bool]
-            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -315,7 +311,6 @@ class ThreadClient:
             messages=messages,
             ignore_roles=ignore_roles,
             return_context=return_context,
-            strict_ontology=strict_ontology,
             request_options=request_options,
         )
         return _response.data
@@ -327,7 +322,6 @@ class ThreadClient:
         messages: typing.Sequence[Message],
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
-        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddThreadMessagesResponse:
         """
@@ -350,9 +344,6 @@ class ThreadClient:
 
         return_context : typing.Optional[bool]
             Optionally return context block relevant to the most recent messages.
-
-        strict_ontology : typing.Optional[bool]
-            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -384,7 +375,6 @@ class ThreadClient:
             messages=messages,
             ignore_roles=ignore_roles,
             return_context=return_context,
-            strict_ontology=strict_ontology,
             request_options=request_options,
         )
         return _response.data
@@ -703,7 +693,6 @@ class AsyncThreadClient:
         messages: typing.Sequence[Message],
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
-        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddThreadMessagesResponse:
         """
@@ -724,9 +713,6 @@ class AsyncThreadClient:
 
         return_context : typing.Optional[bool]
             Optionally return context block relevant to the most recent messages.
-
-        strict_ontology : typing.Optional[bool]
-            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -766,7 +752,6 @@ class AsyncThreadClient:
             messages=messages,
             ignore_roles=ignore_roles,
             return_context=return_context,
-            strict_ontology=strict_ontology,
             request_options=request_options,
         )
         return _response.data
@@ -778,7 +763,6 @@ class AsyncThreadClient:
         messages: typing.Sequence[Message],
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
-        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddThreadMessagesResponse:
         """
@@ -801,9 +785,6 @@ class AsyncThreadClient:
 
         return_context : typing.Optional[bool]
             Optionally return context block relevant to the most recent messages.
-
-        strict_ontology : typing.Optional[bool]
-            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -843,7 +824,6 @@ class AsyncThreadClient:
             messages=messages,
             ignore_roles=ignore_roles,
             return_context=return_context,
-            strict_ontology=strict_ontology,
             request_options=request_options,
         )
         return _response.data
