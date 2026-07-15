@@ -2,6 +2,8 @@
 
 # isort: skip_file
 
+from .add_node_item import AddNodeItem
+from .add_nodes_response import AddNodesResponse
 from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
@@ -60,6 +62,8 @@ from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
 from .metadata_filter_group import MetadataFilterGroup
+from .observation_steering_config import ObservationSteeringConfig
+from .observation_type import ObservationType
 from .path_detect_config import PathDetectConfig
 from .pattern_metadata import PatternMetadata
 from .pattern_result import PatternResult
@@ -85,6 +89,8 @@ from .user_list_response import UserListResponse
 from .user_node_response import UserNodeResponse
 
 __all__ = [
+    "AddNodeItem",
+    "AddNodesResponse",
     "AddThreadMessagesRequest",
     "AddThreadMessagesResponse",
     "AddTripleResponse",
@@ -143,6 +149,8 @@ __all__ = [
     "Message",
     "MessageListResponse",
     "MetadataFilterGroup",
+    "ObservationSteeringConfig",
+    "ObservationType",
     "PathDetectConfig",
     "PatternMetadata",
     "PatternResult",

@@ -9,6 +9,7 @@ from .entity_property import EntityProperty
 
 class EntityType(UniversalBaseModel):
     description: str
+    identity_properties: typing.Optional[typing.List[str]] = None
     name: str
     properties: typing.Optional[typing.List[EntityProperty]] = None
 
