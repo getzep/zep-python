@@ -161,6 +161,7 @@ class UserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -185,6 +186,9 @@ class UserClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             The metadata associated with the user.
+
+        time_zone : typing.Optional[str]
+            The user's IANA time zone. Null or omission leaves it unset at creation.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -212,6 +216,7 @@ class UserClient:
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
+            time_zone=time_zone,
             request_options=request_options,
         )
         return _response.data
@@ -350,6 +355,7 @@ class UserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -374,6 +380,9 @@ class UserClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             The metadata to update
+
+        time_zone : typing.Optional[str]
+            The user's IANA time zone. Null clears the existing value.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -401,6 +410,7 @@ class UserClient:
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
+            time_zone=time_zone,
             request_options=request_options,
         )
         return _response.data
@@ -671,6 +681,7 @@ class AsyncUserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -695,6 +706,9 @@ class AsyncUserClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             The metadata associated with the user.
+
+        time_zone : typing.Optional[str]
+            The user's IANA time zone. Null or omission leaves it unset at creation.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -730,6 +744,7 @@ class AsyncUserClient:
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
+            time_zone=time_zone,
             request_options=request_options,
         )
         return _response.data
@@ -892,6 +907,7 @@ class AsyncUserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -916,6 +932,9 @@ class AsyncUserClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             The metadata to update
+
+        time_zone : typing.Optional[str]
+            The user's IANA time zone. Null clears the existing value.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -951,6 +970,7 @@ class AsyncUserClient:
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
+            time_zone=time_zone,
             request_options=request_options,
         )
         return _response.data

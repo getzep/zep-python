@@ -3,6 +3,8 @@
 # isort: skip_file
 
 from .types import (
+    AddNodeItem,
+    AddNodesResponse,
     AddThreadMessagesRequest,
     AddThreadMessagesResponse,
     AddTripleResponse,
@@ -61,6 +63,8 @@ from .types import (
     Message,
     MessageListResponse,
     MetadataFilterGroup,
+    ObservationSteeringConfig,
+    ObservationType,
     PathDetectConfig,
     PatternMetadata,
     PatternResult,
@@ -92,6 +96,8 @@ from .environment import ZepEnvironment
 from .version import __version__
 
 __all__ = [
+    "AddNodeItem",
+    "AddNodesResponse",
     "AddThreadMessagesRequest",
     "AddThreadMessagesResponse",
     "AddTripleResponse",
@@ -156,6 +162,8 @@ __all__ = [
     "MessageListResponse",
     "MetadataFilterGroup",
     "NotFoundError",
+    "ObservationSteeringConfig",
+    "ObservationType",
     "PathDetectConfig",
     "PatternMetadata",
     "PatternResult",
