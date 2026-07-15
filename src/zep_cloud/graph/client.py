@@ -4,6 +4,8 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
+from ..types.add_node_item import AddNodeItem
+from ..types.add_nodes_response import AddNodesResponse
 from ..types.add_triple_response import AddTripleResponse
 from ..types.clone_graph_response import CloneGraphResponse
 from ..types.custom_instruction import CustomInstruction
@@ -298,6 +300,7 @@ class GraphClient:
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Episode:
@@ -319,6 +322,9 @@ class GraphClient:
             Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
+
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         user_id : typing.Optional[str]
             User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
@@ -350,6 +356,7 @@ class GraphClient:
             graph_id=graph_id,
             metadata=metadata,
             source_description=source_description,
+            strict_ontology=strict_ontology,
             user_id=user_id,
             request_options=request_options,
         )
@@ -360,6 +367,7 @@ class GraphClient:
         *,
         episodes: typing.Sequence[EpisodeData],
         graph_id: typing.Optional[str] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
@@ -374,6 +382,9 @@ class GraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         user_id : typing.Optional[str]
             User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
@@ -403,7 +414,11 @@ class GraphClient:
         )
         """
         _response = self._raw_client.add_batch(
-            episodes=episodes, graph_id=graph_id, user_id=user_id, request_options=request_options
+            episodes=episodes,
+            graph_id=graph_id,
+            strict_ontology=strict_ontology,
+            user_id=user_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -615,6 +630,7 @@ class GraphClient:
         graph_id: str,
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
         """
@@ -627,6 +643,9 @@ class GraphClient:
         description : typing.Optional[str]
 
         name : typing.Optional[str]
+
+        time_zone : typing.Optional[str]
+            The graph's IANA time zone. Stored on its group-backed subject.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -648,7 +667,7 @@ class GraphClient:
         )
         """
         _response = self._raw_client.create(
-            graph_id=graph_id, description=description, name=name, request_options=request_options
+            graph_id=graph_id, description=description, name=name, time_zone=time_zone, request_options=request_options
         )
         return _response.data
 
@@ -712,6 +731,54 @@ class GraphClient:
             order_by=order_by,
             asc=asc,
             request_options=request_options,
+        )
+        return _response.data
+
+    def add_nodes(
+        self,
+        *,
+        nodes: typing.Sequence[AddNodeItem],
+        graph_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AddNodesResponse:
+        """
+        Add entity nodes to a user or graph directly, without episode ingestion. Up to 100 nodes per request.
+
+        Parameters
+        ----------
+        nodes : typing.Sequence[AddNodeItem]
+            The nodes to add. 1 to 100 items.
+
+        graph_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AddNodesResponse
+            Accepted
+
+        Examples
+        --------
+        from zep_cloud import AddNodeItem, Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.add_nodes(
+            nodes=[
+                AddNodeItem(
+                    name="name",
+                )
+            ],
+        )
+        """
+        _response = self._raw_client.add_nodes(
+            nodes=nodes, graph_id=graph_id, user_id=user_id, request_options=request_options
         )
         return _response.data
 
@@ -975,6 +1042,7 @@ class GraphClient:
         *,
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
         """
@@ -988,6 +1056,9 @@ class GraphClient:
         description : typing.Optional[str]
 
         name : typing.Optional[str]
+
+        time_zone : typing.Optional[str]
+            The graph's IANA time zone. Stored on its group-backed subject.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1009,7 +1080,7 @@ class GraphClient:
         )
         """
         _response = self._raw_client.update(
-            graph_id, description=description, name=name, request_options=request_options
+            graph_id, description=description, name=name, time_zone=time_zone, request_options=request_options
         )
         return _response.data
 
@@ -1347,6 +1418,7 @@ class AsyncGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Episode:
@@ -1368,6 +1440,9 @@ class AsyncGraphClient:
             Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
+
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         user_id : typing.Optional[str]
             User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
@@ -1407,6 +1482,7 @@ class AsyncGraphClient:
             graph_id=graph_id,
             metadata=metadata,
             source_description=source_description,
+            strict_ontology=strict_ontology,
             user_id=user_id,
             request_options=request_options,
         )
@@ -1417,6 +1493,7 @@ class AsyncGraphClient:
         *,
         episodes: typing.Sequence[EpisodeData],
         graph_id: typing.Optional[str] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[Episode]:
@@ -1431,6 +1508,9 @@ class AsyncGraphClient:
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
+
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         user_id : typing.Optional[str]
             User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
@@ -1468,7 +1548,11 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.add_batch(
-            episodes=episodes, graph_id=graph_id, user_id=user_id, request_options=request_options
+            episodes=episodes,
+            graph_id=graph_id,
+            strict_ontology=strict_ontology,
+            user_id=user_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -1696,6 +1780,7 @@ class AsyncGraphClient:
         graph_id: str,
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
         """
@@ -1708,6 +1793,9 @@ class AsyncGraphClient:
         description : typing.Optional[str]
 
         name : typing.Optional[str]
+
+        time_zone : typing.Optional[str]
+            The graph's IANA time zone. Stored on its group-backed subject.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1737,7 +1825,7 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            graph_id=graph_id, description=description, name=name, request_options=request_options
+            graph_id=graph_id, description=description, name=name, time_zone=time_zone, request_options=request_options
         )
         return _response.data
 
@@ -1809,6 +1897,62 @@ class AsyncGraphClient:
             order_by=order_by,
             asc=asc,
             request_options=request_options,
+        )
+        return _response.data
+
+    async def add_nodes(
+        self,
+        *,
+        nodes: typing.Sequence[AddNodeItem],
+        graph_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AddNodesResponse:
+        """
+        Add entity nodes to a user or graph directly, without episode ingestion. Up to 100 nodes per request.
+
+        Parameters
+        ----------
+        nodes : typing.Sequence[AddNodeItem]
+            The nodes to add. 1 to 100 items.
+
+        graph_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AddNodesResponse
+            Accepted
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AddNodeItem, AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.add_nodes(
+                nodes=[
+                    AddNodeItem(
+                        name="name",
+                    )
+                ],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.add_nodes(
+            nodes=nodes, graph_id=graph_id, user_id=user_id, request_options=request_options
         )
         return _response.data
 
@@ -2106,6 +2250,7 @@ class AsyncGraphClient:
         *,
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
         """
@@ -2119,6 +2264,9 @@ class AsyncGraphClient:
         description : typing.Optional[str]
 
         name : typing.Optional[str]
+
+        time_zone : typing.Optional[str]
+            The graph's IANA time zone. Stored on its group-backed subject.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2148,7 +2296,7 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            graph_id, description=description, name=name, request_options=request_options
+            graph_id, description=description, name=name, time_zone=time_zone, request_options=request_options
         )
         return _response.data
 

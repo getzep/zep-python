@@ -87,9 +87,6 @@ class RawObservationClient:
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -206,9 +203,6 @@ class RawObservationClient:
                 "limit": limit,
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
-            },
-            headers={
-                "content-type": "application/json",
             },
             request_options=request_options,
             omit=OMIT,
@@ -406,9 +400,6 @@ class AsyncRawObservationClient:
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -525,9 +516,6 @@ class AsyncRawObservationClient:
                 "limit": limit,
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
-            },
-            headers={
-                "content-type": "application/json",
             },
             request_options=request_options,
             omit=OMIT,
