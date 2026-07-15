@@ -88,9 +88,6 @@ class RawEdgeClient:
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -196,9 +193,6 @@ class RawEdgeClient:
                 "limit": limit,
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
-            },
-            headers={
-                "content-type": "application/json",
             },
             request_options=request_options,
             omit=OMIT,
@@ -576,9 +570,6 @@ class AsyncRawEdgeClient:
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -684,9 +675,6 @@ class AsyncRawEdgeClient:
                 "limit": limit,
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
-            },
-            headers={
-                "content-type": "application/json",
             },
             request_options=request_options,
             omit=OMIT,

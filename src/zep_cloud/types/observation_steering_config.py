@@ -3,17 +3,13 @@
 import typing
 
 import pydantic
-import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
+from .observation_type import ObservationType
 
 
-class ProjectInfo(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    default_time_zone: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    name: typing.Optional[str] = None
-    uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = None
+class ObservationSteeringConfig(UniversalBaseModel):
+    instruction: typing.Optional[str] = None
+    types: typing.Optional[typing.List[ObservationType]] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

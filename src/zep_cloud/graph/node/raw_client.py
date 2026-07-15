@@ -90,9 +90,6 @@ class RawNodeClient:
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -198,9 +195,6 @@ class RawNodeClient:
                 "limit": limit,
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
-            },
-            headers={
-                "content-type": "application/json",
             },
             request_options=request_options,
             omit=OMIT,
@@ -698,9 +692,6 @@ class AsyncRawNodeClient:
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -806,9 +797,6 @@ class AsyncRawNodeClient:
                 "limit": limit,
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
-            },
-            headers={
-                "content-type": "application/json",
             },
             request_options=request_options,
             omit=OMIT,
