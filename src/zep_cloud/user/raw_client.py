@@ -302,6 +302,7 @@ class RawUserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[User]:
         """
@@ -327,6 +328,9 @@ class RawUserClient:
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             The metadata associated with the user.
 
+        time_zone : typing.Optional[str]
+            The user's IANA time zone. Null or omission leaves it unset at creation.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -344,6 +348,7 @@ class RawUserClient:
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
+                "time_zone": time_zone,
                 "user_id": user_id,
             },
             headers={
@@ -621,6 +626,7 @@ class RawUserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[User]:
         """
@@ -646,6 +652,9 @@ class RawUserClient:
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             The metadata to update
 
+        time_zone : typing.Optional[str]
+            The user's IANA time zone. Null clears the existing value.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -663,6 +672,7 @@ class RawUserClient:
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
+                "time_zone": time_zone,
             },
             headers={
                 "content-type": "application/json",
@@ -1183,6 +1193,7 @@ class AsyncRawUserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[User]:
         """
@@ -1208,6 +1219,9 @@ class AsyncRawUserClient:
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             The metadata associated with the user.
 
+        time_zone : typing.Optional[str]
+            The user's IANA time zone. Null or omission leaves it unset at creation.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -1225,6 +1239,7 @@ class AsyncRawUserClient:
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
+                "time_zone": time_zone,
                 "user_id": user_id,
             },
             headers={
@@ -1504,6 +1519,7 @@ class AsyncRawUserClient:
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        time_zone: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[User]:
         """
@@ -1529,6 +1545,9 @@ class AsyncRawUserClient:
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
             The metadata to update
 
+        time_zone : typing.Optional[str]
+            The user's IANA time zone. Null clears the existing value.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -1546,6 +1565,7 @@ class AsyncRawUserClient:
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
+                "time_zone": time_zone,
             },
             headers={
                 "content-type": "application/json",
