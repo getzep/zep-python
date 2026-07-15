@@ -3,17 +3,21 @@
 import typing
 
 import pydantic
-import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
+from .add_node_item import AddNodeItem
 
 
-class ProjectInfo(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    default_time_zone: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    name: typing.Optional[str] = None
-    uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = None
+class AddNodesResponse(UniversalBaseModel):
+    nodes: typing.Optional[typing.List[AddNodeItem]] = pydantic.Field(default=None)
+    """
+    The accepted nodes, each carrying its resolved (server-assigned or
+    caller-supplied) UUID, in request order.
+    """
+
+    task_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Task ID of the async add-nodes task.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

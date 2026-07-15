@@ -4,8 +4,13 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
+from ..types.observation_steering_config import ObservationSteeringConfig
+from ..types.observation_type import ObservationType
 from ..types.project_info_response import ProjectInfoResponse
 from .raw_client import AsyncRawProjectClient, RawProjectClient
+
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
 
 
 class ProjectClient:
@@ -47,6 +52,129 @@ class ProjectClient:
         client.project.get()
         """
         _response = self._raw_client.get(request_options=request_options)
+        return _response.data
+
+    def update(
+        self, *, default_time_zone: typing.Optional[str] = OMIT, request_options: typing.Optional[RequestOptions] = None
+    ) -> ProjectInfoResponse:
+        """
+        Sets or clears the project-level fallback time zone for the API key's project.
+
+        Parameters
+        ----------
+        default_time_zone : typing.Optional[str]
+            The project's IANA fallback time zone. Null clears the existing value.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ProjectInfoResponse
+            Updated
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.update()
+        """
+        _response = self._raw_client.update(default_time_zone=default_time_zone, request_options=request_options)
+        return _response.data
+
+    def get_observation_steering(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ObservationSteeringConfig:
+        """
+        Returns project steering or the effective user/graph steering with project fallback. This API is experimental and may change in future releases.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID for user-specific steering
+
+        graph_id : typing.Optional[str]
+            Graph ID for graph-specific steering
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ObservationSteeringConfig
+            Retrieved
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.get_observation_steering(
+            user_id="user_id",
+            graph_id="graph_id",
+        )
+        """
+        _response = self._raw_client.get_observation_steering(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    def set_observation_steering(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        instruction: typing.Optional[str] = OMIT,
+        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ObservationSteeringConfig:
+        """
+        Replaces project, user, or graph steering. An empty configuration clears the project default or removes the user/graph override. Changes affect later materializer runs only. This API is experimental and may change in future releases.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID for user-specific steering
+
+        graph_id : typing.Optional[str]
+            Graph ID for graph-specific steering
+
+        instruction : typing.Optional[str]
+
+        types : typing.Optional[typing.Sequence[ObservationType]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ObservationSteeringConfig
+            Updated
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.set_observation_steering(
+            user_id="user_id",
+            graph_id="graph_id",
+        )
+        """
+        _response = self._raw_client.set_observation_steering(
+            user_id=user_id, graph_id=graph_id, instruction=instruction, types=types, request_options=request_options
+        )
         return _response.data
 
 
@@ -97,4 +225,151 @@ class AsyncProjectClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get(request_options=request_options)
+        return _response.data
+
+    async def update(
+        self, *, default_time_zone: typing.Optional[str] = OMIT, request_options: typing.Optional[RequestOptions] = None
+    ) -> ProjectInfoResponse:
+        """
+        Sets or clears the project-level fallback time zone for the API key's project.
+
+        Parameters
+        ----------
+        default_time_zone : typing.Optional[str]
+            The project's IANA fallback time zone. Null clears the existing value.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ProjectInfoResponse
+            Updated
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.update()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.update(default_time_zone=default_time_zone, request_options=request_options)
+        return _response.data
+
+    async def get_observation_steering(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ObservationSteeringConfig:
+        """
+        Returns project steering or the effective user/graph steering with project fallback. This API is experimental and may change in future releases.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID for user-specific steering
+
+        graph_id : typing.Optional[str]
+            Graph ID for graph-specific steering
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ObservationSteeringConfig
+            Retrieved
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.get_observation_steering(
+                user_id="user_id",
+                graph_id="graph_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_observation_steering(
+            user_id=user_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
+    async def set_observation_steering(
+        self,
+        *,
+        user_id: typing.Optional[str] = None,
+        graph_id: typing.Optional[str] = None,
+        instruction: typing.Optional[str] = OMIT,
+        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ObservationSteeringConfig:
+        """
+        Replaces project, user, or graph steering. An empty configuration clears the project default or removes the user/graph override. Changes affect later materializer runs only. This API is experimental and may change in future releases.
+
+        Parameters
+        ----------
+        user_id : typing.Optional[str]
+            User ID for user-specific steering
+
+        graph_id : typing.Optional[str]
+            Graph ID for graph-specific steering
+
+        instruction : typing.Optional[str]
+
+        types : typing.Optional[typing.Sequence[ObservationType]]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ObservationSteeringConfig
+            Updated
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.set_observation_steering(
+                user_id="user_id",
+                graph_id="graph_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_observation_steering(
+            user_id=user_id, graph_id=graph_id, instruction=instruction, types=types, request_options=request_options
+        )
         return _response.data
