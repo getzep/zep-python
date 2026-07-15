@@ -26,6 +26,11 @@ class AddThreadMessagesRequest(UniversalBaseModel):
     Optionally return context block relevant to the most recent messages.
     """
 
+    strict_ontology: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+    """
+
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
