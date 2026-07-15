@@ -1,6 +1,9 @@
 name: ci
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
 jobs:
   compile:
     runs-on: ubuntu-24.04
