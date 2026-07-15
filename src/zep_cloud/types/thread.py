@@ -13,6 +13,7 @@ class Thread(UniversalBaseModel):
     project_uuid: typing.Optional[str] = None
     thread_id: typing.Optional[str] = None
     user_id: typing.Optional[str] = None
+    user_uuid: typing.Optional[str] = None
     uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = None
 
     if IS_PYDANTIC_V2:

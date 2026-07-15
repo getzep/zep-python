@@ -87,9 +87,6 @@ class RawThreadSummaryClient:
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -206,9 +203,6 @@ class RawThreadSummaryClient:
                 "limit": limit,
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
-            },
-            headers={
-                "content-type": "application/json",
             },
             request_options=request_options,
             omit=OMIT,
@@ -332,9 +326,6 @@ class AsyncRawThreadSummaryClient:
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
             },
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -451,9 +442,6 @@ class AsyncRawThreadSummaryClient:
                 "limit": limit,
                 "order_by": order_by,
                 "uuid_cursor": uuid_cursor,
-            },
-            headers={
-                "content-type": "application/json",
             },
             request_options=request_options,
             omit=OMIT,
