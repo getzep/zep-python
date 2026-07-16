@@ -27,6 +27,7 @@ class User(UniversalBaseModel):
     Deprecated
     """
 
+    time_zone: typing.Optional[str] = None
     updated_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     Deprecated

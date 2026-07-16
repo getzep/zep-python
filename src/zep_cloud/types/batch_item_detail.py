@@ -20,6 +20,7 @@ class BatchItemDetail(UniversalBaseModel):
 
     error: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     graph_id: typing.Optional[str] = None
+    graph_uuid: typing.Optional[str] = None
     item_id: typing.Optional[str] = None
     kind: typing.Optional[BatchItemKind] = None
     sequence_index: typing.Optional[int] = None
@@ -28,6 +29,7 @@ class BatchItemDetail(UniversalBaseModel):
     thread_id: typing.Optional[str] = None
     updated_at: typing.Optional[str] = None
     user_id: typing.Optional[str] = None
+    user_uuid: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
