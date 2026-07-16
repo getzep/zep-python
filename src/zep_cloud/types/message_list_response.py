@@ -33,6 +33,11 @@ class MessageListResponse(UniversalBaseModel):
     The user ID associated with this thread.
     """
 
+    user_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The opaque user identifier used by dashboard routes.
+    """
+
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
