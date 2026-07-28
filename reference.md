@@ -1666,14 +1666,6 @@ Nested objects and arrays are not allowed.
 <dl>
 <dd>
 
-**fact_uuid:** `typing.Optional[str]` — The uuid of the edge to add
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **graph_id:** `typing.Optional[str]` 
     
 </dd>
