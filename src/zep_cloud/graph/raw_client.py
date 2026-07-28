@@ -723,7 +723,6 @@ class RawGraphClient:
         created_at: typing.Optional[str] = OMIT,
         edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
-        fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -761,9 +760,6 @@ class RawGraphClient:
 
         expired_at : typing.Optional[str]
             The time (if any) at which the edge expires
-
-        fact_uuid : typing.Optional[str]
-            The uuid of the edge to add
 
         graph_id : typing.Optional[str]
 
@@ -836,7 +832,6 @@ class RawGraphClient:
                 "expired_at": expired_at,
                 "fact": fact,
                 "fact_name": fact_name,
-                "fact_uuid": fact_uuid,
                 "graph_id": graph_id,
                 "invalid_at": invalid_at,
                 "metadata": metadata,
@@ -2532,7 +2527,6 @@ class AsyncRawGraphClient:
         created_at: typing.Optional[str] = OMIT,
         edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
-        fact_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
@@ -2570,9 +2564,6 @@ class AsyncRawGraphClient:
 
         expired_at : typing.Optional[str]
             The time (if any) at which the edge expires
-
-        fact_uuid : typing.Optional[str]
-            The uuid of the edge to add
 
         graph_id : typing.Optional[str]
 
@@ -2645,7 +2636,6 @@ class AsyncRawGraphClient:
                 "expired_at": expired_at,
                 "fact": fact,
                 "fact_name": fact_name,
-                "fact_uuid": fact_uuid,
                 "graph_id": graph_id,
                 "invalid_at": invalid_at,
                 "metadata": metadata,

@@ -7,6 +7,7 @@ from .add_nodes_response import AddNodesResponse
 from .add_thread_messages_request import AddThreadMessagesRequest
 from .add_thread_messages_response import AddThreadMessagesResponse
 from .add_triple_response import AddTripleResponse
+from .added_node import AddedNode
 from .api_error import ApiError
 from .apidata_batch_add_item_role import ApidataBatchAddItemRole
 from .apidata_batch_add_item_type import ApidataBatchAddItemType
@@ -94,6 +95,7 @@ __all__ = [
     "AddThreadMessagesRequest",
     "AddThreadMessagesResponse",
     "AddTripleResponse",
+    "AddedNode",
     "ApiError",
     "ApidataBatchAddItemRole",
     "ApidataBatchAddItemType",
