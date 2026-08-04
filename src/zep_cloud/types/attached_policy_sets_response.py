@@ -4,15 +4,11 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .graph import Graph
+from .policy_set_summary_response import PolicySetSummaryResponse
 
 
-class GraphListResponse(UniversalBaseModel):
-    graphs: typing.Optional[typing.List[Graph]] = None
-    page_number: typing.Optional[int] = None
-    page_size: typing.Optional[int] = None
-    row_count: typing.Optional[int] = None
-    total_count: typing.Optional[int] = None
+class AttachedPolicySetsResponse(UniversalBaseModel):
+    policy_sets: typing.Optional[typing.List[PolicySetSummaryResponse]] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

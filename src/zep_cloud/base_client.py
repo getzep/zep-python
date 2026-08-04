@@ -14,6 +14,7 @@ from .project.client import AsyncProjectClient, ProjectClient
 from .task.client import AsyncTaskClient, TaskClient
 from .thread.client import AsyncThreadClient, ThreadClient
 from .user.client import AsyncUserClient, UserClient
+from .user_group.client import AsyncUserGroupClient, UserGroupClient
 
 
 class BaseClient:
@@ -83,6 +84,7 @@ class BaseClient:
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
+        self.user_group = UserGroupClient(client_wrapper=self._client_wrapper)
         self.batch = BatchClient(client_wrapper=self._client_wrapper)
         self.context = ContextClient(client_wrapper=self._client_wrapper)
         self.graph = GraphClient(client_wrapper=self._client_wrapper)
@@ -159,6 +161,7 @@ class AsyncBaseClient:
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
+        self.user_group = AsyncUserGroupClient(client_wrapper=self._client_wrapper)
         self.batch = AsyncBatchClient(client_wrapper=self._client_wrapper)
         self.context = AsyncContextClient(client_wrapper=self._client_wrapper)
         self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
