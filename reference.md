@@ -1,4 +1,1065 @@
 # Reference
+## UserGroup
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">list_policy_sets</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.list_policy_sets(
+    group_uuid="groupUUID",
+    project_id="projectId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">attach_policy_set</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.attach_policy_set(
+    group_uuid="groupUUID",
+    project_id="projectId",
+    policy_set_uuid="policy_set_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**policy_set_uuid:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">detach_policy_set</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.detach_policy_set(
+    group_uuid="groupUUID",
+    policy_set_uuid="policySetUUID",
+    project_id="projectId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**policy_set_uuid:** `str` — Policy set UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">list</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.list(
+    project_id="projectId",
+    page_number=1,
+    page_size=1,
+    search="search",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_number:** `int` — Page number
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_size:** `int` — Page size
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `typing.Optional[str]` — Name search
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">create</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.create(
+    project_id="projectId",
+    name="name",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">list_for_user</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.list_for_user(
+    user_uuid="userUUID",
+    project_id="projectId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_uuid:** `str` — User UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">get</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.get(
+    group_uuid="groupUUID",
+    project_id="projectId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.delete(
+    group_uuid="groupUUID",
+    project_id="projectId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">update</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.update(
+    group_uuid="groupUUID",
+    project_id="projectId",
+    expected_version=1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expected_version:** `int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">list_members</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.list_members(
+    group_uuid="groupUUID",
+    project_id="projectId",
+    page_number=1,
+    page_size=1,
+    search="search",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_number:** `int` — Page number
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_size:** `int` — Page size
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `typing.Optional[str]` — User search
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">add_members</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.add_members(
+    group_uuid="groupUUID",
+    project_id="projectId",
+    user_uuids=["user_uuids"],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_uuids:** `typing.Sequence[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">remove_members</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.remove_members(
+    group_uuid="groupUUID",
+    project_id="projectId",
+    user_uuids=["user_uuids"],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_uuids:** `typing.Sequence[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">list_member_candidates</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.list_member_candidates(
+    group_uuid="groupUUID",
+    project_id="projectId",
+    page_number=1,
+    page_size=1,
+    search="search",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_number:** `int` — Page number
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page_size:** `int` — Page size
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `typing.Optional[str]` — User search
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">remove_member</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.user_group.remove_member(
+    group_uuid="groupUUID",
+    user_uuid="userUUID",
+    project_id="projectId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — UserGroup UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_uuid:** `str` — User UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**project_id:** `str` — Project UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Batch
 <details><summary><code>client.batch.<a href="src/zep_cloud/batch/client.py">list</a>(...)</code></summary>
 <dl>
@@ -2067,7 +3128,7 @@ client.graph.list_all(
 <dl>
 <dd>
 
-**page_size:** `typing.Optional[int]` — Number of graphs to retrieve per page.
+**page_size:** `typing.Optional[int]` — Number of graphs to retrieve per page (default 50, range 1-100; explicit 0 is invalid).
     
 </dd>
 </dl>
@@ -2075,7 +3136,7 @@ client.graph.list_all(
 <dl>
 <dd>
 
-**search:** `typing.Optional[str]` — Search term for filtering graphs by graph_id.
+**search:** `typing.Optional[str]` — Search term for filtering graphs by graph_id, name, or description. Queries longer than 200 Unicode code points after whitespace normalization are invalid.
     
 </dd>
 </dl>
@@ -2083,7 +3144,7 @@ client.graph.list_all(
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Column to sort by (created_at, group_id, name).
+**order_by:** `typing.Optional[str]` — Column to sort by (created_at, graph_id, name).
     
 </dd>
 </dl>

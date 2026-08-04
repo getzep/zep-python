@@ -4,15 +4,14 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .graph import Graph
 
 
-class GraphListResponse(UniversalBaseModel):
-    graphs: typing.Optional[typing.List[Graph]] = None
-    page_number: typing.Optional[int] = None
-    page_size: typing.Optional[int] = None
-    row_count: typing.Optional[int] = None
-    total_count: typing.Optional[int] = None
+class UserGroupQuota(UniversalBaseModel):
+    active_managed: typing.Optional[int] = None
+    allocation: typing.Optional[int] = None
+    has_feature: typing.Optional[bool] = None
+    resolved: typing.Optional[bool] = None
+    unlimited: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

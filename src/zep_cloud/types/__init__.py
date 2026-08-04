@@ -11,6 +11,7 @@ from .added_node import AddedNode
 from .api_error import ApiError
 from .apidata_batch_add_item_role import ApidataBatchAddItemRole
 from .apidata_batch_add_item_type import ApidataBatchAddItemType
+from .attached_policy_sets_response import AttachedPolicySetsResponse
 from .batch_add_item import BatchAddItem
 from .batch_item_detail import BatchItemDetail
 from .batch_item_kind import BatchItemKind
@@ -63,12 +64,14 @@ from .list_user_instructions_response import ListUserInstructionsResponse
 from .message import Message
 from .message_list_response import MessageListResponse
 from .metadata_filter_group import MetadataFilterGroup
+from .mutate_user_group_members_request import MutateUserGroupMembersRequest
 from .observation_steering_config import ObservationSteeringConfig
 from .observation_type import ObservationType
 from .path_detect_config import PathDetectConfig
 from .pattern_metadata import PatternMetadata
 from .pattern_result import PatternResult
 from .pattern_seeds import PatternSeeds
+from .policy_set_summary_response import PolicySetSummaryResponse
 from .project_info import ProjectInfo
 from .project_info_response import ProjectInfoResponse
 from .property_filter import PropertyFilter
@@ -85,8 +88,16 @@ from .thread_context_response import ThreadContextResponse
 from .thread_list_response import ThreadListResponse
 from .thread_summary import ThreadSummary
 from .user import User
+from .user_group import UserGroup
+from .user_group_kind import UserGroupKind
+from .user_group_list_response import UserGroupListResponse
+from .user_group_members_response import UserGroupMembersResponse
+from .user_group_membership_response import UserGroupMembershipResponse
+from .user_group_quota import UserGroupQuota
+from .user_group_response import UserGroupResponse
 from .user_instruction import UserInstruction
 from .user_list_response import UserListResponse
+from .user_membership_groups_response import UserMembershipGroupsResponse
 from .user_node_response import UserNodeResponse
 
 __all__ = [
@@ -99,6 +110,7 @@ __all__ = [
     "ApiError",
     "ApidataBatchAddItemRole",
     "ApidataBatchAddItemType",
+    "AttachedPolicySetsResponse",
     "BatchAddItem",
     "BatchItemDetail",
     "BatchItemKind",
@@ -151,12 +163,14 @@ __all__ = [
     "Message",
     "MessageListResponse",
     "MetadataFilterGroup",
+    "MutateUserGroupMembersRequest",
     "ObservationSteeringConfig",
     "ObservationType",
     "PathDetectConfig",
     "PatternMetadata",
     "PatternResult",
     "PatternSeeds",
+    "PolicySetSummaryResponse",
     "ProjectInfo",
     "ProjectInfoResponse",
     "PropertyFilter",
@@ -173,7 +187,15 @@ __all__ = [
     "ThreadListResponse",
     "ThreadSummary",
     "User",
+    "UserGroup",
+    "UserGroupKind",
+    "UserGroupListResponse",
+    "UserGroupMembersResponse",
+    "UserGroupMembershipResponse",
+    "UserGroupQuota",
+    "UserGroupResponse",
     "UserInstruction",
     "UserListResponse",
+    "UserMembershipGroupsResponse",
     "UserNodeResponse",
 ]

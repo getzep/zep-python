@@ -1091,13 +1091,13 @@ class RawGraphClient:
             Page number for pagination, starting from 1.
 
         page_size : typing.Optional[int]
-            Number of graphs to retrieve per page.
+            Number of graphs to retrieve per page (default 50, range 1-100; explicit 0 is invalid).
 
         search : typing.Optional[str]
-            Search term for filtering graphs by graph_id.
+            Search term for filtering graphs by graph_id, name, or description. Queries longer than 200 Unicode code points after whitespace normalization are invalid.
 
         order_by : typing.Optional[str]
-            Column to sort by (created_at, group_id, name).
+            Column to sort by (created_at, graph_id, name).
 
         asc : typing.Optional[bool]
             Sort in ascending order.
@@ -2895,13 +2895,13 @@ class AsyncRawGraphClient:
             Page number for pagination, starting from 1.
 
         page_size : typing.Optional[int]
-            Number of graphs to retrieve per page.
+            Number of graphs to retrieve per page (default 50, range 1-100; explicit 0 is invalid).
 
         search : typing.Optional[str]
-            Search term for filtering graphs by graph_id.
+            Search term for filtering graphs by graph_id, name, or description. Queries longer than 200 Unicode code points after whitespace normalization are invalid.
 
         order_by : typing.Optional[str]
-            Column to sort by (created_at, group_id, name).
+            Column to sort by (created_at, graph_id, name).
 
         asc : typing.Optional[bool]
             Sort in ascending order.
