@@ -1666,14 +1666,6 @@ Nested objects and arrays are not allowed.
 <dl>
 <dd>
 
-**fact_uuid:** `typing.Optional[str]` — The uuid of the edge to add
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **graph_id:** `typing.Optional[str]` 
     
 </dd>
@@ -4951,7 +4943,7 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
     
 </dd>
 </dl>
@@ -5076,7 +5068,7 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
     
 </dd>
 </dl>
@@ -5908,7 +5900,7 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
     
 </dd>
 </dl>
@@ -6033,7 +6025,7 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
     
 </dd>
 </dl>
@@ -6541,7 +6533,7 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
     
 </dd>
 </dl>
@@ -6666,7 +6658,7 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
     
 </dd>
 </dl>
@@ -6862,7 +6854,7 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
     
 </dd>
 </dl>
@@ -6987,7 +6979,7 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at" or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
     
 </dd>
 </dl>

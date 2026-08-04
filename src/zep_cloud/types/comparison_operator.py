@@ -3,5 +3,5 @@
 import typing
 
 ComparisonOperator = typing.Union[
-    typing.Literal["=", "<>", ">", "<", ">=", "<=", "IS NULL", "IS NOT NULL", "CONTAINS"], typing.Any
+    typing.Literal["=", "<>", ">", "<", ">=", "<=", "IS NULL", "is_null", "IS NOT NULL", "CONTAINS"], typing.Any
 ]

@@ -16,7 +16,7 @@ class DateFilter(UniversalBaseModel):
     date: typing.Optional[str] = pydantic.Field(default=None)
     """
     Date to filter on. Required for non-null operators (=, \<\>, \>, \<, \>=, \<=).
-    Should be omitted for IS NULL and IS NOT NULL operators.
+    Should be omitted for IS NULL (or is_null) and IS NOT NULL operators.
     """
 
     if IS_PYDANTIC_V2:

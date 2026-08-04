@@ -60,7 +60,7 @@ class RawEdgeClient:
             Maximum number of items to return
 
         order_by : typing.Optional[str]
-            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
 
         uuid_cursor : typing.Optional[str]
             UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
@@ -166,7 +166,7 @@ class RawEdgeClient:
             Maximum number of items to return
 
         order_by : typing.Optional[str]
-            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
 
         uuid_cursor : typing.Optional[str]
             UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
@@ -542,7 +542,7 @@ class AsyncRawEdgeClient:
             Maximum number of items to return
 
         order_by : typing.Optional[str]
-            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
 
         uuid_cursor : typing.Optional[str]
             UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
@@ -648,7 +648,7 @@ class AsyncRawEdgeClient:
             Maximum number of items to return
 
         order_by : typing.Optional[str]
-            Field to sort by. One of "created_at" or "uuid" (default "uuid").
+            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
 
         uuid_cursor : typing.Optional[str]
             UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.

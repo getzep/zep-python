@@ -33,7 +33,7 @@ class GraphEdgesRequest(UniversalBaseModel):
 
     order_by: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Field to sort by. One of "created_at" or "uuid" (default "uuid").
+    Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
     """
 
     uuid_cursor: typing.Optional[str] = pydantic.Field(default=None)

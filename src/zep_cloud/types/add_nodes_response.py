@@ -4,14 +4,14 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .add_node_item import AddNodeItem
+from .added_node import AddedNode
 
 
 class AddNodesResponse(UniversalBaseModel):
-    nodes: typing.Optional[typing.List[AddNodeItem]] = pydantic.Field(default=None)
+    nodes: typing.Optional[typing.List[AddedNode]] = pydantic.Field(default=None)
     """
-    The accepted nodes, each carrying its resolved (server-assigned or
-    caller-supplied) UUID, in request order.
+    The accepted nodes, each carrying the UUID Zep assigned to it, in request
+    order.
     """
 
     task_id: typing.Optional[str] = pydantic.Field(default=None)

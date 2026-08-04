@@ -3,41 +3,45 @@
 import typing
 
 import pydantic
+import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.serialization import FieldMetadata
 
 
-class AddNodeItem(UniversalBaseModel):
+class AddedNode(UniversalBaseModel):
     attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
     """
-    Additional attributes of the node. Values must be scalar types (string,
-    number, boolean, or null). Nested objects and arrays are not allowed.
+    Additional attributes of the node.
     """
 
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The node creation time. Defaults to the request time when absent.
+    The node creation time.
     """
 
     label: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The node's entity type. At most one; the base "Entity" label is added
-    implicitly by the graph layer on save and does not need to be supplied.
+    The node's entity type.
     """
 
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
     """
-    Optional metadata attached to the node's shadow episode. Max 10 scalar
-    key-value pairs.
+    Metadata attached to the node's shadow episode.
     """
 
     name: str = pydantic.Field()
     """
-    The name of the node. Used to derive the node's search embedding.
+    The name of the node.
     """
 
     summary: typing.Optional[str] = pydantic.Field(default=None)
     """
     A regional summary of the node.
+    """
+
+    uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = pydantic.Field(default=None)
+    """
+    The node UUID, assigned by Zep.
     """
 
     if IS_PYDANTIC_V2:
