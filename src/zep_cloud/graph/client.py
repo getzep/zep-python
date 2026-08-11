@@ -21,6 +21,7 @@ from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
+from ..types.graph_subgraph_response import GraphSubgraphResponse
 from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
 from ..types.pattern_seeds import PatternSeeds
 from ..types.recency_weight import RecencyWeight
@@ -918,6 +919,9 @@ class GraphClient:
         reranker : typing.Optional[Reranker]
             Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
             auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
+            episode_mentions ranks edge candidates by how many of the episodes listed
+            in search_filters.episode_uuids mention them; without episode_uuids it has
+            no effect and results are ranked as if no reranker were specified.
 
         return_raw_results : typing.Optional[bool]
             When scope=auto, include the selected raw graph results alongside the materialized context block.
@@ -963,6 +967,89 @@ class GraphClient:
             reranker=reranker,
             return_raw_results=return_raw_results,
             scope=scope,
+            search_filters=search_filters,
+            user_id=user_id,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def get_subgraph(
+        self,
+        *,
+        seed_node_uuids: typing.Sequence[str],
+        depth: typing.Optional[int] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        max_edges: typing.Optional[int] = OMIT,
+        max_nodes: typing.Optional[int] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GraphSubgraphResponse:
+        """
+        Returns the bounded neighborhood of a set of seed nodes as a single {nodes, edges} payload: breadth-first expansion up to a caller-specified depth, subject to explicit budgets, with explicit truncation reporting.
+
+        Parameters
+        ----------
+        seed_node_uuids : typing.Sequence[str]
+            Seed node UUIDs to expand from, in traversal-priority order: seeds are
+            admitted before any expansion, in this order, and count toward
+            max_nodes first. 1-20 entries, required. Seeds that do not exist in
+            the target graph are ignored, not an error.
+
+        depth : typing.Optional[int]
+            Maximum traversal depth from the seeds. 1-3. Defaults to 1.
+
+        direction : typing.Optional[str]
+            Edge orientation followed during expansion, relative to each frontier
+            node: "in" | "out" | "both". Defaults to "both".
+
+        graph_id : typing.Optional[str]
+            graph_id identifies the target named graph. Exactly one of user_id or
+            graph_id is required.
+
+        max_edges : typing.Optional[int]
+            Maximum number of edges in the response. 1-1000. Defaults to 200.
+
+        max_nodes : typing.Optional[int]
+            Maximum number of nodes in the response, including admitted seeds.
+            1-500. Defaults to 100.
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters constraining traversed edges and included nodes. Reuses the
+            graph.search filter type. search_filters.episode_metadata_filters is
+            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+
+        user_id : typing.Optional[str]
+            user_id identifies the target user graph. Exactly one of user_id or
+            graph_id is required.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphSubgraphResponse
+            Subgraph
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.get_subgraph(
+            seed_node_uuids=["seed_node_uuids"],
+        )
+        """
+        _response = self._raw_client.get_subgraph(
+            seed_node_uuids=seed_node_uuids,
+            depth=depth,
+            direction=direction,
+            graph_id=graph_id,
+            max_edges=max_edges,
+            max_nodes=max_nodes,
             search_filters=search_filters,
             user_id=user_id,
             request_options=request_options,
@@ -2095,6 +2182,9 @@ class AsyncGraphClient:
         reranker : typing.Optional[Reranker]
             Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
             auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
+            episode_mentions ranks edge candidates by how many of the episodes listed
+            in search_filters.episode_uuids mention them; without episode_uuids it has
+            no effect and results are ranked as if no reranker were specified.
 
         return_raw_results : typing.Optional[bool]
             When scope=auto, include the selected raw graph results alongside the materialized context block.
@@ -2148,6 +2238,97 @@ class AsyncGraphClient:
             reranker=reranker,
             return_raw_results=return_raw_results,
             scope=scope,
+            search_filters=search_filters,
+            user_id=user_id,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def get_subgraph(
+        self,
+        *,
+        seed_node_uuids: typing.Sequence[str],
+        depth: typing.Optional[int] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        max_edges: typing.Optional[int] = OMIT,
+        max_nodes: typing.Optional[int] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GraphSubgraphResponse:
+        """
+        Returns the bounded neighborhood of a set of seed nodes as a single {nodes, edges} payload: breadth-first expansion up to a caller-specified depth, subject to explicit budgets, with explicit truncation reporting.
+
+        Parameters
+        ----------
+        seed_node_uuids : typing.Sequence[str]
+            Seed node UUIDs to expand from, in traversal-priority order: seeds are
+            admitted before any expansion, in this order, and count toward
+            max_nodes first. 1-20 entries, required. Seeds that do not exist in
+            the target graph are ignored, not an error.
+
+        depth : typing.Optional[int]
+            Maximum traversal depth from the seeds. 1-3. Defaults to 1.
+
+        direction : typing.Optional[str]
+            Edge orientation followed during expansion, relative to each frontier
+            node: "in" | "out" | "both". Defaults to "both".
+
+        graph_id : typing.Optional[str]
+            graph_id identifies the target named graph. Exactly one of user_id or
+            graph_id is required.
+
+        max_edges : typing.Optional[int]
+            Maximum number of edges in the response. 1-1000. Defaults to 200.
+
+        max_nodes : typing.Optional[int]
+            Maximum number of nodes in the response, including admitted seeds.
+            1-500. Defaults to 100.
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters constraining traversed edges and included nodes. Reuses the
+            graph.search filter type. search_filters.episode_metadata_filters is
+            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+
+        user_id : typing.Optional[str]
+            user_id identifies the target user graph. Exactly one of user_id or
+            graph_id is required.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphSubgraphResponse
+            Subgraph
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.get_subgraph(
+                seed_node_uuids=["seed_node_uuids"],
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_subgraph(
+            seed_node_uuids=seed_node_uuids,
+            depth=depth,
+            direction=direction,
+            graph_id=graph_id,
+            max_edges=max_edges,
+            max_nodes=max_nodes,
             search_filters=search_filters,
             user_id=user_id,
             request_options=request_options,

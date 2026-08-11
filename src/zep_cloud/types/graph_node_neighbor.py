@@ -4,20 +4,13 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .comparison_operator import ComparisonOperator
+from .entity_edge import EntityEdge
+from .entity_node import EntityNode
 
 
-class DateFilter(UniversalBaseModel):
-    comparison_operator: ComparisonOperator = pydantic.Field()
-    """
-    Comparison operator for date filter
-    """
-
-    date: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Date to filter on. Required for non-null operators (`=`, `<>`, `>`, `<`, `>=`, `<=`).
-    Should be omitted for IS NULL (or is_null) and IS NOT NULL operators.
-    """
+class GraphNodeNeighbor(UniversalBaseModel):
+    edges: typing.Optional[typing.List[EntityEdge]] = None
+    node: typing.Optional[EntityNode] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

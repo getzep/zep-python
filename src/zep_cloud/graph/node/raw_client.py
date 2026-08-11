@@ -17,6 +17,7 @@ from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.entity_edge import EntityEdge
 from ...types.entity_node import EntityNode
 from ...types.episode_response import EpisodeResponse
+from ...types.graph_node_neighbor import GraphNodeNeighbor
 from ...types.search_filters import SearchFilters
 from ...types.success_response import SuccessResponse
 
@@ -244,7 +245,7 @@ class RawNodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[typing.List[EntityEdge]]:
         """
-        Returns all edges for a node
+        Deprecated. Use edge listing with `filters.connected_node_uuids`, or the neighbors endpoint (`POST /graph/node/{node_uuid}/neighbors`), instead. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -309,7 +310,7 @@ class RawNodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[EpisodeResponse]:
         """
-        Returns all episodes that mentioned a given node
+        Deprecated. Use episode listing with `mentioned_node_uuids` (`POST /graph/episodes/graph/{graph_id}` or `POST /graph/episodes/user/{user_id}`) instead. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -346,6 +347,133 @@ class RawNodeClient:
                         typing.Optional[typing.Any],
                         parse_obj_as(
                             type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_neighbors(
+        self,
+        node_uuid: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        direction_sort: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[typing.List[GraphNodeNeighbor]]:
+        """
+        Enumerates the distinct entity nodes directly connected to a node, together with the edges connecting each to it.
+
+        Parameters
+        ----------
+        node_uuid : str
+            Node UUID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Orientation of the connecting edge relative to the anchor node: "out"
+            (anchor is the edge's source), "in" (anchor is the edge's target), or
+            "both" (either). Defaults to "both".
+
+        direction_sort : typing.Optional[str]
+            Sort direction for order_by. One of "asc" or "desc". Defaults to
+            "desc". Named direction_sort to avoid clashing with the traversal
+            Direction field above.
+
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the connecting edges (edge types, dates, and the
+            section-3 node-/episode-anchored fields) and the neighbor nodes
+            (node_labels/exclude_node_labels). Reuses the graph.search filter
+            type.
+
+        limit : typing.Optional[int]
+            Maximum number of neighbor nodes to return. An explicit value is
+            clamped to 50; when omitted, the default page size (100) applies.
+
+        order_by : typing.Optional[str]
+            Field to sort neighbor nodes by. One of "uuid" or "created_at".
+            Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[typing.List[GraphNodeNeighbor]]
+            Neighbors
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(node_uuid)}/neighbors",
+            method="POST",
+            json={
+                "cursor": cursor,
+                "direction": direction,
+                "direction_sort": direction_sort,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=SearchFilters, direction="write"
+                ),
+                "limit": limit,
+                "order_by": order_by,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[GraphNodeNeighbor],
+                    parse_obj_as(
+                        type_=typing.List[GraphNodeNeighbor],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -846,7 +974,7 @@ class AsyncRawNodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[typing.List[EntityEdge]]:
         """
-        Returns all edges for a node
+        Deprecated. Use edge listing with `filters.connected_node_uuids`, or the neighbors endpoint (`POST /graph/node/{node_uuid}/neighbors`), instead. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -911,7 +1039,7 @@ class AsyncRawNodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[EpisodeResponse]:
         """
-        Returns all episodes that mentioned a given node
+        Deprecated. Use episode listing with `mentioned_node_uuids` (`POST /graph/episodes/graph/{graph_id}` or `POST /graph/episodes/user/{user_id}`) instead. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -948,6 +1076,133 @@ class AsyncRawNodeClient:
                         typing.Optional[typing.Any],
                         parse_obj_as(
                             type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_neighbors(
+        self,
+        node_uuid: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        direction_sort: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[typing.List[GraphNodeNeighbor]]:
+        """
+        Enumerates the distinct entity nodes directly connected to a node, together with the edges connecting each to it.
+
+        Parameters
+        ----------
+        node_uuid : str
+            Node UUID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Orientation of the connecting edge relative to the anchor node: "out"
+            (anchor is the edge's source), "in" (anchor is the edge's target), or
+            "both" (either). Defaults to "both".
+
+        direction_sort : typing.Optional[str]
+            Sort direction for order_by. One of "asc" or "desc". Defaults to
+            "desc". Named direction_sort to avoid clashing with the traversal
+            Direction field above.
+
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the connecting edges (edge types, dates, and the
+            section-3 node-/episode-anchored fields) and the neighbor nodes
+            (node_labels/exclude_node_labels). Reuses the graph.search filter
+            type.
+
+        limit : typing.Optional[int]
+            Maximum number of neighbor nodes to return. An explicit value is
+            clamped to 50; when omitted, the default page size (100) applies.
+
+        order_by : typing.Optional[str]
+            Field to sort neighbor nodes by. One of "uuid" or "created_at".
+            Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[typing.List[GraphNodeNeighbor]]
+            Neighbors
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/node/{jsonable_encoder(node_uuid)}/neighbors",
+            method="POST",
+            json={
+                "cursor": cursor,
+                "direction": direction,
+                "direction_sort": direction_sort,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=SearchFilters, direction="write"
+                ),
+                "limit": limit,
+                "order_by": order_by,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[GraphNodeNeighbor],
+                    parse_obj_as(
+                        type_=typing.List[GraphNodeNeighbor],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

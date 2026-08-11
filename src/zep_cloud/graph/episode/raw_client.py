@@ -102,6 +102,105 @@ class RawEpisodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def list_by_graph_id(
+        self,
+        graph_id: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[typing.List[Episode]]:
+        """
+        Returns a paginated, filterable list of episodes for a graph.
+
+        Parameters
+        ----------
+        graph_id : str
+            Graph ID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc". Defaults to "desc".
+
+        limit : typing.Optional[int]
+            Maximum number of episodes to return. An explicit value is clamped to
+            50; when omitted, the default page size (100) applies.
+
+        mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
+            Restricts results to episodes that mention any of the listed node
+            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+
+        order_by : typing.Optional[str]
+            Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[typing.List[Episode]]
+            Episodes
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/episodes/graph/{jsonable_encoder(graph_id)}",
+            method="POST",
+            json={
+                "cursor": cursor,
+                "direction": direction,
+                "limit": limit,
+                "mentioned_node_uuids": mentioned_node_uuids,
+                "order_by": order_by,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[Episode],
+                    parse_obj_as(
+                        type_=typing.List[Episode],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     def get_by_user_id(
         self,
         user_id: str,
@@ -142,6 +241,105 @@ class RawEpisodeClient:
                     EpisodeResponse,
                     parse_obj_as(
                         type_=EpisodeResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def list_by_user_id(
+        self,
+        user_id: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[typing.List[Episode]]:
+        """
+        Returns a paginated, filterable list of episodes for a user's graph.
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc". Defaults to "desc".
+
+        limit : typing.Optional[int]
+            Maximum number of episodes to return. An explicit value is clamped to
+            50; when omitted, the default page size (100) applies.
+
+        mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
+            Restricts results to episodes that mention any of the listed node
+            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+
+        order_by : typing.Optional[str]
+            Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[typing.List[Episode]]
+            Episodes
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/episodes/user/{jsonable_encoder(user_id)}",
+            method="POST",
+            json={
+                "cursor": cursor,
+                "direction": direction,
+                "limit": limit,
+                "mentioned_node_uuids": mentioned_node_uuids,
+                "order_by": order_by,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[Episode],
+                    parse_obj_as(
+                        type_=typing.List[Episode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -421,7 +619,7 @@ class RawEpisodeClient:
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[EpisodeMentions]:
         """
-        Returns nodes and edges mentioned in an episode
+        Deprecated. Use edge and node listing with `filters.episode_uuids` instead. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -562,6 +760,105 @@ class AsyncRawEpisodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    async def list_by_graph_id(
+        self,
+        graph_id: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[typing.List[Episode]]:
+        """
+        Returns a paginated, filterable list of episodes for a graph.
+
+        Parameters
+        ----------
+        graph_id : str
+            Graph ID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc". Defaults to "desc".
+
+        limit : typing.Optional[int]
+            Maximum number of episodes to return. An explicit value is clamped to
+            50; when omitted, the default page size (100) applies.
+
+        mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
+            Restricts results to episodes that mention any of the listed node
+            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+
+        order_by : typing.Optional[str]
+            Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[typing.List[Episode]]
+            Episodes
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/episodes/graph/{jsonable_encoder(graph_id)}",
+            method="POST",
+            json={
+                "cursor": cursor,
+                "direction": direction,
+                "limit": limit,
+                "mentioned_node_uuids": mentioned_node_uuids,
+                "order_by": order_by,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[Episode],
+                    parse_obj_as(
+                        type_=typing.List[Episode],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     async def get_by_user_id(
         self,
         user_id: str,
@@ -602,6 +899,105 @@ class AsyncRawEpisodeClient:
                     EpisodeResponse,
                     parse_obj_as(
                         type_=EpisodeResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def list_by_user_id(
+        self,
+        user_id: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[typing.List[Episode]]:
+        """
+        Returns a paginated, filterable list of episodes for a user's graph.
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc". Defaults to "desc".
+
+        limit : typing.Optional[int]
+            Maximum number of episodes to return. An explicit value is clamped to
+            50; when omitted, the default page size (100) applies.
+
+        mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
+            Restricts results to episodes that mention any of the listed node
+            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+
+        order_by : typing.Optional[str]
+            Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[typing.List[Episode]]
+            Episodes
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/episodes/user/{jsonable_encoder(user_id)}",
+            method="POST",
+            json={
+                "cursor": cursor,
+                "direction": direction,
+                "limit": limit,
+                "mentioned_node_uuids": mentioned_node_uuids,
+                "order_by": order_by,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[Episode],
+                    parse_obj_as(
+                        type_=typing.List[Episode],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -883,7 +1279,7 @@ class AsyncRawEpisodeClient:
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[EpisodeMentions]:
         """
-        Returns nodes and edges mentioned in an episode
+        Deprecated. Use edge and node listing with `filters.episode_uuids` instead. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------

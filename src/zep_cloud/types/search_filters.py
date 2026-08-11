@@ -11,13 +11,20 @@ from .property_filter import PropertyFilter
 
 
 class SearchFilters(UniversalBaseModel):
+    connected_node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    List of node UUIDs to filter edges on: an edge matches if its source OR
+    target node UUID is in this list. Applies to edges only; rejected on
+    requests whose result type contains no edges. Max 256 entries.
+    """
+
     created_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic.Field(default=None)
     """
     2D array of date filters for the created_at field.
     The outer array elements are combined with OR logic.
     The inner array elements are combined with AND logic.
-    Example: [[\{"\>", date1\}, \{"\<", date2\}], [\{"=", date3\}]]
-    This translates to: (created_at \> date1 AND created_at \< date2) OR (created_at = date3)
+    Example: `[[{">", date1}, {"<", date2}], [{"=", date3}]]`
+    This translates to: `(created_at > date1 AND created_at < date2) OR (created_at = date3)`
     """
 
     edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
@@ -36,6 +43,14 @@ class SearchFilters(UniversalBaseModel):
     matching the metadata predicates. Uses explicit AND/OR groups. This feature is experimental and may change in future releases.
     """
 
+    episode_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    List of episode UUIDs to filter on. An edge matches if it was derived
+    from any listed episode; a node matches if it is mentioned by any
+    listed episode. Valid for both edge and node result types. Max 256
+    entries.
+    """
+
     exclude_edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     List of edge types to exclude from results
@@ -51,8 +66,8 @@ class SearchFilters(UniversalBaseModel):
     2D array of date filters for the expired_at field.
     The outer array elements are combined with OR logic.
     The inner array elements are combined with AND logic.
-    Example: [[\{"\>", date1\}, \{"\<", date2\}], [\{"=", date3\}]]
-    This translates to: (expired_at \> date1 AND expired_at \< date2) OR (expired_at = date3)
+    Example: `[[{">", date1}, {"<", date2}], [{"=", date3}]]`
+    This translates to: `(expired_at > date1 AND expired_at < date2) OR (expired_at = date3)`
     """
 
     invalid_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic.Field(default=None)
@@ -60,8 +75,8 @@ class SearchFilters(UniversalBaseModel):
     2D array of date filters for the invalid_at field.
     The outer array elements are combined with OR logic.
     The inner array elements are combined with AND logic.
-    Example: [[\{"\>", date1\}, \{"\<", date2\}], [\{"=", date3\}]]
-    This translates to: (invalid_at \> date1 AND invalid_at \< date2) OR (invalid_at = date3)
+    Example: `[[{">", date1}, {"<", date2}], [{"=", date3}]]`
+    This translates to: `(invalid_at > date1 AND invalid_at < date2) OR (invalid_at = date3)`
     """
 
     node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
@@ -74,13 +89,27 @@ class SearchFilters(UniversalBaseModel):
     List of property filters to apply to nodes and edges
     """
 
+    source_node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    List of node UUIDs to filter edges on: an edge matches if its source
+    node UUID is in this list. Applies to edges only; rejected on requests
+    whose result type contains no edges. Max 256 entries.
+    """
+
+    target_node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    List of node UUIDs to filter edges on: an edge matches if its target
+    node UUID is in this list. Applies to edges only; rejected on requests
+    whose result type contains no edges. Max 256 entries.
+    """
+
     valid_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic.Field(default=None)
     """
     2D array of date filters for the valid_at field.
     The outer array elements are combined with OR logic.
     The inner array elements are combined with AND logic.
-    Example: [[\{"\>", date1\}, \{"\<", date2\}], [\{"=", date3\}]]
-    This translates to: (valid_at \> date1 AND valid_at \< date2) OR (valid_at = date3)
+    Example: `[[{">", date1}, {"<", date2}], [{"=", date3}]]`
+    This translates to: `(valid_at > date1 AND valid_at < date2) OR (valid_at = date3)`
     """
 
     if IS_PYDANTIC_V2:

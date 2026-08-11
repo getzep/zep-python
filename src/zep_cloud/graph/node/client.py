@@ -7,6 +7,7 @@ from ...core.request_options import RequestOptions
 from ...types.entity_edge import EntityEdge
 from ...types.entity_node import EntityNode
 from ...types.episode_response import EpisodeResponse
+from ...types.graph_node_neighbor import GraphNodeNeighbor
 from ...types.search_filters import SearchFilters
 from ...types.success_response import SuccessResponse
 from .raw_client import AsyncRawNodeClient, RawNodeClient
@@ -178,7 +179,7 @@ class NodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityEdge]:
         """
-        Returns all edges for a node
+        Deprecated. Use edge listing with `filters.connected_node_uuids`, or the neighbors endpoint (`POST /graph/node/{node_uuid}/neighbors`), instead. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -211,7 +212,7 @@ class NodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EpisodeResponse:
         """
-        Returns all episodes that mentioned a given node
+        Deprecated. Use episode listing with `mentioned_node_uuids` (`POST /graph/episodes/graph/{graph_id}` or `POST /graph/episodes/user/{user_id}`) instead. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -238,6 +239,85 @@ class NodeClient:
         )
         """
         _response = self._raw_client.get_episodes(node_uuid, request_options=request_options)
+        return _response.data
+
+    def get_neighbors(
+        self,
+        node_uuid: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        direction_sort: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[GraphNodeNeighbor]:
+        """
+        Enumerates the distinct entity nodes directly connected to a node, together with the edges connecting each to it.
+
+        Parameters
+        ----------
+        node_uuid : str
+            Node UUID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Orientation of the connecting edge relative to the anchor node: "out"
+            (anchor is the edge's source), "in" (anchor is the edge's target), or
+            "both" (either). Defaults to "both".
+
+        direction_sort : typing.Optional[str]
+            Sort direction for order_by. One of "asc" or "desc". Defaults to
+            "desc". Named direction_sort to avoid clashing with the traversal
+            Direction field above.
+
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the connecting edges (edge types, dates, and the
+            section-3 node-/episode-anchored fields) and the neighbor nodes
+            (node_labels/exclude_node_labels). Reuses the graph.search filter
+            type.
+
+        limit : typing.Optional[int]
+            Maximum number of neighbor nodes to return. An explicit value is
+            clamped to 50; when omitted, the default page size (100) applies.
+
+        order_by : typing.Optional[str]
+            Field to sort neighbor nodes by. One of "uuid" or "created_at".
+            Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[GraphNodeNeighbor]
+            Neighbors
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.node.get_neighbors(
+            node_uuid="node_uuid",
+        )
+        """
+        _response = self._raw_client.get_neighbors(
+            node_uuid,
+            cursor=cursor,
+            direction=direction,
+            direction_sort=direction_sort,
+            filters=filters,
+            limit=limit,
+            order_by=order_by,
+            request_options=request_options,
+        )
         return _response.data
 
     def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
@@ -536,7 +616,7 @@ class AsyncNodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[EntityEdge]:
         """
-        Returns all edges for a node
+        Deprecated. Use edge listing with `filters.connected_node_uuids`, or the neighbors endpoint (`POST /graph/node/{node_uuid}/neighbors`), instead. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -577,7 +657,7 @@ class AsyncNodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EpisodeResponse:
         """
-        Returns all episodes that mentioned a given node
+        Deprecated. Use episode listing with `mentioned_node_uuids` (`POST /graph/episodes/graph/{graph_id}` or `POST /graph/episodes/user/{user_id}`) instead. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -612,6 +692,93 @@ class AsyncNodeClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_episodes(node_uuid, request_options=request_options)
+        return _response.data
+
+    async def get_neighbors(
+        self,
+        node_uuid: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        direction_sort: typing.Optional[str] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[GraphNodeNeighbor]:
+        """
+        Enumerates the distinct entity nodes directly connected to a node, together with the edges connecting each to it.
+
+        Parameters
+        ----------
+        node_uuid : str
+            Node UUID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Orientation of the connecting edge relative to the anchor node: "out"
+            (anchor is the edge's source), "in" (anchor is the edge's target), or
+            "both" (either). Defaults to "both".
+
+        direction_sort : typing.Optional[str]
+            Sort direction for order_by. One of "asc" or "desc". Defaults to
+            "desc". Named direction_sort to avoid clashing with the traversal
+            Direction field above.
+
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the connecting edges (edge types, dates, and the
+            section-3 node-/episode-anchored fields) and the neighbor nodes
+            (node_labels/exclude_node_labels). Reuses the graph.search filter
+            type.
+
+        limit : typing.Optional[int]
+            Maximum number of neighbor nodes to return. An explicit value is
+            clamped to 50; when omitted, the default page size (100) applies.
+
+        order_by : typing.Optional[str]
+            Field to sort neighbor nodes by. One of "uuid" or "created_at".
+            Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[GraphNodeNeighbor]
+            Neighbors
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.node.get_neighbors(
+                node_uuid="node_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_neighbors(
+            node_uuid,
+            cursor=cursor,
+            direction=direction,
+            direction_sort=direction_sort,
+            filters=filters,
+            limit=limit,
+            order_by=order_by,
+            request_options=request_options,
+        )
         return _response.data
 
     async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityNode:
