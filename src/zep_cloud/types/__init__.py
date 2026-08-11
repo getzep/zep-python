@@ -48,12 +48,15 @@ from .get_task_response import GetTaskResponse
 from .graph import Graph
 from .graph_data_type import GraphDataType
 from .graph_edges_request import GraphEdgesRequest
+from .graph_episode_list_request import GraphEpisodeListRequest
 from .graph_list_response import GraphListResponse
+from .graph_node_neighbor import GraphNodeNeighbor
 from .graph_nodes_request import GraphNodesRequest
 from .graph_observations_request import GraphObservationsRequest
 from .graph_search_response_metadata import GraphSearchResponseMetadata
 from .graph_search_results import GraphSearchResults
 from .graph_search_scope import GraphSearchScope
+from .graph_subgraph_response import GraphSubgraphResponse
 from .graph_thread_summaries_request import GraphThreadSummariesRequest
 from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
 from .graphiti_saga_node import GraphitiSagaNode
@@ -147,12 +150,15 @@ __all__ = [
     "Graph",
     "GraphDataType",
     "GraphEdgesRequest",
+    "GraphEpisodeListRequest",
     "GraphListResponse",
+    "GraphNodeNeighbor",
     "GraphNodesRequest",
     "GraphObservationsRequest",
     "GraphSearchResponseMetadata",
     "GraphSearchResults",
     "GraphSearchScope",
+    "GraphSubgraphResponse",
     "GraphThreadSummariesRequest",
     "GraphitiMetadataFilterGroupType",
     "GraphitiSagaNode",
