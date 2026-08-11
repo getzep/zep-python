@@ -3536,6 +3536,9 @@ client.graph.search(
 
 Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
 auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
+episode_mentions ranks edge candidates by how many of the episodes listed
+in search_filters.episode_uuids mention them; without episode_uuids it has
+no effect and results are ranked as if no reranker were specified.
     
 </dd>
 </dl>
@@ -3572,6 +3575,153 @@ edges, nodes, observations, and thread_summaries.
 <dd>
 
 **user_id:** `typing.Optional[str]` — The user_id when searching user graph. If not searching user graph, please use graph_id instead.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">get_subgraph</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the bounded neighborhood of a set of seed nodes as a single {nodes, edges} payload: breadth-first expansion up to a caller-specified depth, subject to explicit budgets, with explicit truncation reporting.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.get_subgraph(
+    seed_node_uuids=["seed_node_uuids"],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**seed_node_uuids:** `typing.Sequence[str]` 
+
+Seed node UUIDs to expand from, in traversal-priority order: seeds are
+admitted before any expansion, in this order, and count toward
+max_nodes first. 1-20 entries, required. Seeds that do not exist in
+the target graph are ignored, not an error.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**depth:** `typing.Optional[int]` — Maximum traversal depth from the seeds. 1-3. Defaults to 1.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` 
+
+Edge orientation followed during expansion, relative to each frontier
+node: "in" | "out" | "both". Defaults to "both".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_id:** `typing.Optional[str]` 
+
+graph_id identifies the target named graph. Exactly one of user_id or
+graph_id is required.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**max_edges:** `typing.Optional[int]` — Maximum number of edges in the response. 1-1000. Defaults to 200.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**max_nodes:** `typing.Optional[int]` 
+
+Maximum number of nodes in the response, including admitted seeds.
+1-500. Defaults to 100.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search_filters:** `typing.Optional[SearchFilters]` 
+
+Filters constraining traversed edges and included nodes. Reuses the
+graph.search filter type. search_filters.episode_metadata_filters is
+rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_id:** `typing.Optional[str]` 
+
+user_id identifies the target user graph. Exactly one of user_id or
+graph_id is required.
     
 </dd>
 </dl>
@@ -6499,6 +6649,125 @@ client.graph.episode.get_by_graph_id(
 </dl>
 </details>
 
+<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">list_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a paginated, filterable list of episodes for a graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.episode.list_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+response header of the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc". Defaults to "desc".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` 
+
+Maximum number of episodes to return. An explicit value is clamped to
+50; when omitted, the default page size (100) applies.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mentioned_node_uuids:** `typing.Optional[typing.Sequence[str]]` 
+
+Restricts results to episodes that mention any of the listed node
+UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">get_by_user_id</a>(...)</code></summary>
 <dl>
 <dd>
@@ -6559,6 +6828,125 @@ client.graph.episode.get_by_user_id(
 <dd>
 
 **lastn:** `typing.Optional[int]` — The number of most recent episodes entries to retrieve.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.episode.<a href="src/zep_cloud/graph/episode/client.py">list_by_user_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a paginated, filterable list of episodes for a user's graph.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.episode.list_by_user_id(
+    user_id="user_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `str` — User ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+response header of the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc". Defaults to "desc".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` 
+
+Maximum number of episodes to return. An explicit value is clamped to
+50; when omitted, the default page size (100) applies.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mentioned_node_uuids:** `typing.Optional[typing.Sequence[str]]` 
+
+Restricts results to episodes that mention any of the listed node
+UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
     
 </dd>
 </dl>
@@ -6809,7 +7197,7 @@ client.graph.episode.update(
 <dl>
 <dd>
 
-Returns nodes and edges mentioned in an episode
+Deprecated. Use edge and node listing with `filters.episode_uuids` instead. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 </dd>
 </dl>
 </dd>
@@ -7130,7 +7518,7 @@ Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor re
 <dl>
 <dd>
 
-Returns all edges for a node
+Deprecated. Use edge listing with `filters.connected_node_uuids`, or the neighbors endpoint (`POST /graph/node/{node_uuid}/neighbors`), instead. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 </dd>
 </dl>
 </dd>
@@ -7200,7 +7588,7 @@ client.graph.node.get_edges(
 <dl>
 <dd>
 
-Returns all episodes that mentioned a given node
+Deprecated. Use episode listing with `mentioned_node_uuids` (`POST /graph/episodes/graph/{graph_id}` or `POST /graph/episodes/user/{user_id}`) instead. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 </dd>
 </dl>
 </dd>
@@ -7239,6 +7627,146 @@ client.graph.node.get_episodes(
 <dd>
 
 **node_uuid:** `str` — Node UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.node.<a href="src/zep_cloud/graph/node/client.py">get_neighbors</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Enumerates the distinct entity nodes directly connected to a node, together with the edges connecting each to it.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.node.get_neighbors(
+    node_uuid="node_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**node_uuid:** `str` — Node UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+response header of the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` 
+
+Orientation of the connecting edge relative to the anchor node: "out"
+(anchor is the edge's source), "in" (anchor is the edge's target), or
+"both" (either). Defaults to "both".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction_sort:** `typing.Optional[str]` 
+
+Sort direction for order_by. One of "asc" or "desc". Defaults to
+"desc". Named direction_sort to avoid clashing with the traversal
+Direction field above.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` 
+
+Filters constraining the connecting edges (edge types, dates, and the
+section-3 node-/episode-anchored fields) and the neighbor nodes
+(node_labels/exclude_node_labels). Reuses the graph.search filter
+type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` 
+
+Maximum number of neighbor nodes to return. An explicit value is
+clamped to 50; when omitted, the default page size (100) applies.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order_by:** `typing.Optional[str]` 
+
+Field to sort neighbor nodes by. One of "uuid" or "created_at".
+Defaults to "uuid".
     
 </dd>
 </dl>

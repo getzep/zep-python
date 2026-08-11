@@ -32,6 +32,7 @@ from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
 from ..types.graph_search_results import GraphSearchResults
 from ..types.graph_search_scope import GraphSearchScope
+from ..types.graph_subgraph_response import GraphSubgraphResponse
 from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
 from ..types.pattern_seeds import PatternSeeds
 from ..types.recency_weight import RecencyWeight
@@ -1455,6 +1456,9 @@ class RawGraphClient:
         reranker : typing.Optional[Reranker]
             Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
             auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
+            episode_mentions ranks edge candidates by how many of the episodes listed
+            in search_filters.episode_uuids mention them; without episode_uuids it has
+            no effect and results are ranked as if no reranker were specified.
 
         return_raw_results : typing.Optional[bool]
             When scope=auto, include the selected raw graph results alongside the materialized context block.
@@ -1520,6 +1524,149 @@ class RawGraphClient:
                         typing.Optional[typing.Any],
                         parse_obj_as(
                             type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_subgraph(
+        self,
+        *,
+        seed_node_uuids: typing.Sequence[str],
+        depth: typing.Optional[int] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        max_edges: typing.Optional[int] = OMIT,
+        max_nodes: typing.Optional[int] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[GraphSubgraphResponse]:
+        """
+        Returns the bounded neighborhood of a set of seed nodes as a single {nodes, edges} payload: breadth-first expansion up to a caller-specified depth, subject to explicit budgets, with explicit truncation reporting.
+
+        Parameters
+        ----------
+        seed_node_uuids : typing.Sequence[str]
+            Seed node UUIDs to expand from, in traversal-priority order: seeds are
+            admitted before any expansion, in this order, and count toward
+            max_nodes first. 1-20 entries, required. Seeds that do not exist in
+            the target graph are ignored, not an error.
+
+        depth : typing.Optional[int]
+            Maximum traversal depth from the seeds. 1-3. Defaults to 1.
+
+        direction : typing.Optional[str]
+            Edge orientation followed during expansion, relative to each frontier
+            node: "in" | "out" | "both". Defaults to "both".
+
+        graph_id : typing.Optional[str]
+            graph_id identifies the target named graph. Exactly one of user_id or
+            graph_id is required.
+
+        max_edges : typing.Optional[int]
+            Maximum number of edges in the response. 1-1000. Defaults to 200.
+
+        max_nodes : typing.Optional[int]
+            Maximum number of nodes in the response, including admitted seeds.
+            1-500. Defaults to 100.
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters constraining traversed edges and included nodes. Reuses the
+            graph.search filter type. search_filters.episode_metadata_filters is
+            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+
+        user_id : typing.Optional[str]
+            user_id identifies the target user graph. Exactly one of user_id or
+            graph_id is required.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[GraphSubgraphResponse]
+            Subgraph
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "graph/subgraph",
+            method="POST",
+            json={
+                "depth": depth,
+                "direction": direction,
+                "graph_id": graph_id,
+                "max_edges": max_edges,
+                "max_nodes": max_nodes,
+                "search_filters": convert_and_respect_annotation_metadata(
+                    object_=search_filters, annotation=SearchFilters, direction="write"
+                ),
+                "seed_node_uuids": seed_node_uuids,
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphSubgraphResponse,
+                    parse_obj_as(
+                        type_=GraphSubgraphResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3259,6 +3406,9 @@ class AsyncRawGraphClient:
         reranker : typing.Optional[Reranker]
             Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
             auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
+            episode_mentions ranks edge candidates by how many of the episodes listed
+            in search_filters.episode_uuids mention them; without episode_uuids it has
+            no effect and results are ranked as if no reranker were specified.
 
         return_raw_results : typing.Optional[bool]
             When scope=auto, include the selected raw graph results alongside the materialized context block.
@@ -3324,6 +3474,149 @@ class AsyncRawGraphClient:
                         typing.Optional[typing.Any],
                         parse_obj_as(
                             type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_subgraph(
+        self,
+        *,
+        seed_node_uuids: typing.Sequence[str],
+        depth: typing.Optional[int] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
+        max_edges: typing.Optional[int] = OMIT,
+        max_nodes: typing.Optional[int] = OMIT,
+        search_filters: typing.Optional[SearchFilters] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[GraphSubgraphResponse]:
+        """
+        Returns the bounded neighborhood of a set of seed nodes as a single {nodes, edges} payload: breadth-first expansion up to a caller-specified depth, subject to explicit budgets, with explicit truncation reporting.
+
+        Parameters
+        ----------
+        seed_node_uuids : typing.Sequence[str]
+            Seed node UUIDs to expand from, in traversal-priority order: seeds are
+            admitted before any expansion, in this order, and count toward
+            max_nodes first. 1-20 entries, required. Seeds that do not exist in
+            the target graph are ignored, not an error.
+
+        depth : typing.Optional[int]
+            Maximum traversal depth from the seeds. 1-3. Defaults to 1.
+
+        direction : typing.Optional[str]
+            Edge orientation followed during expansion, relative to each frontier
+            node: "in" | "out" | "both". Defaults to "both".
+
+        graph_id : typing.Optional[str]
+            graph_id identifies the target named graph. Exactly one of user_id or
+            graph_id is required.
+
+        max_edges : typing.Optional[int]
+            Maximum number of edges in the response. 1-1000. Defaults to 200.
+
+        max_nodes : typing.Optional[int]
+            Maximum number of nodes in the response, including admitted seeds.
+            1-500. Defaults to 100.
+
+        search_filters : typing.Optional[SearchFilters]
+            Filters constraining traversed edges and included nodes. Reuses the
+            graph.search filter type. search_filters.episode_metadata_filters is
+            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+
+        user_id : typing.Optional[str]
+            user_id identifies the target user graph. Exactly one of user_id or
+            graph_id is required.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[GraphSubgraphResponse]
+            Subgraph
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "graph/subgraph",
+            method="POST",
+            json={
+                "depth": depth,
+                "direction": direction,
+                "graph_id": graph_id,
+                "max_edges": max_edges,
+                "max_nodes": max_nodes,
+                "search_filters": convert_and_respect_annotation_metadata(
+                    object_=search_filters, annotation=SearchFilters, direction="write"
+                ),
+                "seed_node_uuids": seed_node_uuids,
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphSubgraphResponse,
+                    parse_obj_as(
+                        type_=GraphSubgraphResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
