@@ -65,9 +65,36 @@ class EntityEdge(UniversalBaseModel):
     SelectionRank is the global cross-scope rank assigned by auto scope selection.
     """
 
+    source_node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    SourceNodeLabels are the labels of the source node at read time. Same
+    read-time-projection semantics as SourceNodeName (spec-2 §4).
+    """
+
+    source_node_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    SourceNodeName is the name of the source node at read time. It is a
+    read-time projection of current node state, not a stored edge
+    attribute: a subsequent node rename is reflected on the next read.
+    Omitted (the edge is still returned) if the source node cannot be
+    resolved, for example if it was deleted concurrently (spec-2 §4).
+    """
+
     source_node_uuid: str = pydantic.Field()
     """
     UUID of the source node
+    """
+
+    target_node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    TargetNodeLabels are the labels of the target node at read time. Same
+    read-time-projection semantics as SourceNodeName (spec-2 §4).
+    """
+
+    target_node_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    TargetNodeName is the name of the target node at read time. Same
+    read-time-projection semantics as SourceNodeName (spec-2 §4).
     """
 
     target_node_uuid: str = pydantic.Field()

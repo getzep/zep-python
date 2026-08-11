@@ -70,6 +70,73 @@ class EpisodeClient:
         _response = self._raw_client.get_by_graph_id(graph_id, lastn=lastn, request_options=request_options)
         return _response.data
 
+    def list_by_graph_id(
+        self,
+        graph_id: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[Episode]:
+        """
+        Returns a paginated, filterable list of episodes for a graph.
+
+        Parameters
+        ----------
+        graph_id : str
+            Graph ID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc". Defaults to "desc".
+
+        limit : typing.Optional[int]
+            Maximum number of episodes to return. An explicit value is clamped to
+            50; when omitted, the default page size (100) applies.
+
+        mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
+            Restricts results to episodes that mention any of the listed node
+            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+
+        order_by : typing.Optional[str]
+            Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Episode]
+            Episodes
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.episode.list_by_graph_id(
+            graph_id="graph_id",
+        )
+        """
+        _response = self._raw_client.list_by_graph_id(
+            graph_id,
+            cursor=cursor,
+            direction=direction,
+            limit=limit,
+            mentioned_node_uuids=mentioned_node_uuids,
+            order_by=order_by,
+            request_options=request_options,
+        )
+        return _response.data
+
     def get_by_user_id(
         self,
         user_id: str,
@@ -109,6 +176,73 @@ class EpisodeClient:
         )
         """
         _response = self._raw_client.get_by_user_id(user_id, lastn=lastn, request_options=request_options)
+        return _response.data
+
+    def list_by_user_id(
+        self,
+        user_id: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[Episode]:
+        """
+        Returns a paginated, filterable list of episodes for a user's graph.
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc". Defaults to "desc".
+
+        limit : typing.Optional[int]
+            Maximum number of episodes to return. An explicit value is clamped to
+            50; when omitted, the default page size (100) applies.
+
+        mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
+            Restricts results to episodes that mention any of the listed node
+            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+
+        order_by : typing.Optional[str]
+            Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Episode]
+            Episodes
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.episode.list_by_user_id(
+            user_id="user_id",
+        )
+        """
+        _response = self._raw_client.list_by_user_id(
+            user_id,
+            cursor=cursor,
+            direction=direction,
+            limit=limit,
+            mentioned_node_uuids=mentioned_node_uuids,
+            order_by=order_by,
+            request_options=request_options,
+        )
         return _response.data
 
     def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
@@ -218,7 +352,7 @@ class EpisodeClient:
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EpisodeMentions:
         """
-        Returns nodes and edges mentioned in an episode
+        Deprecated. Use edge and node listing with `filters.episode_uuids` instead. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -312,6 +446,81 @@ class AsyncEpisodeClient:
         _response = await self._raw_client.get_by_graph_id(graph_id, lastn=lastn, request_options=request_options)
         return _response.data
 
+    async def list_by_graph_id(
+        self,
+        graph_id: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[Episode]:
+        """
+        Returns a paginated, filterable list of episodes for a graph.
+
+        Parameters
+        ----------
+        graph_id : str
+            Graph ID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc". Defaults to "desc".
+
+        limit : typing.Optional[int]
+            Maximum number of episodes to return. An explicit value is clamped to
+            50; when omitted, the default page size (100) applies.
+
+        mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
+            Restricts results to episodes that mention any of the listed node
+            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+
+        order_by : typing.Optional[str]
+            Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Episode]
+            Episodes
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.episode.list_by_graph_id(
+                graph_id="graph_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_by_graph_id(
+            graph_id,
+            cursor=cursor,
+            direction=direction,
+            limit=limit,
+            mentioned_node_uuids=mentioned_node_uuids,
+            order_by=order_by,
+            request_options=request_options,
+        )
+        return _response.data
+
     async def get_by_user_id(
         self,
         user_id: str,
@@ -359,6 +568,81 @@ class AsyncEpisodeClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_by_user_id(user_id, lastn=lastn, request_options=request_options)
+        return _response.data
+
+    async def list_by_user_id(
+        self,
+        user_id: str,
+        *,
+        cursor: typing.Optional[str] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = OMIT,
+        mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        order_by: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[Episode]:
+        """
+        Returns a paginated, filterable list of episodes for a user's graph.
+
+        Parameters
+        ----------
+        user_id : str
+            User ID
+
+        cursor : typing.Optional[str]
+            Opaque cursor for pagination, obtained from the Zep-Next-Cursor
+            response header of the previous page.
+
+        direction : typing.Optional[str]
+            Sort direction. One of "asc" or "desc". Defaults to "desc".
+
+        limit : typing.Optional[int]
+            Maximum number of episodes to return. An explicit value is clamped to
+            50; when omitted, the default page size (100) applies.
+
+        mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
+            Restricts results to episodes that mention any of the listed node
+            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+
+        order_by : typing.Optional[str]
+            Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Episode]
+            Episodes
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.episode.list_by_user_id(
+                user_id="user_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.list_by_user_id(
+            user_id,
+            cursor=cursor,
+            direction=direction,
+            limit=limit,
+            mentioned_node_uuids=mentioned_node_uuids,
+            order_by=order_by,
+            request_options=request_options,
+        )
         return _response.data
 
     async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> Episode:
@@ -492,7 +776,7 @@ class AsyncEpisodeClient:
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EpisodeMentions:
         """
-        Returns nodes and edges mentioned in an episode
+        Deprecated. Use edge and node listing with `filters.episode_uuids` instead. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
