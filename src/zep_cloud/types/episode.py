@@ -6,54 +6,26 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
-from .graph_data_type import GraphDataType
-from .role_type import RoleType
 
 
 class Episode(UniversalBaseModel):
-    content: str
-    created_at: str
-    metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
+    content: typing.Optional[str] = None
+    created_at: typing.Optional[str] = None
+    document_id: typing.Optional[str] = None
+    graph_uuid: typing.Optional[str] = None
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     processed: typing.Optional[bool] = None
-    relevance: typing.Optional[float] = pydantic.Field(default=None)
-    """
-    Relevance is an experimental rank-aligned score in [0,1] derived from Score via logit transformation.
-    Only populated when using cross_encoder reranker; omitted for other reranker types (e.g., RRF).
-    """
-
-    role: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Optional role, will only be present if the episode was created using memory.add API
-    """
-
-    role_type: typing.Optional[RoleType] = pydantic.Field(default=None)
-    """
-    Optional role_type, will only be present if the episode was created using memory.add API
-    """
-
-    score: typing.Optional[float] = pydantic.Field(default=None)
-    """
-    Score is the reranker output: sigmoid-distributed logits [0,1] when using cross_encoder reranker, or RRF ordinal rank when using rrf reranker
-    """
-
-    selection_rank: typing.Optional[int] = pydantic.Field(default=None)
-    """
-    SelectionRank is the global cross-scope rank assigned by auto scope selection.
-    """
-
-    source: typing.Optional[GraphDataType] = None
+    relevance: typing.Optional[float] = None
+    role: typing.Optional[str] = None
+    role_name: typing.Optional[str] = None
+    score: typing.Optional[float] = None
+    source: typing.Optional[str] = None
     source_description: typing.Optional[str] = None
-    task_id: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Optional task ID to poll episode processing status. Currently only available for batch ingestion.
-    """
-
-    thread_id: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Optional thread ID, will be present if the episode is part of a thread
-    """
-
-    uuid_: typing_extensions.Annotated[str, FieldMetadata(alias="uuid")]
+    thread_uuid: typing.Optional[str] = None
+    uuid_: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+    ] = None
+    valid_at: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
