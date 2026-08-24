@@ -4,9 +4,11 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.observation_steering_config import ObservationSteeringConfig
-from ..types.observation_type import ObservationType
-from ..types.project_info_response import ProjectInfoResponse
+from ..types.instructions import Instructions
+from ..types.observation_steering import ObservationSteering
+from ..types.ontology import Ontology
+from ..types.project import Project
+from ..types.user_summary_instructions import UserSummaryInstructions
 from .raw_client import AsyncRawProjectClient, RawProjectClient
 
 # this is used as the default value for optional parameters
@@ -28,10 +30,8 @@ class ProjectClient:
         """
         return self._raw_client
 
-    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectInfoResponse:
+    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> Project:
         """
-        Retrieve project info based on the provided api key.
-
         Parameters
         ----------
         request_options : typing.Optional[RequestOptions]
@@ -39,8 +39,8 @@ class ProjectClient:
 
         Returns
         -------
-        ProjectInfoResponse
-            Retrieved
+        Project
+            OK
 
         Examples
         --------
@@ -55,23 +55,27 @@ class ProjectClient:
         return _response.data
 
     def update(
-        self, *, default_time_zone: typing.Optional[str] = OMIT, request_options: typing.Optional[RequestOptions] = None
-    ) -> ProjectInfoResponse:
+        self,
+        *,
+        default_time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Project:
         """
-        Sets or clears the project-level fallback time zone for the API key's project.
-
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
-            The project's IANA fallback time zone. Null clears the existing value.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ProjectInfoResponse
-            Updated
+        Project
+            OK
 
         Examples
         --------
@@ -82,34 +86,22 @@ class ProjectClient:
         )
         client.project.update()
         """
-        _response = self._raw_client.update(default_time_zone=default_time_zone, request_options=request_options)
+        _response = self._raw_client.update(
+            default_time_zone=default_time_zone, idempotency_key=idempotency_key, request_options=request_options
+        )
         return _response.data
 
-    def get_observation_steering(
-        self,
-        *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> ObservationSteeringConfig:
+    def get_instructions(self, *, request_options: typing.Optional[RequestOptions] = None) -> Instructions:
         """
-        Returns project steering or the effective user/graph steering with project fallback. This API is experimental and may change in future releases.
-
         Parameters
         ----------
-        user_id : typing.Optional[str]
-            User ID for user-specific steering
-
-        graph_id : typing.Optional[str]
-            Graph ID for graph-specific steering
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ObservationSteeringConfig
-            Retrieved
+        Instructions
+            OK
 
         Examples
         --------
@@ -118,47 +110,106 @@ class ProjectClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.project.get_observation_steering(
-            user_id="user_id",
-            graph_id="graph_id",
-        )
+        client.project.get_instructions()
         """
-        _response = self._raw_client.get_observation_steering(
-            user_id=user_id, graph_id=graph_id, request_options=request_options
+        _response = self._raw_client.get_instructions(request_options=request_options)
+        return _response.data
+
+    def set_instructions(
+        self,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Instructions:
+        """
+        Parameters
+        ----------
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Instructions
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
         )
+        client.project.set_instructions()
+        """
+        _response = self._raw_client.set_instructions(
+            inherited=inherited,
+            instructions=instructions,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def get_observation_steering(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ObservationSteering:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ObservationSteering
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.get_observation_steering()
+        """
+        _response = self._raw_client.get_observation_steering(request_options=request_options)
         return _response.data
 
     def set_observation_steering(
         self,
         *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
+        inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
+        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ObservationSteeringConfig:
+    ) -> ObservationSteering:
         """
-        Replaces project, user, or graph steering. An empty configuration clears the project default or removes the user/graph override. Changes affect later materializer runs only. This API is experimental and may change in future releases.
-
         Parameters
         ----------
-        user_id : typing.Optional[str]
-            User ID for user-specific steering
-
-        graph_id : typing.Optional[str]
-            Graph ID for graph-specific steering
+        inherited : typing.Optional[bool]
 
         instruction : typing.Optional[str]
 
-        types : typing.Optional[typing.Sequence[ObservationType]]
+        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ObservationSteeringConfig
-            Updated
+        ObservationSteering
+            OK
 
         Examples
         --------
@@ -167,13 +218,152 @@ class ProjectClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.project.set_observation_steering(
-            user_id="user_id",
-            graph_id="graph_id",
-        )
+        client.project.set_observation_steering()
         """
         _response = self._raw_client.set_observation_steering(
-            user_id=user_id, graph_id=graph_id, instruction=instruction, types=types, request_options=request_options
+            inherited=inherited,
+            instruction=instruction,
+            types=types,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def get_ontology(self, *, request_options: typing.Optional[RequestOptions] = None) -> Ontology:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Ontology
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.get_ontology()
+        """
+        _response = self._raw_client.get_ontology(request_options=request_options)
+        return _response.data
+
+    def set_ontology(
+        self,
+        *,
+        edge_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Ontology:
+        """
+        Parameters
+        ----------
+        edge_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        entity_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        inherited : typing.Optional[bool]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Ontology
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.set_ontology()
+        """
+        _response = self._raw_client.set_ontology(
+            edge_types=edge_types,
+            entity_types=entity_types,
+            inherited=inherited,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def get_user_summary_instructions(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> UserSummaryInstructions:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserSummaryInstructions
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.get_user_summary_instructions()
+        """
+        _response = self._raw_client.get_user_summary_instructions(request_options=request_options)
+        return _response.data
+
+    def set_user_summary_instructions(
+        self,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> UserSummaryInstructions:
+        """
+        Parameters
+        ----------
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserSummaryInstructions
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.set_user_summary_instructions()
+        """
+        _response = self._raw_client.set_user_summary_instructions(
+            inherited=inherited,
+            instructions=instructions,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
         )
         return _response.data
 
@@ -193,10 +383,8 @@ class AsyncProjectClient:
         """
         return self._raw_client
 
-    async def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectInfoResponse:
+    async def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> Project:
         """
-        Retrieve project info based on the provided api key.
-
         Parameters
         ----------
         request_options : typing.Optional[RequestOptions]
@@ -204,8 +392,8 @@ class AsyncProjectClient:
 
         Returns
         -------
-        ProjectInfoResponse
-            Retrieved
+        Project
+            OK
 
         Examples
         --------
@@ -228,23 +416,27 @@ class AsyncProjectClient:
         return _response.data
 
     async def update(
-        self, *, default_time_zone: typing.Optional[str] = OMIT, request_options: typing.Optional[RequestOptions] = None
-    ) -> ProjectInfoResponse:
+        self,
+        *,
+        default_time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Project:
         """
-        Sets or clears the project-level fallback time zone for the API key's project.
-
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
-            The project's IANA fallback time zone. Null clears the existing value.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ProjectInfoResponse
-            Updated
+        Project
+            OK
 
         Examples
         --------
@@ -263,34 +455,22 @@ class AsyncProjectClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.update(default_time_zone=default_time_zone, request_options=request_options)
+        _response = await self._raw_client.update(
+            default_time_zone=default_time_zone, idempotency_key=idempotency_key, request_options=request_options
+        )
         return _response.data
 
-    async def get_observation_steering(
-        self,
-        *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> ObservationSteeringConfig:
+    async def get_instructions(self, *, request_options: typing.Optional[RequestOptions] = None) -> Instructions:
         """
-        Returns project steering or the effective user/graph steering with project fallback. This API is experimental and may change in future releases.
-
         Parameters
         ----------
-        user_id : typing.Optional[str]
-            User ID for user-specific steering
-
-        graph_id : typing.Optional[str]
-            Graph ID for graph-specific steering
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ObservationSteeringConfig
-            Retrieved
+        Instructions
+            OK
 
         Examples
         --------
@@ -304,50 +484,125 @@ class AsyncProjectClient:
 
 
         async def main() -> None:
-            await client.project.get_observation_steering(
-                user_id="user_id",
-                graph_id="graph_id",
-            )
+            await client.project.get_instructions()
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_observation_steering(
-            user_id=user_id, graph_id=graph_id, request_options=request_options
+        _response = await self._raw_client.get_instructions(request_options=request_options)
+        return _response.data
+
+    async def set_instructions(
+        self,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Instructions:
+        """
+        Parameters
+        ----------
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Instructions
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
         )
+
+
+        async def main() -> None:
+            await client.project.set_instructions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_instructions(
+            inherited=inherited,
+            instructions=instructions,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def get_observation_steering(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ObservationSteering:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ObservationSteering
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.get_observation_steering()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_observation_steering(request_options=request_options)
         return _response.data
 
     async def set_observation_steering(
         self,
         *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
+        inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
+        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ObservationSteeringConfig:
+    ) -> ObservationSteering:
         """
-        Replaces project, user, or graph steering. An empty configuration clears the project default or removes the user/graph override. Changes affect later materializer runs only. This API is experimental and may change in future releases.
-
         Parameters
         ----------
-        user_id : typing.Optional[str]
-            User ID for user-specific steering
-
-        graph_id : typing.Optional[str]
-            Graph ID for graph-specific steering
+        inherited : typing.Optional[bool]
 
         instruction : typing.Optional[str]
 
-        types : typing.Optional[typing.Sequence[ObservationType]]
+        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ObservationSteeringConfig
-            Updated
+        ObservationSteering
+            OK
 
         Examples
         --------
@@ -361,15 +616,186 @@ class AsyncProjectClient:
 
 
         async def main() -> None:
-            await client.project.set_observation_steering(
-                user_id="user_id",
-                graph_id="graph_id",
-            )
+            await client.project.set_observation_steering()
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.set_observation_steering(
-            user_id=user_id, graph_id=graph_id, instruction=instruction, types=types, request_options=request_options
+            inherited=inherited,
+            instruction=instruction,
+            types=types,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def get_ontology(self, *, request_options: typing.Optional[RequestOptions] = None) -> Ontology:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Ontology
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.get_ontology()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_ontology(request_options=request_options)
+        return _response.data
+
+    async def set_ontology(
+        self,
+        *,
+        edge_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> Ontology:
+        """
+        Parameters
+        ----------
+        edge_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        entity_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        inherited : typing.Optional[bool]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Ontology
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.set_ontology()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_ontology(
+            edge_types=edge_types,
+            entity_types=entity_types,
+            inherited=inherited,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def get_user_summary_instructions(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> UserSummaryInstructions:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserSummaryInstructions
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.get_user_summary_instructions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_user_summary_instructions(request_options=request_options)
+        return _response.data
+
+    async def set_user_summary_instructions(
+        self,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> UserSummaryInstructions:
+        """
+        Parameters
+        ----------
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserSummaryInstructions
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.set_user_summary_instructions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_user_summary_instructions(
+            inherited=inherited,
+            instructions=instructions,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
         )
         return _response.data

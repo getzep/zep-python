@@ -3,14 +3,13 @@
 import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
-from ..types.list_user_instructions_response import ListUserInstructionsResponse
-from ..types.success_response import SuccessResponse
-from ..types.thread import Thread
+from ..types.json_object import JsonObject
 from ..types.user import User
-from ..types.user_instruction import UserInstruction
-from ..types.user_list_response import UserListResponse
-from ..types.user_node_response import UserNodeResponse
+from ..types.user_delete_result import UserDeleteResult
+from ..types.user_page import UserPage
+from ..types.user_summary_instructions import UserSummaryInstructions
 from .raw_client import AsyncRawUserClient, RawUserClient
 
 # this is used as the default value for optional parameters
@@ -32,163 +31,37 @@ class UserClient:
         """
         return self._raw_client
 
-    def list_user_summary_instructions(
-        self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
-    ) -> ListUserInstructionsResponse:
-        """
-        Lists all user summary instructions for a project, user.
-
-        Parameters
-        ----------
-        user_id : typing.Optional[str]
-            User ID to get user-specific instructions
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        ListUserInstructionsResponse
-            The list of instructions.
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.user.list_user_summary_instructions(
-            user_id="user_id",
-        )
-        """
-        _response = self._raw_client.list_user_summary_instructions(user_id=user_id, request_options=request_options)
-        return _response.data
-
-    def add_user_summary_instructions(
+    def create(
         self,
         *,
-        instructions: typing.Sequence[UserInstruction],
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
-        """
-        Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
-
-        Parameters
-        ----------
-        instructions : typing.Sequence[UserInstruction]
-            Instructions to add to the user summary generation.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            Instructions added successfully
-
-        Examples
-        --------
-        from zep_cloud import UserInstruction, Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.user.add_user_summary_instructions(
-            instructions=[
-                UserInstruction(
-                    name="name",
-                    text="text",
-                )
-            ],
-        )
-        """
-        _response = self._raw_client.add_user_summary_instructions(
-            instructions=instructions, user_ids=user_ids, request_options=request_options
-        )
-        return _response.data
-
-    def delete_user_summary_instructions(
-        self,
-        *,
-        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
-        """
-        Deletes user summary/instructions for users or project wide defaults.
-
-        Parameters
-        ----------
-        instruction_names : typing.Optional[typing.Sequence[str]]
-            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            Instructions deleted successfully
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.user.delete_user_summary_instructions()
-        """
-        _response = self._raw_client.delete_user_summary_instructions(
-            instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
-        )
-        return _response.data
-
-    def add(
-        self,
-        *,
-        user_id: str,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        Adds a user.
-
         Parameters
         ----------
-        user_id : str
-            The unique identifier of the user.
-
         disable_default_ontology : typing.Optional[bool]
-            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
-            The email address of the user.
 
         first_name : typing.Optional[str]
-            The first name of the user.
 
         last_name : typing.Optional[str]
-            The last name of the user.
 
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            The metadata associated with the user.
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         time_zone : typing.Optional[str]
-            The user's IANA time zone. Null or omission leaves it unset at creation.
+
+        user_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -196,7 +69,7 @@ class UserClient:
         Returns
         -------
         User
-            The user that was added.
+            Created
 
         Examples
         --------
@@ -205,59 +78,58 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.add(
-            user_id="user_id",
-        )
+        client.user.create()
         """
-        _response = self._raw_client.add(
-            user_id=user_id,
+        _response = self._raw_client.create(
             disable_default_ontology=disable_default_ontology,
             email=email,
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
             time_zone=time_zone,
+            user_id=user_id,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data
 
-    def list_ordered(
+    def list(
         self,
         *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        search: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
+        order: typing.Optional[str] = None,
+        search: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> UserListResponse:
+    ) -> SyncPager[User, UserPage]:
         """
-        Returns all users.
-
         Parameters
         ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1
+        limit : typing.Optional[int]
+            Page size
 
-        page_size : typing.Optional[int]
-            Number of users to retrieve per page
-
-        search : typing.Optional[str]
-            Search term for filtering users by user_id, name, or email
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
         order_by : typing.Optional[str]
-            Column to sort by (created_at, user_id, email)
+            Sort field
 
-        asc : typing.Optional[bool]
-            Sort in ascending order
+        order : typing.Optional[str]
+            asc or desc
+
+        search : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        UserListResponse
-            Successfully retrieved list of users
+        SyncPager[User, UserPage]
+            OK
 
         Examples
         --------
@@ -266,32 +138,47 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.list_ordered(
-            page_number=1,
-            page_size=1,
-            search="search",
+        response = client.user.list(
+            limit=1,
+            cursor="cursor",
             order_by="order_by",
-            asc=True,
+            order="order",
         )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
         """
-        _response = self._raw_client.list_ordered(
-            page_number=page_number,
-            page_size=page_size,
-            search=search,
+        return self._raw_client.list(
+            limit=limit,
+            cursor=cursor,
             order_by=order_by,
-            asc=asc,
+            order=order,
+            search=search,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
-        return _response.data
 
-    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
+    def lookup(
+        self,
+        *,
+        graph_id: typing.Optional[str] = OMIT,
+        thread_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> User:
         """
-        Returns a user.
-
         Parameters
         ----------
-        user_id : str
-            The user_id of the user to get.
+        graph_id : typing.Optional[str]
+
+        thread_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -299,7 +186,40 @@ class UserClient:
         Returns
         -------
         User
-            The user that was retrieved.
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.lookup()
+        """
+        _response = self._raw_client.lookup(
+            graph_id=graph_id,
+            thread_id=thread_id,
+            user_id=user_id,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def get(self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
+        """
+        Parameters
+        ----------
+        user_uuid : str
+            User UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            OK
 
         Examples
         --------
@@ -309,28 +229,34 @@ class UserClient:
             api_key="YOUR_API_KEY",
         )
         client.user.get(
-            user_id="userId",
+            user_uuid="user_uuid",
         )
         """
-        _response = self._raw_client.get(user_id, request_options=request_options)
+        _response = self._raw_client.get(user_uuid, request_options=request_options)
         return _response.data
 
-    def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+    def delete(
+        self,
+        user_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> UserDeleteResult:
         """
-        Deletes a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
-            OK
+        UserDeleteResult
+            Accepted
 
         Examples
         --------
@@ -340,49 +266,49 @@ class UserClient:
             api_key="YOUR_API_KEY",
         )
         client.user.delete(
-            user_id="userId",
+            user_uuid="user_uuid",
         )
         """
-        _response = self._raw_client.delete(user_id, request_options=request_options)
+        _response = self._raw_client.delete(user_uuid, idempotency_key=idempotency_key, request_options=request_options)
         return _response.data
 
     def update(
         self,
-        user_id: str,
+        user_uuid: str,
         *,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        Updates a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
 
         disable_default_ontology : typing.Optional[bool]
-            When true, disables the use of default/fallback ontology for the user's graph.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         email : typing.Optional[str]
-            The email address of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         first_name : typing.Optional[str]
-            The first name of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         last_name : typing.Optional[str]
-            The last name of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            The metadata to update
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         time_zone : typing.Optional[str]
-            The user's IANA time zone. Null clears the existing value.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -390,79 +316,6 @@ class UserClient:
         Returns
         -------
         User
-            The user that was updated.
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.user.update(
-            user_id="userId",
-        )
-        """
-        _response = self._raw_client.update(
-            user_id,
-            disable_default_ontology=disable_default_ontology,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            metadata=metadata,
-            time_zone=time_zone,
-            request_options=request_options,
-        )
-        return _response.data
-
-    def get_node(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> UserNodeResponse:
-        """
-        Returns a user's node.
-
-        Parameters
-        ----------
-        user_id : str
-            The user_id of the user to get the node for.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        UserNodeResponse
-            Response object containing the User node.
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.user.get_node(
-            user_id="userId",
-        )
-        """
-        _response = self._raw_client.get_node(user_id, request_options=request_options)
-        return _response.data
-
-    def get_threads(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[Thread]:
-        """
-        Returns all threads for a user.
-
-        Parameters
-        ----------
-        user_id : str
-            User ID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[Thread]
             OK
 
         Examples
@@ -472,29 +325,37 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.get_threads(
-            user_id="userId",
+        client.user.update(
+            user_uuid="user_uuid",
         )
         """
-        _response = self._raw_client.get_threads(user_id, request_options=request_options)
+        _response = self._raw_client.update(
+            user_uuid,
+            disable_default_ontology=disable_default_ontology,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            metadata=metadata,
+            time_zone=time_zone,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
         return _response.data
 
-    def warm(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+    def get_node(self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> JsonObject:
         """
-        Hints Zep to warm a user's graph for low-latency search
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
-            Warm hint accepted
+        JsonObject
+            OK
 
         Examples
         --------
@@ -503,11 +364,91 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.user.warm(
-            user_id="userId",
+        client.user.get_node(
+            user_uuid="user_uuid",
         )
         """
-        _response = self._raw_client.warm(user_id, request_options=request_options)
+        _response = self._raw_client.get_node(user_uuid, request_options=request_options)
+        return _response.data
+
+    def get_summary_instructions(
+        self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> UserSummaryInstructions:
+        """
+        Parameters
+        ----------
+        user_uuid : str
+            User UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserSummaryInstructions
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.get_summary_instructions(
+            user_uuid="user_uuid",
+        )
+        """
+        _response = self._raw_client.get_summary_instructions(user_uuid, request_options=request_options)
+        return _response.data
+
+    def set_summary_instructions(
+        self,
+        user_uuid: str,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> UserSummaryInstructions:
+        """
+        Parameters
+        ----------
+        user_uuid : str
+            User UUID
+
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserSummaryInstructions
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.set_summary_instructions(
+            user_uuid="user_uuid",
+        )
+        """
+        _response = self._raw_client.set_summary_instructions(
+            user_uuid,
+            inherited=inherited,
+            instructions=instructions,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
         return _response.data
 
 
@@ -526,189 +467,37 @@ class AsyncUserClient:
         """
         return self._raw_client
 
-    async def list_user_summary_instructions(
-        self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
-    ) -> ListUserInstructionsResponse:
-        """
-        Lists all user summary instructions for a project, user.
-
-        Parameters
-        ----------
-        user_id : typing.Optional[str]
-            User ID to get user-specific instructions
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        ListUserInstructionsResponse
-            The list of instructions.
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.user.list_user_summary_instructions(
-                user_id="user_id",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.list_user_summary_instructions(
-            user_id=user_id, request_options=request_options
-        )
-        return _response.data
-
-    async def add_user_summary_instructions(
+    async def create(
         self,
         *,
-        instructions: typing.Sequence[UserInstruction],
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
-        """
-        Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
-
-        Parameters
-        ----------
-        instructions : typing.Sequence[UserInstruction]
-            Instructions to add to the user summary generation.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            Instructions added successfully
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep, UserInstruction
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.user.add_user_summary_instructions(
-                instructions=[
-                    UserInstruction(
-                        name="name",
-                        text="text",
-                    )
-                ],
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.add_user_summary_instructions(
-            instructions=instructions, user_ids=user_ids, request_options=request_options
-        )
-        return _response.data
-
-    async def delete_user_summary_instructions(
-        self,
-        *,
-        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SuccessResponse:
-        """
-        Deletes user summary/instructions for users or project wide defaults.
-
-        Parameters
-        ----------
-        instruction_names : typing.Optional[typing.Sequence[str]]
-            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            Instructions deleted successfully
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.user.delete_user_summary_instructions()
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.delete_user_summary_instructions(
-            instruction_names=instruction_names, user_ids=user_ids, request_options=request_options
-        )
-        return _response.data
-
-    async def add(
-        self,
-        *,
-        user_id: str,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        Adds a user.
-
         Parameters
         ----------
-        user_id : str
-            The unique identifier of the user.
-
         disable_default_ontology : typing.Optional[bool]
-            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
-            The email address of the user.
 
         first_name : typing.Optional[str]
-            The first name of the user.
 
         last_name : typing.Optional[str]
-            The last name of the user.
 
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            The metadata associated with the user.
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         time_zone : typing.Optional[str]
-            The user's IANA time zone. Null or omission leaves it unset at creation.
+
+        user_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -716,7 +505,7 @@ class AsyncUserClient:
         Returns
         -------
         User
-            The user that was added.
+            Created
 
         Examples
         --------
@@ -730,62 +519,61 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.add(
-                user_id="user_id",
-            )
+            await client.user.create()
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.add(
-            user_id=user_id,
+        _response = await self._raw_client.create(
             disable_default_ontology=disable_default_ontology,
             email=email,
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
             time_zone=time_zone,
+            user_id=user_id,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data
 
-    async def list_ordered(
+    async def list(
         self,
         *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        search: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
+        order: typing.Optional[str] = None,
+        search: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> UserListResponse:
+    ) -> AsyncPager[User, UserPage]:
         """
-        Returns all users.
-
         Parameters
         ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1
+        limit : typing.Optional[int]
+            Page size
 
-        page_size : typing.Optional[int]
-            Number of users to retrieve per page
-
-        search : typing.Optional[str]
-            Search term for filtering users by user_id, name, or email
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
         order_by : typing.Optional[str]
-            Column to sort by (created_at, user_id, email)
+            Sort field
 
-        asc : typing.Optional[bool]
-            Sort in ascending order
+        order : typing.Optional[str]
+            asc or desc
+
+        search : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        UserListResponse
-            Successfully retrieved list of users
+        AsyncPager[User, UserPage]
+            OK
 
         Examples
         --------
@@ -799,35 +587,51 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.list_ordered(
-                page_number=1,
-                page_size=1,
-                search="search",
+            response = await client.user.list(
+                limit=1,
+                cursor="cursor",
                 order_by="order_by",
-                asc=True,
+                order="order",
             )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list_ordered(
-            page_number=page_number,
-            page_size=page_size,
-            search=search,
+        return await self._raw_client.list(
+            limit=limit,
+            cursor=cursor,
             order_by=order_by,
-            asc=asc,
+            order=order,
+            search=search,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
-        return _response.data
 
-    async def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
+    async def lookup(
+        self,
+        *,
+        graph_id: typing.Optional[str] = OMIT,
+        thread_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> User:
         """
-        Returns a user.
-
         Parameters
         ----------
-        user_id : str
-            The user_id of the user to get.
+        graph_id : typing.Optional[str]
+
+        thread_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -835,7 +639,48 @@ class AsyncUserClient:
         Returns
         -------
         User
-            The user that was retrieved.
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.lookup()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.lookup(
+            graph_id=graph_id,
+            thread_id=thread_id,
+            user_id=user_id,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def get(self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> User:
+        """
+        Parameters
+        ----------
+        user_uuid : str
+            User UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            OK
 
         Examples
         --------
@@ -850,31 +695,37 @@ class AsyncUserClient:
 
         async def main() -> None:
             await client.user.get(
-                user_id="userId",
+                user_uuid="user_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(user_id, request_options=request_options)
+        _response = await self._raw_client.get(user_uuid, request_options=request_options)
         return _response.data
 
-    async def delete(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+    async def delete(
+        self,
+        user_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> UserDeleteResult:
         """
-        Deletes a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
-            OK
+        UserDeleteResult
+            Accepted
 
         Examples
         --------
@@ -889,52 +740,54 @@ class AsyncUserClient:
 
         async def main() -> None:
             await client.user.delete(
-                user_id="userId",
+                user_uuid="user_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.delete(user_id, request_options=request_options)
+        _response = await self._raw_client.delete(
+            user_uuid, idempotency_key=idempotency_key, request_options=request_options
+        )
         return _response.data
 
     async def update(
         self,
-        user_id: str,
+        user_uuid: str,
         *,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
-        Updates a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
 
         disable_default_ontology : typing.Optional[bool]
-            When true, disables the use of default/fallback ontology for the user's graph.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         email : typing.Optional[str]
-            The email address of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         first_name : typing.Optional[str]
-            The first name of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         last_name : typing.Optional[str]
-            The last name of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            The metadata to update
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         time_zone : typing.Optional[str]
-            The user's IANA time zone. Null clears the existing value.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -942,97 +795,6 @@ class AsyncUserClient:
         Returns
         -------
         User
-            The user that was updated.
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.user.update(
-                user_id="userId",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.update(
-            user_id,
-            disable_default_ontology=disable_default_ontology,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            metadata=metadata,
-            time_zone=time_zone,
-            request_options=request_options,
-        )
-        return _response.data
-
-    async def get_node(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> UserNodeResponse:
-        """
-        Returns a user's node.
-
-        Parameters
-        ----------
-        user_id : str
-            The user_id of the user to get the node for.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        UserNodeResponse
-            Response object containing the User node.
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.user.get_node(
-                user_id="userId",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get_node(user_id, request_options=request_options)
-        return _response.data
-
-    async def get_threads(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.List[Thread]:
-        """
-        Returns all threads for a user.
-
-        Parameters
-        ----------
-        user_id : str
-            User ID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[Thread]
             OK
 
         Examples
@@ -1047,32 +809,40 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.get_threads(
-                user_id="userId",
+            await client.user.update(
+                user_uuid="user_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_threads(user_id, request_options=request_options)
+        _response = await self._raw_client.update(
+            user_uuid,
+            disable_default_ontology=disable_default_ontology,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            metadata=metadata,
+            time_zone=time_zone,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
         return _response.data
 
-    async def warm(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+    async def get_node(self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> JsonObject:
         """
-        Hints Zep to warm a user's graph for low-latency search
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
-            Warm hint accepted
+        JsonObject
+            OK
 
         Examples
         --------
@@ -1086,12 +856,108 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            await client.user.warm(
-                user_id="userId",
+            await client.user.get_node(
+                user_uuid="user_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.warm(user_id, request_options=request_options)
+        _response = await self._raw_client.get_node(user_uuid, request_options=request_options)
+        return _response.data
+
+    async def get_summary_instructions(
+        self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> UserSummaryInstructions:
+        """
+        Parameters
+        ----------
+        user_uuid : str
+            User UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserSummaryInstructions
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.get_summary_instructions(
+                user_uuid="user_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_summary_instructions(user_uuid, request_options=request_options)
+        return _response.data
+
+    async def set_summary_instructions(
+        self,
+        user_uuid: str,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> UserSummaryInstructions:
+        """
+        Parameters
+        ----------
+        user_uuid : str
+            User UUID
+
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        UserSummaryInstructions
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.set_summary_instructions(
+                user_uuid="user_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_summary_instructions(
+            user_uuid,
+            inherited=inherited,
+            instructions=instructions,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
         return _response.data

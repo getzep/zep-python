@@ -7,38 +7,26 @@ from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.jsonable_encoder import jsonable_encoder
+from ..core.pagination import AsyncPager, SyncPager
+from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
-from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
-from ..errors.forbidden_error import ForbiddenError
-from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.add_node_item import AddNodeItem
-from ..types.add_nodes_response import AddNodesResponse
-from ..types.add_triple_response import AddTripleResponse
+from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.clone_graph_response import CloneGraphResponse
-from ..types.custom_instruction import CustomInstruction
-from ..types.detect_config import DetectConfig
-from ..types.detect_patterns_response import DetectPatternsResponse
-from ..types.edge_type import EdgeType
-from ..types.entity_type import EntityType
-from ..types.entity_type_response import EntityTypeResponse
-from ..types.episode import Episode
-from ..types.episode_data import EpisodeData
+from ..types.async_result import AsyncResult
+from ..types.clone_graph_result import CloneGraphResult
 from ..types.graph import Graph
-from ..types.graph_data_type import GraphDataType
-from ..types.graph_list_response import GraphListResponse
-from ..types.graph_search_results import GraphSearchResults
-from ..types.graph_search_scope import GraphSearchScope
-from ..types.graph_subgraph_response import GraphSubgraphResponse
-from ..types.list_custom_instructions_response import ListCustomInstructionsResponse
-from ..types.pattern_seeds import PatternSeeds
-from ..types.recency_weight import RecencyWeight
-from ..types.reranker import Reranker
-from ..types.search_filters import SearchFilters
-from ..types.success_response import SuccessResponse
+from ..types.graph_context_response import GraphContextResponse
+from ..types.graph_delete_result import GraphDeleteResult
+from ..types.graph_page import GraphPage
+from ..types.instructions import Instructions
+from ..types.json_object import JsonObject
+from ..types.json_object_page import JsonObjectPage
+from ..types.observation_steering import ObservationSteering
+from ..types.ontology import Ontology
+from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -48,966 +36,28 @@ class RawGraphClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_custom_instructions(
-        self,
-        *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ListCustomInstructionsResponse]:
-        """
-        Lists all custom instructions for a project, user, or graph.
-
-        Parameters
-        ----------
-        user_id : typing.Optional[str]
-            User ID to get user-specific instructions
-
-        graph_id : typing.Optional[str]
-            Graph ID to get graph-specific instructions
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[ListCustomInstructionsResponse]
-            The list of instructions.
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "custom-instructions",
-            method="GET",
-            params={
-                "user_id": user_id,
-                "graph_id": graph_id,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ListCustomInstructionsResponse,
-                    parse_obj_as(
-                        type_=ListCustomInstructionsResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def add_custom_instructions(
-        self,
-        *,
-        instructions: typing.Sequence[CustomInstruction],
-        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[SuccessResponse]:
-        """
-        Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
-
-        Parameters
-        ----------
-        instructions : typing.Sequence[CustomInstruction]
-            Instructions to add to the graph.
-
-        graph_ids : typing.Optional[typing.Sequence[str]]
-            Graph IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[SuccessResponse]
-            Instructions added successfully
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "custom-instructions",
-            method="POST",
-            json={
-                "graph_ids": graph_ids,
-                "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[CustomInstruction], direction="write"
-                ),
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def delete_custom_instructions(
-        self,
-        *,
-        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[SuccessResponse]:
-        """
-        Deletes custom instructions for graphs or project wide defaults.
-
-        Parameters
-        ----------
-        graph_ids : typing.Optional[typing.Sequence[str]]
-            Determines which group graphs will have their custom instructions deleted. If no graphs are provided, the project-wide custom instructions will be affected.
-
-        instruction_names : typing.Optional[typing.Sequence[str]]
-            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            Determines which user graphs will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be affected.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[SuccessResponse]
-            Instructions deleted successfully
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "custom-instructions",
-            method="DELETE",
-            json={
-                "graph_ids": graph_ids,
-                "instruction_names": instruction_names,
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def list_entity_types(
-        self,
-        *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[EntityTypeResponse]:
-        """
-        Returns all entity types for a project, user, or graph.
-
-        Parameters
-        ----------
-        user_id : typing.Optional[str]
-            User ID to get user-specific entity types
-
-        graph_id : typing.Optional[str]
-            Graph ID to get graph-specific entity types
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[EntityTypeResponse]
-            The list of entity types.
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "entity-types",
-            method="GET",
-            params={
-                "user_id": user_id,
-                "graph_id": graph_id,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    EntityTypeResponse,
-                    parse_obj_as(
-                        type_=EntityTypeResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def set_entity_types_internal(
-        self,
-        *,
-        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
-        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
-        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[SuccessResponse]:
-        """
-        Sets the entity types for multiple users and graphs, replacing any existing ones.
-
-        Parameters
-        ----------
-        edge_types : typing.Optional[typing.Sequence[EdgeType]]
-
-        entity_types : typing.Optional[typing.Sequence[EntityType]]
-
-        graph_ids : typing.Optional[typing.Sequence[str]]
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[SuccessResponse]
-            Entity types set successfully
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "entity-types",
-            method="PUT",
-            json={
-                "edge_types": convert_and_respect_annotation_metadata(
-                    object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
-                ),
-                "entity_types": convert_and_respect_annotation_metadata(
-                    object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
-                ),
-                "graph_ids": graph_ids,
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def add(
-        self,
-        *,
-        data: str,
-        type: GraphDataType,
-        created_at: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        source_description: typing.Optional[str] = OMIT,
-        strict_ontology: typing.Optional[bool] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[Episode]:
-        """
-        Add data to the graph.
-
-        Parameters
-        ----------
-        data : str
-
-        type : GraphDataType
-
-        created_at : typing.Optional[str]
-
-        graph_id : typing.Optional[str]
-            graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
-
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
-
-        source_description : typing.Optional[str]
-
-        strict_ontology : typing.Optional[bool]
-            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
-
-        user_id : typing.Optional[str]
-            User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[Episode]
-            Added episode
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graph",
-            method="POST",
-            json={
-                "created_at": created_at,
-                "data": data,
-                "graph_id": graph_id,
-                "metadata": metadata,
-                "source_description": source_description,
-                "strict_ontology": strict_ontology,
-                "type": type,
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    Episode,
-                    parse_obj_as(
-                        type_=Episode,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def add_batch(
-        self,
-        *,
-        episodes: typing.Sequence[EpisodeData],
-        graph_id: typing.Optional[str] = OMIT,
-        strict_ontology: typing.Optional[bool] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[Episode]]:
-        """
-        Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*`) instead.
-
-        Adds data to the graph in batch mode, processing episodes concurrently.
-
-        Parameters
-        ----------
-        episodes : typing.Sequence[EpisodeData]
-
-        graph_id : typing.Optional[str]
-            graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
-
-        strict_ontology : typing.Optional[bool]
-            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
-
-        user_id : typing.Optional[str]
-            User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[typing.List[Episode]]
-            Added episodes
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graph-batch",
-            method="POST",
-            json={
-                "episodes": convert_and_respect_annotation_metadata(
-                    object_=episodes, annotation=typing.Sequence[EpisodeData], direction="write"
-                ),
-                "graph_id": graph_id,
-                "strict_ontology": strict_ontology,
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    typing.List[Episode],
-                    parse_obj_as(
-                        type_=typing.List[Episode],  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def add_fact_triple(
-        self,
-        *,
-        fact: str,
-        fact_name: str,
-        created_at: typing.Optional[str] = OMIT,
-        edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
-        source_node_name: typing.Optional[str] = OMIT,
-        source_node_summary: typing.Optional[str] = OMIT,
-        source_node_uuid: typing.Optional[str] = OMIT,
-        target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        target_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
-        target_node_name: typing.Optional[str] = OMIT,
-        target_node_summary: typing.Optional[str] = OMIT,
-        target_node_uuid: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[AddTripleResponse]:
-        """
-        Add a fact triple for a user or group
-
-        Parameters
-        ----------
-        fact : str
-            The fact relating the two nodes that this edge represents
-
-        fact_name : str
-            The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
-
-        created_at : typing.Optional[str]
-            The timestamp of the message
-
-        edge_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Additional attributes of the edge. Values must be scalar types (string, number, boolean, or null).
-            Nested objects and arrays are not allowed.
-
-        expired_at : typing.Optional[str]
-            The time (if any) at which the edge expires
-
-        graph_id : typing.Optional[str]
-
-        invalid_at : typing.Optional[str]
-            The time (if any) at which the fact stops being true
-
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs for the shadow episode created for this fact triple.
-            Max 10 keys. Values must be strings, numbers, or booleans.
-
-        source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
-            Nested objects and arrays are not allowed.
-
-        source_node_labels : typing.Optional[typing.Sequence[str]]
-            The labels for the source node. At most one entity-type label may be
-            provided so that manually-added triples remain consistent with automatic
-            episode extraction, which assigns one best-match entity type per node.
-            The base "Entity" label is added implicitly by the graph layer on save
-            and does not need to be supplied here.
-
-        source_node_name : typing.Optional[str]
-            The name of the source node to add
-
-        source_node_summary : typing.Optional[str]
-            The summary of the source node to add
-
-        source_node_uuid : typing.Optional[str]
-            The source node uuid
-
-        target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
-            Nested objects and arrays are not allowed.
-
-        target_node_labels : typing.Optional[typing.Sequence[str]]
-            The labels for the target node. At most one entity-type label may be
-            provided so that manually-added triples remain consistent with automatic
-            episode extraction, which assigns one best-match entity type per node.
-            The base "Entity" label is added implicitly by the graph layer on save
-            and does not need to be supplied here.
-
-        target_node_name : typing.Optional[str]
-            The name of the target node to add
-
-        target_node_summary : typing.Optional[str]
-            The summary of the target node to add
-
-        target_node_uuid : typing.Optional[str]
-            The target node uuid
-
-        user_id : typing.Optional[str]
-
-        valid_at : typing.Optional[str]
-            The time at which the fact becomes true
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[AddTripleResponse]
-            Resulting triple
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graph/add-fact-triple",
-            method="POST",
-            json={
-                "created_at": created_at,
-                "edge_attributes": edge_attributes,
-                "expired_at": expired_at,
-                "fact": fact,
-                "fact_name": fact_name,
-                "graph_id": graph_id,
-                "invalid_at": invalid_at,
-                "metadata": metadata,
-                "source_node_attributes": source_node_attributes,
-                "source_node_labels": source_node_labels,
-                "source_node_name": source_node_name,
-                "source_node_summary": source_node_summary,
-                "source_node_uuid": source_node_uuid,
-                "target_node_attributes": target_node_attributes,
-                "target_node_labels": target_node_labels,
-                "target_node_name": target_node_name,
-                "target_node_summary": target_node_summary,
-                "target_node_uuid": target_node_uuid,
-                "user_id": user_id,
-                "valid_at": valid_at,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    AddTripleResponse,
-                    parse_obj_as(
-                        type_=AddTripleResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def clone(
-        self,
-        *,
-        source_graph_id: typing.Optional[str] = OMIT,
-        source_user_id: typing.Optional[str] = OMIT,
-        target_graph_id: typing.Optional[str] = OMIT,
-        target_user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[CloneGraphResponse]:
-        """
-        Clone a user or group graph.
-
-        Parameters
-        ----------
-        source_graph_id : typing.Optional[str]
-            source_graph_id is the ID of the graph to be cloned. Required if source_user_id is not provided
-
-        source_user_id : typing.Optional[str]
-            user_id of the user whose graph is being cloned. Required if source_graph_id is not provided
-
-        target_graph_id : typing.Optional[str]
-            target_graph_id is the ID to be set on the cloned graph. Must not point to an existing graph. Required if target_user_id is not provided.
-
-        target_user_id : typing.Optional[str]
-            user_id to be set on the cloned user. Must not point to an existing user. Required if target_graph_id is not provided.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[CloneGraphResponse]
-            Response object containing graph_id or user_id pointing to the new graph
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graph/clone",
-            method="POST",
-            json={
-                "source_graph_id": source_graph_id,
-                "source_user_id": source_user_id,
-                "target_graph_id": target_graph_id,
-                "target_user_id": target_user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CloneGraphResponse,
-                    parse_obj_as(
-                        type_=CloneGraphResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
     def create(
         self,
         *,
-        graph_id: str,
         description: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Graph]:
         """
-        Creates a new graph.
-
         Parameters
         ----------
-        graph_id : str
-
         description : typing.Optional[str]
+
+        graph_id : typing.Optional[str]
 
         name : typing.Optional[str]
 
         time_zone : typing.Optional[str]
-            The graph's IANA time zone. Stored on its group-backed subject.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1015,10 +65,10 @@ class RawGraphClient:
         Returns
         -------
         HttpResponse[Graph]
-            The added graph
+            Created
         """
         _response = self._client_wrapper.httpx_client.request(
-            "graph/create",
+            "graphs",
             method="POST",
             json={
                 "description": description,
@@ -1028,6 +78,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -1046,15 +97,26 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1069,83 +131,95 @@ class RawGraphClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def list_all(
+    def list(
         self,
         *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        search: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
+        order: typing.Optional[str] = None,
+        search: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[GraphListResponse]:
+    ) -> SyncPager[Graph, GraphPage]:
         """
-        Returns all graphs. In order to list users, use user.list_ordered instead
-
         Parameters
         ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1.
+        limit : typing.Optional[int]
+            Page size
 
-        page_size : typing.Optional[int]
-            Number of graphs to retrieve per page (default 50, range 1-100; explicit 0 is invalid).
-
-        search : typing.Optional[str]
-            Search term for filtering graphs by graph_id, name, or description. Queries longer than 200 Unicode code points after whitespace normalization are invalid.
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
         order_by : typing.Optional[str]
-            Column to sort by (created_at, graph_id, name).
+            Sort field
 
-        asc : typing.Optional[bool]
-            Sort in ascending order.
+        order : typing.Optional[str]
+            asc or desc
+
+        search : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[GraphListResponse]
-            Successfully retrieved list of graphs.
+        SyncPager[Graph, GraphPage]
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            "graph/list-all",
-            method="GET",
+            "graphs/list",
+            method="POST",
             params={
-                "pageNumber": page_number,
-                "pageSize": page_size,
-                "search": search,
+                "limit": limit,
+                "cursor": cursor,
                 "order_by": order_by,
-                "asc": asc,
+                "order": order,
+            },
+            json={
+                "search": search,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GraphListResponse,
+                _parsed_response = typing.cast(
+                    GraphPage,
                     parse_obj_as(
-                        type_=GraphListResponse,  # type: ignore
+                        type_=GraphPage,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return HttpResponse(response=_response, data=_data)
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list(
+                    limit=limit,
+                    cursor=_parsed_next,
+                    order_by=order_by,
+                    order=order,
+                    search=search,
+                    idempotency_key=idempotency_key,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
             if _response.status_code == 400:
                 raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1155,221 +229,8 @@ class RawGraphClient:
                         ),
                     ),
                 )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def add_nodes(
-        self,
-        *,
-        nodes: typing.Sequence[AddNodeItem],
-        graph_id: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[AddNodesResponse]:
-        """
-        Add entity nodes to a user or graph directly, without episode ingestion. Up to 100 nodes per request.
-
-        Parameters
-        ----------
-        nodes : typing.Sequence[AddNodeItem]
-            The nodes to add. 1 to 100 items.
-
-        graph_id : typing.Optional[str]
-
-        user_id : typing.Optional[str]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[AddNodesResponse]
-            Accepted
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graph/nodes",
-            method="POST",
-            json={
-                "graph_id": graph_id,
-                "nodes": convert_and_respect_annotation_metadata(
-                    object_=nodes, annotation=typing.Sequence[AddNodeItem], direction="write"
-                ),
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    AddNodesResponse,
-                    parse_obj_as(
-                        type_=AddNodesResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def detect_patterns(
-        self,
-        *,
-        detect: typing.Optional[DetectConfig] = OMIT,
-        edge_limit: typing.Optional[int] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        min_occurrences: typing.Optional[int] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        query_limit: typing.Optional[int] = OMIT,
-        recency_weight: typing.Optional[RecencyWeight] = OMIT,
-        search_filters: typing.Optional[SearchFilters] = OMIT,
-        seeds: typing.Optional[PatternSeeds] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[DetectPatternsResponse]:
-        """
-        Detects structural patterns in a knowledge graph including relationship frequencies,
-        multi-hop paths, co-occurrences, hubs, and clusters.
-        When a query is provided, uses hybrid search to discover seed nodes,
-        detects triple-frequency patterns, and returns resolved edges ranked by relevance.
-
-        Parameters
-        ----------
-        detect : typing.Optional[DetectConfig]
-            Which pattern types to detect with type-specific configuration.
-            Omit to detect all types with defaults. Ignored when query is set.
-
-        edge_limit : typing.Optional[int]
-            Max resolved edges per pattern. Default: 10, Max: 100. Only used with query.
-
-        graph_id : typing.Optional[str]
-            Graph ID when detecting patterns on a named graph
-
-        limit : typing.Optional[int]
-            Max patterns to return. Default: 50, Max: 200
-
-        min_occurrences : typing.Optional[int]
-            Minimum occurrence count to report a pattern. Default: 2
-
-        query : typing.Optional[str]
-            Search query for discovering seed nodes via hybrid search.
-            When set, forces triple-frequency detection only and enables edge resolution
-            with cross-encoder reranking. Mutually exclusive with seeds.
-
-        query_limit : typing.Optional[int]
-            Max seed nodes from search. Default: 10, Max: 50. Only used with query.
-
-        recency_weight : typing.Optional[RecencyWeight]
-            Exponential half-life decay applied to edge created_at timestamps.
-            Valid values: none, 7_days, 30_days, 90_days. Default: none
-
-        search_filters : typing.Optional[SearchFilters]
-            Filters which edges/nodes participate in pattern detection.
-            Reuses the same filter format as /graph/search.
-
-        seeds : typing.Optional[PatternSeeds]
-            Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
-
-        user_id : typing.Optional[str]
-            User ID when detecting patterns on a user graph
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[DetectPatternsResponse]
-            Detected patterns
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graph/patterns",
-            method="POST",
-            json={
-                "detect": convert_and_respect_annotation_metadata(
-                    object_=detect, annotation=DetectConfig, direction="write"
-                ),
-                "edge_limit": edge_limit,
-                "graph_id": graph_id,
-                "limit": limit,
-                "min_occurrences": min_occurrences,
-                "query": query,
-                "query_limit": query_limit,
-                "recency_weight": recency_weight,
-                "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=SearchFilters, direction="write"
-                ),
-                "seeds": convert_and_respect_annotation_metadata(
-                    object_=seeds, annotation=PatternSeeds, direction="write"
-                ),
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    DetectPatternsResponse,
-                    parse_obj_as(
-                        type_=DetectPatternsResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1390,315 +251,38 @@ class RawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def search(
+    def lookup(
         self,
         *,
-        query: str,
-        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
-        center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        max_characters: typing.Optional[int] = OMIT,
-        mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[Reranker] = OMIT,
-        return_raw_results: typing.Optional[bool] = OMIT,
-        scope: typing.Optional[GraphSearchScope] = OMIT,
-        search_filters: typing.Optional[SearchFilters] = OMIT,
+        thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[GraphSearchResults]:
+    ) -> HttpResponse[Graph]:
         """
-        Perform a graph search query.
-
         Parameters
         ----------
-        query : str
-            The string to search for (required)
-
-        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
-            Nodes that are the origins of the BFS searches
-
-        center_node_uuid : typing.Optional[str]
-            Node to rerank around for node distance reranking
-
         graph_id : typing.Optional[str]
-            The graph_id to search in. When searching user graph, please use user_id instead.
 
-        limit : typing.Optional[int]
-            The maximum number of facts to retrieve for non-auto scopes. Defaults to 10. Limited to 50. Ignored when scope=auto.
-
-        max_characters : typing.Optional[int]
-            Maximum total characters across all selected results when scope=auto. Defaults to 2500. Limited to 50000.
-
-        mmr_lambda : typing.Optional[float]
-            weighting for maximal marginal relevance
-
-        reranker : typing.Optional[Reranker]
-            Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
-            auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
-            episode_mentions ranks edge candidates by how many of the episodes listed
-            in search_filters.episode_uuids mention them; without episode_uuids it has
-            no effect and results are ranked as if no reranker were specified.
-
-        return_raw_results : typing.Optional[bool]
-            When scope=auto, include the selected raw graph results alongside the materialized context block.
-            For graph-service-backed auto mode, selected raw results may include episodes,
-            edges, nodes, observations, and thread_summaries.
-
-        scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges.
-
-        search_filters : typing.Optional[SearchFilters]
-            Search filters to apply to the search
+        thread_id : typing.Optional[str]
 
         user_id : typing.Optional[str]
-            The user_id when searching user graph. If not searching user graph, please use graph_id instead.
 
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[GraphSearchResults]
-            Graph search results or auto-context block
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graph/search",
-            method="POST",
-            json={
-                "bfs_origin_node_uuids": bfs_origin_node_uuids,
-                "center_node_uuid": center_node_uuid,
-                "graph_id": graph_id,
-                "limit": limit,
-                "max_characters": max_characters,
-                "mmr_lambda": mmr_lambda,
-                "query": query,
-                "reranker": reranker,
-                "return_raw_results": return_raw_results,
-                "scope": scope,
-                "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=SearchFilters, direction="write"
-                ),
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GraphSearchResults,
-                    parse_obj_as(
-                        type_=GraphSearchResults,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def get_subgraph(
-        self,
-        *,
-        seed_node_uuids: typing.Sequence[str],
-        depth: typing.Optional[int] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        max_edges: typing.Optional[int] = OMIT,
-        max_nodes: typing.Optional[int] = OMIT,
-        search_filters: typing.Optional[SearchFilters] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[GraphSubgraphResponse]:
-        """
-        Returns the bounded neighborhood of a set of seed nodes as a single {nodes, edges} payload: breadth-first expansion up to a caller-specified depth, subject to explicit budgets, with explicit truncation reporting.
-
-        Parameters
-        ----------
-        seed_node_uuids : typing.Sequence[str]
-            Seed node UUIDs to expand from, in traversal-priority order: seeds are
-            admitted before any expansion, in this order, and count toward
-            max_nodes first. 1-20 entries, required. Seeds that do not exist in
-            the target graph are ignored, not an error.
-
-        depth : typing.Optional[int]
-            Maximum traversal depth from the seeds. 1-3. Defaults to 1.
-
-        direction : typing.Optional[str]
-            Edge orientation followed during expansion, relative to each frontier
-            node: "in" | "out" | "both". Defaults to "both".
-
-        graph_id : typing.Optional[str]
-            graph_id identifies the target named graph. Exactly one of user_id or
-            graph_id is required.
-
-        max_edges : typing.Optional[int]
-            Maximum number of edges in the response. 1-1000. Defaults to 200.
-
-        max_nodes : typing.Optional[int]
-            Maximum number of nodes in the response, including admitted seeds.
-            1-500. Defaults to 100.
-
-        search_filters : typing.Optional[SearchFilters]
-            Filters constraining traversed edges and included nodes. Reuses the
-            graph.search filter type. search_filters.episode_metadata_filters is
-            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
-
-        user_id : typing.Optional[str]
-            user_id identifies the target user graph. Exactly one of user_id or
-            graph_id is required.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[GraphSubgraphResponse]
-            Subgraph
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "graph/subgraph",
-            method="POST",
-            json={
-                "depth": depth,
-                "direction": direction,
-                "graph_id": graph_id,
-                "max_edges": max_edges,
-                "max_nodes": max_nodes,
-                "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=SearchFilters, direction="write"
-                ),
-                "seed_node_uuids": seed_node_uuids,
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GraphSubgraphResponse,
-                    parse_obj_as(
-                        type_=GraphSubgraphResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def get(self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[Graph]:
-        """
-        Returns a graph.
-
-        Parameters
-        ----------
-        graph_id : str
-            The graph_id of the graph to get.
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1706,12 +290,22 @@ class RawGraphClient:
         Returns
         -------
         HttpResponse[Graph]
-            The graph that was retrieved.
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/{jsonable_encoder(graph_id)}",
-            method="GET",
+            "graphs/lookup",
+            method="POST",
+            json={
+                "graph_id": graph_id,
+                "thread_id": thread_id,
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
@@ -1723,8 +317,8 @@ class RawGraphClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1734,8 +328,19 @@ class RawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1750,40 +355,40 @@ class RawGraphClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def delete(
-        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[SuccessResponse]:
+    def get(self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[Graph]:
         """
-        Deletes a graph. If you would like to delete a user graph, make sure to use user.delete instead.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
+        graph_uuid : str
+            Graph UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
-            Deleted
+        HttpResponse[Graph]
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/{jsonable_encoder(graph_id)}",
-            method="DELETE",
+            f"graphs/{jsonable_encoder(graph_uuid)}",
+            method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    Graph,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=Graph,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1792,9 +397,20 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1810,8 +426,84 @@ class RawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def delete(
+        self,
+        graph_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[GraphDeleteResult]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[GraphDeleteResult]
+            Accepted
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}",
+            method="DELETE",
+            headers={
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphDeleteResult,
+                    parse_obj_as(
+                        type_=GraphDeleteResult,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1825,6 +517,10 @@ class RawGraphClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
@@ -1832,27 +528,30 @@ class RawGraphClient:
 
     def update(
         self,
-        graph_id: str,
+        graph_uuid: str,
         *,
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Graph]:
         """
-        Updates information about a graph.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
+        graph_uuid : str
+            Graph UUID
 
         description : typing.Optional[str]
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         name : typing.Optional[str]
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         time_zone : typing.Optional[str]
-            The graph's IANA time zone. Stored on its group-backed subject.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1860,10 +559,10 @@ class RawGraphClient:
         Returns
         -------
         HttpResponse[Graph]
-            The updated graph object
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/{jsonable_encoder(graph_id)}",
+            f"graphs/{jsonable_encoder(graph_uuid)}",
             method="PATCH",
             json={
                 "description": description,
@@ -1872,6 +571,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -1890,15 +590,15 @@ class RawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1908,8 +608,8 @@ class RawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1924,46 +624,65 @@ class RawGraphClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def warm(
-        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[SuccessResponse]:
+    def clone(
+        self,
+        graph_uuid: str,
+        *,
+        target_graph_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[CloneGraphResult]:
         """
-        Hints Zep to warm a graph for low-latency search
-
         Parameters
         ----------
-        graph_id : str
-            The graph_id of the graph to warm.
+        graph_uuid : str
+            Graph UUID
+
+        target_graph_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
-            Warm hint accepted
+        HttpResponse[CloneGraphResult]
+            Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graph/{jsonable_encoder(graph_id)}/warm",
-            method="GET",
+            f"graphs/{jsonable_encoder(graph_uuid)}/clone",
+            method="POST",
+            json={
+                "target_graph_id": target_graph_id,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    CloneGraphResult,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=CloneGraphResult,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1973,8 +692,19 @@ class RawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1988,6 +718,1581 @@ class RawGraphClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_context(
+        self,
+        graph_uuid: str,
+        *,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        include_results: typing.Optional[bool] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        recency_bias: typing.Optional[str] = OMIT,
+        template_uuid: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[GraphContextResponse]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        include_results : typing.Optional[bool]
+
+        max_characters : typing.Optional[int]
+
+        query : typing.Optional[str]
+
+        recency_bias : typing.Optional[str]
+
+        template_uuid : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[GraphContextResponse]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/context",
+            method="POST",
+            json={
+                "filters": filters,
+                "include_results": include_results,
+                "max_characters": max_characters,
+                "query": query,
+                "recency_bias": recency_bias,
+                "template_uuid": template_uuid,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphContextResponse,
+                    parse_obj_as(
+                        type_=GraphContextResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_instructions(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[Instructions]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[Instructions]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/instructions",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Instructions,
+                    parse_obj_as(
+                        type_=Instructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def set_instructions(
+        self,
+        graph_uuid: str,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[Instructions]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[Instructions]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/instructions",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instructions": instructions,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Instructions,
+                    parse_obj_as(
+                        type_=Instructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_observation_steering(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[ObservationSteering]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ObservationSteering]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/observation-steering",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ObservationSteering,
+                    parse_obj_as(
+                        type_=ObservationSteering,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def set_observation_steering(
+        self,
+        graph_uuid: str,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instruction: typing.Optional[str] = OMIT,
+        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[ObservationSteering]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        inherited : typing.Optional[bool]
+
+        instruction : typing.Optional[str]
+
+        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ObservationSteering]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/observation-steering",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instruction": instruction,
+                "types": types,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ObservationSteering,
+                    parse_obj_as(
+                        type_=ObservationSteering,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_ontology(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[Ontology]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[Ontology]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/ontology",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Ontology,
+                    parse_obj_as(
+                        type_=Ontology,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def set_ontology(
+        self,
+        graph_uuid: str,
+        *,
+        edge_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[Ontology]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        edge_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        entity_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        inherited : typing.Optional[bool]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[Ontology]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/ontology",
+            method="PUT",
+            json={
+                "edge_types": edge_types,
+                "entity_types": entity_types,
+                "inherited": inherited,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Ontology,
+                    parse_obj_as(
+                        type_=Ontology,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def search_edges(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/edges",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.search_edges(
+                    graph_uuid,
+                    limit=limit,
+                    cursor=_parsed_next,
+                    bfs_origin_node_uuids=bfs_origin_node_uuids,
+                    center_node_uuid=center_node_uuid,
+                    filters=filters,
+                    mmr_lambda=mmr_lambda,
+                    query=query,
+                    reranker=reranker,
+                    idempotency_key=idempotency_key,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def search_episodes(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/episodes",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.search_episodes(
+                    graph_uuid,
+                    limit=limit,
+                    cursor=_parsed_next,
+                    bfs_origin_node_uuids=bfs_origin_node_uuids,
+                    center_node_uuid=center_node_uuid,
+                    filters=filters,
+                    mmr_lambda=mmr_lambda,
+                    query=query,
+                    reranker=reranker,
+                    idempotency_key=idempotency_key,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def search_nodes(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/nodes",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.search_nodes(
+                    graph_uuid,
+                    limit=limit,
+                    cursor=_parsed_next,
+                    bfs_origin_node_uuids=bfs_origin_node_uuids,
+                    center_node_uuid=center_node_uuid,
+                    filters=filters,
+                    mmr_lambda=mmr_lambda,
+                    query=query,
+                    reranker=reranker,
+                    idempotency_key=idempotency_key,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def search_observations(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/observations",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.search_observations(
+                    graph_uuid,
+                    limit=limit,
+                    cursor=_parsed_next,
+                    bfs_origin_node_uuids=bfs_origin_node_uuids,
+                    center_node_uuid=center_node_uuid,
+                    filters=filters,
+                    mmr_lambda=mmr_lambda,
+                    query=query,
+                    reranker=reranker,
+                    idempotency_key=idempotency_key,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def search_thread_summaries(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/thread-summaries",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.search_thread_summaries(
+                    graph_uuid,
+                    limit=limit,
+                    cursor=_parsed_next,
+                    bfs_origin_node_uuids=bfs_origin_node_uuids,
+                    center_node_uuid=center_node_uuid,
+                    filters=filters,
+                    mmr_lambda=mmr_lambda,
+                    query=query,
+                    reranker=reranker,
+                    idempotency_key=idempotency_key,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_subgraph(
+        self,
+        graph_uuid: str,
+        *,
+        depth: typing.Optional[int] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        max_edges: typing.Optional[int] = OMIT,
+        max_nodes: typing.Optional[int] = OMIT,
+        seed_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[JsonObject]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        depth : typing.Optional[int]
+
+        direction : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        max_edges : typing.Optional[int]
+
+        max_nodes : typing.Optional[int]
+
+        seed_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[JsonObject]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/subgraph",
+            method="POST",
+            json={
+                "depth": depth,
+                "direction": direction,
+                "filters": filters,
+                "max_edges": max_edges,
+                "max_nodes": max_nodes,
+                "seed_node_uuids": seed_node_uuids,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    JsonObject,
+                    parse_obj_as(
+                        type_=JsonObject,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def warm(
+        self,
+        graph_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[AsyncResult]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[AsyncResult]
+            Accepted
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/warm",
+            method="POST",
+            headers={
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    AsyncResult,
+                    parse_obj_as(
+                        type_=AsyncResult,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
@@ -1998,966 +2303,28 @@ class AsyncRawGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_custom_instructions(
-        self,
-        *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ListCustomInstructionsResponse]:
-        """
-        Lists all custom instructions for a project, user, or graph.
-
-        Parameters
-        ----------
-        user_id : typing.Optional[str]
-            User ID to get user-specific instructions
-
-        graph_id : typing.Optional[str]
-            Graph ID to get graph-specific instructions
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[ListCustomInstructionsResponse]
-            The list of instructions.
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "custom-instructions",
-            method="GET",
-            params={
-                "user_id": user_id,
-                "graph_id": graph_id,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ListCustomInstructionsResponse,
-                    parse_obj_as(
-                        type_=ListCustomInstructionsResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def add_custom_instructions(
-        self,
-        *,
-        instructions: typing.Sequence[CustomInstruction],
-        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[SuccessResponse]:
-        """
-        Adds new custom instructions for graphs without removing existing ones. If user_ids or graph_ids is empty, adds to project-wide default instructions.
-
-        Parameters
-        ----------
-        instructions : typing.Sequence[CustomInstruction]
-            Instructions to add to the graph.
-
-        graph_ids : typing.Optional[typing.Sequence[str]]
-            Graph IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[SuccessResponse]
-            Instructions added successfully
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "custom-instructions",
-            method="POST",
-            json={
-                "graph_ids": graph_ids,
-                "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[CustomInstruction], direction="write"
-                ),
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def delete_custom_instructions(
-        self,
-        *,
-        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[SuccessResponse]:
-        """
-        Deletes custom instructions for graphs or project wide defaults.
-
-        Parameters
-        ----------
-        graph_ids : typing.Optional[typing.Sequence[str]]
-            Determines which group graphs will have their custom instructions deleted. If no graphs are provided, the project-wide custom instructions will be affected.
-
-        instruction_names : typing.Optional[typing.Sequence[str]]
-            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            Determines which user graphs will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be affected.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[SuccessResponse]
-            Instructions deleted successfully
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "custom-instructions",
-            method="DELETE",
-            json={
-                "graph_ids": graph_ids,
-                "instruction_names": instruction_names,
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def list_entity_types(
-        self,
-        *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[EntityTypeResponse]:
-        """
-        Returns all entity types for a project, user, or graph.
-
-        Parameters
-        ----------
-        user_id : typing.Optional[str]
-            User ID to get user-specific entity types
-
-        graph_id : typing.Optional[str]
-            Graph ID to get graph-specific entity types
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[EntityTypeResponse]
-            The list of entity types.
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "entity-types",
-            method="GET",
-            params={
-                "user_id": user_id,
-                "graph_id": graph_id,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    EntityTypeResponse,
-                    parse_obj_as(
-                        type_=EntityTypeResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def set_entity_types_internal(
-        self,
-        *,
-        edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
-        entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
-        graph_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[SuccessResponse]:
-        """
-        Sets the entity types for multiple users and graphs, replacing any existing ones.
-
-        Parameters
-        ----------
-        edge_types : typing.Optional[typing.Sequence[EdgeType]]
-
-        entity_types : typing.Optional[typing.Sequence[EntityType]]
-
-        graph_ids : typing.Optional[typing.Sequence[str]]
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[SuccessResponse]
-            Entity types set successfully
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "entity-types",
-            method="PUT",
-            json={
-                "edge_types": convert_and_respect_annotation_metadata(
-                    object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
-                ),
-                "entity_types": convert_and_respect_annotation_metadata(
-                    object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
-                ),
-                "graph_ids": graph_ids,
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def add(
-        self,
-        *,
-        data: str,
-        type: GraphDataType,
-        created_at: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        source_description: typing.Optional[str] = OMIT,
-        strict_ontology: typing.Optional[bool] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[Episode]:
-        """
-        Add data to the graph.
-
-        Parameters
-        ----------
-        data : str
-
-        type : GraphDataType
-
-        created_at : typing.Optional[str]
-
-        graph_id : typing.Optional[str]
-            graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
-
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
-
-        source_description : typing.Optional[str]
-
-        strict_ontology : typing.Optional[bool]
-            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
-
-        user_id : typing.Optional[str]
-            User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[Episode]
-            Added episode
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graph",
-            method="POST",
-            json={
-                "created_at": created_at,
-                "data": data,
-                "graph_id": graph_id,
-                "metadata": metadata,
-                "source_description": source_description,
-                "strict_ontology": strict_ontology,
-                "type": type,
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    Episode,
-                    parse_obj_as(
-                        type_=Episode,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def add_batch(
-        self,
-        *,
-        episodes: typing.Sequence[EpisodeData],
-        graph_id: typing.Optional[str] = OMIT,
-        strict_ontology: typing.Optional[bool] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[Episode]]:
-        """
-        Deprecated. Use the [Batch API](/adding-batch-data) (`client.batch.*`) instead.
-
-        Adds data to the graph in batch mode, processing episodes concurrently.
-
-        Parameters
-        ----------
-        episodes : typing.Sequence[EpisodeData]
-
-        graph_id : typing.Optional[str]
-            graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
-
-        strict_ontology : typing.Optional[bool]
-            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
-
-        user_id : typing.Optional[str]
-            User ID is the ID of the user to which the data will be added. If not adding to a user graph, please use graph_id field instead.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[typing.List[Episode]]
-            Added episodes
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graph-batch",
-            method="POST",
-            json={
-                "episodes": convert_and_respect_annotation_metadata(
-                    object_=episodes, annotation=typing.Sequence[EpisodeData], direction="write"
-                ),
-                "graph_id": graph_id,
-                "strict_ontology": strict_ontology,
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    typing.List[Episode],
-                    parse_obj_as(
-                        type_=typing.List[Episode],  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def add_fact_triple(
-        self,
-        *,
-        fact: str,
-        fact_name: str,
-        created_at: typing.Optional[str] = OMIT,
-        edge_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        source_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        source_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
-        source_node_name: typing.Optional[str] = OMIT,
-        source_node_summary: typing.Optional[str] = OMIT,
-        source_node_uuid: typing.Optional[str] = OMIT,
-        target_node_attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        target_node_labels: typing.Optional[typing.Sequence[str]] = OMIT,
-        target_node_name: typing.Optional[str] = OMIT,
-        target_node_summary: typing.Optional[str] = OMIT,
-        target_node_uuid: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[AddTripleResponse]:
-        """
-        Add a fact triple for a user or group
-
-        Parameters
-        ----------
-        fact : str
-            The fact relating the two nodes that this edge represents
-
-        fact_name : str
-            The name of the edge to add. Should be all caps using snake case (eg RELATES_TO)
-
-        created_at : typing.Optional[str]
-            The timestamp of the message
-
-        edge_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Additional attributes of the edge. Values must be scalar types (string, number, boolean, or null).
-            Nested objects and arrays are not allowed.
-
-        expired_at : typing.Optional[str]
-            The time (if any) at which the edge expires
-
-        graph_id : typing.Optional[str]
-
-        invalid_at : typing.Optional[str]
-            The time (if any) at which the fact stops being true
-
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Optional metadata key-value pairs for the shadow episode created for this fact triple.
-            Max 10 keys. Values must be strings, numbers, or booleans.
-
-        source_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Additional attributes of the source node. Values must be scalar types (string, number, boolean, or null).
-            Nested objects and arrays are not allowed.
-
-        source_node_labels : typing.Optional[typing.Sequence[str]]
-            The labels for the source node. At most one entity-type label may be
-            provided so that manually-added triples remain consistent with automatic
-            episode extraction, which assigns one best-match entity type per node.
-            The base "Entity" label is added implicitly by the graph layer on save
-            and does not need to be supplied here.
-
-        source_node_name : typing.Optional[str]
-            The name of the source node to add
-
-        source_node_summary : typing.Optional[str]
-            The summary of the source node to add
-
-        source_node_uuid : typing.Optional[str]
-            The source node uuid
-
-        target_node_attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Additional attributes of the target node. Values must be scalar types (string, number, boolean, or null).
-            Nested objects and arrays are not allowed.
-
-        target_node_labels : typing.Optional[typing.Sequence[str]]
-            The labels for the target node. At most one entity-type label may be
-            provided so that manually-added triples remain consistent with automatic
-            episode extraction, which assigns one best-match entity type per node.
-            The base "Entity" label is added implicitly by the graph layer on save
-            and does not need to be supplied here.
-
-        target_node_name : typing.Optional[str]
-            The name of the target node to add
-
-        target_node_summary : typing.Optional[str]
-            The summary of the target node to add
-
-        target_node_uuid : typing.Optional[str]
-            The target node uuid
-
-        user_id : typing.Optional[str]
-
-        valid_at : typing.Optional[str]
-            The time at which the fact becomes true
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[AddTripleResponse]
-            Resulting triple
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graph/add-fact-triple",
-            method="POST",
-            json={
-                "created_at": created_at,
-                "edge_attributes": edge_attributes,
-                "expired_at": expired_at,
-                "fact": fact,
-                "fact_name": fact_name,
-                "graph_id": graph_id,
-                "invalid_at": invalid_at,
-                "metadata": metadata,
-                "source_node_attributes": source_node_attributes,
-                "source_node_labels": source_node_labels,
-                "source_node_name": source_node_name,
-                "source_node_summary": source_node_summary,
-                "source_node_uuid": source_node_uuid,
-                "target_node_attributes": target_node_attributes,
-                "target_node_labels": target_node_labels,
-                "target_node_name": target_node_name,
-                "target_node_summary": target_node_summary,
-                "target_node_uuid": target_node_uuid,
-                "user_id": user_id,
-                "valid_at": valid_at,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    AddTripleResponse,
-                    parse_obj_as(
-                        type_=AddTripleResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def clone(
-        self,
-        *,
-        source_graph_id: typing.Optional[str] = OMIT,
-        source_user_id: typing.Optional[str] = OMIT,
-        target_graph_id: typing.Optional[str] = OMIT,
-        target_user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[CloneGraphResponse]:
-        """
-        Clone a user or group graph.
-
-        Parameters
-        ----------
-        source_graph_id : typing.Optional[str]
-            source_graph_id is the ID of the graph to be cloned. Required if source_user_id is not provided
-
-        source_user_id : typing.Optional[str]
-            user_id of the user whose graph is being cloned. Required if source_graph_id is not provided
-
-        target_graph_id : typing.Optional[str]
-            target_graph_id is the ID to be set on the cloned graph. Must not point to an existing graph. Required if target_user_id is not provided.
-
-        target_user_id : typing.Optional[str]
-            user_id to be set on the cloned user. Must not point to an existing user. Required if target_graph_id is not provided.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[CloneGraphResponse]
-            Response object containing graph_id or user_id pointing to the new graph
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graph/clone",
-            method="POST",
-            json={
-                "source_graph_id": source_graph_id,
-                "source_user_id": source_user_id,
-                "target_graph_id": target_graph_id,
-                "target_user_id": target_user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CloneGraphResponse,
-                    parse_obj_as(
-                        type_=CloneGraphResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
     async def create(
         self,
         *,
-        graph_id: str,
         description: typing.Optional[str] = OMIT,
+        graph_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Graph]:
         """
-        Creates a new graph.
-
         Parameters
         ----------
-        graph_id : str
-
         description : typing.Optional[str]
+
+        graph_id : typing.Optional[str]
 
         name : typing.Optional[str]
 
         time_zone : typing.Optional[str]
-            The graph's IANA time zone. Stored on its group-backed subject.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2965,10 +2332,10 @@ class AsyncRawGraphClient:
         Returns
         -------
         AsyncHttpResponse[Graph]
-            The added graph
+            Created
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "graph/create",
+            "graphs",
             method="POST",
             json={
                 "description": description,
@@ -2978,6 +2345,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -2996,15 +2364,26 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3019,83 +2398,98 @@ class AsyncRawGraphClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def list_all(
+    async def list(
         self,
         *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        search: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
+        order: typing.Optional[str] = None,
+        search: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[GraphListResponse]:
+    ) -> AsyncPager[Graph, GraphPage]:
         """
-        Returns all graphs. In order to list users, use user.list_ordered instead
-
         Parameters
         ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1.
+        limit : typing.Optional[int]
+            Page size
 
-        page_size : typing.Optional[int]
-            Number of graphs to retrieve per page (default 50, range 1-100; explicit 0 is invalid).
-
-        search : typing.Optional[str]
-            Search term for filtering graphs by graph_id, name, or description. Queries longer than 200 Unicode code points after whitespace normalization are invalid.
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
         order_by : typing.Optional[str]
-            Column to sort by (created_at, graph_id, name).
+            Sort field
 
-        asc : typing.Optional[bool]
-            Sort in ascending order.
+        order : typing.Optional[str]
+            asc or desc
+
+        search : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[GraphListResponse]
-            Successfully retrieved list of graphs.
+        AsyncPager[Graph, GraphPage]
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "graph/list-all",
-            method="GET",
+            "graphs/list",
+            method="POST",
             params={
-                "pageNumber": page_number,
-                "pageSize": page_size,
-                "search": search,
+                "limit": limit,
+                "cursor": cursor,
                 "order_by": order_by,
-                "asc": asc,
+                "order": order,
+            },
+            json={
+                "search": search,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GraphListResponse,
+                _parsed_response = typing.cast(
+                    GraphPage,
                     parse_obj_as(
-                        type_=GraphListResponse,  # type: ignore
+                        type_=GraphPage,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return AsyncHttpResponse(response=_response, data=_data)
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list(
+                        limit=limit,
+                        cursor=_parsed_next,
+                        order_by=order_by,
+                        order=order,
+                        search=search,
+                        idempotency_key=idempotency_key,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
             if _response.status_code == 400:
                 raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3105,221 +2499,8 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def add_nodes(
-        self,
-        *,
-        nodes: typing.Sequence[AddNodeItem],
-        graph_id: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[AddNodesResponse]:
-        """
-        Add entity nodes to a user or graph directly, without episode ingestion. Up to 100 nodes per request.
-
-        Parameters
-        ----------
-        nodes : typing.Sequence[AddNodeItem]
-            The nodes to add. 1 to 100 items.
-
-        graph_id : typing.Optional[str]
-
-        user_id : typing.Optional[str]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[AddNodesResponse]
-            Accepted
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graph/nodes",
-            method="POST",
-            json={
-                "graph_id": graph_id,
-                "nodes": convert_and_respect_annotation_metadata(
-                    object_=nodes, annotation=typing.Sequence[AddNodeItem], direction="write"
-                ),
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    AddNodesResponse,
-                    parse_obj_as(
-                        type_=AddNodesResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def detect_patterns(
-        self,
-        *,
-        detect: typing.Optional[DetectConfig] = OMIT,
-        edge_limit: typing.Optional[int] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        min_occurrences: typing.Optional[int] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        query_limit: typing.Optional[int] = OMIT,
-        recency_weight: typing.Optional[RecencyWeight] = OMIT,
-        search_filters: typing.Optional[SearchFilters] = OMIT,
-        seeds: typing.Optional[PatternSeeds] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[DetectPatternsResponse]:
-        """
-        Detects structural patterns in a knowledge graph including relationship frequencies,
-        multi-hop paths, co-occurrences, hubs, and clusters.
-        When a query is provided, uses hybrid search to discover seed nodes,
-        detects triple-frequency patterns, and returns resolved edges ranked by relevance.
-
-        Parameters
-        ----------
-        detect : typing.Optional[DetectConfig]
-            Which pattern types to detect with type-specific configuration.
-            Omit to detect all types with defaults. Ignored when query is set.
-
-        edge_limit : typing.Optional[int]
-            Max resolved edges per pattern. Default: 10, Max: 100. Only used with query.
-
-        graph_id : typing.Optional[str]
-            Graph ID when detecting patterns on a named graph
-
-        limit : typing.Optional[int]
-            Max patterns to return. Default: 50, Max: 200
-
-        min_occurrences : typing.Optional[int]
-            Minimum occurrence count to report a pattern. Default: 2
-
-        query : typing.Optional[str]
-            Search query for discovering seed nodes via hybrid search.
-            When set, forces triple-frequency detection only and enables edge resolution
-            with cross-encoder reranking. Mutually exclusive with seeds.
-
-        query_limit : typing.Optional[int]
-            Max seed nodes from search. Default: 10, Max: 50. Only used with query.
-
-        recency_weight : typing.Optional[RecencyWeight]
-            Exponential half-life decay applied to edge created_at timestamps.
-            Valid values: none, 7_days, 30_days, 90_days. Default: none
-
-        search_filters : typing.Optional[SearchFilters]
-            Filters which edges/nodes participate in pattern detection.
-            Reuses the same filter format as /graph/search.
-
-        seeds : typing.Optional[PatternSeeds]
-            Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
-
-        user_id : typing.Optional[str]
-            User ID when detecting patterns on a user graph
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[DetectPatternsResponse]
-            Detected patterns
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graph/patterns",
-            method="POST",
-            json={
-                "detect": convert_and_respect_annotation_metadata(
-                    object_=detect, annotation=DetectConfig, direction="write"
-                ),
-                "edge_limit": edge_limit,
-                "graph_id": graph_id,
-                "limit": limit,
-                "min_occurrences": min_occurrences,
-                "query": query,
-                "query_limit": query_limit,
-                "recency_weight": recency_weight,
-                "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=SearchFilters, direction="write"
-                ),
-                "seeds": convert_and_respect_annotation_metadata(
-                    object_=seeds, annotation=PatternSeeds, direction="write"
-                ),
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    DetectPatternsResponse,
-                    parse_obj_as(
-                        type_=DetectPatternsResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3340,317 +2521,38 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def search(
+    async def lookup(
         self,
         *,
-        query: str,
-        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
-        center_node_uuid: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        max_characters: typing.Optional[int] = OMIT,
-        mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[Reranker] = OMIT,
-        return_raw_results: typing.Optional[bool] = OMIT,
-        scope: typing.Optional[GraphSearchScope] = OMIT,
-        search_filters: typing.Optional[SearchFilters] = OMIT,
+        thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[GraphSearchResults]:
-        """
-        Perform a graph search query.
-
-        Parameters
-        ----------
-        query : str
-            The string to search for (required)
-
-        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
-            Nodes that are the origins of the BFS searches
-
-        center_node_uuid : typing.Optional[str]
-            Node to rerank around for node distance reranking
-
-        graph_id : typing.Optional[str]
-            The graph_id to search in. When searching user graph, please use user_id instead.
-
-        limit : typing.Optional[int]
-            The maximum number of facts to retrieve for non-auto scopes. Defaults to 10. Limited to 50. Ignored when scope=auto.
-
-        max_characters : typing.Optional[int]
-            Maximum total characters across all selected results when scope=auto. Defaults to 2500. Limited to 50000.
-
-        mmr_lambda : typing.Optional[float]
-            weighting for maximal marginal relevance
-
-        reranker : typing.Optional[Reranker]
-            Defaults to RRF. Ignored when scope=auto except node_distance and episode_mentions are rejected;
-            auto search always uses RRF retrieval and applies its own internal rerank after retrieval.
-            episode_mentions ranks edge candidates by how many of the episodes listed
-            in search_filters.episode_uuids mention them; without episode_uuids it has
-            no effect and results are ranked as if no reranker were specified.
-
-        return_raw_results : typing.Optional[bool]
-            When scope=auto, include the selected raw graph results alongside the materialized context block.
-            For graph-service-backed auto mode, selected raw results may include episodes,
-            edges, nodes, observations, and thread_summaries.
-
-        scope : typing.Optional[GraphSearchScope]
-            Defaults to Edges.
-
-        search_filters : typing.Optional[SearchFilters]
-            Search filters to apply to the search
-
-        user_id : typing.Optional[str]
-            The user_id when searching user graph. If not searching user graph, please use graph_id instead.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[GraphSearchResults]
-            Graph search results or auto-context block
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graph/search",
-            method="POST",
-            json={
-                "bfs_origin_node_uuids": bfs_origin_node_uuids,
-                "center_node_uuid": center_node_uuid,
-                "graph_id": graph_id,
-                "limit": limit,
-                "max_characters": max_characters,
-                "mmr_lambda": mmr_lambda,
-                "query": query,
-                "reranker": reranker,
-                "return_raw_results": return_raw_results,
-                "scope": scope,
-                "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=SearchFilters, direction="write"
-                ),
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GraphSearchResults,
-                    parse_obj_as(
-                        type_=GraphSearchResults,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def get_subgraph(
-        self,
-        *,
-        seed_node_uuids: typing.Sequence[str],
-        depth: typing.Optional[int] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
-        max_edges: typing.Optional[int] = OMIT,
-        max_nodes: typing.Optional[int] = OMIT,
-        search_filters: typing.Optional[SearchFilters] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[GraphSubgraphResponse]:
-        """
-        Returns the bounded neighborhood of a set of seed nodes as a single {nodes, edges} payload: breadth-first expansion up to a caller-specified depth, subject to explicit budgets, with explicit truncation reporting.
-
-        Parameters
-        ----------
-        seed_node_uuids : typing.Sequence[str]
-            Seed node UUIDs to expand from, in traversal-priority order: seeds are
-            admitted before any expansion, in this order, and count toward
-            max_nodes first. 1-20 entries, required. Seeds that do not exist in
-            the target graph are ignored, not an error.
-
-        depth : typing.Optional[int]
-            Maximum traversal depth from the seeds. 1-3. Defaults to 1.
-
-        direction : typing.Optional[str]
-            Edge orientation followed during expansion, relative to each frontier
-            node: "in" | "out" | "both". Defaults to "both".
-
-        graph_id : typing.Optional[str]
-            graph_id identifies the target named graph. Exactly one of user_id or
-            graph_id is required.
-
-        max_edges : typing.Optional[int]
-            Maximum number of edges in the response. 1-1000. Defaults to 200.
-
-        max_nodes : typing.Optional[int]
-            Maximum number of nodes in the response, including admitted seeds.
-            1-500. Defaults to 100.
-
-        search_filters : typing.Optional[SearchFilters]
-            Filters constraining traversed edges and included nodes. Reuses the
-            graph.search filter type. search_filters.episode_metadata_filters is
-            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
-
-        user_id : typing.Optional[str]
-            user_id identifies the target user graph. Exactly one of user_id or
-            graph_id is required.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[GraphSubgraphResponse]
-            Subgraph
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "graph/subgraph",
-            method="POST",
-            json={
-                "depth": depth,
-                "direction": direction,
-                "graph_id": graph_id,
-                "max_edges": max_edges,
-                "max_nodes": max_nodes,
-                "search_filters": convert_and_respect_annotation_metadata(
-                    object_=search_filters, annotation=SearchFilters, direction="write"
-                ),
-                "seed_node_uuids": seed_node_uuids,
-                "user_id": user_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GraphSubgraphResponse,
-                    parse_obj_as(
-                        type_=GraphSubgraphResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def get(
-        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[Graph]:
         """
-        Returns a graph.
-
         Parameters
         ----------
-        graph_id : str
-            The graph_id of the graph to get.
+        graph_id : typing.Optional[str]
+
+        thread_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -3658,12 +2560,22 @@ class AsyncRawGraphClient:
         Returns
         -------
         AsyncHttpResponse[Graph]
-            The graph that was retrieved.
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/{jsonable_encoder(graph_id)}",
-            method="GET",
+            "graphs/lookup",
+            method="POST",
+            json={
+                "graph_id": graph_id,
+                "thread_id": thread_id,
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
@@ -3675,8 +2587,8 @@ class AsyncRawGraphClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3686,8 +2598,19 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3702,40 +2625,42 @@ class AsyncRawGraphClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def delete(
-        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    async def get(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[Graph]:
         """
-        Deletes a graph. If you would like to delete a user graph, make sure to use user.delete instead.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
+        graph_uuid : str
+            Graph UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
-            Deleted
+        AsyncHttpResponse[Graph]
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/{jsonable_encoder(graph_id)}",
-            method="DELETE",
+            f"graphs/{jsonable_encoder(graph_uuid)}",
+            method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    Graph,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=Graph,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -3744,9 +2669,20 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3762,8 +2698,84 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def delete(
+        self,
+        graph_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[GraphDeleteResult]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[GraphDeleteResult]
+            Accepted
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}",
+            method="DELETE",
+            headers={
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphDeleteResult,
+                    parse_obj_as(
+                        type_=GraphDeleteResult,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3777,6 +2789,10 @@ class AsyncRawGraphClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
@@ -3784,27 +2800,30 @@ class AsyncRawGraphClient:
 
     async def update(
         self,
-        graph_id: str,
+        graph_uuid: str,
         *,
         description: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Graph]:
         """
-        Updates information about a graph.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
+        graph_uuid : str
+            Graph UUID
 
         description : typing.Optional[str]
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         name : typing.Optional[str]
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         time_zone : typing.Optional[str]
-            The graph's IANA time zone. Stored on its group-backed subject.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -3812,10 +2831,10 @@ class AsyncRawGraphClient:
         Returns
         -------
         AsyncHttpResponse[Graph]
-            The updated graph object
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/{jsonable_encoder(graph_id)}",
+            f"graphs/{jsonable_encoder(graph_uuid)}",
             method="PATCH",
             json={
                 "description": description,
@@ -3824,6 +2843,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -3842,15 +2862,15 @@ class AsyncRawGraphClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3860,8 +2880,8 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3876,46 +2896,65 @@ class AsyncRawGraphClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def warm(
-        self, graph_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    async def clone(
+        self,
+        graph_uuid: str,
+        *,
+        target_graph_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[CloneGraphResult]:
         """
-        Hints Zep to warm a graph for low-latency search
-
         Parameters
         ----------
-        graph_id : str
-            The graph_id of the graph to warm.
+        graph_uuid : str
+            Graph UUID
+
+        target_graph_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
-            Warm hint accepted
+        AsyncHttpResponse[CloneGraphResult]
+            Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graph/{jsonable_encoder(graph_id)}/warm",
-            method="GET",
+            f"graphs/{jsonable_encoder(graph_uuid)}/clone",
+            method="POST",
+            json={
+                "target_graph_id": target_graph_id,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    CloneGraphResult,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=CloneGraphResult,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3925,8 +2964,19 @@ class AsyncRawGraphClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -3940,6 +2990,1596 @@ class AsyncRawGraphClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_context(
+        self,
+        graph_uuid: str,
+        *,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        include_results: typing.Optional[bool] = OMIT,
+        max_characters: typing.Optional[int] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        recency_bias: typing.Optional[str] = OMIT,
+        template_uuid: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[GraphContextResponse]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        include_results : typing.Optional[bool]
+
+        max_characters : typing.Optional[int]
+
+        query : typing.Optional[str]
+
+        recency_bias : typing.Optional[str]
+
+        template_uuid : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[GraphContextResponse]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/context",
+            method="POST",
+            json={
+                "filters": filters,
+                "include_results": include_results,
+                "max_characters": max_characters,
+                "query": query,
+                "recency_bias": recency_bias,
+                "template_uuid": template_uuid,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphContextResponse,
+                    parse_obj_as(
+                        type_=GraphContextResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_instructions(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[Instructions]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[Instructions]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/instructions",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Instructions,
+                    parse_obj_as(
+                        type_=Instructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_instructions(
+        self,
+        graph_uuid: str,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[Instructions]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[Instructions]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/instructions",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instructions": instructions,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Instructions,
+                    parse_obj_as(
+                        type_=Instructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_observation_steering(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[ObservationSteering]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ObservationSteering]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/observation-steering",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ObservationSteering,
+                    parse_obj_as(
+                        type_=ObservationSteering,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_observation_steering(
+        self,
+        graph_uuid: str,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instruction: typing.Optional[str] = OMIT,
+        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[ObservationSteering]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        inherited : typing.Optional[bool]
+
+        instruction : typing.Optional[str]
+
+        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ObservationSteering]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/observation-steering",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instruction": instruction,
+                "types": types,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ObservationSteering,
+                    parse_obj_as(
+                        type_=ObservationSteering,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_ontology(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[Ontology]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[Ontology]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/ontology",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Ontology,
+                    parse_obj_as(
+                        type_=Ontology,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_ontology(
+        self,
+        graph_uuid: str,
+        *,
+        edge_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[Ontology]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        edge_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        entity_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        inherited : typing.Optional[bool]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[Ontology]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/ontology",
+            method="PUT",
+            json={
+                "edge_types": edge_types,
+                "entity_types": entity_types,
+                "inherited": inherited,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Ontology,
+                    parse_obj_as(
+                        type_=Ontology,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def search_edges(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/edges",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.search_edges(
+                        graph_uuid,
+                        limit=limit,
+                        cursor=_parsed_next,
+                        bfs_origin_node_uuids=bfs_origin_node_uuids,
+                        center_node_uuid=center_node_uuid,
+                        filters=filters,
+                        mmr_lambda=mmr_lambda,
+                        query=query,
+                        reranker=reranker,
+                        idempotency_key=idempotency_key,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def search_episodes(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/episodes",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.search_episodes(
+                        graph_uuid,
+                        limit=limit,
+                        cursor=_parsed_next,
+                        bfs_origin_node_uuids=bfs_origin_node_uuids,
+                        center_node_uuid=center_node_uuid,
+                        filters=filters,
+                        mmr_lambda=mmr_lambda,
+                        query=query,
+                        reranker=reranker,
+                        idempotency_key=idempotency_key,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def search_nodes(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/nodes",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.search_nodes(
+                        graph_uuid,
+                        limit=limit,
+                        cursor=_parsed_next,
+                        bfs_origin_node_uuids=bfs_origin_node_uuids,
+                        center_node_uuid=center_node_uuid,
+                        filters=filters,
+                        mmr_lambda=mmr_lambda,
+                        query=query,
+                        reranker=reranker,
+                        idempotency_key=idempotency_key,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def search_observations(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/observations",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.search_observations(
+                        graph_uuid,
+                        limit=limit,
+                        cursor=_parsed_next,
+                        bfs_origin_node_uuids=bfs_origin_node_uuids,
+                        center_node_uuid=center_node_uuid,
+                        filters=filters,
+                        mmr_lambda=mmr_lambda,
+                        query=query,
+                        reranker=reranker,
+                        idempotency_key=idempotency_key,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def search_thread_summaries(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        center_node_uuid: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        mmr_lambda: typing.Optional[float] = OMIT,
+        query: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[JsonObject, JsonObjectPage]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        center_node_uuid : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        mmr_lambda : typing.Optional[float]
+
+        query : typing.Optional[str]
+
+        reranker : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[JsonObject, JsonObjectPage]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/search/thread-summaries",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "bfs_origin_node_uuids": bfs_origin_node_uuids,
+                "center_node_uuid": center_node_uuid,
+                "filters": filters,
+                "mmr_lambda": mmr_lambda,
+                "query": query,
+                "reranker": reranker,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    JsonObjectPage,
+                    parse_obj_as(
+                        type_=JsonObjectPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.search_thread_summaries(
+                        graph_uuid,
+                        limit=limit,
+                        cursor=_parsed_next,
+                        bfs_origin_node_uuids=bfs_origin_node_uuids,
+                        center_node_uuid=center_node_uuid,
+                        filters=filters,
+                        mmr_lambda=mmr_lambda,
+                        query=query,
+                        reranker=reranker,
+                        idempotency_key=idempotency_key,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_subgraph(
+        self,
+        graph_uuid: str,
+        *,
+        depth: typing.Optional[int] = OMIT,
+        direction: typing.Optional[str] = OMIT,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        max_edges: typing.Optional[int] = OMIT,
+        max_nodes: typing.Optional[int] = OMIT,
+        seed_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[JsonObject]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        depth : typing.Optional[int]
+
+        direction : typing.Optional[str]
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+
+        max_edges : typing.Optional[int]
+
+        max_nodes : typing.Optional[int]
+
+        seed_node_uuids : typing.Optional[typing.Sequence[str]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[JsonObject]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/subgraph",
+            method="POST",
+            json={
+                "depth": depth,
+                "direction": direction,
+                "filters": filters,
+                "max_edges": max_edges,
+                "max_nodes": max_nodes,
+                "seed_node_uuids": seed_node_uuids,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    JsonObject,
+                    parse_obj_as(
+                        type_=JsonObject,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def warm(
+        self,
+        graph_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[AsyncResult]:
+        """
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[AsyncResult]
+            Accepted
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{jsonable_encoder(graph_uuid)}/warm",
+            method="POST",
+            headers={
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    AsyncResult,
+                    parse_obj_as(
+                        type_=AsyncResult,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json

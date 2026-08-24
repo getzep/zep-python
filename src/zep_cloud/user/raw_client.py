@@ -7,20 +7,20 @@ from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.jsonable_encoder import jsonable_encoder
+from ..core.pagination import AsyncPager, SyncPager
+from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
-from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
-from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
+from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.list_user_instructions_response import ListUserInstructionsResponse
-from ..types.success_response import SuccessResponse
-from ..types.thread import Thread
+from ..types.json_object import JsonObject
 from ..types.user import User
-from ..types.user_instruction import UserInstruction
-from ..types.user_list_response import UserListResponse
-from ..types.user_node_response import UserNodeResponse
+from ..types.user_delete_result import UserDeleteResult
+from ..types.user_page import UserPage
+from ..types.user_summary_instructions import UserSummaryInstructions
+from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,306 +30,37 @@ class RawUserClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_user_summary_instructions(
-        self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ListUserInstructionsResponse]:
-        """
-        Lists all user summary instructions for a project, user.
-
-        Parameters
-        ----------
-        user_id : typing.Optional[str]
-            User ID to get user-specific instructions
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[ListUserInstructionsResponse]
-            The list of instructions.
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "user-summary-instructions",
-            method="GET",
-            params={
-                "user_id": user_id,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ListUserInstructionsResponse,
-                    parse_obj_as(
-                        type_=ListUserInstructionsResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def add_user_summary_instructions(
+    def create(
         self,
         *,
-        instructions: typing.Sequence[UserInstruction],
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[SuccessResponse]:
-        """
-        Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
-
-        Parameters
-        ----------
-        instructions : typing.Sequence[UserInstruction]
-            Instructions to add to the user summary generation.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[SuccessResponse]
-            Instructions added successfully
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "user-summary-instructions",
-            method="POST",
-            json={
-                "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
-                ),
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def delete_user_summary_instructions(
-        self,
-        *,
-        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[SuccessResponse]:
-        """
-        Deletes user summary/instructions for users or project wide defaults.
-
-        Parameters
-        ----------
-        instruction_names : typing.Optional[typing.Sequence[str]]
-            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[SuccessResponse]
-            Instructions deleted successfully
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "user-summary-instructions",
-            method="DELETE",
-            json={
-                "instruction_names": instruction_names,
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def add(
-        self,
-        *,
-        user_id: str,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[User]:
         """
-        Adds a user.
-
         Parameters
         ----------
-        user_id : str
-            The unique identifier of the user.
-
         disable_default_ontology : typing.Optional[bool]
-            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
-            The email address of the user.
 
         first_name : typing.Optional[str]
-            The first name of the user.
 
         last_name : typing.Optional[str]
-            The last name of the user.
 
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            The metadata associated with the user.
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         time_zone : typing.Optional[str]
-            The user's IANA time zone. Null or omission leaves it unset at creation.
+
+        user_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -337,7 +68,7 @@ class RawUserClient:
         Returns
         -------
         HttpResponse[User]
-            The user that was added.
+            Created
         """
         _response = self._client_wrapper.httpx_client.request(
             "users",
@@ -353,6 +84,7 @@ class RawUserClient:
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -371,15 +103,26 @@ class RawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -394,66 +137,188 @@ class RawUserClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def list_ordered(
+    def list(
         self,
         *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        search: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
+        order: typing.Optional[str] = None,
+        search: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[UserListResponse]:
+    ) -> SyncPager[User, UserPage]:
         """
-        Returns all users.
-
         Parameters
         ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1
+        limit : typing.Optional[int]
+            Page size
 
-        page_size : typing.Optional[int]
-            Number of users to retrieve per page
-
-        search : typing.Optional[str]
-            Search term for filtering users by user_id, name, or email
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
         order_by : typing.Optional[str]
-            Column to sort by (created_at, user_id, email)
+            Sort field
 
-        asc : typing.Optional[bool]
-            Sort in ascending order
+        order : typing.Optional[str]
+            asc or desc
+
+        search : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[UserListResponse]
-            Successfully retrieved list of users
+        SyncPager[User, UserPage]
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            "users-ordered",
-            method="GET",
+            "users/list",
+            method="POST",
             params={
-                "pageNumber": page_number,
-                "pageSize": page_size,
-                "search": search,
+                "limit": limit,
+                "cursor": cursor,
                 "order_by": order_by,
-                "asc": asc,
+                "order": order,
+            },
+            json={
+                "search": search,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    UserPage,
+                    parse_obj_as(
+                        type_=UserPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list(
+                    limit=limit,
+                    cursor=_parsed_next,
+                    order_by=order_by,
+                    order=order,
+                    search=search,
+                    idempotency_key=idempotency_key,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def lookup(
+        self,
+        *,
+        graph_id: typing.Optional[str] = OMIT,
+        thread_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[User]:
+        """
+        Parameters
+        ----------
+        graph_id : typing.Optional[str]
+
+        thread_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[User]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "users/lookup",
+            method="POST",
+            json={
+                "graph_id": graph_id,
+                "thread_id": thread_id,
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    UserListResponse,
+                    User,
                     parse_obj_as(
-                        type_=UserListResponse,  # type: ignore
+                        type_=User,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -462,15 +327,26 @@ class RawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -485,18 +361,20 @@ class RawUserClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get(self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[User]:
+    def get(self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[User]:
         """
-        Returns a user.
-
         Parameters
         ----------
-        user_id : str
-            The user_id of the user to get.
+        user_uuid : str
+            User UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -504,10 +382,10 @@ class RawUserClient:
         Returns
         -------
         HttpResponse[User]
-            The user that was retrieved.
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}",
+            f"users/{jsonable_encoder(user_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -521,8 +399,8 @@ class RawUserClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -532,8 +410,19 @@ class RawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -548,46 +437,57 @@ class RawUserClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
     def delete(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[SuccessResponse]:
+        self,
+        user_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[UserDeleteResult]:
         """
-        Deletes a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
-            OK
+        HttpResponse[UserDeleteResult]
+            Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}",
+            f"users/{jsonable_encoder(user_uuid)}",
             method="DELETE",
+            headers={
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    UserDeleteResult,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=UserDeleteResult,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -597,8 +497,19 @@ class RawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -612,6 +523,10 @@ class RawUserClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
@@ -619,41 +534,41 @@ class RawUserClient:
 
     def update(
         self,
-        user_id: str,
+        user_uuid: str,
         *,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[User]:
         """
-        Updates a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
 
         disable_default_ontology : typing.Optional[bool]
-            When true, disables the use of default/fallback ontology for the user's graph.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         email : typing.Optional[str]
-            The email address of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         first_name : typing.Optional[str]
-            The first name of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         last_name : typing.Optional[str]
-            The last name of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            The metadata to update
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         time_zone : typing.Optional[str]
-            The user's IANA time zone. Null clears the existing value.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -661,10 +576,10 @@ class RawUserClient:
         Returns
         -------
         HttpResponse[User]
-            The user that was updated.
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}",
+            f"users/{jsonable_encoder(user_uuid)}",
             method="PATCH",
             json={
                 "disable_default_ontology": disable_default_ontology,
@@ -676,6 +591,7 @@ class RawUserClient:
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -694,9 +610,20 @@ class RawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -712,127 +639,75 @@ class RawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
     def get_node(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[UserNodeResponse]:
+        self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[JsonObject]:
         """
-        Returns a user's node.
-
         Parameters
         ----------
-        user_id : str
-            The user_id of the user to get the node for.
+        user_uuid : str
+            User UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[UserNodeResponse]
-            Response object containing the User node.
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}/node",
-            method="GET",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    UserNodeResponse,
-                    parse_obj_as(
-                        type_=UserNodeResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    def get_threads(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[typing.List[Thread]]:
-        """
-        Returns all threads for a user.
-
-        Parameters
-        ----------
-        user_id : str
-            User ID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[typing.List[Thread]]
+        HttpResponse[JsonObject]
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}/threads",
+            f"users/{jsonable_encoder(user_uuid)}/node",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[Thread],
+                    JsonObject,
                     parse_obj_as(
-                        type_=typing.List[Thread],  # type: ignore
+                        type_=JsonObject,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -847,46 +722,48 @@ class RawUserClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def warm(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[SuccessResponse]:
+    def get_summary_instructions(
+        self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[UserSummaryInstructions]:
         """
-        Hints Zep to warm a user's graph for low-latency search
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[SuccessResponse]
-            Warm hint accepted
+        HttpResponse[UserSummaryInstructions]
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}/warm",
+            f"users/{jsonable_encoder(user_uuid)}/summary-instructions",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    UserSummaryInstructions,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=UserSummaryInstructions,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -896,8 +773,19 @@ class RawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -911,6 +799,109 @@ class RawUserClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def set_summary_instructions(
+        self,
+        user_uuid: str,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[UserSummaryInstructions]:
+        """
+        Parameters
+        ----------
+        user_uuid : str
+            User UUID
+
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[UserSummaryInstructions]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"users/{jsonable_encoder(user_uuid)}/summary-instructions",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instructions": instructions,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    UserSummaryInstructions,
+                    parse_obj_as(
+                        type_=UserSummaryInstructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
@@ -921,306 +912,37 @@ class AsyncRawUserClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_user_summary_instructions(
-        self, *, user_id: typing.Optional[str] = None, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ListUserInstructionsResponse]:
-        """
-        Lists all user summary instructions for a project, user.
-
-        Parameters
-        ----------
-        user_id : typing.Optional[str]
-            User ID to get user-specific instructions
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[ListUserInstructionsResponse]
-            The list of instructions.
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "user-summary-instructions",
-            method="GET",
-            params={
-                "user_id": user_id,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ListUserInstructionsResponse,
-                    parse_obj_as(
-                        type_=ListUserInstructionsResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def add_user_summary_instructions(
+    async def create(
         self,
         *,
-        instructions: typing.Sequence[UserInstruction],
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[SuccessResponse]:
-        """
-        Adds new summary instructions for users graphs without removing existing ones. If user_ids is empty, adds to project-wide default instructions.
-
-        Parameters
-        ----------
-        instructions : typing.Sequence[UserInstruction]
-            Instructions to add to the user summary generation.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            User IDs to add the instructions to. If empty, the instructions are added to the project-wide default.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[SuccessResponse]
-            Instructions added successfully
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "user-summary-instructions",
-            method="POST",
-            json={
-                "instructions": convert_and_respect_annotation_metadata(
-                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
-                ),
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def delete_user_summary_instructions(
-        self,
-        *,
-        instruction_names: typing.Optional[typing.Sequence[str]] = OMIT,
-        user_ids: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[SuccessResponse]:
-        """
-        Deletes user summary/instructions for users or project wide defaults.
-
-        Parameters
-        ----------
-        instruction_names : typing.Optional[typing.Sequence[str]]
-            Unique identifier for the instructions to be deleted. If empty deletes all instructions.
-
-        user_ids : typing.Optional[typing.Sequence[str]]
-            Determines which users will have their custom instructions deleted. If no users are provided, the project-wide custom instructions will be effected.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[SuccessResponse]
-            Instructions deleted successfully
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "user-summary-instructions",
-            method="DELETE",
-            json={
-                "instruction_names": instruction_names,
-                "user_ids": user_ids,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SuccessResponse,
-                    parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def add(
-        self,
-        *,
-        user_id: str,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[User]:
         """
-        Adds a user.
-
         Parameters
         ----------
-        user_id : str
-            The unique identifier of the user.
-
         disable_default_ontology : typing.Optional[bool]
-            When true, disables the use of default/fallback ontology for the user's graph.
 
         email : typing.Optional[str]
-            The email address of the user.
 
         first_name : typing.Optional[str]
-            The first name of the user.
 
         last_name : typing.Optional[str]
-            The last name of the user.
 
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            The metadata associated with the user.
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         time_zone : typing.Optional[str]
-            The user's IANA time zone. Null or omission leaves it unset at creation.
+
+        user_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1228,7 +950,7 @@ class AsyncRawUserClient:
         Returns
         -------
         AsyncHttpResponse[User]
-            The user that was added.
+            Created
         """
         _response = await self._client_wrapper.httpx_client.request(
             "users",
@@ -1244,6 +966,7 @@ class AsyncRawUserClient:
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -1262,15 +985,26 @@ class AsyncRawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1285,66 +1019,191 @@ class AsyncRawUserClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def list_ordered(
+    async def list(
         self,
         *,
-        page_number: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        search: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
         order_by: typing.Optional[str] = None,
-        asc: typing.Optional[bool] = None,
+        order: typing.Optional[str] = None,
+        search: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[UserListResponse]:
+    ) -> AsyncPager[User, UserPage]:
         """
-        Returns all users.
-
         Parameters
         ----------
-        page_number : typing.Optional[int]
-            Page number for pagination, starting from 1
+        limit : typing.Optional[int]
+            Page size
 
-        page_size : typing.Optional[int]
-            Number of users to retrieve per page
-
-        search : typing.Optional[str]
-            Search term for filtering users by user_id, name, or email
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
         order_by : typing.Optional[str]
-            Column to sort by (created_at, user_id, email)
+            Sort field
 
-        asc : typing.Optional[bool]
-            Sort in ascending order
+        order : typing.Optional[str]
+            asc or desc
+
+        search : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[UserListResponse]
-            Successfully retrieved list of users
+        AsyncPager[User, UserPage]
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "users-ordered",
-            method="GET",
+            "users/list",
+            method="POST",
             params={
-                "pageNumber": page_number,
-                "pageSize": page_size,
-                "search": search,
+                "limit": limit,
+                "cursor": cursor,
                 "order_by": order_by,
-                "asc": asc,
+                "order": order,
+            },
+            json={
+                "search": search,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    UserPage,
+                    parse_obj_as(
+                        type_=UserPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list(
+                        limit=limit,
+                        cursor=_parsed_next,
+                        order_by=order_by,
+                        order=order,
+                        search=search,
+                        idempotency_key=idempotency_key,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def lookup(
+        self,
+        *,
+        graph_id: typing.Optional[str] = OMIT,
+        thread_id: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[User]:
+        """
+        Parameters
+        ----------
+        graph_id : typing.Optional[str]
+
+        thread_id : typing.Optional[str]
+
+        user_id : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[User]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "users/lookup",
+            method="POST",
+            json={
+                "graph_id": graph_id,
+                "thread_id": thread_id,
+                "user_id": user_id,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    UserListResponse,
+                    User,
                     parse_obj_as(
-                        type_=UserListResponse,  # type: ignore
+                        type_=User,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1353,15 +1212,26 @@ class AsyncRawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1376,20 +1246,22 @@ class AsyncRawUserClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
     async def get(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[User]:
         """
-        Returns a user.
-
         Parameters
         ----------
-        user_id : str
-            The user_id of the user to get.
+        user_uuid : str
+            User UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1397,10 +1269,10 @@ class AsyncRawUserClient:
         Returns
         -------
         AsyncHttpResponse[User]
-            The user that was retrieved.
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}",
+            f"users/{jsonable_encoder(user_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -1414,8 +1286,8 @@ class AsyncRawUserClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1425,8 +1297,19 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1441,46 +1324,57 @@ class AsyncRawUserClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
     async def delete(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[SuccessResponse]:
+        self,
+        user_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[UserDeleteResult]:
         """
-        Deletes a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
-            OK
+        AsyncHttpResponse[UserDeleteResult]
+            Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}",
+            f"users/{jsonable_encoder(user_uuid)}",
             method="DELETE",
+            headers={
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    UserDeleteResult,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=UserDeleteResult,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1490,8 +1384,19 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1505,6 +1410,10 @@ class AsyncRawUserClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
@@ -1512,41 +1421,41 @@ class AsyncRawUserClient:
 
     async def update(
         self,
-        user_id: str,
+        user_uuid: str,
         *,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[User]:
         """
-        Updates a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
 
         disable_default_ontology : typing.Optional[bool]
-            When true, disables the use of default/fallback ontology for the user's graph.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         email : typing.Optional[str]
-            The email address of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         first_name : typing.Optional[str]
-            The first name of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
         last_name : typing.Optional[str]
-            The last name of the user.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
-        metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            The metadata to update
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
         time_zone : typing.Optional[str]
-            The user's IANA time zone. Null clears the existing value.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1554,10 +1463,10 @@ class AsyncRawUserClient:
         Returns
         -------
         AsyncHttpResponse[User]
-            The user that was updated.
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}",
+            f"users/{jsonable_encoder(user_uuid)}",
             method="PATCH",
             json={
                 "disable_default_ontology": disable_default_ontology,
@@ -1569,6 +1478,7 @@ class AsyncRawUserClient:
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -1587,9 +1497,20 @@ class AsyncRawUserClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1605,127 +1526,75 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
     async def get_node(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[UserNodeResponse]:
+        self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[JsonObject]:
         """
-        Returns a user's node.
-
         Parameters
         ----------
-        user_id : str
-            The user_id of the user to get the node for.
+        user_uuid : str
+            User UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[UserNodeResponse]
-            Response object containing the User node.
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}/node",
-            method="GET",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    UserNodeResponse,
-                    parse_obj_as(
-                        type_=UserNodeResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
-    async def get_threads(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[typing.List[Thread]]:
-        """
-        Returns all threads for a user.
-
-        Parameters
-        ----------
-        user_id : str
-            User ID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[typing.List[Thread]]
+        AsyncHttpResponse[JsonObject]
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}/threads",
+            f"users/{jsonable_encoder(user_uuid)}/node",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[Thread],
+                    JsonObject,
                     parse_obj_as(
-                        type_=typing.List[Thread],  # type: ignore
+                        type_=JsonObject,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1740,46 +1609,48 @@ class AsyncRawUserClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def warm(
-        self, user_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[SuccessResponse]:
+    async def get_summary_instructions(
+        self, user_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[UserSummaryInstructions]:
         """
-        Hints Zep to warm a user's graph for low-latency search
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        user_uuid : str
+            User UUID
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[SuccessResponse]
-            Warm hint accepted
+        AsyncHttpResponse[UserSummaryInstructions]
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_id)}/warm",
+            f"users/{jsonable_encoder(user_uuid)}/summary-instructions",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    SuccessResponse,
+                    UserSummaryInstructions,
                     parse_obj_as(
-                        type_=SuccessResponse,  # type: ignore
+                        type_=UserSummaryInstructions,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise NotFoundError(
+            if _response.status_code == 400:
+                raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1789,8 +1660,19 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1804,6 +1686,109 @@ class AsyncRawUserClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_summary_instructions(
+        self,
+        user_uuid: str,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[UserSummaryInstructions]:
+        """
+        Parameters
+        ----------
+        user_uuid : str
+            User UUID
+
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[UserSummaryInstructions]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"users/{jsonable_encoder(user_uuid)}/summary-instructions",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instructions": instructions,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    UserSummaryInstructions,
+                    parse_obj_as(
+                        type_=UserSummaryInstructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json

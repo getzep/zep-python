@@ -9,43 +9,14 @@ from ..core.serialization import FieldMetadata
 
 
 class ThreadSummary(UniversalBaseModel):
-    created_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    CreatedAt is when the summary node was first created.
-    """
-
-    last_summarized_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    LastSummarizedAt is the wall-clock timestamp of the most recent
-    summary update. This is an ingestion-time watermark; for the
-    event-time recency of the summary's content, use
-    LastSummarizedEpisodeValidAt instead.
-    """
-
-    last_summarized_episode_valid_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    LastSummarizedEpisodeValidAt is the maximum episode reference time
-    (valid_at) covered by the most recent summary. Use this when
-    answering "how recent is this summary's content in event-time?".
-    """
-
-    summary: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Summary is the incremental summary content.
-    """
-
-    thread_id: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    ThreadID is the ID of the thread this summary belongs to.
-    When a thread was created without an explicit thread_id, this
-    field falls back to the thread's UUID. Clients should treat it
-    as an opaque identifier.
-    """
-
-    uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = pydantic.Field(default=None)
-    """
-    UUID of the thread summary node.
-    """
+    created_at: typing.Optional[str] = None
+    last_summarized_at: typing.Optional[str] = None
+    last_summarized_episode_valid_at: typing.Optional[str] = None
+    summary: typing.Optional[str] = None
+    thread_uuid: typing.Optional[str] = None
+    uuid_: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+    ] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

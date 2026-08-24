@@ -6,16 +6,19 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
+from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
-from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
-from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
+from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.observation_steering_config import ObservationSteeringConfig
-from ..types.observation_type import ObservationType
-from ..types.project_info_response import ProjectInfoResponse
+from ..types.instructions import Instructions
+from ..types.observation_steering import ObservationSteering
+from ..types.ontology import Ontology
+from ..types.project import Project
+from ..types.user_summary_instructions import UserSummaryInstructions
+from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -25,10 +28,8 @@ class RawProjectClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[ProjectInfoResponse]:
+    def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[Project]:
         """
-        Retrieve project info based on the provided api key.
-
         Parameters
         ----------
         request_options : typing.Optional[RequestOptions]
@@ -36,20 +37,20 @@ class RawProjectClient:
 
         Returns
         -------
-        HttpResponse[ProjectInfoResponse]
-            Retrieved
+        HttpResponse[Project]
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            "projects/info",
+            "project",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectInfoResponse,
+                    Project,
                     parse_obj_as(
-                        type_=ProjectInfoResponse,  # type: ignore
+                        type_=Project,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -58,9 +59,20 @@ class RawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -76,53 +88,51 @@ class RawProjectClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
     def update(
-        self, *, default_time_zone: typing.Optional[str] = OMIT, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ProjectInfoResponse]:
+        self,
+        *,
+        default_time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[Project]:
         """
-        Sets or clears the project-level fallback time zone for the API key's project.
-
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
-            The project's IANA fallback time zone. Null clears the existing value.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ProjectInfoResponse]
-            Updated
+        HttpResponse[Project]
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            "projects/info",
+            "project",
             method="PATCH",
             json={
                 "default_time_zone": default_time_zone,
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -130,9 +140,9 @@ class RawProjectClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectInfoResponse,
+                    Project,
                     parse_obj_as(
-                        type_=ProjectInfoResponse,  # type: ignore
+                        type_=Project,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -141,9 +151,20 @@ class RawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -159,8 +180,72 @@ class RawProjectClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_instructions(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[Instructions]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[Instructions]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/instructions",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Instructions,
+                    parse_obj_as(
+                        type_=Instructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -175,51 +260,59 @@ class RawProjectClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get_observation_steering(
+    def set_instructions(
         self,
         *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ObservationSteeringConfig]:
+    ) -> HttpResponse[Instructions]:
         """
-        Returns project steering or the effective user/graph steering with project fallback. This API is experimental and may change in future releases.
-
         Parameters
         ----------
-        user_id : typing.Optional[str]
-            User ID for user-specific steering
+        inherited : typing.Optional[bool]
 
-        graph_id : typing.Optional[str]
-            Graph ID for graph-specific steering
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ObservationSteeringConfig]
-            Retrieved
+        HttpResponse[Instructions]
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            "projects/observation-steering",
-            method="GET",
-            params={
-                "user_id": user_id,
-                "graph_id": graph_id,
+            "project/instructions",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instructions": instructions,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ObservationSteeringConfig,
+                    Instructions,
                     parse_obj_as(
-                        type_=ObservationSteeringConfig,  # type: ignore
+                        type_=Instructions,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -228,15 +321,26 @@ class RawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -250,6 +354,85 @@ class RawProjectClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_observation_steering(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[ObservationSteering]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ObservationSteering]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/observation-steering",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ObservationSteering,
+                    parse_obj_as(
+                        type_=ObservationSteering,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
@@ -258,50 +441,42 @@ class RawProjectClient:
     def set_observation_steering(
         self,
         *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
+        inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
+        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ObservationSteeringConfig]:
+    ) -> HttpResponse[ObservationSteering]:
         """
-        Replaces project, user, or graph steering. An empty configuration clears the project default or removes the user/graph override. Changes affect later materializer runs only. This API is experimental and may change in future releases.
-
         Parameters
         ----------
-        user_id : typing.Optional[str]
-            User ID for user-specific steering
-
-        graph_id : typing.Optional[str]
-            Graph ID for graph-specific steering
+        inherited : typing.Optional[bool]
 
         instruction : typing.Optional[str]
 
-        types : typing.Optional[typing.Sequence[ObservationType]]
+        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ObservationSteeringConfig]
-            Updated
+        HttpResponse[ObservationSteering]
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            "projects/observation-steering",
+            "project/observation-steering",
             method="PUT",
-            params={
-                "user_id": user_id,
-                "graph_id": graph_id,
-            },
             json={
+                "inherited": inherited,
                 "instruction": instruction,
-                "types": convert_and_respect_annotation_metadata(
-                    object_=types, annotation=typing.Sequence[ObservationType], direction="write"
-                ),
+                "types": types,
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -309,9 +484,9 @@ class RawProjectClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ObservationSteeringConfig,
+                    ObservationSteering,
                     parse_obj_as(
-                        type_=ObservationSteeringConfig,  # type: ignore
+                        type_=ObservationSteering,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -320,15 +495,26 @@ class RawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -342,6 +528,352 @@ class RawProjectClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_ontology(self, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[Ontology]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[Ontology]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/ontology",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Ontology,
+                    parse_obj_as(
+                        type_=Ontology,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def set_ontology(
+        self,
+        *,
+        edge_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[Ontology]:
+        """
+        Parameters
+        ----------
+        edge_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        entity_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        inherited : typing.Optional[bool]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[Ontology]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/ontology",
+            method="PUT",
+            json={
+                "edge_types": edge_types,
+                "entity_types": entity_types,
+                "inherited": inherited,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Ontology,
+                    parse_obj_as(
+                        type_=Ontology,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_user_summary_instructions(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[UserSummaryInstructions]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[UserSummaryInstructions]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/user-summary-instructions",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    UserSummaryInstructions,
+                    parse_obj_as(
+                        type_=UserSummaryInstructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def set_user_summary_instructions(
+        self,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[UserSummaryInstructions]:
+        """
+        Parameters
+        ----------
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[UserSummaryInstructions]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/user-summary-instructions",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instructions": instructions,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    UserSummaryInstructions,
+                    parse_obj_as(
+                        type_=UserSummaryInstructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
@@ -352,12 +884,8 @@ class AsyncRawProjectClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ProjectInfoResponse]:
+    async def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> AsyncHttpResponse[Project]:
         """
-        Retrieve project info based on the provided api key.
-
         Parameters
         ----------
         request_options : typing.Optional[RequestOptions]
@@ -365,20 +893,20 @@ class AsyncRawProjectClient:
 
         Returns
         -------
-        AsyncHttpResponse[ProjectInfoResponse]
-            Retrieved
+        AsyncHttpResponse[Project]
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "projects/info",
+            "project",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectInfoResponse,
+                    Project,
                     parse_obj_as(
-                        type_=ProjectInfoResponse,  # type: ignore
+                        type_=Project,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -387,9 +915,20 @@ class AsyncRawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -405,53 +944,51 @@ class AsyncRawProjectClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
     async def update(
-        self, *, default_time_zone: typing.Optional[str] = OMIT, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ProjectInfoResponse]:
+        self,
+        *,
+        default_time_zone: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[Project]:
         """
-        Sets or clears the project-level fallback time zone for the API key's project.
-
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
-            The project's IANA fallback time zone. Null clears the existing value.
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ProjectInfoResponse]
-            Updated
+        AsyncHttpResponse[Project]
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "projects/info",
+            "project",
             method="PATCH",
             json={
                 "default_time_zone": default_time_zone,
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -459,9 +996,9 @@ class AsyncRawProjectClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectInfoResponse,
+                    Project,
                     parse_obj_as(
-                        type_=ProjectInfoResponse,  # type: ignore
+                        type_=Project,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -470,9 +1007,20 @@ class AsyncRawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -488,8 +1036,72 @@ class AsyncRawProjectClient:
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_instructions(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[Instructions]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[Instructions]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/instructions",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Instructions,
+                    parse_obj_as(
+                        type_=Instructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -504,51 +1116,59 @@ class AsyncRawProjectClient:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
             )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    async def get_observation_steering(
+    async def set_instructions(
         self,
         *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ObservationSteeringConfig]:
+    ) -> AsyncHttpResponse[Instructions]:
         """
-        Returns project steering or the effective user/graph steering with project fallback. This API is experimental and may change in future releases.
-
         Parameters
         ----------
-        user_id : typing.Optional[str]
-            User ID for user-specific steering
+        inherited : typing.Optional[bool]
 
-        graph_id : typing.Optional[str]
-            Graph ID for graph-specific steering
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ObservationSteeringConfig]
-            Retrieved
+        AsyncHttpResponse[Instructions]
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "projects/observation-steering",
-            method="GET",
-            params={
-                "user_id": user_id,
-                "graph_id": graph_id,
+            "project/instructions",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instructions": instructions,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ObservationSteeringConfig,
+                    Instructions,
                     parse_obj_as(
-                        type_=ObservationSteeringConfig,  # type: ignore
+                        type_=Instructions,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -557,15 +1177,26 @@ class AsyncRawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -579,6 +1210,85 @@ class AsyncRawProjectClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_observation_steering(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[ObservationSteering]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ObservationSteering]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/observation-steering",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ObservationSteering,
+                    parse_obj_as(
+                        type_=ObservationSteering,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
@@ -587,50 +1297,42 @@ class AsyncRawProjectClient:
     async def set_observation_steering(
         self,
         *,
-        user_id: typing.Optional[str] = None,
-        graph_id: typing.Optional[str] = None,
+        inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
+        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ObservationSteeringConfig]:
+    ) -> AsyncHttpResponse[ObservationSteering]:
         """
-        Replaces project, user, or graph steering. An empty configuration clears the project default or removes the user/graph override. Changes affect later materializer runs only. This API is experimental and may change in future releases.
-
         Parameters
         ----------
-        user_id : typing.Optional[str]
-            User ID for user-specific steering
-
-        graph_id : typing.Optional[str]
-            Graph ID for graph-specific steering
+        inherited : typing.Optional[bool]
 
         instruction : typing.Optional[str]
 
-        types : typing.Optional[typing.Sequence[ObservationType]]
+        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ObservationSteeringConfig]
-            Updated
+        AsyncHttpResponse[ObservationSteering]
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "projects/observation-steering",
+            "project/observation-steering",
             method="PUT",
-            params={
-                "user_id": user_id,
-                "graph_id": graph_id,
-            },
             json={
+                "inherited": inherited,
                 "instruction": instruction,
-                "types": convert_and_respect_annotation_metadata(
-                    object_=types, annotation=typing.Sequence[ObservationType], direction="write"
-                ),
+                "types": types,
             },
             headers={
                 "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
             },
             request_options=request_options,
             omit=OMIT,
@@ -638,9 +1340,9 @@ class AsyncRawProjectClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ObservationSteeringConfig,
+                    ObservationSteering,
                     parse_obj_as(
-                        type_=ObservationSteeringConfig,  # type: ignore
+                        type_=ObservationSteering,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -649,15 +1351,26 @@ class AsyncRawProjectClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        types_api_error_ApiError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=types_api_error_ApiError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
-            if _response.status_code == 500:
-                raise InternalServerError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -671,6 +1384,354 @@ class AsyncRawProjectClient:
         except JSONDecodeError:
             raise core_api_error_ApiError(
                 status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_ontology(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[Ontology]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[Ontology]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/ontology",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Ontology,
+                    parse_obj_as(
+                        type_=Ontology,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_ontology(
+        self,
+        *,
+        edge_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        entity_types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[Ontology]:
+        """
+        Parameters
+        ----------
+        edge_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        entity_types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        inherited : typing.Optional[bool]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[Ontology]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/ontology",
+            method="PUT",
+            json={
+                "edge_types": edge_types,
+                "entity_types": entity_types,
+                "inherited": inherited,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    Ontology,
+                    parse_obj_as(
+                        type_=Ontology,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_user_summary_instructions(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[UserSummaryInstructions]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[UserSummaryInstructions]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/user-summary-instructions",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    UserSummaryInstructions,
+                    parse_obj_as(
+                        type_=UserSummaryInstructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_user_summary_instructions(
+        self,
+        *,
+        inherited: typing.Optional[bool] = OMIT,
+        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[UserSummaryInstructions]:
+        """
+        Parameters
+        ----------
+        inherited : typing.Optional[bool]
+
+        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[UserSummaryInstructions]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/user-summary-instructions",
+            method="PUT",
+            json={
+                "inherited": inherited,
+                "instructions": instructions,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    UserSummaryInstructions,
+                    parse_obj_as(
+                        type_=UserSummaryInstructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
             )
         raise core_api_error_ApiError(
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json

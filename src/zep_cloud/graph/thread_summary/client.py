@@ -3,9 +3,10 @@
 import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ...core.pagination import AsyncPager, SyncPager
 from ...core.request_options import RequestOptions
-from ...types.search_filters import SearchFilters
-from ...types.thread_summary import ThreadSummary
+from ...types.json_object import JsonObject
+from ...types.json_object_page import JsonObjectPage
 from .raw_client import AsyncRawThreadSummaryClient, RawThreadSummaryClient
 
 # this is used as the default value for optional parameters
@@ -27,54 +28,39 @@ class ThreadSummaryClient:
         """
         return self._raw_client
 
-    def get_by_graph_id(
+    def list(
         self,
-        graph_id: str,
+        graph_uuid: str,
         *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ThreadSummary]:
+    ) -> SyncPager[JsonObject, JsonObjectPage]:
         """
-        Returns incremental thread summaries associated with the graph.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
-
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+        graph_uuid : str
+            Graph UUID
 
         limit : typing.Optional[int]
-            Maximum number of items to return
+            Page size
 
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
 
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[ThreadSummary]
-            Thread summaries
+        SyncPager[JsonObject, JsonObjectPage]
+            OK
 
         Examples
         --------
@@ -83,93 +69,25 @@ class ThreadSummaryClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.thread_summary.get_by_graph_id(
-            graph_id="graph_id",
+        response = client.graph.thread_summary.list(
+            graph_uuid="graph_uuid",
+            limit=1,
+            cursor="cursor",
         )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
         """
-        _response = self._raw_client.get_by_graph_id(
-            graph_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
+        return self._raw_client.list(
+            graph_uuid,
             limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
+            cursor=cursor,
+            filters=filters,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
-        return _response.data
-
-    def get_by_user_id(
-        self,
-        user_id: str,
-        *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ThreadSummary]:
-        """
-        Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
-
-        Parameters
-        ----------
-        user_id : str
-            User ID
-
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
-
-        limit : typing.Optional[int]
-            Maximum number of items to return
-
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
-
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
-
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[ThreadSummary]
-            Thread summaries
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.graph.thread_summary.get_by_user_id(
-            user_id="user_id",
-        )
-        """
-        _response = self._raw_client.get_by_user_id(
-            user_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
-            limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
-            request_options=request_options,
-        )
-        return _response.data
 
 
 class AsyncThreadSummaryClient:
@@ -187,54 +105,39 @@ class AsyncThreadSummaryClient:
         """
         return self._raw_client
 
-    async def get_by_graph_id(
+    async def list(
         self,
-        graph_id: str,
+        graph_uuid: str,
         *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ThreadSummary]:
+    ) -> AsyncPager[JsonObject, JsonObjectPage]:
         """
-        Returns incremental thread summaries associated with the graph.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
-
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+        graph_uuid : str
+            Graph UUID
 
         limit : typing.Optional[int]
-            Maximum number of items to return
+            Page size
 
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
 
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[ThreadSummary]
-            Thread summaries
+        AsyncPager[JsonObject, JsonObjectPage]
+            OK
 
         Examples
         --------
@@ -248,101 +151,26 @@ class AsyncThreadSummaryClient:
 
 
         async def main() -> None:
-            await client.graph.thread_summary.get_by_graph_id(
-                graph_id="graph_id",
+            response = await client.graph.thread_summary.list(
+                graph_uuid="graph_uuid",
+                limit=1,
+                cursor="cursor",
             )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_graph_id(
-            graph_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
+        return await self._raw_client.list(
+            graph_uuid,
             limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
+            cursor=cursor,
+            filters=filters,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
-        return _response.data
-
-    async def get_by_user_id(
-        self,
-        user_id: str,
-        *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[ThreadSummary]:
-        """
-        Returns incremental thread summaries generated from messages in each thread associated with the user's graph.
-
-        Parameters
-        ----------
-        user_id : str
-            User ID
-
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
-
-        limit : typing.Optional[int]
-            Maximum number of items to return
-
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
-
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
-
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[ThreadSummary]
-            Thread summaries
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.graph.thread_summary.get_by_user_id(
-                user_id="user_id",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get_by_user_id(
-            user_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
-            limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
-            request_options=request_options,
-        )
-        return _response.data
