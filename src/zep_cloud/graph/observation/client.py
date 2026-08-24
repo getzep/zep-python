@@ -3,9 +3,10 @@
 import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ...core.pagination import AsyncPager, SyncPager
 from ...core.request_options import RequestOptions
-from ...types.derived_node import DerivedNode
-from ...types.search_filters import SearchFilters
+from ...types.observation import Observation
+from ...types.observation_page import ObservationPage
 from .raw_client import AsyncRawObservationClient, RawObservationClient
 
 # this is used as the default value for optional parameters
@@ -27,54 +28,39 @@ class ObservationClient:
         """
         return self._raw_client
 
-    def get_by_graph_id(
+    def list(
         self,
-        graph_id: str,
+        graph_uuid: str,
         *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[DerivedNode]:
+    ) -> SyncPager[Observation, ObservationPage]:
         """
-        Returns read-only observation nodes for a graph.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
-
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+        graph_uuid : str
+            Graph UUID
 
         limit : typing.Optional[int]
-            Maximum number of items to return
+            Page size
 
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
 
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[DerivedNode]
-            Observations
+        SyncPager[Observation, ObservationPage]
+            OK
 
         Examples
         --------
@@ -83,101 +69,36 @@ class ObservationClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.observation.get_by_graph_id(
-            graph_id="graph_id",
+        response = client.graph.observation.list(
+            graph_uuid="graph_uuid",
+            limit=1,
+            cursor="cursor",
         )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
         """
-        _response = self._raw_client.get_by_graph_id(
-            graph_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
+        return self._raw_client.list(
+            graph_uuid,
             limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
+            cursor=cursor,
+            filters=filters,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
-        return _response.data
 
-    def get_by_user_id(
-        self,
-        user_id: str,
-        *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[DerivedNode]:
+    def get(
+        self, graph_uuid: str, observation_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> Observation:
         """
-        Returns read-only observation nodes for a user's graph.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        graph_uuid : str
+            Graph UUID
 
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
-
-        limit : typing.Optional[int]
-            Maximum number of items to return
-
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
-
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
-
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[DerivedNode]
-            Observations
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.graph.observation.get_by_user_id(
-            user_id="user_id",
-        )
-        """
-        _response = self._raw_client.get_by_user_id(
-            user_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
-            limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
-            request_options=request_options,
-        )
-        return _response.data
-
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> DerivedNode:
-        """
-        Returns a specific observation node by UUID. Observation nodes are read-only.
-
-        Parameters
-        ----------
-        uuid_ : str
+        observation_uuid : str
             Observation UUID
 
         request_options : typing.Optional[RequestOptions]
@@ -185,8 +106,8 @@ class ObservationClient:
 
         Returns
         -------
-        DerivedNode
-            Observation
+        Observation
+            OK
 
         Examples
         --------
@@ -196,10 +117,11 @@ class ObservationClient:
             api_key="YOUR_API_KEY",
         )
         client.graph.observation.get(
-            uuid_="uuid",
+            graph_uuid="graph_uuid",
+            observation_uuid="observation_uuid",
         )
         """
-        _response = self._raw_client.get(uuid_, request_options=request_options)
+        _response = self._raw_client.get(graph_uuid, observation_uuid, request_options=request_options)
         return _response.data
 
 
@@ -218,54 +140,39 @@ class AsyncObservationClient:
         """
         return self._raw_client
 
-    async def get_by_graph_id(
+    async def list(
         self,
-        graph_id: str,
+        graph_uuid: str,
         *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[DerivedNode]:
+    ) -> AsyncPager[Observation, ObservationPage]:
         """
-        Returns read-only observation nodes for a graph.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
-
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+        graph_uuid : str
+            Graph UUID
 
         limit : typing.Optional[int]
-            Maximum number of items to return
+            Page size
 
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
 
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[DerivedNode]
-            Observations
+        AsyncPager[Observation, ObservationPage]
+            OK
 
         Examples
         --------
@@ -279,112 +186,40 @@ class AsyncObservationClient:
 
 
         async def main() -> None:
-            await client.graph.observation.get_by_graph_id(
-                graph_id="graph_id",
+            response = await client.graph.observation.list(
+                graph_uuid="graph_uuid",
+                limit=1,
+                cursor="cursor",
             )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_graph_id(
-            graph_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
+        return await self._raw_client.list(
+            graph_uuid,
             limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
+            cursor=cursor,
+            filters=filters,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
-        return _response.data
 
-    async def get_by_user_id(
-        self,
-        user_id: str,
-        *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[DerivedNode]:
+    async def get(
+        self, graph_uuid: str, observation_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> Observation:
         """
-        Returns read-only observation nodes for a user's graph.
-
         Parameters
         ----------
-        user_id : str
-            User ID
+        graph_uuid : str
+            Graph UUID
 
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
-
-        limit : typing.Optional[int]
-            Maximum number of items to return
-
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
-
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
-
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[DerivedNode]
-            Observations
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.graph.observation.get_by_user_id(
-                user_id="user_id",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get_by_user_id(
-            user_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
-            limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
-            request_options=request_options,
-        )
-        return _response.data
-
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> DerivedNode:
-        """
-        Returns a specific observation node by UUID. Observation nodes are read-only.
-
-        Parameters
-        ----------
-        uuid_ : str
+        observation_uuid : str
             Observation UUID
 
         request_options : typing.Optional[RequestOptions]
@@ -392,8 +227,8 @@ class AsyncObservationClient:
 
         Returns
         -------
-        DerivedNode
-            Observation
+        Observation
+            OK
 
         Examples
         --------
@@ -408,11 +243,12 @@ class AsyncObservationClient:
 
         async def main() -> None:
             await client.graph.observation.get(
-                uuid_="uuid",
+                graph_uuid="graph_uuid",
+                observation_uuid="observation_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(uuid_, request_options=request_options)
+        _response = await self._raw_client.get(graph_uuid, observation_uuid, request_options=request_options)
         return _response.data

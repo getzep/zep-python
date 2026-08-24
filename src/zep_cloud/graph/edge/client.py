@@ -3,10 +3,12 @@
 import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ...core.pagination import AsyncPager, SyncPager
 from ...core.request_options import RequestOptions
-from ...types.entity_edge import EntityEdge
-from ...types.search_filters import SearchFilters
-from ...types.success_response import SuccessResponse
+from ...types.add_edge_result import AddEdgeResult
+from ...types.async_result import AsyncResult
+from ...types.edge import Edge
+from ...types.edge_page import EdgePage
 from .raw_client import AsyncRawEdgeClient, RawEdgeClient
 
 # this is used as the default value for optional parameters
@@ -28,54 +30,55 @@ class EdgeClient:
         """
         return self._raw_client
 
-    def get_by_graph_id(
+    def add(
         self,
-        graph_id: str,
+        graph_uuid: str,
         *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
+        attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        expired_at: typing.Optional[str] = OMIT,
+        fact: typing.Optional[str] = OMIT,
+        fact_name: typing.Optional[str] = OMIT,
+        invalid_at: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        source_node: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        target_node: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        valid_at: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[EntityEdge]:
+    ) -> AddEdgeResult:
         """
-        Returns all edges for a graph.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
+        graph_uuid : str
+            Graph UUID
 
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
+        attributes : typing.Optional[typing.Dict[str, typing.Any]]
 
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
+        expired_at : typing.Optional[str]
 
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+        fact : typing.Optional[str]
 
-        limit : typing.Optional[int]
-            Maximum number of items to return
+        fact_name : typing.Optional[str]
 
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+        invalid_at : typing.Optional[str]
 
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
+        source_node : typing.Optional[typing.Dict[str, typing.Any]]
+
+        target_node : typing.Optional[typing.Dict[str, typing.Any]]
+
+        valid_at : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[EntityEdge]
-            Edges
+        AddEdgeResult
+            Accepted
 
         Examples
         --------
@@ -84,70 +87,59 @@ class EdgeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.edge.get_by_graph_id(
-            graph_id="graph_id",
+        client.graph.edge.add(
+            graph_uuid="graph_uuid",
         )
         """
-        _response = self._raw_client.get_by_graph_id(
-            graph_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
-            limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
+        _response = self._raw_client.add(
+            graph_uuid,
+            attributes=attributes,
+            expired_at=expired_at,
+            fact=fact,
+            fact_name=fact_name,
+            invalid_at=invalid_at,
+            metadata=metadata,
+            source_node=source_node,
+            target_node=target_node,
+            valid_at=valid_at,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data
 
-    def get_by_user_id(
+    def list(
         self,
-        user_id: str,
+        graph_uuid: str,
         *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[EntityEdge]:
+    ) -> SyncPager[Edge, EdgePage]:
         """
-        Returns all edges for a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
-
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+        graph_uuid : str
+            Graph UUID
 
         limit : typing.Optional[int]
-            Maximum number of items to return
+            Page size
 
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
 
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[EntityEdge]
-            Edges
+        SyncPager[Edge, EdgePage]
+            OK
 
         Examples
         --------
@@ -156,29 +148,34 @@ class EdgeClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.graph.edge.get_by_user_id(
-            user_id="user_id",
+        response = client.graph.edge.list(
+            graph_uuid="graph_uuid",
+            limit=1,
+            cursor="cursor",
         )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
         """
-        _response = self._raw_client.get_by_user_id(
-            user_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
+        return self._raw_client.list(
+            graph_uuid,
             limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
+            cursor=cursor,
+            filters=filters,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
-        return _response.data
 
-    def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
+    def get(self, graph_uuid: str, edge_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> Edge:
         """
-        Returns a specific edge by its UUID.
-
         Parameters
         ----------
-        uuid_ : str
+        graph_uuid : str
+            Graph UUID
+
+        edge_uuid : str
             Edge UUID
 
         request_options : typing.Optional[RequestOptions]
@@ -186,8 +183,8 @@ class EdgeClient:
 
         Returns
         -------
-        EntityEdge
-            Edge
+        Edge
+            OK
 
         Examples
         --------
@@ -197,28 +194,39 @@ class EdgeClient:
             api_key="YOUR_API_KEY",
         )
         client.graph.edge.get(
-            uuid_="uuid",
+            graph_uuid="graph_uuid",
+            edge_uuid="edge_uuid",
         )
         """
-        _response = self._raw_client.get(uuid_, request_options=request_options)
+        _response = self._raw_client.get(graph_uuid, edge_uuid, request_options=request_options)
         return _response.data
 
-    def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+    def delete(
+        self,
+        graph_uuid: str,
+        edge_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncResult:
         """
-        Deletes an edge by UUID.
-
         Parameters
         ----------
-        uuid_ : str
+        graph_uuid : str
+            Graph UUID
+
+        edge_uuid : str
             Edge UUID
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
-            Edge deleted
+        AsyncResult
+            Accepted
 
         Examples
         --------
@@ -228,57 +236,48 @@ class EdgeClient:
             api_key="YOUR_API_KEY",
         )
         client.graph.edge.delete(
-            uuid_="uuid",
+            graph_uuid="graph_uuid",
+            edge_uuid="edge_uuid",
         )
         """
-        _response = self._raw_client.delete(uuid_, request_options=request_options)
+        _response = self._raw_client.delete(
+            graph_uuid, edge_uuid, idempotency_key=idempotency_key, request_options=request_options
+        )
         return _response.data
 
     def update(
         self,
-        uuid_: str,
+        graph_uuid: str,
+        edge_uuid: str,
         *,
-        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
+        attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         fact: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> EntityEdge:
+    ) -> Edge:
         """
-        Updates an entity edge by UUID.
-
         Parameters
         ----------
-        uuid_ : str
+        graph_uuid : str
+            Graph UUID
+
+        edge_uuid : str
             Edge UUID
 
-        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
-
-        expired_at : typing.Optional[str]
-            Updated time at which the edge expires
+        attributes : typing.Optional[typing.Dict[str, typing.Any]]
 
         fact : typing.Optional[str]
-            Updated fact for the edge
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
-        invalid_at : typing.Optional[str]
-            Updated time at which the fact stopped being true
-
-        name : typing.Optional[str]
-            Updated name (relationship type) for the edge
-
-        valid_at : typing.Optional[str]
-            Updated time at which the fact becomes true
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        EntityEdge
-            Updated edge
+        Edge
+            OK
 
         Examples
         --------
@@ -288,17 +287,16 @@ class EdgeClient:
             api_key="YOUR_API_KEY",
         )
         client.graph.edge.update(
-            uuid_="uuid",
+            graph_uuid="graph_uuid",
+            edge_uuid="edge_uuid",
         )
         """
         _response = self._raw_client.update(
-            uuid_,
+            graph_uuid,
+            edge_uuid,
             attributes=attributes,
-            expired_at=expired_at,
             fact=fact,
-            invalid_at=invalid_at,
-            name=name,
-            valid_at=valid_at,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data
@@ -319,54 +317,55 @@ class AsyncEdgeClient:
         """
         return self._raw_client
 
-    async def get_by_graph_id(
+    async def add(
         self,
-        graph_id: str,
+        graph_uuid: str,
         *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
+        attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        expired_at: typing.Optional[str] = OMIT,
+        fact: typing.Optional[str] = OMIT,
+        fact_name: typing.Optional[str] = OMIT,
+        invalid_at: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        source_node: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        target_node: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        valid_at: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[EntityEdge]:
+    ) -> AddEdgeResult:
         """
-        Returns all edges for a graph.
-
         Parameters
         ----------
-        graph_id : str
-            Graph ID
+        graph_uuid : str
+            Graph UUID
 
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
+        attributes : typing.Optional[typing.Dict[str, typing.Any]]
 
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
+        expired_at : typing.Optional[str]
 
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+        fact : typing.Optional[str]
 
-        limit : typing.Optional[int]
-            Maximum number of items to return
+        fact_name : typing.Optional[str]
 
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+        invalid_at : typing.Optional[str]
 
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+        metadata : typing.Optional[typing.Dict[str, typing.Any]]
 
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
+        source_node : typing.Optional[typing.Dict[str, typing.Any]]
+
+        target_node : typing.Optional[typing.Dict[str, typing.Any]]
+
+        valid_at : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[EntityEdge]
-            Edges
+        AddEdgeResult
+            Accepted
 
         Examples
         --------
@@ -380,73 +379,62 @@ class AsyncEdgeClient:
 
 
         async def main() -> None:
-            await client.graph.edge.get_by_graph_id(
-                graph_id="graph_id",
+            await client.graph.edge.add(
+                graph_uuid="graph_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_graph_id(
-            graph_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
-            limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
+        _response = await self._raw_client.add(
+            graph_uuid,
+            attributes=attributes,
+            expired_at=expired_at,
+            fact=fact,
+            fact_name=fact_name,
+            invalid_at=invalid_at,
+            metadata=metadata,
+            source_node=source_node,
+            target_node=target_node,
+            valid_at=valid_at,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data
 
-    async def get_by_user_id(
+    async def list(
         self,
-        user_id: str,
+        graph_uuid: str,
         *,
-        cursor: typing.Optional[str] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
-        limit: typing.Optional[int] = OMIT,
-        order_by: typing.Optional[str] = OMIT,
-        uuid_cursor: typing.Optional[str] = OMIT,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[EntityEdge]:
+    ) -> AsyncPager[Edge, EdgePage]:
         """
-        Returns all edges for a user.
-
         Parameters
         ----------
-        user_id : str
-            User ID
-
-        cursor : typing.Optional[str]
-            Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
-            of the previous page. Encodes the sort field, direction, and continuation position.
-
-        direction : typing.Optional[str]
-            Sort direction. One of "asc" or "desc" (default "desc").
-
-        filters : typing.Optional[SearchFilters]
-            Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+        graph_uuid : str
+            Graph UUID
 
         limit : typing.Optional[int]
-            Maximum number of items to return
+            Page size
 
-        order_by : typing.Optional[str]
-            Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
-        uuid_cursor : typing.Optional[str]
-            UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
 
-            Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        typing.List[EntityEdge]
-            Edges
+        AsyncPager[Edge, EdgePage]
+            OK
 
         Examples
         --------
@@ -460,32 +448,40 @@ class AsyncEdgeClient:
 
 
         async def main() -> None:
-            await client.graph.edge.get_by_user_id(
-                user_id="user_id",
+            response = await client.graph.edge.list(
+                graph_uuid="graph_uuid",
+                limit=1,
+                cursor="cursor",
             )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_by_user_id(
-            user_id,
-            cursor=cursor,
-            direction=direction,
-            filters=filters,
+        return await self._raw_client.list(
+            graph_uuid,
             limit=limit,
-            order_by=order_by,
-            uuid_cursor=uuid_cursor,
+            cursor=cursor,
+            filters=filters,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
-        return _response.data
 
-    async def get(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> EntityEdge:
+    async def get(
+        self, graph_uuid: str, edge_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> Edge:
         """
-        Returns a specific edge by its UUID.
-
         Parameters
         ----------
-        uuid_ : str
+        graph_uuid : str
+            Graph UUID
+
+        edge_uuid : str
             Edge UUID
 
         request_options : typing.Optional[RequestOptions]
@@ -493,8 +489,8 @@ class AsyncEdgeClient:
 
         Returns
         -------
-        EntityEdge
-            Edge
+        Edge
+            OK
 
         Examples
         --------
@@ -509,31 +505,42 @@ class AsyncEdgeClient:
 
         async def main() -> None:
             await client.graph.edge.get(
-                uuid_="uuid",
+                graph_uuid="graph_uuid",
+                edge_uuid="edge_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(uuid_, request_options=request_options)
+        _response = await self._raw_client.get(graph_uuid, edge_uuid, request_options=request_options)
         return _response.data
 
-    async def delete(self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None) -> SuccessResponse:
+    async def delete(
+        self,
+        graph_uuid: str,
+        edge_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncResult:
         """
-        Deletes an edge by UUID.
-
         Parameters
         ----------
-        uuid_ : str
+        graph_uuid : str
+            Graph UUID
+
+        edge_uuid : str
             Edge UUID
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
-            Edge deleted
+        AsyncResult
+            Accepted
 
         Examples
         --------
@@ -548,60 +555,51 @@ class AsyncEdgeClient:
 
         async def main() -> None:
             await client.graph.edge.delete(
-                uuid_="uuid",
+                graph_uuid="graph_uuid",
+                edge_uuid="edge_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.delete(uuid_, request_options=request_options)
+        _response = await self._raw_client.delete(
+            graph_uuid, edge_uuid, idempotency_key=idempotency_key, request_options=request_options
+        )
         return _response.data
 
     async def update(
         self,
-        uuid_: str,
+        graph_uuid: str,
+        edge_uuid: str,
         *,
-        attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
+        attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         fact: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        name: typing.Optional[str] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> EntityEdge:
+    ) -> Edge:
         """
-        Updates an entity edge by UUID.
-
         Parameters
         ----------
-        uuid_ : str
+        graph_uuid : str
+            Graph UUID
+
+        edge_uuid : str
             Edge UUID
 
-        attributes : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
-            Updated attributes. Merged with existing attributes. Set a key to null to delete it.
-
-        expired_at : typing.Optional[str]
-            Updated time at which the edge expires
+        attributes : typing.Optional[typing.Dict[str, typing.Any]]
 
         fact : typing.Optional[str]
-            Updated fact for the edge
+            Omit to leave unchanged, send JSON null to clear, or send a value to set.
 
-        invalid_at : typing.Optional[str]
-            Updated time at which the fact stopped being true
-
-        name : typing.Optional[str]
-            Updated name (relationship type) for the edge
-
-        valid_at : typing.Optional[str]
-            Updated time at which the fact becomes true
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        EntityEdge
-            Updated edge
+        Edge
+            OK
 
         Examples
         --------
@@ -616,20 +614,19 @@ class AsyncEdgeClient:
 
         async def main() -> None:
             await client.graph.edge.update(
-                uuid_="uuid",
+                graph_uuid="graph_uuid",
+                edge_uuid="edge_uuid",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            uuid_,
+            graph_uuid,
+            edge_uuid,
             attributes=attributes,
-            expired_at=expired_at,
             fact=fact,
-            invalid_at=invalid_at,
-            name=name,
-            valid_at=valid_at,
+            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data

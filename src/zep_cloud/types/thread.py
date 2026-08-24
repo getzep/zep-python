@@ -10,11 +10,13 @@ from ..core.serialization import FieldMetadata
 
 class Thread(UniversalBaseModel):
     created_at: typing.Optional[str] = None
-    project_uuid: typing.Optional[str] = None
+    graph_uuid: typing.Optional[str] = None
     thread_id: typing.Optional[str] = None
-    user_id: typing.Optional[str] = None
+    updated_at: typing.Optional[str] = None
     user_uuid: typing.Optional[str] = None
-    uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = None
+    uuid_: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+    ] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
