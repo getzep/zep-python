@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import List, Optional
 
 from dateutil import parser as dateutil_parser
-from zep_cloud import Edge, Episode, Node
+from zep_cloud import EntityEdge, EntityNode, Episode
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def parse_iso_datetime(iso_string: Optional[str]) -> Optional[datetime]:
+def parse_iso_datetime(iso_string: str) -> Optional[datetime]:
     """Parse ISO datetime string using dateutil parser."""
     if not iso_string:
         return None
@@ -39,7 +39,7 @@ FACTS and ENTITIES{episodes_header} represent relevant context to the current co
 """
 
 
-def format_edge_date_range(edge: Edge) -> str:
+def format_edge_date_range(edge: EntityEdge) -> str:
     """
     Format the date range of an entity edge.
     
@@ -64,7 +64,7 @@ def format_edge_date_range(edge: Edge) -> str:
     return f"{valid_at} - {invalid_at}"
 
 
-def compose_context_string(edges: List[Edge], nodes: List[Node], episodes: List[Episode]) -> str:
+def compose_context_string(edges: List[EntityEdge], nodes: List[EntityNode], episodes: List[Episode]) -> str:
     """
     Compose a search context from entity edges, nodes, and episodes.
     
@@ -110,19 +110,14 @@ def compose_context_string(edges: List[Edge], nodes: List[Node], episodes: List[
     episodes_list = []
     if episodes:
         for episode in episodes:
-            # spec-3 8.4 resolves v3's overloaded pair: role carries the enum
-            # v3 spelled role_type, and role_name carries the sender name v3
-            # spelled role. The rendered prefix is unchanged.
-            role_name = getattr(episode, "role_name", None)
-            role_type = getattr(episode, "role", None)
-
             role_prefix = ""
-            if role_name and role_type:
-                role_prefix = f"{role_name} ({role_type}): "
-            elif role_name:
-                role_prefix = f"{role_name}: "
-            elif role_type:
-                role_prefix = f"({role_type}): "
+            if hasattr(episode, 'role') and episode.role:
+                if hasattr(episode, 'role_type') and episode.role_type:
+                    role_prefix = f"{episode.role} ({episode.role_type}): "
+                else:
+                    role_prefix = f"{episode.role}: "
+            elif hasattr(episode, 'role_type') and episode.role_type:
+                role_prefix = f"({episode.role_type}): "
 
             parsed_timestamp = parse_iso_datetime(episode.created_at)
             timestamp = parsed_timestamp.strftime(DATE_FORMAT) if parsed_timestamp is not None else "date unknown"
