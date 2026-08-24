@@ -57,3 +57,11 @@ class AsyncZep(AsyncBaseClient):
             httpx_client=httpx_client,
             logging=logging,
         )
+
+    @property
+    def user(self) -> AsyncUserClient:  # type: ignore[override]
+        return self._external_user
+
+    @property
+    def graph(self) -> AsyncGraphClient:  # type: ignore[override]
+        return self._external_graph

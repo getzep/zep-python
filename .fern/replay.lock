@@ -24,5 +24,1572 @@ generations:
     cli_version: unknown
     generator_versions:
       fernapi/fern-python-sdk: 4.25.5
-current_generation: 8a3fb853912eadd78157bed5f9811ae936e834a8
-patches: []
+  - commit_sha: efb21b6fecdbd398f987f84b9cfd603c245d92f8
+    tree_hash: 2a3fc2af497a8eaae466c6798cfc6b24ca980013
+    timestamp: 2026-08-24T23:09:43.300Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-python-sdk: 4.64.1
+current_generation: efb21b6fecdbd398f987f84b9cfd603c245d92f8
+patches:
+  - id: patch-0a8e75ca
+    content_hash: sha256:866881ec7def1e2b7e6e110d3902675881441f06358dee9da74e5712d0e8b8d6
+    original_commit: 0a8e75cac06010f33e9a3ac27518605f812dea26
+    original_message: Port the hand-written wrappers to the v4 surface
+    original_author: paulpaliychuk <pavlo.paliychuk.ca@gmail.com>
+    base_generation: 7f514a610245d1b8cde850032abc4a52a01da9d4
+    files:
+      - src/zep_cloud/client.py
+      - src/zep_cloud/external_clients/graph.py
+      - src/zep_cloud/graph/utils.py
+      - tests/graph/test_utils.py
+    patch_content: |+
+      From 0a8e75cac06010f33e9a3ac27518605f812dea26 Mon Sep 17 00:00:00 2001
+      From: paulpaliychuk <pavlo.paliychuk.ca@gmail.com>
+      Date: Mon, 24 Aug 2026 18:54:36 -0400
+      Subject: [PATCH] Port the hand-written wrappers to the v4 surface
+
+      The .fernignore-protected files still targeted v3, so every v4 generation
+      failed mypy no matter how good the contract was.
+
+      external_clients/graph.py: v4 generates graph.set_ontology, so the
+      hand-written override of that name collided with it. The Pydantic ontology
+      DSL is unchanged and now feeds the generated call through build_ontology,
+      which is exported so the project scope can send the same payload to
+      project.set_ontology. user_ids and graph_ids are gone: they drove a
+      server-side fan-out v4 has no endpoint for (spec-3 14.4), so the graph is an
+      explicit argument and a caller targeting several graphs calls once per graph.
+      EntityEdgeSourceTarget is EdgeSourceTarget, whose fields v4 spells
+      source_entity_type and target_entity_type.
+
+      client.py: the v4 generator exposes sub-clients as read-only properties, so
+      the external user and graph clients are held privately and surfaced by
+      overriding the property rather than assigning over it. The legacy /api/v2
+      base-URL handling is dropped for /api/v4 (14.4).
+
+      graph/utils.py: EntityEdge and EntityNode are Edge and Node, created_at is
+      optional on the v4 model, and v4 resolves v3's overloaded role plus role_type
+      into role, the enum, and role_name, the sender. The composed string is
+      unchanged, and tests/graph/test_utils.py follows, including its duck-typed
+      mocks.
+
+      Verified against the generated client from the 4.0.0-alpha.1 candidate: mypy
+      reports no issues across 168 files and the 16 context-string tests pass.
+
+      This branch does not typecheck on its own until the next generation lands,
+      since the wrappers now expect v4 types while the checked-in generated code is
+      still v3. Nothing builds the base branch by itself; CI builds the generation
+      pull request, which is this plus the v4 client.
+      ---
+       src/zep_cloud/client.py                 |  28 +-
+       src/zep_cloud/external_clients/graph.py | 474 ++++--------------------
+       src/zep_cloud/graph/utils.py            |  27 +-
+       tests/graph/test_utils.py               |  53 +--
+       4 files changed, 131 insertions(+), 451 deletions(-)
+
+      diff --git a/src/zep_cloud/client.py b/src/zep_cloud/client.py
+      index b793251..3a1a409 100644
+      --- a/src/zep_cloud/client.py
+      +++ b/src/zep_cloud/client.py
+      @@ -21,7 +21,7 @@ class Zep(BaseClient):
+           ):
+               env_api_url = os.getenv("ZEP_API_URL")
+               if env_api_url:
+      -            base_url = f"{env_api_url}/api/v2"
+      +            base_url = f"{env_api_url}/api/v4"
+               super().__init__(
+                   base_url=base_url,
+                   environment=environment,
+      @@ -30,8 +30,16 @@ class Zep(BaseClient):
+                   follow_redirects=follow_redirects,
+                   httpx_client=httpx_client
+               )
+      -        self.user = UserClient(client_wrapper=self._client_wrapper)
+      -        self.graph = GraphClient(client_wrapper=self._client_wrapper)
+      +        self._external_user = UserClient(client_wrapper=self._client_wrapper)
+      +        self._external_graph = GraphClient(client_wrapper=self._client_wrapper)
+      +
+      +    @property
+      +    def user(self) -> UserClient:  # type: ignore[override]
+      +        return self._external_user
+      +
+      +    @property
+      +    def graph(self) -> GraphClient:  # type: ignore[override]
+      +        return self._external_graph
+       
+       class AsyncZep(AsyncBaseClient):
+           def __init__(
+      @@ -46,7 +54,7 @@ class AsyncZep(AsyncBaseClient):
+           ):
+               env_api_url = os.getenv("ZEP_API_URL")
+               if env_api_url:
+      -            base_url = f"{env_api_url}/api/v2"
+      +            base_url = f"{env_api_url}/api/v4"
+               super().__init__(
+                   base_url=base_url,
+                   environment=environment,
+      @@ -55,5 +63,13 @@ class AsyncZep(AsyncBaseClient):
+                   follow_redirects=follow_redirects,
+                   httpx_client=httpx_client
+               )
+      -        self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
+      -        self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
+      +        self._external_user = AsyncUserClient(client_wrapper=self._client_wrapper)
+      +        self._external_graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
+      +
+      +    @property
+      +    def user(self) -> AsyncUserClient:  # type: ignore[override]
+      +        return self._external_user
+      +
+      +    @property
+      +    def graph(self) -> AsyncGraphClient:  # type: ignore[override]
+      +        return self._external_graph
+      diff --git a/src/zep_cloud/external_clients/graph.py b/src/zep_cloud/external_clients/graph.py
+      index 3c65065..4e620ea 100644
+      --- a/src/zep_cloud/external_clients/graph.py
+      +++ b/src/zep_cloud/external_clients/graph.py
+      @@ -1,7 +1,7 @@
+       import typing
+       
+      -from zep_cloud import EdgeType, EntityEdgeSourceTarget
+       from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+      +from zep_cloud.core.request_options import RequestOptions
+       from zep_cloud.external_clients.ontology import (
+           EdgeModel,
+           edge_model_to_api_schema,
+      @@ -9,449 +9,107 @@ from zep_cloud.external_clients.ontology import (
+       )
+       from zep_cloud.graph.client import AsyncGraphClient as AsyncBaseGraphClient
+       from zep_cloud.graph.client import GraphClient as BaseGraphClient
+      -from zep_cloud.types import EntityType
+      +from zep_cloud.types import EdgeSourceTarget, EdgeType, EntityType, Ontology
+       
+       if typing.TYPE_CHECKING:
+           from zep_cloud.external_clients.ontology import EntityModel
+      -from zep_cloud.core.request_options import RequestOptions
+      -
+      -
+      -class GraphClient(BaseGraphClient):
+      -    def __init__(self, *, client_wrapper: SyncClientWrapper):
+      -        super().__init__(client_wrapper=client_wrapper)
+      -
+      -    def set_ontology(
+      -        self,
+      -        entities: dict[str, "EntityModel"],
+      -        edges: typing.Optional[
+      -            dict[
+      -                str,
+      -                typing.Union[
+      -                    "EdgeModel",
+      -                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
+      -                ],
+      -            ]
+      -        ] = None,
+      -        user_ids: typing.Optional[typing.List[str]] = None,
+      -        graph_ids: typing.Optional[typing.List[str]] = None,
+      -        request_options: typing.Optional[RequestOptions] = None,
+      -    ):
+      -        """
+      -        Sets the entity and edge types for a project, replacing any existing ones.
+      -
+      -        Parameters
+      -        ----------
+      -        entities : dict[str, "EntityModel"]
+      -            Entity type definitions.
+       
+      -        edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
+      -            Edge type definitions.
+      +EdgeSpec = typing.Union[
+      +    "EdgeModel",
+      +    typing.Tuple["EdgeModel", typing.List[EdgeSourceTarget]],
+      +]
+       
+      -        user_ids : typing.Optional[typing.List[str]]
+       
+      -            The user identifiers for which to set the ontology.
+      +def build_ontology(
+      +    entities: typing.Dict[str, "EntityModel"],
+      +    edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
+      +) -> typing.Tuple[typing.List[EntityType], typing.List[EdgeType]]:
+      +    """Turn the Pydantic ontology models into the types the v4 API accepts.
+       
+      -        graph_ids : typing.Optional[typing.List[str]]
+      -            The graph identifiers for which to set the ontology.
+      +    This is the whole value the hand-written layer adds: the wire shape is a
+      +    list of entity and edge types, and this derives it from Python classes so an
+      +    ontology is declared once, in the type system.
+      +    """
+      +    api_entity_types: typing.List[EntityType] = []
+      +    for name, entity in entities.items():
+      +        api_entity_types.append(EntityType(**entity_model_to_api_schema(entity, name)))
+       
+      -        request_options : typing.Optional[RequestOptions]
+      -            Request-specific configuration.
+      +    api_edge_types: typing.List[EdgeType] = []
+      +    if edges:
+      +        for name, edge_data in edges.items():
+      +            if isinstance(edge_data, tuple):
+      +                edge_model, source_targets = edge_data
+      +            else:
+      +                edge_model, source_targets = edge_data, None
+       
+      -        Examples
+      -        --------
+      -
+      -        class Destination(EntityModel):
+      +            edge_dict = edge_model_to_api_schema(edge_model, name)
+      +            if source_targets:
+      +                edge_dict["source_targets"] = [
+      +                    st.dict() if hasattr(st, "dict") else st for st in source_targets
+      +                ]
+      +            api_edge_types.append(EdgeType(**edge_dict))
+       
+      -        \"""A destination is a place that travelers visit.\"""
+      -            destination_name: EntityText = Field(
+      -                description="The name of the destination",
+      -                default=None
+      -            )
+      -            country: EntityText = Field(
+      -                description="The country of the destination",
+      -                default=None
+      -            )
+      -            region: EntityText = Field(
+      -                description="The region of the destination",
+      -                default=None
+      -            )
+      -            description: EntityText = Field(
+      -                description="A description of the destination",
+      -                default=None
+      -            )
+      +    return api_entity_types, api_edge_types
+       
+       
+      -        class TravelingTo(EdgeModel):
+      -
+      -        \"""An edge representing a traveler going to a destination.\"""
+      -            travel_date: EntityText = Field(
+      -                description="The date of travel to this destination",
+      -                default=None
+      -            )
+      -            purpose: EntityText = Field(
+      -                description="The purpose of travel (Business, Leisure, etc.)",
+      -                default=None
+      -            )
+      -
+      -        client.graph.set_ontology(
+      -            entities={
+      -                "Destination": Destination,
+      -            },
+      -            edges={
+      -                "TRAVELING_TO": (
+      -                    TravelingTo,
+      -                    [
+      -                        EntityEdgeSourceTarget(
+      -                            source="User",
+      -                            target="Destination"
+      -                        )
+      -                    ]
+      -                ),
+      -            }
+      -        )
+      -        """
+      -        return self.set_entity_types(
+      -            entities=entities,
+      -            edges=edges,
+      -            user_ids=user_ids,
+      -            graph_ids=graph_ids,
+      -            request_options=request_options,
+      -        )
+      +class GraphClient(BaseGraphClient):
+      +    def __init__(self, *, client_wrapper: SyncClientWrapper):
+      +        super().__init__(client_wrapper=client_wrapper)
+       
+           def set_entity_types(
+               self,
+      -        entities: dict[str, "EntityModel"],
+      -        edges: typing.Optional[
+      -            dict[
+      -                str,
+      -                typing.Union[
+      -                    "EdgeModel",
+      -                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
+      -                ],
+      -            ]
+      -        ] = None,
+      -        user_ids: typing.Optional[typing.List[str]] = None,
+      -        graph_ids: typing.Optional[typing.List[str]] = None,
+      +        graph_uuid: str,
+      +        entities: typing.Dict[str, "EntityModel"],
+      +        edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
+               request_options: typing.Optional[RequestOptions] = None,
+      -    ):
+      +    ) -> Ontology:
+               """
+      -        Sets the entity and edge types for a project, replacing any existing ones.
+      -
+      -        Parameters
+      -        ----------
+      -        entities : dict[str, "EntityModel"]
+      -
+      -        edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
+      -
+      -        user_ids : typing.Optional[typing.List[str]]
+      +        Set the entity and edge types for one graph, replacing its existing ontology.
+       
+      -            The user identifiers for which to set the ontology.
+      -
+      -        graph_ids : typing.Optional[typing.List[str]]
+      -            The graph identifiers for which to set the ontology.
+      -
+      -        request_options : typing.Optional[RequestOptions]
+      -            Request-specific configuration.
+      +        The graph is an explicit argument. v3 took ``user_ids`` and ``graph_ids``
+      +        and fanned out server-side; v4 has one ontology endpoint per scope
+      +        (spec-3 14.4), so a caller targeting several graphs calls this once per
+      +        graph, and a caller targeting the project default passes the same
+      +        ``build_ontology`` output to ``client.project.set_ontology``.
+       
+               Examples
+               --------
+      -
+      -        class Destination(EntityModel):
+      -
+      -        \"""A destination is a place that travelers visit.\"""
+      -            destination_name: EntityText = Field(
+      -                description="The name of the destination",
+      -                default=None
+      -            )
+      -            country: EntityText = Field(
+      -                description="The country of the destination",
+      -                default=None
+      -            )
+      -            region: EntityText = Field(
+      -                description="The region of the destination",
+      -                default=None
+      -            )
+      -            description: EntityText = Field(
+      -                description="A description of the destination",
+      -                default=None
+      -            )
+      -
+      -
+      -        class TravelingTo(EdgeModel):
+      -
+      -        \"""An edge representing a traveler going to a destination.\"""
+      -            travel_date: EntityText = Field(
+      -                description="The date of travel to this destination",
+      -                default=None
+      -            )
+      -            purpose: EntityText = Field(
+      -                description="The purpose of travel (Business, Leisure, etc.)",
+      -                default=None
+      -            )
+      -
+               client.graph.set_entity_types(
+      -            entities={
+      -                "Destination": Destination,
+      -            },
+      +            graph_uuid="...",
+      +            entities={"Traveler": Traveler},
+                   edges={
+      -                "TRAVELING_TO": (
+      -                    TravelingTo,
+      -                    [
+      -                        EntityEdgeSourceTarget(
+      -                            source="User",
+      -                            target="Destination"
+      -                        )
+      -                    ]
+      +                "TRAVELED_TO": (
+      +                    TraveledTo,
+      +                    [EdgeSourceTarget(source_entity_type="Traveler", target_entity_type="Destination")],
+                       ),
+      -            }
+      +            },
+               )
+               """
+      -        api_entity_types: list[EntityType] = []
+      -        api_edge_types: list[EdgeType] = []
+      -
+      -        for name, entity in entities.items():
+      -            entity_dict = entity_model_to_api_schema(entity, name)
+      -            api_entity_types.append(EntityType(**entity_dict))
+      -
+      -        if edges:
+      -            for name, edge_data in edges.items():
+      -                # Handle both EdgeModel directly and tuple of (model, source_targets)
+      -                if isinstance(edge_data, tuple):
+      -                    edge_model, source_targets = edge_data
+      -                else:
+      -                    edge_model = edge_data
+      -                    source_targets = None
+      -
+      -                edge_dict = edge_model_to_api_schema(edge_model, name)
+      -                if source_targets:
+      -                    edge_dict["source_targets"] = [st.dict() for st in source_targets]
+      -                api_edge_types.append(EdgeType(**edge_dict))
+      -        res = self.set_entity_types_internal(
+      -            entity_types=api_entity_types,
+      -            edge_types=api_edge_types,
+      -            user_ids=user_ids,
+      -            graph_ids=graph_ids,
+      +        entity_types, edge_types = build_ontology(entities, edges)
+      +        return self.set_ontology(
+      +            graph_uuid,
+      +            entity_types=entity_types,
+      +            edge_types=edge_types,
+                   request_options=request_options,
+               )
+      -        return res
+       
+       
+       class AsyncGraphClient(AsyncBaseGraphClient):
+           def __init__(self, *, client_wrapper: AsyncClientWrapper):
+               super().__init__(client_wrapper=client_wrapper)
+       
+      -    async def set_ontology(
+      -        self,
+      -        entities: dict[str, "EntityModel"],
+      -        edges: typing.Optional[
+      -            dict[
+      -                str,
+      -                typing.Union[
+      -                    "EdgeModel",
+      -                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
+      -                ],
+      -            ]
+      -        ] = None,
+      -        user_ids: typing.Optional[typing.List[str]] = None,
+      -        graph_ids: typing.Optional[typing.List[str]] = None,
+      -        request_options: typing.Optional[RequestOptions] = None,
+      -    ):
+      -        """
+      -        Sets the entity and edge types for a project, replacing any existing ones.
+      -
+      -        Parameters
+      -        ----------
+      -        entities : dict[str, "EntityModel"]
+      -            Entity type definitions.
+      -
+      -        edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
+      -            Edge type definitions.
+      -
+      -        user_ids : typing.Optional[typing.List[str]]
+      -
+      -            The user identifiers for which to set the ontology.
+      -
+      -        graph_ids : typing.Optional[typing.List[str]]
+      -            The graph identifiers for which to set the ontology.
+      -
+      -        request_options : typing.Optional[RequestOptions]
+      -            Request-specific configuration.
+      -
+      -        Examples
+      -        --------
+      -
+      -        class Destination(EntityModel):
+      -
+      -        \"""A destination is a place that travelers visit.\"""
+      -            destination_name: EntityText = Field(
+      -                description="The name of the destination",
+      -                default=None
+      -            )
+      -            country: EntityText = Field(
+      -                description="The country of the destination",
+      -                default=None
+      -            )
+      -            region: EntityText = Field(
+      -                description="The region of the destination",
+      -                default=None
+      -            )
+      -            description: EntityText = Field(
+      -                description="A description of the destination",
+      -                default=None
+      -            )
+      -
+      -
+      -        class TravelingTo(EdgeModel):
+      -
+      -        \"""An edge representing a traveler going to a destination.\"""
+      -            travel_date: EntityText = Field(
+      -                description="The date of travel to this destination",
+      -                default=None
+      -            )
+      -            purpose: EntityText = Field(
+      -                description="The purpose of travel (Business, Leisure, etc.)",
+      -                default=None
+      -            )
+      -
+      -        await client.graph.set_ontology(
+      -            entities={
+      -                "Destination": Destination,
+      -            },
+      -            edges={
+      -                "TRAVELING_TO": (
+      -                    TravelingTo,
+      -                    [
+      -                        EntityEdgeSourceTarget(
+      -                            source="User",
+      -                            target="Destination"
+      -                        )
+      -                    ]
+      -                ),
+      -            }
+      -        )
+      -        """
+      -        return await self.set_entity_types(
+      -            entities=entities,
+      -            edges=edges,
+      -            request_options=request_options,
+      -            user_ids=user_ids,
+      -            graph_ids=graph_ids
+      -        )
+      -
+           async def set_entity_types(
+               self,
+      -        entities: dict[str, "EntityModel"],
+      -        edges: typing.Optional[
+      -            dict[
+      -                str,
+      -                typing.Union[
+      -                    "EdgeModel",
+      -                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
+      -                ],
+      -            ]
+      -        ] = None,
+      -        user_ids: typing.Optional[typing.List[str]] = None,
+      -        graph_ids: typing.Optional[typing.List[str]] = None,
+      +        graph_uuid: str,
+      +        entities: typing.Dict[str, "EntityModel"],
+      +        edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
+               request_options: typing.Optional[RequestOptions] = None,
+      -    ):
+      -        """
+      -        Sets the entity and edge types for a project, replacing any existing ones.
+      -
+      -        Parameters
+      -        ----------
+      -        entities : dict[str, "EntityModel"]
+      -
+      -        edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
+      -
+      -        user_ids : typing.Optional[typing.List[str]]
+      -
+      -            The user identifiers for which to set the ontology.
+      -
+      -        graph_ids : typing.Optional[typing.List[str]]
+      -            The graph identifiers for which to set the ontology.
+      -
+      -        request_options : typing.Optional[RequestOptions]
+      -            Request-specific configuration.
+      -
+      -        Examples
+      -        --------
+      -
+      -        class Destination(EntityModel):
+      -
+      -        \"""A destination is a place that travelers visit.\"""
+      -            destination_name: EntityText = Field(
+      -                description="The name of the destination",
+      -                default=None
+      -            )
+      -            country: EntityText = Field(
+      -                description="The country of the destination",
+      -                default=None
+      -            )
+      -            region: EntityText = Field(
+      -                description="The region of the destination",
+      -                default=None
+      -            )
+      -            description: EntityText = Field(
+      -                description="A description of the destination",
+      -                default=None
+      -            )
+      -
+      -
+      -        class TravelingTo(EdgeModel):
+      -
+      -        \"""An edge representing a traveler going to a destination.\"""
+      -            travel_date: EntityText = Field(
+      -                description="The date of travel to this destination",
+      -                default=None
+      -            )
+      -            purpose: EntityText = Field(
+      -                description="The purpose of travel (Business, Leisure, etc.)",
+      -                default=None
+      -            )
+      -
+      -        await client.graph.set_entity_types(
+      -            entities={
+      -                "Destination": Destination,
+      -            },
+      -            edges={
+      -                "TRAVELING_TO": (
+      -                    TravelingTo,
+      -                    [
+      -                        EntityEdgeSourceTarget(
+      -                            source="User",
+      -                            target="Destination"
+      -                        )
+      -                    ]
+      -                ),
+      -            }
+      -        )
+      -        """
+      -        api_entity_types: list[EntityType] = []
+      -        api_edge_types: list[EdgeType] = []
+      -
+      -        for name, entity in entities.items():
+      -            entity_dict = entity_model_to_api_schema(entity, name)
+      -            api_entity_types.append(EntityType(**entity_dict))
+      -
+      -        if edges:
+      -            for name, edge_data in edges.items():
+      -                # Handle both EdgeModel directly and tuple of (model, source_targets)
+      -                if isinstance(edge_data, tuple):
+      -                    edge_model, source_targets = edge_data
+      -                else:
+      -                    edge_model = edge_data
+      -                    source_targets = None
+      -
+      -                edge_dict = edge_model_to_api_schema(edge_model, name)
+      -                if source_targets:
+      -                    edge_dict["source_targets"] = [st.dict() for st in source_targets]
+      -                api_edge_types.append(EdgeType(**edge_dict))
+      -
+      -        res = await self.set_entity_types_internal(
+      -            entity_types=api_entity_types,
+      -            edge_types=api_edge_types,
+      -            user_ids=user_ids,
+      -            graph_ids=graph_ids,
+      +    ) -> Ontology:
+      +        """Asynchronous counterpart of :meth:`GraphClient.set_entity_types`."""
+      +        entity_types, edge_types = build_ontology(entities, edges)
+      +        return await self.set_ontology(
+      +            graph_uuid,
+      +            entity_types=entity_types,
+      +            edge_types=edge_types,
+                   request_options=request_options,
+               )
+      -        return res
+      diff --git a/src/zep_cloud/graph/utils.py b/src/zep_cloud/graph/utils.py
+      index 384a878..35f4d6f 100644
+      --- a/src/zep_cloud/graph/utils.py
+      +++ b/src/zep_cloud/graph/utils.py
+      @@ -2,12 +2,12 @@ from datetime import datetime
+       from typing import List, Optional
+       
+       from dateutil import parser as dateutil_parser
+      -from zep_cloud import EntityEdge, EntityNode, Episode
+      +from zep_cloud import Edge, Episode, Node
+       
+       DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+       
+       
+      -def parse_iso_datetime(iso_string: str) -> Optional[datetime]:
+      +def parse_iso_datetime(iso_string: Optional[str]) -> Optional[datetime]:
+           """Parse ISO datetime string using dateutil parser."""
+           if not iso_string:
+               return None
+      @@ -39,7 +39,7 @@ FACTS and ENTITIES{episodes_header} represent relevant context to the current co
+       """
+       
+       
+      -def format_edge_date_range(edge: EntityEdge) -> str:
+      +def format_edge_date_range(edge: Edge) -> str:
+           """
+           Format the date range of an entity edge.
+           
+      @@ -64,7 +64,7 @@ def format_edge_date_range(edge: EntityEdge) -> str:
+           return f"{valid_at} - {invalid_at}"
+       
+       
+      -def compose_context_string(edges: List[EntityEdge], nodes: List[EntityNode], episodes: List[Episode]) -> str:
+      +def compose_context_string(edges: List[Edge], nodes: List[Node], episodes: List[Episode]) -> str:
+           """
+           Compose a search context from entity edges, nodes, and episodes.
+           
+      @@ -110,14 +110,19 @@ def compose_context_string(edges: List[EntityEdge], nodes: List[EntityNode], epi
+           episodes_list = []
+           if episodes:
+               for episode in episodes:
+      +            # spec-3 8.4 resolves v3's overloaded pair: role carries the enum
+      +            # v3 spelled role_type, and role_name carries the sender name v3
+      +            # spelled role. The rendered prefix is unchanged.
+      +            role_name = getattr(episode, "role_name", None)
+      +            role_type = getattr(episode, "role", None)
+      +
+                   role_prefix = ""
+      -            if hasattr(episode, 'role') and episode.role:
+      -                if hasattr(episode, 'role_type') and episode.role_type:
+      -                    role_prefix = f"{episode.role} ({episode.role_type}): "
+      -                else:
+      -                    role_prefix = f"{episode.role}: "
+      -            elif hasattr(episode, 'role_type') and episode.role_type:
+      -                role_prefix = f"({episode.role_type}): "
+      +            if role_name and role_type:
+      +                role_prefix = f"{role_name} ({role_type}): "
+      +            elif role_name:
+      +                role_prefix = f"{role_name}: "
+      +            elif role_type:
+      +                role_prefix = f"({role_type}): "
+       
+                   parsed_timestamp = parse_iso_datetime(episode.created_at)
+                   timestamp = parsed_timestamp.strftime(DATE_FORMAT) if parsed_timestamp is not None else "date unknown"
+      diff --git a/tests/graph/test_utils.py b/tests/graph/test_utils.py
+      index 7ed919c..909d2a0 100644
+      --- a/tests/graph/test_utils.py
+      +++ b/tests/graph/test_utils.py
+      @@ -3,13 +3,13 @@ from typing import Any, Dict, Optional
+       
+       import pytest
+       
+      -from zep_cloud import EntityEdge, EntityNode, Episode
+      +from zep_cloud import Edge, Episode, Node
+       from zep_cloud.graph.utils import compose_context_string, format_edge_date_range
+       
+       
+       class TestFormatEdgeDateRange:
+           def test_format_edge_date_range_with_valid_dates(self):
+      -        edge = EntityEdge(
+      +        edge = Edge(
+                   fact="Test fact",
+                   name="test_edge",
+                   uuid_="edge-123",
+      @@ -23,7 +23,7 @@ class TestFormatEdgeDateRange:
+               assert result == "2024-01-01 10:00:00 - 2024-01-02 10:00:00"
+       
+           def test_format_edge_date_range_with_none_dates(self):
+      -        edge = EntityEdge(
+      +        edge = Edge(
+                   fact="Test fact",
+                   name="test_edge", 
+                   uuid_="edge-123",
+      @@ -37,7 +37,7 @@ class TestFormatEdgeDateRange:
+               assert result == "date unknown - present"
+       
+           def test_format_edge_date_range_with_partial_dates(self):
+      -        edge = EntityEdge(
+      +        edge = Edge(
+                   fact="Test fact",
+                   name="test_edge",
+                   uuid_="edge-123",
+      @@ -60,7 +60,7 @@ class TestComposeContextString:
+               assert "EPISODES" not in result
+       
+           def test_facts_only(self):
+      -        edge = EntityEdge(
+      +        edge = Edge(
+                   fact="User likes pizza",
+                   name="likes",
+                   uuid_="edge-123",
+      @@ -78,7 +78,7 @@ class TestComposeContextString:
+               assert "EPISODES" not in result
+       
+           def test_entities_basic(self):
+      -        node = EntityNode(
+      +        node = Node(
+                   name="John",
+                   summary="A user",
+                   uuid_="node-123",
+      @@ -91,7 +91,7 @@ class TestComposeContextString:
+               assert "<ENTITIES>" in result
+       
+           def test_entities_with_label_and_attributes(self):
+      -        node = EntityNode(
+      +        node = Node(
+                   name="John",
+                   summary="A user",
+                   uuid_="node-123",
+      @@ -109,7 +109,7 @@ class TestComposeContextString:
+               assert "Summary: A user" in result
+       
+           def test_entities_with_entity_label_removed(self):
+      -        node = EntityNode(
+      +        node = Node(
+                   name="Alice",
+                   summary="A customer",
+                   uuid_="node-456",
+      @@ -124,7 +124,7 @@ class TestComposeContextString:
+               assert "Summary: A customer" in result
+       
+           def test_entities_with_only_entity_label(self):
+      -        node = EntityNode(
+      +        node = Node(
+                   name="Bob",
+                   summary="A person",
+                   uuid_="node-789",
+      @@ -140,7 +140,7 @@ class TestComposeContextString:
+               assert "Summary: A person" in result
+       
+           def test_entities_with_labels_attribute_filtered(self):
+      -        node = EntityNode(
+      +        node = Node(
+                   name="stores",
+                   summary="Physical locations for shopping",
+                   uuid_="node-123",
+      @@ -174,33 +174,34 @@ class TestComposeContextString:
+                   content="Hello there!",
+                   created_at="2024-01-01T10:00:00Z",
+                   uuid_="episode-123",
+      -            role="user"
+      +            role_name="user"
+               )
+               result = compose_context_string([], [], [episode])
+               
+               assert "user: Hello there! (2024-01-01 10:00:00)" in result
+       
+      -    def test_episodes_with_role_and_type(self):
+      -        # Create a mock episode with role_type since Episode model uses enum
+      +    def test_episodes_with_sender_name_and_role(self):
+      +        # spec-3 8.4: role_name is the sender, role is the enum v3 called
+      +        # role_type.
+               class MockEpisode:
+                   def __init__(self):
+                       self.content = "Hello there!"
+                       self.created_at = "2024-01-01T10:00:00Z"
+      -                self.role = "assistant"
+      -                self.role_type = "ai"
+      +                self.role_name = "assistant"
+      +                self.role = "ai"
+               
+               episode = MockEpisode()
+               result = compose_context_string([], [], [episode])
+               
+               assert "assistant (ai): Hello there! (2024-01-01 10:00:00)" in result
+       
+      -    def test_episodes_with_role_type_only(self):
+      +    def test_episodes_with_role_only(self):
+               class MockEpisode:
+                   def __init__(self):
+                       self.content = "Hello there!"
+                       self.created_at = "2024-01-01T10:00:00Z"
+      -                self.role = None
+      -                self.role_type = "system"
+      +                self.role_name = None
+      +                self.role = "system"
+               
+               episode = MockEpisode()
+               result = compose_context_string([], [], [episode])
+      @@ -209,7 +210,7 @@ class TestComposeContextString:
+       
+       
+           def test_complete_context_with_all_elements(self):
+      -        edge = EntityEdge(
+      +        edge = Edge(
+                   fact="User prefers coffee",
+                   name="prefers",
+                   uuid_="edge-123",
+      @@ -220,7 +221,7 @@ class TestComposeContextString:
+                   invalid_at=None
+               )
+               
+      -        node = EntityNode(
+      +        node = Node(
+                   name="Alice",
+                   summary="Regular customer",
+                   uuid_="node-123",
+      @@ -233,8 +234,8 @@ class TestComposeContextString:
+                   def __init__(self):
+                       self.content = "I'd like my usual coffee"
+                       self.created_at = "2024-01-01T09:00:00Z"
+      -                self.role = "user"
+      -                self.role_type = "customer"
+      +                self.role_name = "user"
+      +                self.role = "customer"
+               
+               episode = MockEpisode()
+               
+      @@ -255,7 +256,7 @@ class TestComposeContextString:
+       
+           def test_multiple_items(self):
+               edges = [
+      -            EntityEdge(
+      +            Edge(
+                       fact="Fact 1",
+                       name="edge1",
+                       uuid_="edge-1",
+      @@ -264,7 +265,7 @@ class TestComposeContextString:
+                       target_node_uuid="target-1",
+                       valid_at="2024-01-01T10:00:00Z"
+                   ),
+      -            EntityEdge(
+      +            Edge(
+                       fact="Fact 2",
+                       name="edge2", 
+                       uuid_="edge-2",
+      @@ -276,13 +277,13 @@ class TestComposeContextString:
+               ]
+               
+               nodes = [
+      -            EntityNode(
+      +            Node(
+                       name="Node1",
+                       summary="Summary 1",
+                       uuid_="node-1",
+                       created_at="2024-01-01T09:00:00Z"
+                   ),
+      -            EntityNode(
+      +            Node(
+                       name="Node2",
+                       summary="Summary 2",
+                       uuid_="node-2", 
+      -- 
+      2.52.0
+
+    theirs_snapshot:
+      src/zep_cloud/client.py: |
+        import os
+        import typing
+
+        import httpx
+        from .base_client import AsyncBaseClient, BaseClient
+        from .environment import ZepEnvironment
+        from .external_clients.graph import AsyncGraphClient, GraphClient
+        from .external_clients.user import AsyncUserClient, UserClient
+
+
+        class Zep(BaseClient):
+            def __init__(
+                    self,
+                    *,
+                    base_url: typing.Optional[str] = None,
+                    environment: ZepEnvironment = ZepEnvironment.DEFAULT,
+                    api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
+                    timeout: typing.Optional[float] = None,
+                    follow_redirects: typing.Optional[bool] = None,
+                    httpx_client: typing.Optional[httpx.Client] = None
+            ):
+                env_api_url = os.getenv("ZEP_API_URL")
+                if env_api_url:
+                    base_url = f"{env_api_url}/api/v4"
+                super().__init__(
+                    base_url=base_url,
+                    environment=environment,
+                    api_key=api_key,
+                    timeout=timeout,
+                    follow_redirects=follow_redirects,
+                    httpx_client=httpx_client
+                )
+                self._external_user = UserClient(client_wrapper=self._client_wrapper)
+                self._external_graph = GraphClient(client_wrapper=self._client_wrapper)
+
+            @property
+            def user(self) -> UserClient:  # type: ignore[override]
+                return self._external_user
+
+            @property
+            def graph(self) -> GraphClient:  # type: ignore[override]
+                return self._external_graph
+
+        class AsyncZep(AsyncBaseClient):
+            def __init__(
+                    self,
+                    *,
+                    base_url: typing.Optional[str] = None,
+                    environment: ZepEnvironment = ZepEnvironment.DEFAULT,
+                    api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
+                    timeout: typing.Optional[float] = None,
+                    follow_redirects: typing.Optional[bool] = None,
+                    httpx_client: typing.Optional[httpx.AsyncClient] = None
+            ):
+                env_api_url = os.getenv("ZEP_API_URL")
+                if env_api_url:
+                    base_url = f"{env_api_url}/api/v4"
+                super().__init__(
+                    base_url=base_url,
+                    environment=environment,
+                    api_key=api_key,
+                    timeout=timeout,
+                    follow_redirects=follow_redirects,
+                    httpx_client=httpx_client
+                )
+                self._external_user = AsyncUserClient(client_wrapper=self._client_wrapper)
+                self._external_graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
+
+            @property
+            def user(self) -> AsyncUserClient:  # type: ignore[override]
+                return self._external_user
+
+            @property
+            def graph(self) -> AsyncGraphClient:  # type: ignore[override]
+                return self._external_graph
+      src/zep_cloud/external_clients/graph.py: |
+        import typing
+
+        from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+        from zep_cloud.core.request_options import RequestOptions
+        from zep_cloud.external_clients.ontology import (
+            EdgeModel,
+            edge_model_to_api_schema,
+            entity_model_to_api_schema,
+        )
+        from zep_cloud.graph.client import AsyncGraphClient as AsyncBaseGraphClient
+        from zep_cloud.graph.client import GraphClient as BaseGraphClient
+        from zep_cloud.types import EdgeSourceTarget, EdgeType, EntityType, Ontology
+
+        if typing.TYPE_CHECKING:
+            from zep_cloud.external_clients.ontology import EntityModel
+
+        EdgeSpec = typing.Union[
+            "EdgeModel",
+            typing.Tuple["EdgeModel", typing.List[EdgeSourceTarget]],
+        ]
+
+
+        def build_ontology(
+            entities: typing.Dict[str, "EntityModel"],
+            edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
+        ) -> typing.Tuple[typing.List[EntityType], typing.List[EdgeType]]:
+            """Turn the Pydantic ontology models into the types the v4 API accepts.
+
+            This is the whole value the hand-written layer adds: the wire shape is a
+            list of entity and edge types, and this derives it from Python classes so an
+            ontology is declared once, in the type system.
+            """
+            api_entity_types: typing.List[EntityType] = []
+            for name, entity in entities.items():
+                api_entity_types.append(EntityType(**entity_model_to_api_schema(entity, name)))
+
+            api_edge_types: typing.List[EdgeType] = []
+            if edges:
+                for name, edge_data in edges.items():
+                    if isinstance(edge_data, tuple):
+                        edge_model, source_targets = edge_data
+                    else:
+                        edge_model, source_targets = edge_data, None
+
+                    edge_dict = edge_model_to_api_schema(edge_model, name)
+                    if source_targets:
+                        edge_dict["source_targets"] = [
+                            st.dict() if hasattr(st, "dict") else st for st in source_targets
+                        ]
+                    api_edge_types.append(EdgeType(**edge_dict))
+
+            return api_entity_types, api_edge_types
+
+
+        class GraphClient(BaseGraphClient):
+            def __init__(self, *, client_wrapper: SyncClientWrapper):
+                super().__init__(client_wrapper=client_wrapper)
+
+            def set_entity_types(
+                self,
+                graph_uuid: str,
+                entities: typing.Dict[str, "EntityModel"],
+                edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
+                request_options: typing.Optional[RequestOptions] = None,
+            ) -> Ontology:
+                """
+                Set the entity and edge types for one graph, replacing its existing ontology.
+
+                The graph is an explicit argument. v3 took ``user_ids`` and ``graph_ids``
+                and fanned out server-side; v4 has one ontology endpoint per scope
+                (spec-3 14.4), so a caller targeting several graphs calls this once per
+                graph, and a caller targeting the project default passes the same
+                ``build_ontology`` output to ``client.project.set_ontology``.
+
+                Examples
+                --------
+                client.graph.set_entity_types(
+                    graph_uuid="...",
+                    entities={"Traveler": Traveler},
+                    edges={
+                        "TRAVELED_TO": (
+                            TraveledTo,
+                            [EdgeSourceTarget(source_entity_type="Traveler", target_entity_type="Destination")],
+                        ),
+                    },
+                )
+                """
+                entity_types, edge_types = build_ontology(entities, edges)
+                return self.set_ontology(
+                    graph_uuid,
+                    entity_types=entity_types,
+                    edge_types=edge_types,
+                    request_options=request_options,
+                )
+
+
+        class AsyncGraphClient(AsyncBaseGraphClient):
+            def __init__(self, *, client_wrapper: AsyncClientWrapper):
+                super().__init__(client_wrapper=client_wrapper)
+
+            async def set_entity_types(
+                self,
+                graph_uuid: str,
+                entities: typing.Dict[str, "EntityModel"],
+                edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
+                request_options: typing.Optional[RequestOptions] = None,
+            ) -> Ontology:
+                """Asynchronous counterpart of :meth:`GraphClient.set_entity_types`."""
+                entity_types, edge_types = build_ontology(entities, edges)
+                return await self.set_ontology(
+                    graph_uuid,
+                    entity_types=entity_types,
+                    edge_types=edge_types,
+                    request_options=request_options,
+                )
+      src/zep_cloud/graph/utils.py: |-
+        from datetime import datetime
+        from typing import List, Optional
+
+        from dateutil import parser as dateutil_parser
+        from zep_cloud import Edge, Episode, Node
+
+        DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+
+        def parse_iso_datetime(iso_string: Optional[str]) -> Optional[datetime]:
+            """Parse ISO datetime string using dateutil parser."""
+            if not iso_string:
+                return None
+            
+            try:
+                return dateutil_parser.isoparse(iso_string)
+            except (ValueError, TypeError):
+                return None
+
+        TEMPLATE_STRING = """
+        FACTS and ENTITIES{episodes_header} represent relevant context to the current conversation.
+
+        # These are the most relevant facts and their valid date ranges
+        # format: FACT (Date range: from - to)
+        <FACTS>
+        {facts}
+        </FACTS>
+
+        # These are the most relevant entities
+        # Name: ENTITY_NAME
+        # Label: entity_label (if present)
+        # Attributes: (if present)
+        #   attr_name: attr_value
+        # Summary: entity summary
+        <ENTITIES>
+        {entities}
+        </ENTITIES>
+        {episodes_section}
+        """
+
+
+        def format_edge_date_range(edge: Edge) -> str:
+            """
+            Format the date range of an entity edge.
+            
+            Args:
+                edge: The entity edge to format.
+                
+            Returns:
+                A string representation of the date range.
+            """
+            valid_at = "date unknown"
+            invalid_at = "present"
+
+            if edge.valid_at is not None:
+                parsed_valid_at = parse_iso_datetime(edge.valid_at)
+                if parsed_valid_at is not None:
+                    valid_at = parsed_valid_at.strftime(DATE_FORMAT)
+            if edge.invalid_at is not None:
+                parsed_invalid_at = parse_iso_datetime(edge.invalid_at)
+                if parsed_invalid_at is not None:
+                    invalid_at = parsed_invalid_at.strftime(DATE_FORMAT)
+
+            return f"{valid_at} - {invalid_at}"
+
+
+        def compose_context_string(edges: List[Edge], nodes: List[Node], episodes: List[Episode]) -> str:
+            """
+            Compose a search context from entity edges, nodes, and episodes.
+            
+            Args:
+                edges: List of entity edges.
+                nodes: List of entity nodes.
+                episodes: List of episodes.
+                
+            Returns:
+                A formatted string containing facts, entities, and episodes.
+            """
+            facts = []
+            for edge in edges:
+                fact = f"  - {edge.fact} (Date range: {format_edge_date_range(edge)})"
+                facts.append(fact)
+
+            entities = []
+            for node in nodes:
+                entity_parts = [f"Name: {node.name}"]
+                
+                if hasattr(node, 'labels') and node.labels:
+                    labels = list(node.labels)  # Create a copy to avoid modifying original
+                    if 'Entity' in labels:
+                        labels.remove('Entity')
+                    if labels:  # Only add label if there are remaining labels after removing 'Entity'
+                        entity_parts.append(f"Label: {labels[0]}")
+                
+                if hasattr(node, 'attributes') and node.attributes:
+                    # Filter out 'labels' from attributes as it's redundant with the Label field
+                    filtered_attributes = {k: v for k, v in node.attributes.items() if k != 'labels'}
+                    if filtered_attributes:  # Only add attributes section if there are non-label attributes
+                        entity_parts.append("Attributes:")
+                        for attr_name, attr_value in filtered_attributes.items():
+                            entity_parts.append(f"  {attr_name}: {attr_value}")
+                
+                if node.summary:
+                    entity_parts.append(f"Summary: {node.summary}")
+                
+                entity = "\n".join(entity_parts)
+                entities.append(entity)
+
+            # Format episodes
+            episodes_list = []
+            if episodes:
+                for episode in episodes:
+                    # spec-3 8.4 resolves v3's overloaded pair: role carries the enum
+                    # v3 spelled role_type, and role_name carries the sender name v3
+                    # spelled role. The rendered prefix is unchanged.
+                    role_name = getattr(episode, "role_name", None)
+                    role_type = getattr(episode, "role", None)
+
+                    role_prefix = ""
+                    if role_name and role_type:
+                        role_prefix = f"{role_name} ({role_type}): "
+                    elif role_name:
+                        role_prefix = f"{role_name}: "
+                    elif role_type:
+                        role_prefix = f"({role_type}): "
+
+                    parsed_timestamp = parse_iso_datetime(episode.created_at)
+                    timestamp = parsed_timestamp.strftime(DATE_FORMAT) if parsed_timestamp is not None else "date unknown"
+                    
+                    episode_str = f"  - {role_prefix}{episode.content} ({timestamp})"
+                    episodes_list.append(episode_str)
+
+            facts_str = "\n".join(facts) if facts else ""
+            entities_str = "\n".join(entities) if entities else ""
+            episodes_str = "\n".join(episodes_list) if episodes_list else ""
+            
+            # Determine if episodes section should be included
+            episodes_header = ", and EPISODES" if episodes else ""
+            episodes_section = f"\n# These are the most relevant episodes\n<EPISODES>\n{episodes_str}\n</EPISODES>" if episodes else ""
+            
+            return TEMPLATE_STRING.format(
+                episodes_header=episodes_header,
+                facts=facts_str,
+                entities=entities_str,
+                episodes_section=episodes_section
+            )
+      tests/graph/test_utils.py: |-
+        from datetime import datetime
+        from typing import Any, Dict, Optional
+
+        import pytest
+
+        from zep_cloud import Edge, Episode, Node
+        from zep_cloud.graph.utils import compose_context_string, format_edge_date_range
+
+
+        class TestFormatEdgeDateRange:
+            def test_format_edge_date_range_with_valid_dates(self):
+                edge = Edge(
+                    fact="Test fact",
+                    name="test_edge",
+                    uuid_="edge-123",
+                    created_at="2024-01-01T09:00:00Z",
+                    source_node_uuid="source-123",
+                    target_node_uuid="target-123",
+                    valid_at="2024-01-01T10:00:00Z",
+                    invalid_at="2024-01-02T10:00:00Z"
+                )
+                result = format_edge_date_range(edge)
+                assert result == "2024-01-01 10:00:00 - 2024-01-02 10:00:00"
+
+            def test_format_edge_date_range_with_none_dates(self):
+                edge = Edge(
+                    fact="Test fact",
+                    name="test_edge", 
+                    uuid_="edge-123",
+                    created_at="2024-01-01T09:00:00Z",
+                    source_node_uuid="source-123",
+                    target_node_uuid="target-123",
+                    valid_at=None, 
+                    invalid_at=None
+                )
+                result = format_edge_date_range(edge)
+                assert result == "date unknown - present"
+
+            def test_format_edge_date_range_with_partial_dates(self):
+                edge = Edge(
+                    fact="Test fact",
+                    name="test_edge",
+                    uuid_="edge-123",
+                    created_at="2024-01-01T09:00:00Z",
+                    source_node_uuid="source-123",
+                    target_node_uuid="target-123",
+                    valid_at="2024-01-01T10:00:00Z",
+                    invalid_at=None
+                )
+                result = format_edge_date_range(edge)
+                assert result == "2024-01-01 10:00:00 - present"
+
+
+        class TestComposeContextString:
+            def test_empty_inputs(self):
+                result = compose_context_string([], [], [])
+                assert "FACTS and ENTITIES represent relevant context" in result
+                assert "<FACTS>" in result
+                assert "<ENTITIES>" in result
+                assert "EPISODES" not in result
+
+            def test_facts_only(self):
+                edge = Edge(
+                    fact="User likes pizza",
+                    name="likes",
+                    uuid_="edge-123",
+                    created_at="2024-01-01T09:00:00Z",
+                    source_node_uuid="user-123",
+                    target_node_uuid="pizza-123",
+                    valid_at="2024-01-01T10:00:00Z",
+                    invalid_at="2024-01-02T10:00:00Z"
+                )
+                result = compose_context_string([edge], [], [])
+                
+                assert "User likes pizza (Date range: 2024-01-01 10:00:00 - 2024-01-02 10:00:00)" in result
+                assert "<FACTS>" in result
+                assert "<ENTITIES>" in result
+                assert "EPISODES" not in result
+
+            def test_entities_basic(self):
+                node = Node(
+                    name="John",
+                    summary="A user",
+                    uuid_="node-123",
+                    created_at="2024-01-01T09:00:00Z"
+                )
+                result = compose_context_string([], [node], [])
+                
+                assert "Name: John" in result
+                assert "Summary: A user" in result
+                assert "<ENTITIES>" in result
+
+            def test_entities_with_label_and_attributes(self):
+                node = Node(
+                    name="John",
+                    summary="A user",
+                    uuid_="node-123",
+                    created_at="2024-01-01T09:00:00Z",
+                    labels=["Person"],
+                    attributes={"age": "30", "city": "New York"}
+                )
+                result = compose_context_string([], [node], [])
+                
+                assert "Name: John" in result
+                assert "Label: Person" in result
+                assert "Attributes:" in result
+                assert "age: 30" in result
+                assert "city: New York" in result
+                assert "Summary: A user" in result
+
+            def test_entities_with_entity_label_removed(self):
+                node = Node(
+                    name="Alice",
+                    summary="A customer",
+                    uuid_="node-456",
+                    created_at="2024-01-01T09:00:00Z",
+                    labels=["Entity", "Customer"]
+                )
+                result = compose_context_string([], [node], [])
+                
+                assert "Name: Alice" in result
+                assert "Label: Customer" in result  # Should show Customer, not Entity
+                assert "Label: Entity" not in result  # Should not show Entity
+                assert "Summary: A customer" in result
+
+            def test_entities_with_only_entity_label(self):
+                node = Node(
+                    name="Bob",
+                    summary="A person",
+                    uuid_="node-789",
+                    created_at="2024-01-01T09:00:00Z",
+                    labels=["Entity"]
+                )
+                result = compose_context_string([], [node], [])
+                
+                assert "Name: Bob" in result
+                # Check that the entities section doesn't contain "Label: " (with space after colon)
+                entities_section = result[result.find("<ENTITIES>"):result.find("</ENTITIES>")]
+                assert "Label: " not in entities_section  # Should not show any label since only Entity was present
+                assert "Summary: A person" in result
+
+            def test_entities_with_labels_attribute_filtered(self):
+                node = Node(
+                    name="stores",
+                    summary="Physical locations for shopping",
+                    uuid_="node-123",
+                    created_at="2024-01-01T09:00:00Z",
+                    labels=["Location", "Entity"],
+                    attributes={"labels": ["Location", "Entity"], "location_type": "physical"}
+                )
+                result = compose_context_string([], [node], [])
+                
+                assert "Name: stores" in result
+                assert "Label: Location" in result  # Should show Location (first non-Entity label)
+                assert "Attributes:" in result
+                assert "location_type: physical" in result
+                assert "labels:" not in result  # Should not show labels in attributes
+                assert "Summary: Physical locations for shopping" in result
+
+            def test_episodes_basic(self):
+                episode = Episode(
+                    content="Hello there!",
+                    created_at="2024-01-01T10:00:00Z",
+                    uuid_="episode-123"
+                )
+                result = compose_context_string([], [], [episode])
+                
+                assert "FACTS and ENTITIES, and EPISODES represent" in result
+                assert "<EPISODES>" in result
+                assert "Hello there! (2024-01-01 10:00:00)" in result
+
+            def test_episodes_with_role(self):
+                episode = Episode(
+                    content="Hello there!",
+                    created_at="2024-01-01T10:00:00Z",
+                    uuid_="episode-123",
+                    role_name="user"
+                )
+                result = compose_context_string([], [], [episode])
+                
+                assert "user: Hello there! (2024-01-01 10:00:00)" in result
+
+            def test_episodes_with_sender_name_and_role(self):
+                # spec-3 8.4: role_name is the sender, role is the enum v3 called
+                # role_type.
+                class MockEpisode:
+                    def __init__(self):
+                        self.content = "Hello there!"
+                        self.created_at = "2024-01-01T10:00:00Z"
+                        self.role_name = "assistant"
+                        self.role = "ai"
+                
+                episode = MockEpisode()
+                result = compose_context_string([], [], [episode])
+                
+                assert "assistant (ai): Hello there! (2024-01-01 10:00:00)" in result
+
+            def test_episodes_with_role_only(self):
+                class MockEpisode:
+                    def __init__(self):
+                        self.content = "Hello there!"
+                        self.created_at = "2024-01-01T10:00:00Z"
+                        self.role_name = None
+                        self.role = "system"
+                
+                episode = MockEpisode()
+                result = compose_context_string([], [], [episode])
+                
+                assert "(system): Hello there! (2024-01-01 10:00:00)" in result
+
+
+            def test_complete_context_with_all_elements(self):
+                edge = Edge(
+                    fact="User prefers coffee",
+                    name="prefers",
+                    uuid_="edge-123",
+                    created_at="2024-01-01T07:00:00Z",
+                    source_node_uuid="user-123",
+                    target_node_uuid="coffee-123",
+                    valid_at="2024-01-01T08:00:00Z",
+                    invalid_at=None
+                )
+                
+                node = Node(
+                    name="Alice",
+                    summary="Regular customer",
+                    uuid_="node-123",
+                    created_at="2024-01-01T07:00:00Z",
+                    labels=["Customer"],
+                    attributes={"tier": "gold", "visits": "25"}
+                )
+                
+                class MockEpisode:
+                    def __init__(self):
+                        self.content = "I'd like my usual coffee"
+                        self.created_at = "2024-01-01T09:00:00Z"
+                        self.role_name = "user"
+                        self.role = "customer"
+                
+                episode = MockEpisode()
+                
+                result = compose_context_string([edge], [node], [episode])
+                
+                # Check for all sections
+                assert "FACTS and ENTITIES, and EPISODES represent" in result
+                assert "<FACTS>" in result
+                assert "<ENTITIES>" in result
+                assert "<EPISODES>" in result
+                
+                # Check content
+                assert "User prefers coffee" in result
+                assert "Name: Alice" in result
+                assert "tier: gold" in result
+                assert "Summary: Regular customer" in result
+                assert "user (customer): I'd like my usual coffee" in result
+
+            def test_multiple_items(self):
+                edges = [
+                    Edge(
+                        fact="Fact 1",
+                        name="edge1",
+                        uuid_="edge-1",
+                        created_at="2024-01-01T09:00:00Z",
+                        source_node_uuid="source-1",
+                        target_node_uuid="target-1",
+                        valid_at="2024-01-01T10:00:00Z"
+                    ),
+                    Edge(
+                        fact="Fact 2",
+                        name="edge2", 
+                        uuid_="edge-2",
+                        created_at="2024-01-02T09:00:00Z",
+                        source_node_uuid="source-2",
+                        target_node_uuid="target-2",
+                        valid_at="2024-01-02T10:00:00Z"
+                    )
+                ]
+                
+                nodes = [
+                    Node(
+                        name="Node1",
+                        summary="Summary 1",
+                        uuid_="node-1",
+                        created_at="2024-01-01T09:00:00Z"
+                    ),
+                    Node(
+                        name="Node2",
+                        summary="Summary 2",
+                        uuid_="node-2", 
+                        created_at="2024-01-01T09:00:00Z"
+                    )
+                ]
+                
+                episodes = [
+                    Episode(
+                        content="Message 1",
+                        created_at="2024-01-01T10:00:00Z",
+                        uuid_="episode-1"
+                    ),
+                    Episode(
+                        content="Message 2",
+                        created_at="2024-01-01T11:00:00Z",
+                        uuid_="episode-2"
+                    )
+                ]
+                
+                result = compose_context_string(edges, nodes, episodes)
+                
+                assert "Fact 1" in result
+                assert "Fact 2" in result
+                assert "Node1" in result
+                assert "Node2" in result
+                assert "Message 1" in result
+                assert "Message 2" in result
+    status: unresolved
