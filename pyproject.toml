@@ -1,6 +1,7 @@
 [project]
 name = "zep-cloud"
 dynamic = ["version"]
+version = "4.0.0a1"
 
 [tool.poetry]
 name = "zep-cloud"
