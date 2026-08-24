@@ -4,11 +4,8 @@
 # what must not be regenerated stays here:
 #   .github  — the SDK Release audit fails closed unless CI is protected
 #   LICENSE  — legal text, not a generated artifact
-#   .fern/   — Fern's own replay state
 #
 # Anything ported forward from v3 is re-added deliberately, file by file.
 .github
 LICENSE
-.fern/replay.lock
-.fern/replay.yml
 .gitattributes
