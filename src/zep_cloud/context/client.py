@@ -3,10 +3,10 @@
 import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
-from ..types.context_template_response import ContextTemplateResponse
-from ..types.list_context_templates_response import ListContextTemplatesResponse
-from ..types.success_response import SuccessResponse
+from ..types.context_template import ContextTemplate
+from ..types.context_template_page import ContextTemplatePage
 from .raw_client import AsyncRawContextClient, RawContextClient
 
 # this is used as the default value for optional parameters
@@ -28,21 +28,30 @@ class ContextClient:
         """
         return self._raw_client
 
-    def list_context_templates(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ListContextTemplatesResponse:
+    def create_template(
+        self,
+        *,
+        name: typing.Optional[str] = OMIT,
+        template: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ContextTemplate:
         """
-        Lists all context templates.
-
         Parameters
         ----------
+        name : typing.Optional[str]
+
+        template : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ListContextTemplatesResponse
-            The list of context templates.
+        ContextTemplate
+            Created
 
         Examples
         --------
@@ -51,68 +60,42 @@ class ContextClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.context.list_context_templates()
+        client.context.create_template()
         """
-        _response = self._raw_client.list_context_templates(request_options=request_options)
-        return _response.data
-
-    def create_context_template(
-        self, *, template: str, template_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
-        """
-        Creates a new context template.
-
-        Parameters
-        ----------
-        template : str
-            The template content (max 1200 characters).
-
-        template_id : str
-            Unique identifier for the template (max 100 characters).
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        ContextTemplateResponse
-            The created context template.
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        client.context.create_context_template(
-            template="template",
-            template_id="template_id",
-        )
-        """
-        _response = self._raw_client.create_context_template(
-            template=template, template_id=template_id, request_options=request_options
+        _response = self._raw_client.create_template(
+            name=name, template=template, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
 
-    def get_context_template(
-        self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    def list_templates(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        name: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[ContextTemplate, ContextTemplatePage]:
         """
-        Retrieves a context template by template_id.
-
         Parameters
         ----------
-        template_id : str
-            Template ID
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        name : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ContextTemplateResponse
-            The context template.
+        SyncPager[ContextTemplate, ContextTemplatePage]
+            OK
 
         Examples
         --------
@@ -121,34 +104,79 @@ class ContextClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.context.get_context_template(
-            template_id="template_id",
+        response = client.context.list_templates(
+            limit=1,
+            cursor="cursor",
+        )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
+        """
+        return self._raw_client.list_templates(
+            limit=limit, cursor=cursor, name=name, idempotency_key=idempotency_key, request_options=request_options
+        )
+
+    def get_template(
+        self, template_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ContextTemplate:
+        """
+        Parameters
+        ----------
+        template_uuid : str
+            Template UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ContextTemplate
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.context.get_template(
+            template_uuid="template_uuid",
         )
         """
-        _response = self._raw_client.get_context_template(template_id, request_options=request_options)
+        _response = self._raw_client.get_template(template_uuid, request_options=request_options)
         return _response.data
 
-    def update_context_template(
-        self, template_id: str, *, template: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    def update_template(
+        self,
+        template_uuid: str,
+        *,
+        name: typing.Optional[str] = OMIT,
+        template: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ContextTemplate:
         """
-        Updates an existing context template by template_id.
-
         Parameters
         ----------
-        template_id : str
-            Template ID
+        template_uuid : str
+            Template UUID
 
-        template : str
-            The template content (max 1200 characters).
+        name : typing.Optional[str]
+
+        template : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ContextTemplateResponse
-            The updated context template.
+        ContextTemplate
+            OK
 
         Examples
         --------
@@ -157,34 +185,40 @@ class ContextClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.context.update_context_template(
-            template_id="template_id",
-            template="template",
+        client.context.update_template(
+            template_uuid="template_uuid",
         )
         """
-        _response = self._raw_client.update_context_template(
-            template_id, template=template, request_options=request_options
+        _response = self._raw_client.update_template(
+            template_uuid,
+            name=name,
+            template=template,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
         )
         return _response.data
 
-    def delete_context_template(
-        self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
+    def delete_template(
+        self,
+        template_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> None:
         """
-        Deletes a context template by template_id.
-
         Parameters
         ----------
-        template_id : str
-            Template ID
+        template_uuid : str
+            Template UUID
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        SuccessResponse
-            Template deleted successfully
+        None
 
         Examples
         --------
@@ -193,11 +227,13 @@ class ContextClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.context.delete_context_template(
-            template_id="template_id",
+        client.context.delete_template(
+            template_uuid="template_uuid",
         )
         """
-        _response = self._raw_client.delete_context_template(template_id, request_options=request_options)
+        _response = self._raw_client.delete_template(
+            template_uuid, idempotency_key=idempotency_key, request_options=request_options
+        )
         return _response.data
 
 
@@ -216,21 +252,30 @@ class AsyncContextClient:
         """
         return self._raw_client
 
-    async def list_context_templates(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ListContextTemplatesResponse:
+    async def create_template(
+        self,
+        *,
+        name: typing.Optional[str] = OMIT,
+        template: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ContextTemplate:
         """
-        Lists all context templates.
-
         Parameters
         ----------
+        name : typing.Optional[str]
+
+        template : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ListContextTemplatesResponse
-            The list of context templates.
+        ContextTemplate
+            Created
 
         Examples
         --------
@@ -244,35 +289,45 @@ class AsyncContextClient:
 
 
         async def main() -> None:
-            await client.context.list_context_templates()
+            await client.context.create_template()
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list_context_templates(request_options=request_options)
+        _response = await self._raw_client.create_template(
+            name=name, template=template, idempotency_key=idempotency_key, request_options=request_options
+        )
         return _response.data
 
-    async def create_context_template(
-        self, *, template: str, template_id: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    async def list_templates(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        name: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[ContextTemplate, ContextTemplatePage]:
         """
-        Creates a new context template.
-
         Parameters
         ----------
-        template : str
-            The template content (max 1200 characters).
+        limit : typing.Optional[int]
+            Page size
 
-        template_id : str
-            Unique identifier for the template (max 100 characters).
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        name : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ContextTemplateResponse
-            The created context template.
+        AsyncPager[ContextTemplate, ContextTemplatePage]
+            OK
 
         Examples
         --------
@@ -286,37 +341,91 @@ class AsyncContextClient:
 
 
         async def main() -> None:
-            await client.context.create_context_template(
-                template="template",
-                template_id="template_id",
+            response = await client.context.list_templates(
+                limit=1,
+                cursor="cursor",
+            )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
+
+
+        asyncio.run(main())
+        """
+        return await self._raw_client.list_templates(
+            limit=limit, cursor=cursor, name=name, idempotency_key=idempotency_key, request_options=request_options
+        )
+
+    async def get_template(
+        self, template_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ContextTemplate:
+        """
+        Parameters
+        ----------
+        template_uuid : str
+            Template UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ContextTemplate
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.context.get_template(
+                template_uuid="template_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.create_context_template(
-            template=template, template_id=template_id, request_options=request_options
-        )
+        _response = await self._raw_client.get_template(template_uuid, request_options=request_options)
         return _response.data
 
-    async def get_context_template(
-        self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    async def update_template(
+        self,
+        template_uuid: str,
+        *,
+        name: typing.Optional[str] = OMIT,
+        template: typing.Optional[str] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ContextTemplate:
         """
-        Retrieves a context template by template_id.
-
         Parameters
         ----------
-        template_id : str
-            Template ID
+        template_uuid : str
+            Template UUID
+
+        name : typing.Optional[str]
+
+        template : typing.Optional[str]
+
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ContextTemplateResponse
-            The context template.
+        ContextTemplate
+            OK
 
         Examples
         --------
@@ -330,37 +439,43 @@ class AsyncContextClient:
 
 
         async def main() -> None:
-            await client.context.get_context_template(
-                template_id="template_id",
+            await client.context.update_template(
+                template_uuid="template_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_context_template(template_id, request_options=request_options)
+        _response = await self._raw_client.update_template(
+            template_uuid,
+            name=name,
+            template=template,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
         return _response.data
 
-    async def update_context_template(
-        self, template_id: str, *, template: str, request_options: typing.Optional[RequestOptions] = None
-    ) -> ContextTemplateResponse:
+    async def delete_template(
+        self,
+        template_uuid: str,
+        *,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> None:
         """
-        Updates an existing context template by template_id.
-
         Parameters
         ----------
-        template_id : str
-            Template ID
+        template_uuid : str
+            Template UUID
 
-        template : str
-            The template content (max 1200 characters).
+        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ContextTemplateResponse
-            The updated context template.
+        None
 
         Examples
         --------
@@ -374,56 +489,14 @@ class AsyncContextClient:
 
 
         async def main() -> None:
-            await client.context.update_context_template(
-                template_id="template_id",
-                template="template",
+            await client.context.delete_template(
+                template_uuid="template_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.update_context_template(
-            template_id, template=template, request_options=request_options
+        _response = await self._raw_client.delete_template(
+            template_uuid, idempotency_key=idempotency_key, request_options=request_options
         )
-        return _response.data
-
-    async def delete_context_template(
-        self, template_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> SuccessResponse:
-        """
-        Deletes a context template by template_id.
-
-        Parameters
-        ----------
-        template_id : str
-            Template ID
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SuccessResponse
-            Template deleted successfully
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.context.delete_context_template(
-                template_id="template_id",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.delete_context_template(template_id, request_options=request_options)
         return _response.data

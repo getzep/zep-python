@@ -1,11 +1,5 @@
-.env
-dist/
 .mypy_cache/
+.ruff_cache/
 __pycache__/
+dist/
 poetry.toml
-.idea/
-.vscode/
-*.env
-.venv/
-venv/
-.cache/
