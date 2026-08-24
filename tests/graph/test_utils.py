@@ -3,13 +3,13 @@ from typing import Any, Dict, Optional
 
 import pytest
 
-from zep_cloud import EntityEdge, EntityNode, Episode
+from zep_cloud import Edge, Episode, Node
 from zep_cloud.graph.utils import compose_context_string, format_edge_date_range
 
 
 class TestFormatEdgeDateRange:
     def test_format_edge_date_range_with_valid_dates(self):
-        edge = EntityEdge(
+        edge = Edge(
             fact="Test fact",
             name="test_edge",
             uuid_="edge-123",
@@ -23,7 +23,7 @@ class TestFormatEdgeDateRange:
         assert result == "2024-01-01 10:00:00 - 2024-01-02 10:00:00"
 
     def test_format_edge_date_range_with_none_dates(self):
-        edge = EntityEdge(
+        edge = Edge(
             fact="Test fact",
             name="test_edge", 
             uuid_="edge-123",
@@ -37,7 +37,7 @@ class TestFormatEdgeDateRange:
         assert result == "date unknown - present"
 
     def test_format_edge_date_range_with_partial_dates(self):
-        edge = EntityEdge(
+        edge = Edge(
             fact="Test fact",
             name="test_edge",
             uuid_="edge-123",
@@ -60,7 +60,7 @@ class TestComposeContextString:
         assert "EPISODES" not in result
 
     def test_facts_only(self):
-        edge = EntityEdge(
+        edge = Edge(
             fact="User likes pizza",
             name="likes",
             uuid_="edge-123",
@@ -78,7 +78,7 @@ class TestComposeContextString:
         assert "EPISODES" not in result
 
     def test_entities_basic(self):
-        node = EntityNode(
+        node = Node(
             name="John",
             summary="A user",
             uuid_="node-123",
@@ -91,7 +91,7 @@ class TestComposeContextString:
         assert "<ENTITIES>" in result
 
     def test_entities_with_label_and_attributes(self):
-        node = EntityNode(
+        node = Node(
             name="John",
             summary="A user",
             uuid_="node-123",
@@ -109,7 +109,7 @@ class TestComposeContextString:
         assert "Summary: A user" in result
 
     def test_entities_with_entity_label_removed(self):
-        node = EntityNode(
+        node = Node(
             name="Alice",
             summary="A customer",
             uuid_="node-456",
@@ -124,7 +124,7 @@ class TestComposeContextString:
         assert "Summary: A customer" in result
 
     def test_entities_with_only_entity_label(self):
-        node = EntityNode(
+        node = Node(
             name="Bob",
             summary="A person",
             uuid_="node-789",
@@ -140,7 +140,7 @@ class TestComposeContextString:
         assert "Summary: A person" in result
 
     def test_entities_with_labels_attribute_filtered(self):
-        node = EntityNode(
+        node = Node(
             name="stores",
             summary="Physical locations for shopping",
             uuid_="node-123",
@@ -174,33 +174,34 @@ class TestComposeContextString:
             content="Hello there!",
             created_at="2024-01-01T10:00:00Z",
             uuid_="episode-123",
-            role="user"
+            role_name="user"
         )
         result = compose_context_string([], [], [episode])
         
         assert "user: Hello there! (2024-01-01 10:00:00)" in result
 
-    def test_episodes_with_role_and_type(self):
-        # Create a mock episode with role_type since Episode model uses enum
+    def test_episodes_with_sender_name_and_role(self):
+        # spec-3 8.4: role_name is the sender, role is the enum v3 called
+        # role_type.
         class MockEpisode:
             def __init__(self):
                 self.content = "Hello there!"
                 self.created_at = "2024-01-01T10:00:00Z"
-                self.role = "assistant"
-                self.role_type = "ai"
+                self.role_name = "assistant"
+                self.role = "ai"
         
         episode = MockEpisode()
         result = compose_context_string([], [], [episode])
         
         assert "assistant (ai): Hello there! (2024-01-01 10:00:00)" in result
 
-    def test_episodes_with_role_type_only(self):
+    def test_episodes_with_role_only(self):
         class MockEpisode:
             def __init__(self):
                 self.content = "Hello there!"
                 self.created_at = "2024-01-01T10:00:00Z"
-                self.role = None
-                self.role_type = "system"
+                self.role_name = None
+                self.role = "system"
         
         episode = MockEpisode()
         result = compose_context_string([], [], [episode])
@@ -209,7 +210,7 @@ class TestComposeContextString:
 
 
     def test_complete_context_with_all_elements(self):
-        edge = EntityEdge(
+        edge = Edge(
             fact="User prefers coffee",
             name="prefers",
             uuid_="edge-123",
@@ -220,7 +221,7 @@ class TestComposeContextString:
             invalid_at=None
         )
         
-        node = EntityNode(
+        node = Node(
             name="Alice",
             summary="Regular customer",
             uuid_="node-123",
@@ -233,8 +234,8 @@ class TestComposeContextString:
             def __init__(self):
                 self.content = "I'd like my usual coffee"
                 self.created_at = "2024-01-01T09:00:00Z"
-                self.role = "user"
-                self.role_type = "customer"
+                self.role_name = "user"
+                self.role = "customer"
         
         episode = MockEpisode()
         
@@ -255,7 +256,7 @@ class TestComposeContextString:
 
     def test_multiple_items(self):
         edges = [
-            EntityEdge(
+            Edge(
                 fact="Fact 1",
                 name="edge1",
                 uuid_="edge-1",
@@ -264,7 +265,7 @@ class TestComposeContextString:
                 target_node_uuid="target-1",
                 valid_at="2024-01-01T10:00:00Z"
             ),
-            EntityEdge(
+            Edge(
                 fact="Fact 2",
                 name="edge2", 
                 uuid_="edge-2",
@@ -276,13 +277,13 @@ class TestComposeContextString:
         ]
         
         nodes = [
-            EntityNode(
+            Node(
                 name="Node1",
                 summary="Summary 1",
                 uuid_="node-1",
                 created_at="2024-01-01T09:00:00Z"
             ),
-            EntityNode(
+            Node(
                 name="Node2",
                 summary="Summary 2",
                 uuid_="node-2", 

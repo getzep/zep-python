@@ -21,7 +21,7 @@ class Zep(BaseClient):
     ):
         env_api_url = os.getenv("ZEP_API_URL")
         if env_api_url:
-            base_url = f"{env_api_url}/api/v2"
+            base_url = f"{env_api_url}/api/v4"
         super().__init__(
             base_url=base_url,
             environment=environment,
@@ -30,8 +30,16 @@ class Zep(BaseClient):
             follow_redirects=follow_redirects,
             httpx_client=httpx_client
         )
-        self.user = UserClient(client_wrapper=self._client_wrapper)
-        self.graph = GraphClient(client_wrapper=self._client_wrapper)
+        self._external_user = UserClient(client_wrapper=self._client_wrapper)
+        self._external_graph = GraphClient(client_wrapper=self._client_wrapper)
+
+    @property
+    def user(self) -> UserClient:  # type: ignore[override]
+        return self._external_user
+
+    @property
+    def graph(self) -> GraphClient:  # type: ignore[override]
+        return self._external_graph
 
 class AsyncZep(AsyncBaseClient):
     def __init__(
@@ -46,7 +54,7 @@ class AsyncZep(AsyncBaseClient):
     ):
         env_api_url = os.getenv("ZEP_API_URL")
         if env_api_url:
-            base_url = f"{env_api_url}/api/v2"
+            base_url = f"{env_api_url}/api/v4"
         super().__init__(
             base_url=base_url,
             environment=environment,
@@ -55,5 +63,13 @@ class AsyncZep(AsyncBaseClient):
             follow_redirects=follow_redirects,
             httpx_client=httpx_client
         )
-        self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
-        self.graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
+        self._external_user = AsyncUserClient(client_wrapper=self._client_wrapper)
+        self._external_graph = AsyncGraphClient(client_wrapper=self._client_wrapper)
+
+    @property
+    def user(self) -> AsyncUserClient:  # type: ignore[override]
+        return self._external_user
+
+    @property
+    def graph(self) -> AsyncGraphClient:  # type: ignore[override]
+        return self._external_graph

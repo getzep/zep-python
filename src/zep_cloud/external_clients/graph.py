@@ -1,7 +1,7 @@
 import typing
 
-from zep_cloud import EdgeType, EntityEdgeSourceTarget
 from zep_cloud.core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from zep_cloud.core.request_options import RequestOptions
 from zep_cloud.external_clients.ontology import (
     EdgeModel,
     edge_model_to_api_schema,
@@ -9,449 +9,107 @@ from zep_cloud.external_clients.ontology import (
 )
 from zep_cloud.graph.client import AsyncGraphClient as AsyncBaseGraphClient
 from zep_cloud.graph.client import GraphClient as BaseGraphClient
-from zep_cloud.types import EntityType
+from zep_cloud.types import EdgeSourceTarget, EdgeType, EntityType, Ontology
 
 if typing.TYPE_CHECKING:
     from zep_cloud.external_clients.ontology import EntityModel
-from zep_cloud.core.request_options import RequestOptions
+
+EdgeSpec = typing.Union[
+    "EdgeModel",
+    typing.Tuple["EdgeModel", typing.List[EdgeSourceTarget]],
+]
+
+
+def build_ontology(
+    entities: typing.Dict[str, "EntityModel"],
+    edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
+) -> typing.Tuple[typing.List[EntityType], typing.List[EdgeType]]:
+    """Turn the Pydantic ontology models into the types the v4 API accepts.
+
+    This is the whole value the hand-written layer adds: the wire shape is a
+    list of entity and edge types, and this derives it from Python classes so an
+    ontology is declared once, in the type system.
+    """
+    api_entity_types: typing.List[EntityType] = []
+    for name, entity in entities.items():
+        api_entity_types.append(EntityType(**entity_model_to_api_schema(entity, name)))
+
+    api_edge_types: typing.List[EdgeType] = []
+    if edges:
+        for name, edge_data in edges.items():
+            if isinstance(edge_data, tuple):
+                edge_model, source_targets = edge_data
+            else:
+                edge_model, source_targets = edge_data, None
+
+            edge_dict = edge_model_to_api_schema(edge_model, name)
+            if source_targets:
+                edge_dict["source_targets"] = [
+                    st.dict() if hasattr(st, "dict") else st for st in source_targets
+                ]
+            api_edge_types.append(EdgeType(**edge_dict))
+
+    return api_entity_types, api_edge_types
 
 
 class GraphClient(BaseGraphClient):
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         super().__init__(client_wrapper=client_wrapper)
 
-    def set_ontology(
-        self,
-        entities: dict[str, "EntityModel"],
-        edges: typing.Optional[
-            dict[
-                str,
-                typing.Union[
-                    "EdgeModel",
-                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
-                ],
-            ]
-        ] = None,
-        user_ids: typing.Optional[typing.List[str]] = None,
-        graph_ids: typing.Optional[typing.List[str]] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ):
-        """
-        Sets the entity and edge types for a project, replacing any existing ones.
-
-        Parameters
-        ----------
-        entities : dict[str, "EntityModel"]
-            Entity type definitions.
-
-        edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
-            Edge type definitions.
-
-        user_ids : typing.Optional[typing.List[str]]
-
-            The user identifiers for which to set the ontology.
-
-        graph_ids : typing.Optional[typing.List[str]]
-            The graph identifiers for which to set the ontology.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Examples
-        --------
-
-        class Destination(EntityModel):
-
-        \"""A destination is a place that travelers visit.\"""
-            destination_name: EntityText = Field(
-                description="The name of the destination",
-                default=None
-            )
-            country: EntityText = Field(
-                description="The country of the destination",
-                default=None
-            )
-            region: EntityText = Field(
-                description="The region of the destination",
-                default=None
-            )
-            description: EntityText = Field(
-                description="A description of the destination",
-                default=None
-            )
-
-
-        class TravelingTo(EdgeModel):
-
-        \"""An edge representing a traveler going to a destination.\"""
-            travel_date: EntityText = Field(
-                description="The date of travel to this destination",
-                default=None
-            )
-            purpose: EntityText = Field(
-                description="The purpose of travel (Business, Leisure, etc.)",
-                default=None
-            )
-
-        client.graph.set_ontology(
-            entities={
-                "Destination": Destination,
-            },
-            edges={
-                "TRAVELING_TO": (
-                    TravelingTo,
-                    [
-                        EntityEdgeSourceTarget(
-                            source="User",
-                            target="Destination"
-                        )
-                    ]
-                ),
-            }
-        )
-        """
-        return self.set_entity_types(
-            entities=entities,
-            edges=edges,
-            user_ids=user_ids,
-            graph_ids=graph_ids,
-            request_options=request_options,
-        )
-
     def set_entity_types(
         self,
-        entities: dict[str, "EntityModel"],
-        edges: typing.Optional[
-            dict[
-                str,
-                typing.Union[
-                    "EdgeModel",
-                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
-                ],
-            ]
-        ] = None,
-        user_ids: typing.Optional[typing.List[str]] = None,
-        graph_ids: typing.Optional[typing.List[str]] = None,
+        graph_uuid: str,
+        entities: typing.Dict[str, "EntityModel"],
+        edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ):
+    ) -> Ontology:
         """
-        Sets the entity and edge types for a project, replacing any existing ones.
+        Set the entity and edge types for one graph, replacing its existing ontology.
 
-        Parameters
-        ----------
-        entities : dict[str, "EntityModel"]
-
-        edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
-
-        user_ids : typing.Optional[typing.List[str]]
-
-            The user identifiers for which to set the ontology.
-
-        graph_ids : typing.Optional[typing.List[str]]
-            The graph identifiers for which to set the ontology.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
+        The graph is an explicit argument. v3 took ``user_ids`` and ``graph_ids``
+        and fanned out server-side; v4 has one ontology endpoint per scope
+        (spec-3 14.4), so a caller targeting several graphs calls this once per
+        graph, and a caller targeting the project default passes the same
+        ``build_ontology`` output to ``client.project.set_ontology``.
 
         Examples
         --------
-
-        class Destination(EntityModel):
-
-        \"""A destination is a place that travelers visit.\"""
-            destination_name: EntityText = Field(
-                description="The name of the destination",
-                default=None
-            )
-            country: EntityText = Field(
-                description="The country of the destination",
-                default=None
-            )
-            region: EntityText = Field(
-                description="The region of the destination",
-                default=None
-            )
-            description: EntityText = Field(
-                description="A description of the destination",
-                default=None
-            )
-
-
-        class TravelingTo(EdgeModel):
-
-        \"""An edge representing a traveler going to a destination.\"""
-            travel_date: EntityText = Field(
-                description="The date of travel to this destination",
-                default=None
-            )
-            purpose: EntityText = Field(
-                description="The purpose of travel (Business, Leisure, etc.)",
-                default=None
-            )
-
         client.graph.set_entity_types(
-            entities={
-                "Destination": Destination,
-            },
+            graph_uuid="...",
+            entities={"Traveler": Traveler},
             edges={
-                "TRAVELING_TO": (
-                    TravelingTo,
-                    [
-                        EntityEdgeSourceTarget(
-                            source="User",
-                            target="Destination"
-                        )
-                    ]
+                "TRAVELED_TO": (
+                    TraveledTo,
+                    [EdgeSourceTarget(source_entity_type="Traveler", target_entity_type="Destination")],
                 ),
-            }
+            },
         )
         """
-        api_entity_types: list[EntityType] = []
-        api_edge_types: list[EdgeType] = []
-
-        for name, entity in entities.items():
-            entity_dict = entity_model_to_api_schema(entity, name)
-            api_entity_types.append(EntityType(**entity_dict))
-
-        if edges:
-            for name, edge_data in edges.items():
-                # Handle both EdgeModel directly and tuple of (model, source_targets)
-                if isinstance(edge_data, tuple):
-                    edge_model, source_targets = edge_data
-                else:
-                    edge_model = edge_data
-                    source_targets = None
-
-                edge_dict = edge_model_to_api_schema(edge_model, name)
-                if source_targets:
-                    edge_dict["source_targets"] = [st.dict() for st in source_targets]
-                api_edge_types.append(EdgeType(**edge_dict))
-        res = self.set_entity_types_internal(
-            entity_types=api_entity_types,
-            edge_types=api_edge_types,
-            user_ids=user_ids,
-            graph_ids=graph_ids,
+        entity_types, edge_types = build_ontology(entities, edges)
+        return self.set_ontology(
+            graph_uuid,
+            entity_types=entity_types,
+            edge_types=edge_types,
             request_options=request_options,
         )
-        return res
 
 
 class AsyncGraphClient(AsyncBaseGraphClient):
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         super().__init__(client_wrapper=client_wrapper)
 
-    async def set_ontology(
-        self,
-        entities: dict[str, "EntityModel"],
-        edges: typing.Optional[
-            dict[
-                str,
-                typing.Union[
-                    "EdgeModel",
-                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
-                ],
-            ]
-        ] = None,
-        user_ids: typing.Optional[typing.List[str]] = None,
-        graph_ids: typing.Optional[typing.List[str]] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ):
-        """
-        Sets the entity and edge types for a project, replacing any existing ones.
-
-        Parameters
-        ----------
-        entities : dict[str, "EntityModel"]
-            Entity type definitions.
-
-        edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
-            Edge type definitions.
-
-        user_ids : typing.Optional[typing.List[str]]
-
-            The user identifiers for which to set the ontology.
-
-        graph_ids : typing.Optional[typing.List[str]]
-            The graph identifiers for which to set the ontology.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Examples
-        --------
-
-        class Destination(EntityModel):
-
-        \"""A destination is a place that travelers visit.\"""
-            destination_name: EntityText = Field(
-                description="The name of the destination",
-                default=None
-            )
-            country: EntityText = Field(
-                description="The country of the destination",
-                default=None
-            )
-            region: EntityText = Field(
-                description="The region of the destination",
-                default=None
-            )
-            description: EntityText = Field(
-                description="A description of the destination",
-                default=None
-            )
-
-
-        class TravelingTo(EdgeModel):
-
-        \"""An edge representing a traveler going to a destination.\"""
-            travel_date: EntityText = Field(
-                description="The date of travel to this destination",
-                default=None
-            )
-            purpose: EntityText = Field(
-                description="The purpose of travel (Business, Leisure, etc.)",
-                default=None
-            )
-
-        await client.graph.set_ontology(
-            entities={
-                "Destination": Destination,
-            },
-            edges={
-                "TRAVELING_TO": (
-                    TravelingTo,
-                    [
-                        EntityEdgeSourceTarget(
-                            source="User",
-                            target="Destination"
-                        )
-                    ]
-                ),
-            }
-        )
-        """
-        return await self.set_entity_types(
-            entities=entities,
-            edges=edges,
-            request_options=request_options,
-            user_ids=user_ids,
-            graph_ids=graph_ids
-        )
-
     async def set_entity_types(
         self,
-        entities: dict[str, "EntityModel"],
-        edges: typing.Optional[
-            dict[
-                str,
-                typing.Union[
-                    "EdgeModel",
-                    typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]],
-                ],
-            ]
-        ] = None,
-        user_ids: typing.Optional[typing.List[str]] = None,
-        graph_ids: typing.Optional[typing.List[str]] = None,
+        graph_uuid: str,
+        entities: typing.Dict[str, "EntityModel"],
+        edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ):
-        """
-        Sets the entity and edge types for a project, replacing any existing ones.
-
-        Parameters
-        ----------
-        entities : dict[str, "EntityModel"]
-
-        edges : typing.Optional[dict[str, typing.Union["EdgeModel", typing.Tuple["EdgeModel", typing.List[EntityEdgeSourceTarget]]]]]
-
-        user_ids : typing.Optional[typing.List[str]]
-
-            The user identifiers for which to set the ontology.
-
-        graph_ids : typing.Optional[typing.List[str]]
-            The graph identifiers for which to set the ontology.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Examples
-        --------
-
-        class Destination(EntityModel):
-
-        \"""A destination is a place that travelers visit.\"""
-            destination_name: EntityText = Field(
-                description="The name of the destination",
-                default=None
-            )
-            country: EntityText = Field(
-                description="The country of the destination",
-                default=None
-            )
-            region: EntityText = Field(
-                description="The region of the destination",
-                default=None
-            )
-            description: EntityText = Field(
-                description="A description of the destination",
-                default=None
-            )
-
-
-        class TravelingTo(EdgeModel):
-
-        \"""An edge representing a traveler going to a destination.\"""
-            travel_date: EntityText = Field(
-                description="The date of travel to this destination",
-                default=None
-            )
-            purpose: EntityText = Field(
-                description="The purpose of travel (Business, Leisure, etc.)",
-                default=None
-            )
-
-        await client.graph.set_entity_types(
-            entities={
-                "Destination": Destination,
-            },
-            edges={
-                "TRAVELING_TO": (
-                    TravelingTo,
-                    [
-                        EntityEdgeSourceTarget(
-                            source="User",
-                            target="Destination"
-                        )
-                    ]
-                ),
-            }
-        )
-        """
-        api_entity_types: list[EntityType] = []
-        api_edge_types: list[EdgeType] = []
-
-        for name, entity in entities.items():
-            entity_dict = entity_model_to_api_schema(entity, name)
-            api_entity_types.append(EntityType(**entity_dict))
-
-        if edges:
-            for name, edge_data in edges.items():
-                # Handle both EdgeModel directly and tuple of (model, source_targets)
-                if isinstance(edge_data, tuple):
-                    edge_model, source_targets = edge_data
-                else:
-                    edge_model = edge_data
-                    source_targets = None
-
-                edge_dict = edge_model_to_api_schema(edge_model, name)
-                if source_targets:
-                    edge_dict["source_targets"] = [st.dict() for st in source_targets]
-                api_edge_types.append(EdgeType(**edge_dict))
-
-        res = await self.set_entity_types_internal(
-            entity_types=api_entity_types,
-            edge_types=api_edge_types,
-            user_ids=user_ids,
-            graph_ids=graph_ids,
+    ) -> Ontology:
+        """Asynchronous counterpart of :meth:`GraphClient.set_entity_types`."""
+        entity_types, edge_types = build_ontology(entities, edges)
+        return await self.set_ontology(
+            graph_uuid,
+            entity_types=entity_types,
+            edge_types=edge_types,
             request_options=request_options,
         )
-        return res
