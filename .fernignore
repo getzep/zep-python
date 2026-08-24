@@ -1,15 +1,13 @@
 # Specify files that shouldn't be modified by Fern
-src/zep_cloud/client.py
-src/zep_cloud/graph/utils.py
-src/zep_cloud/external_clients/
-tests/graph/
-examples/
-pyproject.toml
-poetry.lock
-README.md
+#
+# v4 starts from Fern's generated SDK rather than v3's hand-written layer. Only
+# what must not be regenerated stays here:
+#   .github  — the SDK Release audit fails closed unless CI is protected
+#   LICENSE  — legal text, not a generated artifact
+#   .fern/   — Fern's own replay state
+#
+# Anything ported forward from v3 is re-added deliberately, file by file.
 .github
-Makefile
-.gitignore
 LICENSE
 .fern/replay.lock
 .fern/replay.yml
