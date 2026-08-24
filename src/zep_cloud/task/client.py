@@ -3,8 +3,10 @@
 import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
-from ..types.get_task_response import GetTaskResponse
+from ..types.task import Task
+from ..types.task_page import TaskPage
 from .raw_client import AsyncRawTaskClient, RawTaskClient
 
 
@@ -23,22 +25,63 @@ class TaskClient:
         """
         return self._raw_client
 
-    def get(self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> GetTaskResponse:
+    def list(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[Task, TaskPage]:
         """
-        Gets a task by its ID
-
         Parameters
         ----------
-        task_id : str
-            Task ID
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        GetTaskResponse
-            Task
+        SyncPager[Task, TaskPage]
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.task.list(
+            limit=1,
+            cursor="cursor",
+        )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
+        """
+        return self._raw_client.list(limit=limit, cursor=cursor, request_options=request_options)
+
+    def get(self, task_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> Task:
+        """
+        Parameters
+        ----------
+        task_uuid : str
+            Task UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Task
+            OK
 
         Examples
         --------
@@ -48,10 +91,10 @@ class TaskClient:
             api_key="YOUR_API_KEY",
         )
         client.task.get(
-            task_id="task_id",
+            task_uuid="task_uuid",
         )
         """
-        _response = self._raw_client.get(task_id, request_options=request_options)
+        _response = self._raw_client.get(task_uuid, request_options=request_options)
         return _response.data
 
 
@@ -70,22 +113,72 @@ class AsyncTaskClient:
         """
         return self._raw_client
 
-    async def get(self, task_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> GetTaskResponse:
+    async def list(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[Task, TaskPage]:
         """
-        Gets a task by its ID
-
         Parameters
         ----------
-        task_id : str
-            Task ID
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        GetTaskResponse
-            Task
+        AsyncPager[Task, TaskPage]
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            response = await client.task.list(
+                limit=1,
+                cursor="cursor",
+            )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
+
+
+        asyncio.run(main())
+        """
+        return await self._raw_client.list(limit=limit, cursor=cursor, request_options=request_options)
+
+    async def get(self, task_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> Task:
+        """
+        Parameters
+        ----------
+        task_uuid : str
+            Task UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        Task
+            OK
 
         Examples
         --------
@@ -100,11 +193,11 @@ class AsyncTaskClient:
 
         async def main() -> None:
             await client.task.get(
-                task_id="task_id",
+                task_uuid="task_uuid",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(task_id, request_options=request_options)
+        _response = await self._raw_client.get(task_uuid, request_options=request_options)
         return _response.data
