@@ -9,8 +9,8 @@ from .entity_property import EntityProperty
 
 
 class EdgeType(UniversalBaseModel):
-    description: str
-    name: str
+    description: typing.Optional[str] = None
+    name: typing.Optional[str] = None
     properties: typing.Optional[typing.List[EntityProperty]] = None
     source_targets: typing.Optional[typing.List[EdgeSourceTarget]] = None
 
