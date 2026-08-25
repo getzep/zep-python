@@ -8,6 +8,9 @@
 # Anything ported forward from v3 is re-added deliberately, file by file.
 .github
 LICENSE
+# The ontology DSL is hand-written: it derives the entity and edge type lists
+# from Python classes, which no generator produces. Everything it depends on
+# (EntityType, EdgeType, EntityProperty) is generated and not frozen.
+src/zep_cloud/ontology.py
+tests/ontology/
 .gitattributes
-.fern/replay.lock
-.fern/replay.yml
