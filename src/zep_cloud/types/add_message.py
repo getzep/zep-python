@@ -6,13 +6,14 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .role_type import RoleType
 
 
 class AddMessage(UniversalBaseModel):
     content: typing.Optional[str] = None
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     name: typing.Optional[str] = None
-    role: typing.Optional[str] = None
+    role: typing.Optional[RoleType] = None
     uuid_: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
     ] = None

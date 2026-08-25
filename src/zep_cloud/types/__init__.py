@@ -18,7 +18,9 @@ if typing.TYPE_CHECKING:
     from .async_result import AsyncResult
     from .batch import Batch
     from .batch_item import BatchItem
+    from .batch_item_kind import BatchItemKind
     from .batch_item_page import BatchItemPage
+    from .batch_item_status import BatchItemStatus
     from .batch_items_response import BatchItemsResponse
     from .batch_page import BatchPage
     from .clone_graph_result import CloneGraphResult
@@ -45,6 +47,7 @@ if typing.TYPE_CHECKING:
     from .error_body import ErrorBody
     from .graph import Graph
     from .graph_context_response import GraphContextResponse
+    from .graph_data_type import GraphDataType
     from .graph_delete_result import GraphDeleteResult
     from .graph_page import GraphPage
     from .instructions import Instructions
@@ -63,6 +66,7 @@ if typing.TYPE_CHECKING:
     from .ontology import Ontology
     from .process_batch_result import ProcessBatchResult
     from .project import Project
+    from .role_type import RoleType
     from .search_request import SearchRequest
     from .subgraph_response import SubgraphResponse
     from .task import Task
@@ -91,7 +95,9 @@ _dynamic_imports: typing.Dict[str, str] = {
     "AsyncResult": ".async_result",
     "Batch": ".batch",
     "BatchItem": ".batch_item",
+    "BatchItemKind": ".batch_item_kind",
     "BatchItemPage": ".batch_item_page",
+    "BatchItemStatus": ".batch_item_status",
     "BatchItemsResponse": ".batch_items_response",
     "BatchPage": ".batch_page",
     "CloneGraphResult": ".clone_graph_result",
@@ -118,6 +124,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ErrorBody": ".error_body",
     "Graph": ".graph",
     "GraphContextResponse": ".graph_context_response",
+    "GraphDataType": ".graph_data_type",
     "GraphDeleteResult": ".graph_delete_result",
     "GraphPage": ".graph_page",
     "Instructions": ".instructions",
@@ -136,6 +143,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "Ontology": ".ontology",
     "ProcessBatchResult": ".process_batch_result",
     "Project": ".project",
+    "RoleType": ".role_type",
     "SearchRequest": ".search_request",
     "SubgraphResponse": ".subgraph_response",
     "Task": ".task",
@@ -188,7 +196,9 @@ __all__ = [
     "AsyncResult",
     "Batch",
     "BatchItem",
+    "BatchItemKind",
     "BatchItemPage",
+    "BatchItemStatus",
     "BatchItemsResponse",
     "BatchPage",
     "CloneGraphResult",
@@ -215,6 +225,7 @@ __all__ = [
     "ErrorBody",
     "Graph",
     "GraphContextResponse",
+    "GraphDataType",
     "GraphDeleteResult",
     "GraphPage",
     "Instructions",
@@ -233,6 +244,7 @@ __all__ = [
     "Ontology",
     "ProcessBatchResult",
     "Project",
+    "RoleType",
     "SearchRequest",
     "SubgraphResponse",
     "Task",

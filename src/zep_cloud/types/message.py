@@ -6,6 +6,7 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .role_type import RoleType
 
 
 class Message(UniversalBaseModel):
@@ -14,7 +15,7 @@ class Message(UniversalBaseModel):
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     name: typing.Optional[str] = None
     processed: typing.Optional[bool] = None
-    role: typing.Optional[str] = None
+    role: typing.Optional[RoleType] = None
     thread_uuid: typing.Optional[str] = None
     uuid_: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")

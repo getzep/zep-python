@@ -6,6 +6,8 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .graph_data_type import GraphDataType
+from .role_type import RoleType
 
 
 class Episode(UniversalBaseModel):
@@ -16,10 +18,10 @@ class Episode(UniversalBaseModel):
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     processed: typing.Optional[bool] = None
     relevance: typing.Optional[float] = None
-    role: typing.Optional[str] = None
+    role: typing.Optional[RoleType] = None
     role_name: typing.Optional[str] = None
     score: typing.Optional[float] = None
-    source: typing.Optional[str] = None
+    source: typing.Optional[GraphDataType] = None
     source_description: typing.Optional[str] = None
     thread_uuid: typing.Optional[str] = None
     uuid_: typing_extensions.Annotated[

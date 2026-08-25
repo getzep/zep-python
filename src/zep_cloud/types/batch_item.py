@@ -6,6 +6,8 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .batch_item_kind import BatchItemKind
+from .batch_item_status import BatchItemStatus
 
 
 class BatchItem(UniversalBaseModel):
@@ -14,9 +16,9 @@ class BatchItem(UniversalBaseModel):
     graph_uuid: typing.Optional[str] = None
     sequence_index: typing.Optional[int] = None
     source_uuid: typing.Optional[str] = None
-    status: typing.Optional[str] = None
+    status: typing.Optional[BatchItemStatus] = None
     thread_uuid: typing.Optional[str] = None
-    type: typing.Optional[str] = None
+    type: typing.Optional[BatchItemKind] = None
     uuid_: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
     ] = None
