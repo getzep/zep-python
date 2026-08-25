@@ -10,31 +10,17 @@ from ..core.serialization import FieldMetadata
 
 class User(UniversalBaseModel):
     created_at: typing.Optional[str] = None
-    deleted_at: typing.Optional[str] = None
     disable_default_ontology: typing.Optional[bool] = None
     email: typing.Optional[str] = None
     first_name: typing.Optional[str] = None
-    id: typing.Optional[int] = None
+    graph_uuid: typing.Optional[str] = None
     last_name: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
-    """
-    Deprecated
-    """
-
-    project_uuid: typing.Optional[str] = None
-    session_count: typing.Optional[int] = pydantic.Field(default=None)
-    """
-    Deprecated
-    """
-
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
     time_zone: typing.Optional[str] = None
-    updated_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Deprecated
-    """
-
     user_id: typing.Optional[str] = None
-    uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = None
+    uuid_: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+    ] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

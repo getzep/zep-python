@@ -2,206 +2,250 @@
 
 # isort: skip_file
 
-from .add_node_item import AddNodeItem
-from .add_nodes_response import AddNodesResponse
-from .add_thread_messages_request import AddThreadMessagesRequest
-from .add_thread_messages_response import AddThreadMessagesResponse
-from .add_triple_response import AddTripleResponse
-from .added_node import AddedNode
-from .api_error import ApiError
-from .apidata_batch_add_item_role import ApidataBatchAddItemRole
-from .apidata_batch_add_item_type import ApidataBatchAddItemType
-from .attached_policy_sets_response import AttachedPolicySetsResponse
-from .batch_add_item import BatchAddItem
-from .batch_item_detail import BatchItemDetail
-from .batch_item_kind import BatchItemKind
-from .batch_item_list_response import BatchItemListResponse
-from .batch_item_status import BatchItemStatus
-from .batch_list_response import BatchListResponse
-from .batch_progress import BatchProgress
-from .batch_status import BatchStatus
-from .batch_summary import BatchSummary
-from .clone_graph_response import CloneGraphResponse
-from .cluster_detect_config import ClusterDetectConfig
-from .co_occurrence_detect_config import CoOccurrenceDetectConfig
-from .comparison_operator import ComparisonOperator
-from .context_template_response import ContextTemplateResponse
-from .custom_instruction import CustomInstruction
-from .date_filter import DateFilter
-from .derived_node import DerivedNode
-from .detect_config import DetectConfig
-from .detect_patterns_response import DetectPatternsResponse
-from .edge_type import EdgeType
-from .entity_edge import EntityEdge
-from .entity_edge_source_target import EntityEdgeSourceTarget
-from .entity_node import EntityNode
-from .entity_property import EntityProperty
-from .entity_property_type import EntityPropertyType
-from .entity_type import EntityType
-from .entity_type_response import EntityTypeResponse
-from .episode import Episode
-from .episode_data import EpisodeData
-from .episode_mentions import EpisodeMentions
-from .episode_metadata_filter import EpisodeMetadataFilter
-from .episode_response import EpisodeResponse
-from .get_task_response import GetTaskResponse
-from .graph import Graph
-from .graph_data_type import GraphDataType
-from .graph_edges_request import GraphEdgesRequest
-from .graph_episode_list_request import GraphEpisodeListRequest
-from .graph_list_response import GraphListResponse
-from .graph_node_neighbor import GraphNodeNeighbor
-from .graph_nodes_request import GraphNodesRequest
-from .graph_observations_request import GraphObservationsRequest
-from .graph_search_response_metadata import GraphSearchResponseMetadata
-from .graph_search_results import GraphSearchResults
-from .graph_search_scope import GraphSearchScope
-from .graph_subgraph_response import GraphSubgraphResponse
-from .graph_thread_summaries_request import GraphThreadSummariesRequest
-from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
-from .graphiti_saga_node import GraphitiSagaNode
-from .hub_detect_config import HubDetectConfig
-from .list_context_templates_response import ListContextTemplatesResponse
-from .list_custom_instructions_response import ListCustomInstructionsResponse
-from .list_user_instructions_response import ListUserInstructionsResponse
-from .message import Message
-from .message_list_response import MessageListResponse
-from .metadata_filter_group import MetadataFilterGroup
-from .mutate_user_group_members_request import MutateUserGroupMembersRequest
-from .observation_steering_config import ObservationSteeringConfig
-from .observation_type import ObservationType
-from .path_detect_config import PathDetectConfig
-from .pattern_metadata import PatternMetadata
-from .pattern_result import PatternResult
-from .pattern_seeds import PatternSeeds
-from .policy_set_summary_response import PolicySetSummaryResponse
-from .project_info import ProjectInfo
-from .project_info_response import ProjectInfoResponse
-from .property_filter import PropertyFilter
-from .recency_weight import RecencyWeight
-from .relationship_detect_config import RelationshipDetectConfig
-from .reranker import Reranker
-from .role_type import RoleType
-from .search_filters import SearchFilters
-from .success_response import SuccessResponse
-from .task_error_response import TaskErrorResponse
-from .task_progress import TaskProgress
-from .thread import Thread
-from .thread_context_response import ThreadContextResponse
-from .thread_list_response import ThreadListResponse
-from .thread_summary import ThreadSummary
-from .user import User
-from .user_group import UserGroup
-from .user_group_kind import UserGroupKind
-from .user_group_list_response import UserGroupListResponse
-from .user_group_members_response import UserGroupMembersResponse
-from .user_group_membership_response import UserGroupMembershipResponse
-from .user_group_quota import UserGroupQuota
-from .user_group_response import UserGroupResponse
-from .user_instruction import UserInstruction
-from .user_list_response import UserListResponse
-from .user_membership_groups_response import UserMembershipGroupsResponse
-from .user_node_response import UserNodeResponse
+import typing
+from importlib import import_module
+
+if typing.TYPE_CHECKING:
+    from .add_edge_result import AddEdgeResult
+    from .add_episode_result import AddEpisodeResult
+    from .add_message import AddMessage
+    from .add_messages_result import AddMessagesResult
+    from .add_nodes_result import AddNodesResult
+    from .added_edge import AddedEdge
+    from .added_node import AddedNode
+    from .api_error import ApiError
+    from .artifact_list_request import ArtifactListRequest
+    from .async_result import AsyncResult
+    from .batch import Batch
+    from .batch_item import BatchItem
+    from .batch_item_page import BatchItemPage
+    from .batch_items_response import BatchItemsResponse
+    from .batch_page import BatchPage
+    from .clone_graph_result import CloneGraphResult
+    from .context_edge import ContextEdge
+    from .context_episode import ContextEpisode
+    from .context_node import ContextNode
+    from .context_observation import ContextObservation
+    from .context_results import ContextResults
+    from .context_template import ContextTemplate
+    from .context_template_page import ContextTemplatePage
+    from .context_thread_summary import ContextThreadSummary
+    from .create_context_template_request import CreateContextTemplateRequest
+    from .document_summary import DocumentSummary
+    from .document_summary_page import DocumentSummaryPage
+    from .edge import Edge
+    from .edge_page import EdgePage
+    from .edge_source_target import EdgeSourceTarget
+    from .edge_type import EdgeType
+    from .entity_property import EntityProperty
+    from .entity_property_type import EntityPropertyType
+    from .entity_type import EntityType
+    from .episode import Episode
+    from .episode_page import EpisodePage
+    from .error_body import ErrorBody
+    from .graph import Graph
+    from .graph_context_response import GraphContextResponse
+    from .graph_delete_result import GraphDeleteResult
+    from .graph_page import GraphPage
+    from .instructions import Instructions
+    from .lookup_batch_response import LookupBatchResponse
+    from .lookup_item import LookupItem
+    from .lookup_request import LookupRequest
+    from .message import Message
+    from .message_page import MessagePage
+    from .neighbor_entry import NeighborEntry
+    from .neighbor_page import NeighborPage
+    from .node import Node
+    from .node_page import NodePage
+    from .observation import Observation
+    from .observation_page import ObservationPage
+    from .observation_steering import ObservationSteering
+    from .ontology import Ontology
+    from .process_batch_result import ProcessBatchResult
+    from .project import Project
+    from .search_request import SearchRequest
+    from .subgraph_response import SubgraphResponse
+    from .task import Task
+    from .task_page import TaskPage
+    from .task_progress import TaskProgress
+    from .thread import Thread
+    from .thread_context_response import ThreadContextResponse
+    from .thread_delete_result import ThreadDeleteResult
+    from .thread_page import ThreadPage
+    from .thread_summary import ThreadSummary
+    from .thread_summary_page import ThreadSummaryPage
+    from .user import User
+    from .user_delete_result import UserDeleteResult
+    from .user_page import UserPage
+    from .user_summary_instructions import UserSummaryInstructions
+_dynamic_imports: typing.Dict[str, str] = {
+    "AddEdgeResult": ".add_edge_result",
+    "AddEpisodeResult": ".add_episode_result",
+    "AddMessage": ".add_message",
+    "AddMessagesResult": ".add_messages_result",
+    "AddNodesResult": ".add_nodes_result",
+    "AddedEdge": ".added_edge",
+    "AddedNode": ".added_node",
+    "ApiError": ".api_error",
+    "ArtifactListRequest": ".artifact_list_request",
+    "AsyncResult": ".async_result",
+    "Batch": ".batch",
+    "BatchItem": ".batch_item",
+    "BatchItemPage": ".batch_item_page",
+    "BatchItemsResponse": ".batch_items_response",
+    "BatchPage": ".batch_page",
+    "CloneGraphResult": ".clone_graph_result",
+    "ContextEdge": ".context_edge",
+    "ContextEpisode": ".context_episode",
+    "ContextNode": ".context_node",
+    "ContextObservation": ".context_observation",
+    "ContextResults": ".context_results",
+    "ContextTemplate": ".context_template",
+    "ContextTemplatePage": ".context_template_page",
+    "ContextThreadSummary": ".context_thread_summary",
+    "CreateContextTemplateRequest": ".create_context_template_request",
+    "DocumentSummary": ".document_summary",
+    "DocumentSummaryPage": ".document_summary_page",
+    "Edge": ".edge",
+    "EdgePage": ".edge_page",
+    "EdgeSourceTarget": ".edge_source_target",
+    "EdgeType": ".edge_type",
+    "EntityProperty": ".entity_property",
+    "EntityPropertyType": ".entity_property_type",
+    "EntityType": ".entity_type",
+    "Episode": ".episode",
+    "EpisodePage": ".episode_page",
+    "ErrorBody": ".error_body",
+    "Graph": ".graph",
+    "GraphContextResponse": ".graph_context_response",
+    "GraphDeleteResult": ".graph_delete_result",
+    "GraphPage": ".graph_page",
+    "Instructions": ".instructions",
+    "LookupBatchResponse": ".lookup_batch_response",
+    "LookupItem": ".lookup_item",
+    "LookupRequest": ".lookup_request",
+    "Message": ".message",
+    "MessagePage": ".message_page",
+    "NeighborEntry": ".neighbor_entry",
+    "NeighborPage": ".neighbor_page",
+    "Node": ".node",
+    "NodePage": ".node_page",
+    "Observation": ".observation",
+    "ObservationPage": ".observation_page",
+    "ObservationSteering": ".observation_steering",
+    "Ontology": ".ontology",
+    "ProcessBatchResult": ".process_batch_result",
+    "Project": ".project",
+    "SearchRequest": ".search_request",
+    "SubgraphResponse": ".subgraph_response",
+    "Task": ".task",
+    "TaskPage": ".task_page",
+    "TaskProgress": ".task_progress",
+    "Thread": ".thread",
+    "ThreadContextResponse": ".thread_context_response",
+    "ThreadDeleteResult": ".thread_delete_result",
+    "ThreadPage": ".thread_page",
+    "ThreadSummary": ".thread_summary",
+    "ThreadSummaryPage": ".thread_summary_page",
+    "User": ".user",
+    "UserDeleteResult": ".user_delete_result",
+    "UserPage": ".user_page",
+    "UserSummaryInstructions": ".user_summary_instructions",
+}
+
+
+def __getattr__(attr_name: str) -> typing.Any:
+    module_name = _dynamic_imports.get(attr_name)
+    if module_name is None:
+        raise AttributeError(f"No {attr_name} found in _dynamic_imports for module name -> {__name__}")
+    try:
+        module = import_module(module_name, __package__)
+        if module_name == f".{attr_name}":
+            return module
+        else:
+            return getattr(module, attr_name)
+    except ImportError as e:
+        raise ImportError(f"Failed to import {attr_name} from {module_name}: {e}") from e
+    except AttributeError as e:
+        raise AttributeError(f"Failed to get {attr_name} from {module_name}: {e}") from e
+
+
+def __dir__():
+    lazy_attrs = list(_dynamic_imports.keys())
+    return sorted(lazy_attrs)
+
 
 __all__ = [
-    "AddNodeItem",
-    "AddNodesResponse",
-    "AddThreadMessagesRequest",
-    "AddThreadMessagesResponse",
-    "AddTripleResponse",
+    "AddEdgeResult",
+    "AddEpisodeResult",
+    "AddMessage",
+    "AddMessagesResult",
+    "AddNodesResult",
+    "AddedEdge",
     "AddedNode",
     "ApiError",
-    "ApidataBatchAddItemRole",
-    "ApidataBatchAddItemType",
-    "AttachedPolicySetsResponse",
-    "BatchAddItem",
-    "BatchItemDetail",
-    "BatchItemKind",
-    "BatchItemListResponse",
-    "BatchItemStatus",
-    "BatchListResponse",
-    "BatchProgress",
-    "BatchStatus",
-    "BatchSummary",
-    "CloneGraphResponse",
-    "ClusterDetectConfig",
-    "CoOccurrenceDetectConfig",
-    "ComparisonOperator",
-    "ContextTemplateResponse",
-    "CustomInstruction",
-    "DateFilter",
-    "DerivedNode",
-    "DetectConfig",
-    "DetectPatternsResponse",
+    "ArtifactListRequest",
+    "AsyncResult",
+    "Batch",
+    "BatchItem",
+    "BatchItemPage",
+    "BatchItemsResponse",
+    "BatchPage",
+    "CloneGraphResult",
+    "ContextEdge",
+    "ContextEpisode",
+    "ContextNode",
+    "ContextObservation",
+    "ContextResults",
+    "ContextTemplate",
+    "ContextTemplatePage",
+    "ContextThreadSummary",
+    "CreateContextTemplateRequest",
+    "DocumentSummary",
+    "DocumentSummaryPage",
+    "Edge",
+    "EdgePage",
+    "EdgeSourceTarget",
     "EdgeType",
-    "EntityEdge",
-    "EntityEdgeSourceTarget",
-    "EntityNode",
     "EntityProperty",
     "EntityPropertyType",
     "EntityType",
-    "EntityTypeResponse",
     "Episode",
-    "EpisodeData",
-    "EpisodeMentions",
-    "EpisodeMetadataFilter",
-    "EpisodeResponse",
-    "GetTaskResponse",
+    "EpisodePage",
+    "ErrorBody",
     "Graph",
-    "GraphDataType",
-    "GraphEdgesRequest",
-    "GraphEpisodeListRequest",
-    "GraphListResponse",
-    "GraphNodeNeighbor",
-    "GraphNodesRequest",
-    "GraphObservationsRequest",
-    "GraphSearchResponseMetadata",
-    "GraphSearchResults",
-    "GraphSearchScope",
-    "GraphSubgraphResponse",
-    "GraphThreadSummariesRequest",
-    "GraphitiMetadataFilterGroupType",
-    "GraphitiSagaNode",
-    "HubDetectConfig",
-    "ListContextTemplatesResponse",
-    "ListCustomInstructionsResponse",
-    "ListUserInstructionsResponse",
+    "GraphContextResponse",
+    "GraphDeleteResult",
+    "GraphPage",
+    "Instructions",
+    "LookupBatchResponse",
+    "LookupItem",
+    "LookupRequest",
     "Message",
-    "MessageListResponse",
-    "MetadataFilterGroup",
-    "MutateUserGroupMembersRequest",
-    "ObservationSteeringConfig",
-    "ObservationType",
-    "PathDetectConfig",
-    "PatternMetadata",
-    "PatternResult",
-    "PatternSeeds",
-    "PolicySetSummaryResponse",
-    "ProjectInfo",
-    "ProjectInfoResponse",
-    "PropertyFilter",
-    "RecencyWeight",
-    "RelationshipDetectConfig",
-    "Reranker",
-    "RoleType",
-    "SearchFilters",
-    "SuccessResponse",
-    "TaskErrorResponse",
+    "MessagePage",
+    "NeighborEntry",
+    "NeighborPage",
+    "Node",
+    "NodePage",
+    "Observation",
+    "ObservationPage",
+    "ObservationSteering",
+    "Ontology",
+    "ProcessBatchResult",
+    "Project",
+    "SearchRequest",
+    "SubgraphResponse",
+    "Task",
+    "TaskPage",
     "TaskProgress",
     "Thread",
     "ThreadContextResponse",
-    "ThreadListResponse",
+    "ThreadDeleteResult",
+    "ThreadPage",
     "ThreadSummary",
+    "ThreadSummaryPage",
     "User",
-    "UserGroup",
-    "UserGroupKind",
-    "UserGroupListResponse",
-    "UserGroupMembersResponse",
-    "UserGroupMembershipResponse",
-    "UserGroupQuota",
-    "UserGroupResponse",
-    "UserInstruction",
-    "UserListResponse",
-    "UserMembershipGroupsResponse",
-    "UserNodeResponse",
+    "UserDeleteResult",
+    "UserPage",
+    "UserSummaryInstructions",
 ]
