@@ -8,9 +8,9 @@ from .entity_property_type import EntityPropertyType
 
 
 class EntityProperty(UniversalBaseModel):
-    description: str
-    name: str
-    type: EntityPropertyType
+    description: typing.Optional[str] = None
+    name: typing.Optional[str] = None
+    type: typing.Optional[EntityPropertyType] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

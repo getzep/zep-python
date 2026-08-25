@@ -8,9 +8,9 @@ from .entity_property import EntityProperty
 
 
 class EntityType(UniversalBaseModel):
-    description: str
+    description: typing.Optional[str] = None
     identity_properties: typing.Optional[typing.List[str]] = None
-    name: str
+    name: typing.Optional[str] = None
     properties: typing.Optional[typing.List[EntityProperty]] = None
 
     if IS_PYDANTIC_V2:
