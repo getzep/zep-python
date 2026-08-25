@@ -5,16 +5,29 @@
 property's name, type and description as data. This module lets an ontology be
 declared once, as classes, and derives the payload from them::
 
-    from zep_cloud.ontology import EdgeModel, EntityModel, EntityText, build_ontology
+    from pydantic import Field
+    from typing_extensions import Annotated
+
+    from zep_cloud.ontology import (
+        EdgeModel,
+        EntityModel,
+        EntityText,
+        Identity,
+        build_ontology,
+    )
     from zep_cloud.types import EdgeSourceTarget
 
     class Traveler(EntityModel):
         \"\"\"Someone who takes trips.\"\"\"
-        home_city: EntityText = None
+
+        home_city: Annotated[EntityText, Identity] = Field(
+            default=None, description="The city they live in"
+        )
 
     class TraveledTo(EdgeModel):
         \"\"\"A traveler visiting a destination.\"\"\"
-        purpose: EntityText = None
+
+        purpose: EntityText = Field(default=None, description="Why they went")
 
     entity_types, edge_types = build_ontology(
         entities={"Traveler": Traveler},
@@ -48,6 +61,7 @@ __all__ = [
     "EntityInt",
     "EntityFloat",
     "EntityBoolean",
+    "Identity",
     "PropertyType",
     "build_ontology",
 ]
@@ -62,6 +76,16 @@ class PropertyType:
 
     def __init__(self, wire_type: str) -> None:
         self.wire_type = wire_type
+
+
+class _Identity:
+    """Marks a property as one that tells two nodes of the same type apart."""
+
+
+# Annotate a property with this to list it in the type's identity properties,
+# which is what deduplication compares. Annotated flattens, so
+# ``Annotated[EntityText, Identity]`` carries both markers.
+Identity = _Identity()
 
 
 # The four property types the API accepts. Declared once: a change to the wire
@@ -86,13 +110,27 @@ EdgeSpec = typing.Union[
 ]
 
 
-def _description(model: type) -> str:
-    """A type's description is its docstring, which is where a reader looks."""
-    return (model.__doc__ or "").strip()
+def _description(model: type, label: str) -> str:
+    """A type's description is its docstring, which is where a reader looks.
+
+    An empty description is rejected rather than sent: it goes into the
+    extraction prompt as the account of what belongs to this type, and the write
+    path does not reject an empty one.
+    """
+    description = (model.__doc__ or "").strip()
+    if not description:
+        raise ValueError(
+            f"{label} needs a docstring: it is the type's description, which the "
+            f"extraction model reads to decide what belongs to this type"
+        )
+    return description
 
 
-def _properties(model: typing.Type[BaseModel], label: str) -> typing.List[EntityProperty]:
-    out: typing.List[EntityProperty] = []
+def _properties(
+    model: typing.Type[BaseModel], label: str
+) -> typing.Tuple[typing.List[EntityProperty], typing.List[str]]:
+    properties: typing.List[EntityProperty] = []
+    identity_properties: typing.List[str] = []
     for name, field in model.model_fields.items():
         marker = next(
             (m for m in field.metadata if isinstance(m, PropertyType)),
@@ -103,11 +141,18 @@ def _properties(model: typing.Type[BaseModel], label: str) -> typing.List[Entity
                 f"{label}.{name} is not an ontology property: annotate it with "
                 f"EntityText, EntityInt, EntityFloat or EntityBoolean"
             )
-        description = field.description or ""
-        out.append(
+        description = (field.description or "").strip()
+        if not description:
+            raise ValueError(
+                f"{label}.{name} needs a description: pass "
+                f'Field(default=None, description="...")'
+            )
+        properties.append(
             EntityProperty(name=name, type=marker.wire_type, description=description)
         )
-    return out
+        if any(isinstance(m, _Identity) for m in field.metadata):
+            identity_properties.append(name)
+    return properties, identity_properties
 
 
 def build_ontology(
@@ -123,11 +168,13 @@ def build_ontology(
     """
     entity_types: typing.List[EntityType] = []
     for name, model in (entities or {}).items():
+        properties, identity_properties = _properties(model, name)
         entity_types.append(
             EntityType(
                 name=name,
-                description=_description(model),
-                properties=_properties(model, name),
+                description=_description(model, name),
+                properties=properties,
+                identity_properties=identity_properties or None,
             )
         )
 
@@ -137,11 +184,13 @@ def build_ontology(
             edge_model, source_targets = spec
         else:
             edge_model, source_targets = spec, None
+        # An edge has no identity properties: only nodes are deduplicated.
+        properties, _ = _properties(edge_model, name)
         edge_types.append(
             EdgeType(
                 name=name,
-                description=_description(edge_model),
-                properties=_properties(edge_model, name),
+                description=_description(edge_model, name),
+                properties=properties,
                 source_targets=list(source_targets) if source_targets else None,
             )
         )
