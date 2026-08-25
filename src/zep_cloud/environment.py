@@ -4,4 +4,4 @@ import enum
 
 
 class ZepEnvironment(enum.Enum):
-    DEFAULT = "https://api.getzep.com/api/v2"
+    DEFAULT = "https://api.getzep.com/api/v4"

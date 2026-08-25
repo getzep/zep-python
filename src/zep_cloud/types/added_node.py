@@ -9,7 +9,7 @@ from ..core.serialization import FieldMetadata
 
 
 class AddedNode(UniversalBaseModel):
-    attributes: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
+    attributes: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
     """
     Additional attributes of the node.
     """
@@ -24,7 +24,7 @@ class AddedNode(UniversalBaseModel):
     The node's entity type.
     """
 
-    metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
     """
     Metadata attached to the node's shadow episode.
     """
@@ -39,10 +39,11 @@ class AddedNode(UniversalBaseModel):
     A regional summary of the node.
     """
 
-    uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = pydantic.Field(default=None)
-    """
-    The node UUID, assigned by Zep.
-    """
+    uuid_: typing_extensions.Annotated[
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The node UUID, assigned by Zep."),
+    ] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

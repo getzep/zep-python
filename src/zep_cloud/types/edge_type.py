@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .entity_edge_source_target import EntityEdgeSourceTarget
+from .edge_source_target import EdgeSourceTarget
 from .entity_property import EntityProperty
 
 
@@ -12,7 +12,7 @@ class EdgeType(UniversalBaseModel):
     description: str
     name: str
     properties: typing.Optional[typing.List[EntityProperty]] = None
-    source_targets: typing.Optional[typing.List[EntityEdgeSourceTarget]] = None
+    source_targets: typing.Optional[typing.List[EdgeSourceTarget]] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

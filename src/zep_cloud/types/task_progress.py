@@ -7,7 +7,6 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class TaskProgress(UniversalBaseModel):
-    message: typing.Optional[str] = None
     stage: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
