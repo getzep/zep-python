@@ -62,6 +62,7 @@ __all__ = [
     "EntityFloat",
     "EntityBoolean",
     "Identity",
+    "Excluded",
     "PropertyType",
     "build_ontology",
 ]
@@ -86,6 +87,18 @@ class _Identity:
 # which is what deduplication compares. Annotated flattens, so
 # ``Annotated[EntityText, Identity]`` carries both markers.
 Identity = _Identity()
+
+
+class _Excluded:
+    """Marks a field as left out of the ontology entirely."""
+
+
+# Annotate a field with this to leave it out of the ontology, regardless of
+# whether it also carries a property type marker. This is what lets a model
+# reused for other purposes, such as one already shaped by another schema,
+# keep a field that is not an ontology property instead of having to be split
+# into a separate class just for that field.
+Excluded = _Excluded()
 
 
 # The four property types the API accepts. Declared once: a change to the wire
@@ -132,6 +145,8 @@ def _properties(
     properties: typing.List[EntityProperty] = []
     identity_properties: typing.List[str] = []
     for name, field in model.model_fields.items():
+        if any(isinstance(m, _Excluded) for m in field.metadata):
+            continue
         marker = next(
             (m for m in field.metadata if isinstance(m, PropertyType)),
             None,
@@ -160,6 +175,10 @@ def build_ontology(
     edges: typing.Optional[typing.Dict[str, EdgeSpec]] = None,
 ) -> typing.Tuple[typing.List[EntityType], typing.List[EdgeType]]:
     """Derive the entity and edge type lists from the given model classes.
+
+    Every field needs a property type marker (``EntityText``, ``EntityInt``,
+    ``EntityFloat``, or ``EntityBoolean``), unless it is annotated with
+    ``Excluded``, which leaves it out of the ontology entirely.
 
     Pass the result to ``graph.set_ontology`` for one graph, or to
     ``project.set_ontology`` for the project default. v3 addressed many graphs in

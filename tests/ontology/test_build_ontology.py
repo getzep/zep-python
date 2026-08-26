@@ -9,6 +9,7 @@ from zep_cloud.ontology import (
     EntityInt,
     EntityModel,
     EntityText,
+    Excluded,
     Identity,
     build_ontology,
 )
@@ -139,6 +140,46 @@ def test_an_unannotated_field_is_rejected_by_name():
     class Bad(EntityModel):
         """Has a field that is not an ontology property."""
 
+        oops: str = "x"
+
+    with pytest.raises(ValueError, match="Bad.oops is not an ontology property"):
+        build_ontology(entities={"Bad": Bad})
+
+
+def test_an_excluded_field_is_left_out_of_the_ontology():
+    # A model reused for something other than the ontology can carry a field
+    # that is not a property, the same way Go's `zep:"-"` struct tag lets a
+    # struct field opt out.
+    class Place(EntityModel):
+        """A place."""
+
+        country: EntityText = Field(default=None, description="Its country")
+        internal_id: Annotated[str, Excluded] = "unused"
+
+    entity_types, _ = build_ontology(entities={"Place": Place})
+    assert [p.name for p in entity_types[0].properties] == ["country"]
+
+
+def test_an_excluded_field_with_no_description_still_builds():
+    # Excluded means the field is never read as a property at all, so it
+    # cannot be rejected for missing a description either.
+    class Place(EntityModel):
+        """A place."""
+
+        country: EntityText = Field(default=None, description="Its country")
+        internal_id: Annotated[str, Excluded] = "unused"
+
+    entity_types, _ = build_ontology(entities={"Place": Place})
+    assert len(entity_types[0].properties) == 1
+
+
+def test_an_unmarked_field_alongside_an_excluded_one_is_still_rejected():
+    # Excluded opts a specific field out; it does not relax the requirement
+    # for every other field to carry a property type marker.
+    class Bad(EntityModel):
+        """Has one excluded field and one that is still unmarked."""
+
+        internal_id: Annotated[str, Excluded] = "unused"
         oops: str = "x"
 
     with pytest.raises(ValueError, match="Bad.oops is not an ontology property"):
