@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class CreateContextTemplateRequest(UniversalBaseModel):
-    name: typing.Optional[str] = None
-    template: typing.Optional[str] = None
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A unique, human-readable name for the template.
+    """
+
+    template: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The template content used to render context blocks.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

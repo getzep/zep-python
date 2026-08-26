@@ -20,6 +20,7 @@ if typing.TYPE_CHECKING:
     from .task.client import AsyncTaskClient, TaskClient
     from .thread.client import AsyncThreadClient, ThreadClient
     from .user.client import AsyncUserClient, UserClient
+    from .user_group.client import AsyncUserGroupClient, UserGroupClient
 
 
 class BaseClient:
@@ -101,6 +102,7 @@ class BaseClient:
         self._project: typing.Optional[ProjectClient] = None
         self._task: typing.Optional[TaskClient] = None
         self._thread: typing.Optional[ThreadClient] = None
+        self._user_group: typing.Optional[UserGroupClient] = None
         self._user: typing.Optional[UserClient] = None
 
     @property
@@ -158,6 +160,14 @@ class BaseClient:
 
             self._thread = ThreadClient(client_wrapper=self._client_wrapper)
         return self._thread
+
+    @property
+    def user_group(self):
+        if self._user_group is None:
+            from .user_group.client import UserGroupClient  # noqa: E402
+
+            self._user_group = UserGroupClient(client_wrapper=self._client_wrapper)
+        return self._user_group
 
     @property
     def user(self):
@@ -247,6 +257,7 @@ class AsyncBaseClient:
         self._project: typing.Optional[AsyncProjectClient] = None
         self._task: typing.Optional[AsyncTaskClient] = None
         self._thread: typing.Optional[AsyncThreadClient] = None
+        self._user_group: typing.Optional[AsyncUserGroupClient] = None
         self._user: typing.Optional[AsyncUserClient] = None
 
     @property
@@ -304,6 +315,14 @@ class AsyncBaseClient:
 
             self._thread = AsyncThreadClient(client_wrapper=self._client_wrapper)
         return self._thread
+
+    @property
+    def user_group(self):
+        if self._user_group is None:
+            from .user_group.client import AsyncUserGroupClient  # noqa: E402
+
+            self._user_group = AsyncUserGroupClient(client_wrapper=self._client_wrapper)
+        return self._user_group
 
     @property
     def user(self):

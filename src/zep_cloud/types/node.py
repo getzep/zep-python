@@ -9,16 +9,53 @@ from ..core.serialization import FieldMetadata
 
 
 class Node(UniversalBaseModel):
-    attributes: typing.Optional[typing.Dict[str, typing.Any]] = None
-    created_at: typing.Optional[str] = None
-    graph_uuid: typing.Optional[str] = None
-    labels: typing.Optional[typing.List[str]] = None
-    name: typing.Optional[str] = None
-    relevance: typing.Optional[float] = None
-    score: typing.Optional[float] = None
-    summary: typing.Optional[str] = None
+    attributes: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Additional attributes of the node, as defined by its entity type.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the node was created.
+    """
+
+    graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the graph this node belongs to.
+    """
+
+    labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The entity type labels assigned to the node.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The name of the entity that the node represents.
+    """
+
+    relevance: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    A cross-encoder-derived relevance score, present only when the
+    cross-encoder reranker scored this result; like score, it is omitted from
+    plain list results.
+    """
+
+    score: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The ranking score returned with every search result; omitted when the node
+    appears in a plain list rather than a search result.
+    """
+
+    summary: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A generated summary of the entity that the node represents.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The node UUID, assigned by Zep."),
     ] = None
 
     if IS_PYDANTIC_V2:

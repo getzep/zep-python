@@ -10,6 +10,7 @@ from ...types.async_result import AsyncResult
 from ...types.episode import Episode
 from ...types.episode_page import EpisodePage
 from .raw_client import AsyncRawEpisodeClient, RawEpisodeClient
+from .types.v4add_episode_request_type import V4AddEpisodeRequestType
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -89,13 +90,13 @@ class EpisodeClient:
         self,
         graph_uuid: str,
         *,
+        data: str,
         created_at: typing.Optional[str] = OMIT,
-        data: typing.Optional[str] = OMIT,
         document_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
-        type: typing.Optional[str] = OMIT,
+        type: typing.Optional[V4AddEpisodeRequestType] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddEpisodeResult:
@@ -105,19 +106,28 @@ class EpisodeClient:
         graph_uuid : str
             Graph UUID
 
-        created_at : typing.Optional[str]
+        data : str
+            The episode content to add to the graph.
 
-        data : typing.Optional[str]
+        created_at : typing.Optional[str]
+            The episode's reference time, used for temporal reasoning rather than
+            ingestion time.
 
         document_id : typing.Optional[str]
+            Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the episode.
 
         source_description : typing.Optional[str]
+            A description of the source of this episode.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology.
 
-        type : typing.Optional[str]
+        type : typing.Optional[V4AddEpisodeRequestType]
+            The data format of the episode: text, json, or message. Defaults to text.
 
         idempotency_key : typing.Optional[str]
 
@@ -138,12 +148,13 @@ class EpisodeClient:
         )
         client.graph.episode.add(
             graph_uuid="graph_uuid",
+            data="data",
         )
         """
         _response = self._raw_client.add(
             graph_uuid,
-            created_at=created_at,
             data=data,
+            created_at=created_at,
             document_id=document_id,
             metadata=metadata,
             source_description=source_description,
@@ -177,6 +188,7 @@ class EpisodeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -313,6 +325,7 @@ class EpisodeClient:
             Episode UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to merge onto the episode; a key set to null is removed.
 
         idempotency_key : typing.Optional[str]
 
@@ -429,13 +442,13 @@ class AsyncEpisodeClient:
         self,
         graph_uuid: str,
         *,
+        data: str,
         created_at: typing.Optional[str] = OMIT,
-        data: typing.Optional[str] = OMIT,
         document_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
-        type: typing.Optional[str] = OMIT,
+        type: typing.Optional[V4AddEpisodeRequestType] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddEpisodeResult:
@@ -445,19 +458,28 @@ class AsyncEpisodeClient:
         graph_uuid : str
             Graph UUID
 
-        created_at : typing.Optional[str]
+        data : str
+            The episode content to add to the graph.
 
-        data : typing.Optional[str]
+        created_at : typing.Optional[str]
+            The episode's reference time, used for temporal reasoning rather than
+            ingestion time.
 
         document_id : typing.Optional[str]
+            Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the episode.
 
         source_description : typing.Optional[str]
+            A description of the source of this episode.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology.
 
-        type : typing.Optional[str]
+        type : typing.Optional[V4AddEpisodeRequestType]
+            The data format of the episode: text, json, or message. Defaults to text.
 
         idempotency_key : typing.Optional[str]
 
@@ -483,6 +505,7 @@ class AsyncEpisodeClient:
         async def main() -> None:
             await client.graph.episode.add(
                 graph_uuid="graph_uuid",
+                data="data",
             )
 
 
@@ -490,8 +513,8 @@ class AsyncEpisodeClient:
         """
         _response = await self._raw_client.add(
             graph_uuid,
-            created_at=created_at,
             data=data,
+            created_at=created_at,
             document_id=document_id,
             metadata=metadata,
             source_description=source_description,
@@ -525,6 +548,7 @@ class AsyncEpisodeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -686,6 +710,7 @@ class AsyncEpisodeClient:
             Episode UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to merge onto the episode; a key set to null is removed.
 
         idempotency_key : typing.Optional[str]
 

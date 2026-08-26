@@ -11,10 +11,15 @@ from .task import Task
 class AddEdgeResult(UniversalBaseModel):
     edge: typing.Optional[AddedEdge] = pydantic.Field(default=None)
     """
-    8.6: edge is an accept-time acknowledgement, not a full Edge.
+    An accept-time acknowledgement of the fact you submitted, carrying the
+    identifier and fields you supplied rather than the full edge resource
+    returned by later reads.
     """
 
-    task: typing.Optional[Task] = None
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The asynchronous task that tracks the edge's extraction and indexing.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

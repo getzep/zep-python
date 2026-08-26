@@ -37,10 +37,13 @@ class RawLookupClient:
         Parameters
         ----------
         graphs : typing.Optional[typing.Sequence[str]]
+            Developer-assigned graph IDs to resolve to UUIDs.
 
         threads : typing.Optional[typing.Sequence[str]]
+            Developer-assigned thread IDs to resolve to UUIDs.
 
         users : typing.Optional[typing.Sequence[str]]
+            Developer-assigned user IDs to resolve to UUIDs.
 
         idempotency_key : typing.Optional[str]
 
@@ -141,10 +144,13 @@ class AsyncRawLookupClient:
         Parameters
         ----------
         graphs : typing.Optional[typing.Sequence[str]]
+            Developer-assigned graph IDs to resolve to UUIDs.
 
         threads : typing.Optional[typing.Sequence[str]]
+            Developer-assigned thread IDs to resolve to UUIDs.
 
         users : typing.Optional[typing.Sequence[str]]
+            Developer-assigned user IDs to resolve to UUIDs.
 
         idempotency_key : typing.Optional[str]
 

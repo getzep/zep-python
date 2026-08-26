@@ -8,9 +8,21 @@ from .batch import Batch
 
 
 class BatchPage(UniversalBaseModel):
-    items: typing.Optional[typing.List[Batch]] = None
-    next_cursor: typing.Optional[str] = None
-    total_size: typing.Optional[int] = None
+    items: typing.Optional[typing.List[Batch]] = pydantic.Field(default=None)
+    """
+    The batches on this page.
+    """
+
+    next_cursor: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Opaque cursor for retrieving the next page, present only when more results
+    are available.
+    """
+
+    total_size: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The total number of batches that match the request.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

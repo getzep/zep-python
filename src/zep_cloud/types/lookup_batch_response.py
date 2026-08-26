@@ -8,7 +8,11 @@ from .lookup_item import LookupItem
 
 
 class LookupBatchResponse(UniversalBaseModel):
-    items: typing.Optional[typing.List[LookupItem]] = None
+    items: typing.Optional[typing.List[LookupItem]] = pydantic.Field(default=None)
+    """
+    The lookup result for each identifier submitted, in request order within
+    each resource type.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

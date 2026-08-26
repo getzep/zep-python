@@ -10,15 +10,47 @@ from .role_type import RoleType
 
 
 class Message(UniversalBaseModel):
-    content: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    name: typing.Optional[str] = None
-    processed: typing.Optional[bool] = None
-    role: typing.Optional[RoleType] = None
-    thread_uuid: typing.Optional[str] = None
+    content: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The content of the message.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the message was created.
+    """
+
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Arbitrary key-value metadata attached to the message.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A custom name for the message's sender, for example a specific user or
+    agent name.
+    """
+
+    processed: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether the message has finished being ingested into the user's graph.
+    """
+
+    role: typing.Optional[RoleType] = pydantic.Field(default=None)
+    """
+    The role of the message's sender: system, assistant, user, function, or
+    tool.
+    """
+
+    thread_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the thread this message belongs to.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the message."),
     ] = None
 
     if IS_PYDANTIC_V2:

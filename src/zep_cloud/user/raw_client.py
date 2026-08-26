@@ -11,13 +11,17 @@ from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
+from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
+from ..errors.conflict_error import ConflictError
+from ..errors.forbidden_error import ForbiddenError
 from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.node import Node
 from ..types.user import User
 from ..types.user_delete_result import UserDeleteResult
+from ..types.user_instruction import UserInstruction
 from ..types.user_page import UserPage
 from ..types.user_summary_instructions import UserSummaryInstructions
 from pydantic import ValidationError
@@ -47,18 +51,25 @@ class RawUserClient:
         Parameters
         ----------
         disable_default_ontology : typing.Optional[bool]
+            When true, disables the default ontology for the user's graph.
 
         email : typing.Optional[str]
+            The email address of the user.
 
         first_name : typing.Optional[str]
+            The user's first name.
 
         last_name : typing.Optional[str]
+            The user's last name.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the user.
 
         time_zone : typing.Optional[str]
+            The user's IANA time zone.
 
         user_id : typing.Optional[str]
+            An optional developer-assigned identifier for the user.
 
         idempotency_key : typing.Optional[str]
 
@@ -132,6 +143,17 @@ class RawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -172,6 +194,7 @@ class RawUserClient:
             asc or desc
 
         search : typing.Optional[str]
+            Filters results to users whose user ID, email, or name contains this text.
 
         idempotency_key : typing.Optional[str]
 
@@ -283,10 +306,16 @@ class RawUserClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -519,6 +548,17 @@ class RawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -552,21 +592,22 @@ class RawUserClient:
             User UUID
 
         disable_default_ontology : typing.Optional[bool]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            When true, disables the default ontology for the user's graph.
 
         email : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The email address of the user.
 
         first_name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's first name.
 
         last_name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's last name.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to merge onto the user; a key set to null is removed.
 
         time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's IANA time zone.
 
         idempotency_key : typing.Optional[str]
 
@@ -630,6 +671,17 @@ class RawUserClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -706,8 +758,30 @@ class RawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -813,7 +887,7 @@ class RawUserClient:
         user_uuid: str,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[UserInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[UserSummaryInstructions]:
@@ -824,8 +898,12 @@ class RawUserClient:
             User UUID
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[UserInstruction]]
+            The custom instructions used when generating a user's summary at this
+            scope, each with a name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -842,7 +920,9 @@ class RawUserClient:
             method="PUT",
             json={
                 "inherited": inherited,
-                "instructions": instructions,
+                "instructions": convert_and_respect_annotation_metadata(
+                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -929,18 +1009,25 @@ class AsyncRawUserClient:
         Parameters
         ----------
         disable_default_ontology : typing.Optional[bool]
+            When true, disables the default ontology for the user's graph.
 
         email : typing.Optional[str]
+            The email address of the user.
 
         first_name : typing.Optional[str]
+            The user's first name.
 
         last_name : typing.Optional[str]
+            The user's last name.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the user.
 
         time_zone : typing.Optional[str]
+            The user's IANA time zone.
 
         user_id : typing.Optional[str]
+            An optional developer-assigned identifier for the user.
 
         idempotency_key : typing.Optional[str]
 
@@ -1014,6 +1101,17 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -1054,6 +1152,7 @@ class AsyncRawUserClient:
             asc or desc
 
         search : typing.Optional[str]
+            Filters results to users whose user ID, email, or name contains this text.
 
         idempotency_key : typing.Optional[str]
 
@@ -1168,10 +1267,16 @@ class AsyncRawUserClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -1406,6 +1511,17 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -1439,21 +1555,22 @@ class AsyncRawUserClient:
             User UUID
 
         disable_default_ontology : typing.Optional[bool]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            When true, disables the default ontology for the user's graph.
 
         email : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The email address of the user.
 
         first_name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's first name.
 
         last_name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's last name.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to merge onto the user; a key set to null is removed.
 
         time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's IANA time zone.
 
         idempotency_key : typing.Optional[str]
 
@@ -1517,6 +1634,17 @@ class AsyncRawUserClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1593,8 +1721,30 @@ class AsyncRawUserClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1700,7 +1850,7 @@ class AsyncRawUserClient:
         user_uuid: str,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[UserInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[UserSummaryInstructions]:
@@ -1711,8 +1861,12 @@ class AsyncRawUserClient:
             User UUID
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[UserInstruction]]
+            The custom instructions used when generating a user's summary at this
+            scope, each with a name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -1729,7 +1883,9 @@ class AsyncRawUserClient:
             method="PUT",
             json={
                 "inherited": inherited,
-                "instructions": instructions,
+                "instructions": convert_and_respect_annotation_metadata(
+                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",

@@ -9,17 +9,57 @@ from ..core.serialization import FieldMetadata
 
 
 class User(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    disable_default_ontology: typing.Optional[bool] = None
-    email: typing.Optional[str] = None
-    first_name: typing.Optional[str] = None
-    graph_uuid: typing.Optional[str] = None
-    last_name: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    time_zone: typing.Optional[str] = None
-    user_id: typing.Optional[str] = None
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the user was created.
+    """
+
+    disable_default_ontology: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    When true, disables the use of the default fallback ontology for the
+    user's graph.
+    """
+
+    email: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The email address of the user.
+    """
+
+    first_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The first name of the user.
+    """
+
+    graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the user's graph, populated when the user is
+    created.
+    """
+
+    last_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The last name of the user.
+    """
+
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Arbitrary key-value metadata attached to the user.
+    """
+
+    time_zone: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The user's IANA time zone, used to localize dates in generated context.
+    """
+
+    user_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer-assigned identifier of the user.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the user."),
     ] = None
 
     if IS_PYDANTIC_V2:

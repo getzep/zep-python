@@ -11,12 +11,15 @@ from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
+from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
+from ..errors.conflict_error import ConflictError
 from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.batch import Batch
 from ..types.batch_item import BatchItem
+from ..types.batch_item_input import BatchItemInput
 from ..types.batch_item_page import BatchItemPage
 from ..types.batch_items_response import BatchItemsResponse
 from ..types.batch_page import BatchPage
@@ -147,10 +150,15 @@ class RawBatchClient:
         Parameters
         ----------
         ignore_roles : typing.Optional[typing.Sequence[str]]
+            Message roles to skip during graph extraction for thread message items in
+            this batch.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the batch.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology for episodes in this batch.
 
         idempotency_key : typing.Optional[str]
 
@@ -211,6 +219,17 @@ class RawBatchClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -375,6 +394,17 @@ class RawBatchClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -494,7 +524,7 @@ class RawBatchClient:
         self,
         batch_uuid: str,
         *,
-        items: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        items: typing.Sequence[BatchItemInput],
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[BatchItemsResponse]:
@@ -504,7 +534,8 @@ class RawBatchClient:
         batch_uuid : str
             Batch UUID
 
-        items : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        items : typing.Sequence[BatchItemInput]
+            The batch items to append, each identified by its type field.
 
         idempotency_key : typing.Optional[str]
 
@@ -520,7 +551,9 @@ class RawBatchClient:
             f"batches/{jsonable_encoder(batch_uuid)}/items",
             method="POST",
             json={
-                "items": items,
+                "items": convert_and_respect_annotation_metadata(
+                    object_=items, annotation=typing.Sequence[BatchItemInput], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -563,6 +596,17 @@ class RawBatchClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -650,6 +694,17 @@ class RawBatchClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -796,10 +851,15 @@ class AsyncRawBatchClient:
         Parameters
         ----------
         ignore_roles : typing.Optional[typing.Sequence[str]]
+            Message roles to skip during graph extraction for thread message items in
+            this batch.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the batch.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology for episodes in this batch.
 
         idempotency_key : typing.Optional[str]
 
@@ -860,6 +920,17 @@ class AsyncRawBatchClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1026,6 +1097,17 @@ class AsyncRawBatchClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -1148,7 +1230,7 @@ class AsyncRawBatchClient:
         self,
         batch_uuid: str,
         *,
-        items: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        items: typing.Sequence[BatchItemInput],
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[BatchItemsResponse]:
@@ -1158,7 +1240,8 @@ class AsyncRawBatchClient:
         batch_uuid : str
             Batch UUID
 
-        items : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        items : typing.Sequence[BatchItemInput]
+            The batch items to append, each identified by its type field.
 
         idempotency_key : typing.Optional[str]
 
@@ -1174,7 +1257,9 @@ class AsyncRawBatchClient:
             f"batches/{jsonable_encoder(batch_uuid)}/items",
             method="POST",
             json={
-                "items": items,
+                "items": convert_and_respect_annotation_metadata(
+                    object_=items, annotation=typing.Sequence[BatchItemInput], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -1217,6 +1302,17 @@ class AsyncRawBatchClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1304,6 +1400,17 @@ class AsyncRawBatchClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

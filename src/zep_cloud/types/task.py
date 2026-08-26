@@ -11,17 +11,61 @@ from .task_progress import TaskProgress
 
 
 class Task(UniversalBaseModel):
-    completed_at: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    error: typing.Optional[ErrorBody] = None
-    progress: typing.Optional[TaskProgress] = None
-    result: typing.Optional[typing.Dict[str, typing.Any]] = None
-    started_at: typing.Optional[str] = None
-    status: typing.Optional[str] = None
-    type: typing.Optional[str] = None
-    updated_at: typing.Optional[str] = None
+    completed_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the task reached a terminal status; absent while it is still in
+    progress.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the task was created.
+    """
+
+    error: typing.Optional[ErrorBody] = pydantic.Field(default=None)
+    """
+    The error that caused the task to fail; also present on a partial task
+    when the worker can name a single cause.
+    """
+
+    progress: typing.Optional[TaskProgress] = pydantic.Field(default=None)
+    """
+    The last processing stage a worker reported for this task. It is not
+    cleared when the task finishes, so a completed task may still show its
+    final stage.
+    """
+
+    result: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Operation-specific output populated once the task reaches succeeded or
+    partial, such as identifiers the operation could not return synchronously.
+    """
+
+    started_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time a worker began processing the task; absent until then.
+    """
+
+    status: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The task's current state: pending, processing, succeeded, partial, or
+    failed.
+    """
+
+    type: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The kind of asynchronous operation the task represents.
+    """
+
+    updated_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the task was last updated.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the task, used to poll its status."),
     ] = None
 
     if IS_PYDANTIC_V2:

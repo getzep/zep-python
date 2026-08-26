@@ -1,11 +1,11 @@
 [project]
 name = "zep-cloud"
 dynamic = ["version"]
-version = "4.0.0a4"
+version = "4.0.0a5"
 
 [tool.poetry]
 name = "zep-cloud"
-version = "4.0.0a4"
+version = "4.0.0a5"
 description = ""
 readme = "README.md"
 authors = []

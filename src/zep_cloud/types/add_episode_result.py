@@ -11,11 +11,15 @@ from .task import Task
 class AddEpisodeResult(UniversalBaseModel):
     episode: typing.Optional[Episode] = pydantic.Field(default=None)
     """
-    8.6: only the episode response is a stored resource, so it is a full
-    Episode readable immediately with processed false.
+    The newly created episode, a full resource that is readable immediately.
+    Its processed field is false until graph extraction finishes.
     """
 
-    task: typing.Optional[Task] = None
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The asynchronous task that tracks the episode's graph extraction and
+    indexing.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

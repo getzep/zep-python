@@ -9,16 +9,53 @@ from ..core.serialization import FieldMetadata
 
 
 class Graph(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    graph_id: typing.Optional[str] = None
-    name: typing.Optional[str] = None
-    time_zone: typing.Optional[str] = None
-    type: typing.Optional[str] = None
-    updated_at: typing.Optional[str] = None
-    user_uuid: typing.Optional[str] = None
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the graph was created.
+    """
+
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A description of the graph.
+    """
+
+    graph_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer-assigned identifier of the graph, present only for standard
+    graphs.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The display name of the graph.
+    """
+
+    time_zone: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The graph's IANA time zone.
+    """
+
+    type: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The kind of graph: user for a user's personal graph, or standard for a
+    named graph created directly.
+    """
+
+    updated_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the graph was last updated.
+    """
+
+    user_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the user this graph belongs to, present only for
+    a user graph.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the graph."),
     ] = None
 
     if IS_PYDANTIC_V2:

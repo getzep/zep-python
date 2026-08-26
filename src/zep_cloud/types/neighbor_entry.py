@@ -9,8 +9,15 @@ from .node import Node
 
 
 class NeighborEntry(UniversalBaseModel):
-    edges: typing.Optional[typing.List[Edge]] = None
-    node: typing.Optional[Node] = None
+    edges: typing.Optional[typing.List[Edge]] = pydantic.Field(default=None)
+    """
+    The edges connecting the neighboring node to the queried node.
+    """
+
+    node: typing.Optional[Node] = pydantic.Field(default=None)
+    """
+    The neighboring node reached from the queried node.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -6,8 +6,15 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
+    from .types import V4GraphContextRequestRecencyBias, V4SubgraphRequestDirection
     from . import document_summary, edge, episode, node, observation, thread_summary
+    from .episode import V4AddEpisodeRequestType
+    from .node import V4NeighborsRequestDirection
 _dynamic_imports: typing.Dict[str, str] = {
+    "V4AddEpisodeRequestType": ".episode",
+    "V4GraphContextRequestRecencyBias": ".types",
+    "V4NeighborsRequestDirection": ".node",
+    "V4SubgraphRequestDirection": ".types",
     "document_summary": ".document_summary",
     "edge": ".edge",
     "episode": ".episode",
@@ -38,4 +45,15 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["document_summary", "edge", "episode", "node", "observation", "thread_summary"]
+__all__ = [
+    "V4AddEpisodeRequestType",
+    "V4GraphContextRequestRecencyBias",
+    "V4NeighborsRequestDirection",
+    "V4SubgraphRequestDirection",
+    "document_summary",
+    "edge",
+    "episode",
+    "node",
+    "observation",
+    "thread_summary",
+]

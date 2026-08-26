@@ -8,10 +8,26 @@ from .entity_property import EntityProperty
 
 
 class EntityType(UniversalBaseModel):
-    description: typing.Optional[str] = None
-    identity_properties: typing.Optional[typing.List[str]] = None
-    name: typing.Optional[str] = None
-    properties: typing.Optional[typing.List[EntityProperty]] = None
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A description of the entity type, used to guide extraction.
+    """
+
+    identity_properties: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The property names that determine whether two nodes of this type are the
+    same entity.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The name of the entity type.
+    """
+
+    properties: typing.Optional[typing.List[EntityProperty]] = pydantic.Field(default=None)
+    """
+    The custom properties defined on nodes of this type.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

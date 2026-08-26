@@ -12,6 +12,7 @@ from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
+from ..errors.conflict_error import ConflictError
 from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
@@ -39,8 +40,10 @@ class RawContextClient:
         Parameters
         ----------
         name : typing.Optional[str]
+            A unique, human-readable name for the template.
 
         template : typing.Optional[str]
+            The template content used to render context blocks.
 
         idempotency_key : typing.Optional[str]
 
@@ -109,6 +112,17 @@ class RawContextClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -141,6 +155,7 @@ class RawContextClient:
             Opaque page cursor
 
         name : typing.Optional[str]
+            Filters results to the context template with this exact name.
 
         idempotency_key : typing.Optional[str]
 
@@ -213,6 +228,17 @@ class RawContextClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -329,8 +355,10 @@ class RawContextClient:
             Template UUID
 
         name : typing.Optional[str]
+            A unique, human-readable name for the template.
 
         template : typing.Optional[str]
+            The template content used to render context blocks.
 
         idempotency_key : typing.Optional[str]
 
@@ -390,6 +418,17 @@ class RawContextClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -478,6 +517,17 @@ class RawContextClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -508,8 +558,10 @@ class AsyncRawContextClient:
         Parameters
         ----------
         name : typing.Optional[str]
+            A unique, human-readable name for the template.
 
         template : typing.Optional[str]
+            The template content used to render context blocks.
 
         idempotency_key : typing.Optional[str]
 
@@ -578,6 +630,17 @@ class AsyncRawContextClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -610,6 +673,7 @@ class AsyncRawContextClient:
             Opaque page cursor
 
         name : typing.Optional[str]
+            Filters results to the context template with this exact name.
 
         idempotency_key : typing.Optional[str]
 
@@ -685,6 +749,17 @@ class AsyncRawContextClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -801,8 +876,10 @@ class AsyncRawContextClient:
             Template UUID
 
         name : typing.Optional[str]
+            A unique, human-readable name for the template.
 
         template : typing.Optional[str]
+            The template content used to render context blocks.
 
         idempotency_key : typing.Optional[str]
 
@@ -862,6 +939,17 @@ class AsyncRawContextClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -941,6 +1029,17 @@ class AsyncRawContextClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

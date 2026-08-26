@@ -18,12 +18,14 @@ if typing.TYPE_CHECKING:
     from .async_result import AsyncResult
     from .batch import Batch
     from .batch_item import BatchItem
+    from .batch_item_input import BatchItemInput
     from .batch_item_kind import BatchItemKind
     from .batch_item_page import BatchItemPage
     from .batch_item_status import BatchItemStatus
     from .batch_items_response import BatchItemsResponse
     from .batch_page import BatchPage
     from .clone_graph_result import CloneGraphResult
+    from .comparison_operator import ComparisonOperator
     from .context_edge import ContextEdge
     from .context_episode import ContextEpisode
     from .context_node import ContextNode
@@ -33,9 +35,12 @@ if typing.TYPE_CHECKING:
     from .context_template_page import ContextTemplatePage
     from .context_thread_summary import ContextThreadSummary
     from .create_context_template_request import CreateContextTemplateRequest
+    from .custom_instruction import CustomInstruction
+    from .date_filter import DateFilter
     from .document_summary import DocumentSummary
     from .document_summary_page import DocumentSummaryPage
     from .edge import Edge
+    from .edge_node_ref import EdgeNodeRef
     from .edge_page import EdgePage
     from .edge_source_target import EdgeSourceTarget
     from .edge_type import EdgeType
@@ -43,6 +48,7 @@ if typing.TYPE_CHECKING:
     from .entity_property_type import EntityPropertyType
     from .entity_type import EntityType
     from .episode import Episode
+    from .episode_metadata_filter import EpisodeMetadataFilter
     from .episode_page import EpisodePage
     from .error_body import ErrorBody
     from .graph import Graph
@@ -50,23 +56,32 @@ if typing.TYPE_CHECKING:
     from .graph_data_type import GraphDataType
     from .graph_delete_result import GraphDeleteResult
     from .graph_page import GraphPage
+    from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
     from .instructions import Instructions
     from .lookup_batch_response import LookupBatchResponse
     from .lookup_item import LookupItem
     from .lookup_request import LookupRequest
+    from .membership_mutation_result import MembershipMutationResult
     from .message import Message
     from .message_page import MessagePage
+    from .metadata_filter_group import MetadataFilterGroup
+    from .mutate_members_request import MutateMembersRequest
     from .neighbor_entry import NeighborEntry
     from .neighbor_page import NeighborPage
     from .node import Node
+    from .node_input import NodeInput
     from .node_page import NodePage
     from .observation import Observation
     from .observation_page import ObservationPage
     from .observation_steering import ObservationSteering
+    from .observation_type import ObservationType
     from .ontology import Ontology
     from .process_batch_result import ProcessBatchResult
     from .project import Project
+    from .property_filter import PropertyFilter
     from .role_type import RoleType
+    from .search_filters import SearchFilters
+    from .search_list_request import SearchListRequest
     from .search_request import SearchRequest
     from .subgraph_response import SubgraphResponse
     from .task import Task
@@ -80,8 +95,15 @@ if typing.TYPE_CHECKING:
     from .thread_summary_page import ThreadSummaryPage
     from .user import User
     from .user_delete_result import UserDeleteResult
+    from .user_group import UserGroup
+    from .user_group_page import UserGroupPage
+    from .user_instruction import UserInstruction
     from .user_page import UserPage
     from .user_summary_instructions import UserSummaryInstructions
+    from .v4batch_item_input_data_type import V4BatchItemInputDataType
+    from .v4batch_item_input_role import V4BatchItemInputRole
+    from .v4batch_item_input_type import V4BatchItemInputType
+    from .v4search_request_reranker import V4SearchRequestReranker
 _dynamic_imports: typing.Dict[str, str] = {
     "AddEdgeResult": ".add_edge_result",
     "AddEpisodeResult": ".add_episode_result",
@@ -95,12 +117,14 @@ _dynamic_imports: typing.Dict[str, str] = {
     "AsyncResult": ".async_result",
     "Batch": ".batch",
     "BatchItem": ".batch_item",
+    "BatchItemInput": ".batch_item_input",
     "BatchItemKind": ".batch_item_kind",
     "BatchItemPage": ".batch_item_page",
     "BatchItemStatus": ".batch_item_status",
     "BatchItemsResponse": ".batch_items_response",
     "BatchPage": ".batch_page",
     "CloneGraphResult": ".clone_graph_result",
+    "ComparisonOperator": ".comparison_operator",
     "ContextEdge": ".context_edge",
     "ContextEpisode": ".context_episode",
     "ContextNode": ".context_node",
@@ -110,9 +134,12 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ContextTemplatePage": ".context_template_page",
     "ContextThreadSummary": ".context_thread_summary",
     "CreateContextTemplateRequest": ".create_context_template_request",
+    "CustomInstruction": ".custom_instruction",
+    "DateFilter": ".date_filter",
     "DocumentSummary": ".document_summary",
     "DocumentSummaryPage": ".document_summary_page",
     "Edge": ".edge",
+    "EdgeNodeRef": ".edge_node_ref",
     "EdgePage": ".edge_page",
     "EdgeSourceTarget": ".edge_source_target",
     "EdgeType": ".edge_type",
@@ -120,6 +147,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "EntityPropertyType": ".entity_property_type",
     "EntityType": ".entity_type",
     "Episode": ".episode",
+    "EpisodeMetadataFilter": ".episode_metadata_filter",
     "EpisodePage": ".episode_page",
     "ErrorBody": ".error_body",
     "Graph": ".graph",
@@ -127,23 +155,32 @@ _dynamic_imports: typing.Dict[str, str] = {
     "GraphDataType": ".graph_data_type",
     "GraphDeleteResult": ".graph_delete_result",
     "GraphPage": ".graph_page",
+    "GraphitiMetadataFilterGroupType": ".graphiti_metadata_filter_group_type",
     "Instructions": ".instructions",
     "LookupBatchResponse": ".lookup_batch_response",
     "LookupItem": ".lookup_item",
     "LookupRequest": ".lookup_request",
+    "MembershipMutationResult": ".membership_mutation_result",
     "Message": ".message",
     "MessagePage": ".message_page",
+    "MetadataFilterGroup": ".metadata_filter_group",
+    "MutateMembersRequest": ".mutate_members_request",
     "NeighborEntry": ".neighbor_entry",
     "NeighborPage": ".neighbor_page",
     "Node": ".node",
+    "NodeInput": ".node_input",
     "NodePage": ".node_page",
     "Observation": ".observation",
     "ObservationPage": ".observation_page",
     "ObservationSteering": ".observation_steering",
+    "ObservationType": ".observation_type",
     "Ontology": ".ontology",
     "ProcessBatchResult": ".process_batch_result",
     "Project": ".project",
+    "PropertyFilter": ".property_filter",
     "RoleType": ".role_type",
+    "SearchFilters": ".search_filters",
+    "SearchListRequest": ".search_list_request",
     "SearchRequest": ".search_request",
     "SubgraphResponse": ".subgraph_response",
     "Task": ".task",
@@ -157,8 +194,15 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ThreadSummaryPage": ".thread_summary_page",
     "User": ".user",
     "UserDeleteResult": ".user_delete_result",
+    "UserGroup": ".user_group",
+    "UserGroupPage": ".user_group_page",
+    "UserInstruction": ".user_instruction",
     "UserPage": ".user_page",
     "UserSummaryInstructions": ".user_summary_instructions",
+    "V4BatchItemInputDataType": ".v4batch_item_input_data_type",
+    "V4BatchItemInputRole": ".v4batch_item_input_role",
+    "V4BatchItemInputType": ".v4batch_item_input_type",
+    "V4SearchRequestReranker": ".v4search_request_reranker",
 }
 
 
@@ -196,12 +240,14 @@ __all__ = [
     "AsyncResult",
     "Batch",
     "BatchItem",
+    "BatchItemInput",
     "BatchItemKind",
     "BatchItemPage",
     "BatchItemStatus",
     "BatchItemsResponse",
     "BatchPage",
     "CloneGraphResult",
+    "ComparisonOperator",
     "ContextEdge",
     "ContextEpisode",
     "ContextNode",
@@ -211,9 +257,12 @@ __all__ = [
     "ContextTemplatePage",
     "ContextThreadSummary",
     "CreateContextTemplateRequest",
+    "CustomInstruction",
+    "DateFilter",
     "DocumentSummary",
     "DocumentSummaryPage",
     "Edge",
+    "EdgeNodeRef",
     "EdgePage",
     "EdgeSourceTarget",
     "EdgeType",
@@ -221,6 +270,7 @@ __all__ = [
     "EntityPropertyType",
     "EntityType",
     "Episode",
+    "EpisodeMetadataFilter",
     "EpisodePage",
     "ErrorBody",
     "Graph",
@@ -228,23 +278,32 @@ __all__ = [
     "GraphDataType",
     "GraphDeleteResult",
     "GraphPage",
+    "GraphitiMetadataFilterGroupType",
     "Instructions",
     "LookupBatchResponse",
     "LookupItem",
     "LookupRequest",
+    "MembershipMutationResult",
     "Message",
     "MessagePage",
+    "MetadataFilterGroup",
+    "MutateMembersRequest",
     "NeighborEntry",
     "NeighborPage",
     "Node",
+    "NodeInput",
     "NodePage",
     "Observation",
     "ObservationPage",
     "ObservationSteering",
+    "ObservationType",
     "Ontology",
     "ProcessBatchResult",
     "Project",
+    "PropertyFilter",
     "RoleType",
+    "SearchFilters",
+    "SearchListRequest",
     "SearchRequest",
     "SubgraphResponse",
     "Task",
@@ -258,6 +317,13 @@ __all__ = [
     "ThreadSummaryPage",
     "User",
     "UserDeleteResult",
+    "UserGroup",
+    "UserGroupPage",
+    "UserInstruction",
     "UserPage",
     "UserSummaryInstructions",
+    "V4BatchItemInputDataType",
+    "V4BatchItemInputRole",
+    "V4BatchItemInputType",
+    "V4SearchRequestReranker",
 ]

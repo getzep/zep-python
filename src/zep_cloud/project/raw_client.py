@@ -11,15 +11,19 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
+from ..errors.conflict_error import ConflictError
 from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.custom_instruction import CustomInstruction
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.instructions import Instructions
 from ..types.observation_steering import ObservationSteering
+from ..types.observation_type import ObservationType
 from ..types.ontology import Ontology
 from ..types.project import Project
+from ..types.user_instruction import UserInstruction
 from ..types.user_summary_instructions import UserSummaryInstructions
 from pydantic import ValidationError
 
@@ -115,7 +119,8 @@ class RawProjectClient:
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The project's IANA fallback time zone. Set to null to clear the existing
+            value.
 
         idempotency_key : typing.Optional[str]
 
@@ -174,6 +179,17 @@ class RawProjectClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -275,7 +291,7 @@ class RawProjectClient:
         self,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[CustomInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Instructions]:
@@ -283,8 +299,12 @@ class RawProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[CustomInstruction]]
+            The custom extraction instructions in effect at this scope, each with a
+            name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -301,7 +321,9 @@ class RawProjectClient:
             method="PUT",
             json={
                 "inherited": inherited,
-                "instructions": instructions,
+                "instructions": convert_and_respect_annotation_metadata(
+                    object_=instructions, annotation=typing.Sequence[CustomInstruction], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -446,7 +468,7 @@ class RawProjectClient:
         *,
         inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ObservationSteering]:
@@ -454,10 +476,16 @@ class RawProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         instruction : typing.Optional[str]
+            The natural-language instruction steering how observations are generated
+            at this scope.
 
-        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        types : typing.Optional[typing.Sequence[ObservationType]]
+            The named observation types, each with a description, that generation
+            should steer toward at this scope.
 
         idempotency_key : typing.Optional[str]
 
@@ -475,7 +503,9 @@ class RawProjectClient:
             json={
                 "inherited": inherited,
                 "instruction": instruction,
-                "types": types,
+                "types": convert_and_respect_annotation_metadata(
+                    object_=types, annotation=typing.Sequence[ObservationType], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -626,10 +656,14 @@ class RawProjectClient:
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
+            The edge types defined in the ontology in effect at this scope.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+            The entity types defined in the ontology in effect at this scope.
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -795,7 +829,7 @@ class RawProjectClient:
         self,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[UserInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[UserSummaryInstructions]:
@@ -803,8 +837,12 @@ class RawProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[UserInstruction]]
+            The custom instructions used when generating a user's summary at this
+            scope, each with a name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -821,7 +859,9 @@ class RawProjectClient:
             method="PUT",
             json={
                 "inherited": inherited,
-                "instructions": instructions,
+                "instructions": convert_and_respect_annotation_metadata(
+                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -975,7 +1015,8 @@ class AsyncRawProjectClient:
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The project's IANA fallback time zone. Set to null to clear the existing
+            value.
 
         idempotency_key : typing.Optional[str]
 
@@ -1034,6 +1075,17 @@ class AsyncRawProjectClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1135,7 +1187,7 @@ class AsyncRawProjectClient:
         self,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[CustomInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Instructions]:
@@ -1143,8 +1195,12 @@ class AsyncRawProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[CustomInstruction]]
+            The custom extraction instructions in effect at this scope, each with a
+            name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -1161,7 +1217,9 @@ class AsyncRawProjectClient:
             method="PUT",
             json={
                 "inherited": inherited,
-                "instructions": instructions,
+                "instructions": convert_and_respect_annotation_metadata(
+                    object_=instructions, annotation=typing.Sequence[CustomInstruction], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -1306,7 +1364,7 @@ class AsyncRawProjectClient:
         *,
         inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ObservationSteering]:
@@ -1314,10 +1372,16 @@ class AsyncRawProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         instruction : typing.Optional[str]
+            The natural-language instruction steering how observations are generated
+            at this scope.
 
-        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        types : typing.Optional[typing.Sequence[ObservationType]]
+            The named observation types, each with a description, that generation
+            should steer toward at this scope.
 
         idempotency_key : typing.Optional[str]
 
@@ -1335,7 +1399,9 @@ class AsyncRawProjectClient:
             json={
                 "inherited": inherited,
                 "instruction": instruction,
-                "types": types,
+                "types": convert_and_respect_annotation_metadata(
+                    object_=types, annotation=typing.Sequence[ObservationType], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -1488,10 +1554,14 @@ class AsyncRawProjectClient:
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
+            The edge types defined in the ontology in effect at this scope.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+            The entity types defined in the ontology in effect at this scope.
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -1657,7 +1727,7 @@ class AsyncRawProjectClient:
         self,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[UserInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[UserSummaryInstructions]:
@@ -1665,8 +1735,12 @@ class AsyncRawProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[UserInstruction]]
+            The custom instructions used when generating a user's summary at this
+            scope, each with a name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -1683,7 +1757,9 @@ class AsyncRawProjectClient:
             method="PUT",
             json={
                 "inherited": inherited,
-                "instructions": instructions,
+                "instructions": convert_and_respect_annotation_metadata(
+                    object_=instructions, annotation=typing.Sequence[UserInstruction], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",

@@ -8,7 +8,10 @@ from .task import Task
 
 
 class AsyncResult(UniversalBaseModel):
-    task: typing.Optional[Task] = None
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The asynchronous task that tracks this operation's progress.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
