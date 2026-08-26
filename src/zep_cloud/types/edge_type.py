@@ -9,10 +9,26 @@ from .entity_property import EntityProperty
 
 
 class EdgeType(UniversalBaseModel):
-    description: typing.Optional[str] = None
-    name: typing.Optional[str] = None
-    properties: typing.Optional[typing.List[EntityProperty]] = None
-    source_targets: typing.Optional[typing.List[EdgeSourceTarget]] = None
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A description of the relationship this edge type represents, used to guide
+    extraction.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The name of the edge type, in upper snake case.
+    """
+
+    properties: typing.Optional[typing.List[EntityProperty]] = pydantic.Field(default=None)
+    """
+    The custom properties defined on edges of this type.
+    """
+
+    source_targets: typing.Optional[typing.List[EdgeSourceTarget]] = pydantic.Field(default=None)
+    """
+    The allowed source and target entity type pairs for edges of this type.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

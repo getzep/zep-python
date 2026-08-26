@@ -9,8 +9,15 @@ from .task import Task
 
 
 class CloneGraphResult(UniversalBaseModel):
-    graph: typing.Optional[Graph] = None
-    task: typing.Optional[Task] = None
+    graph: typing.Optional[Graph] = pydantic.Field(default=None)
+    """
+    The newly created graph the source graph is being cloned into.
+    """
+
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The asynchronous task that tracks the clone operation.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

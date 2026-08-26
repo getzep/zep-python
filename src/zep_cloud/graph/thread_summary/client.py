@@ -51,6 +51,7 @@ class ThreadSummaryClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -128,6 +129,7 @@ class AsyncThreadSummaryClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 

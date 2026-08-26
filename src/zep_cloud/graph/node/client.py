@@ -10,8 +10,11 @@ from ...types.async_result import AsyncResult
 from ...types.neighbor_entry import NeighborEntry
 from ...types.neighbor_page import NeighborPage
 from ...types.node import Node
+from ...types.node_input import NodeInput
 from ...types.node_page import NodePage
+from ...types.search_filters import SearchFilters
 from .raw_client import AsyncRawNodeClient, RawNodeClient
+from .types.v4neighbors_request_direction import V4NeighborsRequestDirection
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -36,7 +39,7 @@ class NodeClient:
         self,
         graph_uuid: str,
         *,
-        nodes: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        nodes: typing.Sequence[NodeInput],
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddNodesResult:
@@ -46,7 +49,8 @@ class NodeClient:
         graph_uuid : str
             Graph UUID
 
-        nodes : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        nodes : typing.Sequence[NodeInput]
+            The nodes to add to the graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -60,13 +64,18 @@ class NodeClient:
 
         Examples
         --------
-        from zep_cloud import Zep
+        from zep_cloud import NodeInput, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.graph.node.add(
             graph_uuid="graph_uuid",
+            nodes=[
+                NodeInput(
+                    name="name",
+                )
+            ],
         )
         """
         _response = self._raw_client.add(
@@ -97,6 +106,7 @@ class NodeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -233,12 +243,14 @@ class NodeClient:
             Node UUID
 
         attributes : typing.Optional[typing.Dict[str, typing.Any]]
+            Additional attributes to merge onto the node; a key set to null is
+            removed.
 
         name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The node's name.
 
         summary : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            A summary of the node.
 
         idempotency_key : typing.Optional[str]
 
@@ -280,8 +292,8 @@ class NodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        direction: typing.Optional[V4NeighborsRequestDirection] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[NeighborEntry, NeighborPage]:
@@ -300,9 +312,11 @@ class NodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        direction : typing.Optional[str]
+        direction : typing.Optional[V4NeighborsRequestDirection]
+            The edge orientation to follow from the node: in, out, or both.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the connecting edges and the neighbor nodes.
 
         idempotency_key : typing.Optional[str]
 
@@ -364,7 +378,7 @@ class AsyncNodeClient:
         self,
         graph_uuid: str,
         *,
-        nodes: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        nodes: typing.Sequence[NodeInput],
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddNodesResult:
@@ -374,7 +388,8 @@ class AsyncNodeClient:
         graph_uuid : str
             Graph UUID
 
-        nodes : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        nodes : typing.Sequence[NodeInput]
+            The nodes to add to the graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -390,7 +405,7 @@ class AsyncNodeClient:
         --------
         import asyncio
 
-        from zep_cloud import AsyncZep
+        from zep_cloud import AsyncZep, NodeInput
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -400,6 +415,11 @@ class AsyncNodeClient:
         async def main() -> None:
             await client.graph.node.add(
                 graph_uuid="graph_uuid",
+                nodes=[
+                    NodeInput(
+                        name="name",
+                    )
+                ],
             )
 
 
@@ -433,6 +453,7 @@ class AsyncNodeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -596,12 +617,14 @@ class AsyncNodeClient:
             Node UUID
 
         attributes : typing.Optional[typing.Dict[str, typing.Any]]
+            Additional attributes to merge onto the node; a key set to null is
+            removed.
 
         name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The node's name.
 
         summary : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            A summary of the node.
 
         idempotency_key : typing.Optional[str]
 
@@ -651,8 +674,8 @@ class AsyncNodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        direction: typing.Optional[V4NeighborsRequestDirection] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[NeighborEntry, NeighborPage]:
@@ -671,9 +694,11 @@ class AsyncNodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        direction : typing.Optional[str]
+        direction : typing.Optional[V4NeighborsRequestDirection]
+            The edge orientation to follow from the node: in, out, or both.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the connecting edges and the neighbor nodes.
 
         idempotency_key : typing.Optional[str]
 

@@ -8,7 +8,10 @@ from .batch_item import BatchItem
 
 
 class BatchItemsResponse(UniversalBaseModel):
-    items: typing.Optional[typing.List[BatchItem]] = None
+    items: typing.Optional[typing.List[BatchItem]] = pydantic.Field(default=None)
+    """
+    The batch items that were added, in the order they were appended.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

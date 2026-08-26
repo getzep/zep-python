@@ -7,9 +7,23 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class LookupRequest(UniversalBaseModel):
-    graph_id: typing.Optional[str] = None
-    thread_id: typing.Optional[str] = None
-    user_id: typing.Optional[str] = None
+    graph_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+    with user_id and thread_id.
+    """
+
+    thread_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+    with user_id and graph_id.
+    """
+
+    user_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+    with thread_id and graph_id.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

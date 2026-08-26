@@ -115,6 +115,9 @@ client.batch.create()
 <dd>
 
 **ignore_roles:** `typing.Optional[typing.List[str]]` 
+
+Message roles to skip during graph extraction for thread message items in
+this batch.
     
 </dd>
 </dl>
@@ -122,7 +125,7 @@ client.batch.create()
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Metadata to store on the batch.
     
 </dd>
 </dl>
@@ -131,6 +134,9 @@ client.batch.create()
 <dd>
 
 **strict_ontology:** `typing.Optional[bool]` 
+
+When true, prevents extraction of generic entity nodes that do not match
+the configured ontology for episodes in this batch.
     
 </dd>
 </dl>
@@ -358,7 +364,7 @@ client.batch.list_items(
 <dd>
 
 ```python
-from zep_cloud import Zep
+from zep_cloud import Zep, BatchItemInput
 from zep_cloud.environment import ZepEnvironment
 
 client = Zep(
@@ -368,6 +374,11 @@ client = Zep(
 
 client.batch.add_items(
     batch_uuid="batch_uuid",
+    items=[
+        BatchItemInput(
+            type="graph_episode",
+        )
+    ],
 )
 
 ```
@@ -392,7 +403,7 @@ client.batch.add_items(
 <dl>
 <dd>
 
-**items:** `typing.Optional[typing.List[typing.Dict[str, typing.Any]]]` 
+**items:** `typing.List[BatchItemInput]` — The batch items to append, each identified by its type field.
     
 </dd>
 </dl>
@@ -585,7 +596,7 @@ client.context.list_templates(
 <dl>
 <dd>
 
-**name:** `typing.Optional[str]` 
+**name:** `typing.Optional[str]` — Filters results to the context template with this exact name.
     
 </dd>
 </dl>
@@ -828,7 +839,7 @@ client.graph.create()
 <dl>
 <dd>
 
-**description:** `typing.Optional[str]` 
+**description:** `typing.Optional[str]` — A description of the graph.
     
 </dd>
 </dl>
@@ -836,7 +847,7 @@ client.graph.create()
 <dl>
 <dd>
 
-**graph_id:** `typing.Optional[str]` 
+**graph_id:** `typing.Optional[str]` — An optional developer-assigned identifier for the graph.
     
 </dd>
 </dl>
@@ -844,7 +855,7 @@ client.graph.create()
 <dl>
 <dd>
 
-**name:** `typing.Optional[str]` 
+**name:** `typing.Optional[str]` — A display name for the graph.
     
 </dd>
 </dl>
@@ -852,7 +863,7 @@ client.graph.create()
 <dl>
 <dd>
 
-**time_zone:** `typing.Optional[str]` 
+**time_zone:** `typing.Optional[str]` — The graph's IANA time zone.
     
 </dd>
 </dl>
@@ -947,6 +958,9 @@ client.graph.list(
 <dd>
 
 **search:** `typing.Optional[str]` 
+
+Filters results to graphs whose name, description, or graph ID contains
+this text.
     
 </dd>
 </dl>
@@ -1188,7 +1202,7 @@ client.graph.update(
 <dl>
 <dd>
 
-**description:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**description:** `typing.Optional[str]` — A description of the graph.
     
 </dd>
 </dl>
@@ -1196,7 +1210,7 @@ client.graph.update(
 <dl>
 <dd>
 
-**name:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**name:** `typing.Optional[str]` — The graph's display name.
     
 </dd>
 </dl>
@@ -1204,7 +1218,7 @@ client.graph.update(
 <dl>
 <dd>
 
-**time_zone:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**time_zone:** `typing.Optional[str]` — The graph's IANA time zone.
     
 </dd>
 </dl>
@@ -1271,7 +1285,7 @@ client.graph.clone(
 <dl>
 <dd>
 
-**target_graph_id:** `typing.Optional[str]` 
+**target_graph_id:** `typing.Optional[str]` — An optional name for the cloned graph.
     
 </dd>
 </dl>
@@ -1314,6 +1328,7 @@ client = Zep(
 
 client.graph.get_context(
     graph_uuid="graph_uuid",
+    query="query",
 )
 
 ```
@@ -1338,7 +1353,7 @@ client.graph.get_context(
 <dl>
 <dd>
 
-**filters:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**query:** `str` — The search query used to assemble the context block.
     
 </dd>
 </dl>
@@ -1346,7 +1361,10 @@ client.graph.get_context(
 <dl>
 <dd>
 
-**include_results:** `typing.Optional[bool]` 
+**filters:** `typing.Optional[SearchFilters]` 
+
+Filters constraining which graph data can be selected for the context
+block.
     
 </dd>
 </dl>
@@ -1354,7 +1372,7 @@ client.graph.get_context(
 <dl>
 <dd>
 
-**max_characters:** `typing.Optional[int]` 
+**include_results:** `typing.Optional[bool]` — When true, includes the raw graph results selected for the context block.
     
 </dd>
 </dl>
@@ -1362,7 +1380,7 @@ client.graph.get_context(
 <dl>
 <dd>
 
-**query:** `typing.Optional[str]` 
+**max_characters:** `typing.Optional[int]` — The maximum number of characters in the assembled context block.
     
 </dd>
 </dl>
@@ -1370,7 +1388,7 @@ client.graph.get_context(
 <dl>
 <dd>
 
-**recency_bias:** `typing.Optional[str]` 
+**recency_bias:** `typing.Optional[V4GraphContextRequestRecencyBias]` — Adjusts result selection to favor more recent graph data.
     
 </dd>
 </dl>
@@ -1378,7 +1396,7 @@ client.graph.get_context(
 <dl>
 <dd>
 
-**template_uuid:** `typing.Optional[str]` 
+**template_uuid:** `typing.Optional[str]` — The UUID of a context template used to render the context block.
     
 </dd>
 </dl>
@@ -1801,6 +1819,7 @@ client.graph.search_edges(
     graph_uuid="graph_uuid",
     limit=1,
     cursor="cursor",
+    query="query",
 )
 
 ```
@@ -1886,6 +1905,7 @@ client.graph.search_episodes(
     graph_uuid="graph_uuid",
     limit=1,
     cursor="cursor",
+    query="query",
 )
 
 ```
@@ -1971,6 +1991,7 @@ client.graph.search_nodes(
     graph_uuid="graph_uuid",
     limit=1,
     cursor="cursor",
+    query="query",
 )
 
 ```
@@ -2056,6 +2077,7 @@ client.graph.search_observations(
     graph_uuid="graph_uuid",
     limit=1,
     cursor="cursor",
+    query="query",
 )
 
 ```
@@ -2141,6 +2163,7 @@ client.graph.search_thread_summaries(
     graph_uuid="graph_uuid",
     limit=1,
     cursor="cursor",
+    query="query",
 )
 
 ```
@@ -2224,6 +2247,9 @@ client = Zep(
 
 client.graph.get_subgraph(
     graph_uuid="graph_uuid",
+    seed_node_uuids=[
+        "seed_node_uuids"
+    ],
 )
 
 ```
@@ -2248,7 +2274,7 @@ client.graph.get_subgraph(
 <dl>
 <dd>
 
-**depth:** `typing.Optional[int]` 
+**seed_node_uuids:** `typing.List[str]` — The node UUIDs to expand from, in traversal-priority order.
     
 </dd>
 </dl>
@@ -2256,7 +2282,7 @@ client.graph.get_subgraph(
 <dl>
 <dd>
 
-**direction:** `typing.Optional[str]` 
+**depth:** `typing.Optional[int]` — The maximum traversal depth from the seed nodes. Defaults to 1.
     
 </dd>
 </dl>
@@ -2264,7 +2290,10 @@ client.graph.get_subgraph(
 <dl>
 <dd>
 
-**filters:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**direction:** `typing.Optional[V4SubgraphRequestDirection]` 
+
+The edge orientation to follow during expansion: in, out, or both.
+Defaults to both.
     
 </dd>
 </dl>
@@ -2272,7 +2301,7 @@ client.graph.get_subgraph(
 <dl>
 <dd>
 
-**max_edges:** `typing.Optional[int]` 
+**filters:** `typing.Optional[SearchFilters]` — Filters constraining the traversed edges and included nodes.
     
 </dd>
 </dl>
@@ -2280,7 +2309,7 @@ client.graph.get_subgraph(
 <dl>
 <dd>
 
-**max_nodes:** `typing.Optional[int]` 
+**max_edges:** `typing.Optional[int]` — The maximum number of edges in the response. Defaults to 200.
     
 </dd>
 </dl>
@@ -2288,7 +2317,7 @@ client.graph.get_subgraph(
 <dl>
 <dd>
 
-**seed_node_uuids:** `typing.Optional[typing.List[str]]` 
+**max_nodes:** `typing.Optional[int]` — The maximum number of nodes in the response. Defaults to 100.
     
 </dd>
 </dl>
@@ -2405,7 +2434,7 @@ client.lookup.batch()
 <dl>
 <dd>
 
-**graphs:** `typing.Optional[typing.List[str]]` 
+**graphs:** `typing.Optional[typing.List[str]]` — Developer-assigned graph IDs to resolve to UUIDs.
     
 </dd>
 </dl>
@@ -2413,7 +2442,7 @@ client.lookup.batch()
 <dl>
 <dd>
 
-**threads:** `typing.Optional[typing.List[str]]` 
+**threads:** `typing.Optional[typing.List[str]]` — Developer-assigned thread IDs to resolve to UUIDs.
     
 </dd>
 </dl>
@@ -2421,7 +2450,7 @@ client.lookup.batch()
 <dl>
 <dd>
 
-**users:** `typing.Optional[typing.List[str]]` 
+**users:** `typing.Optional[typing.List[str]]` — Developer-assigned user IDs to resolve to UUIDs.
     
 </dd>
 </dl>
@@ -2528,7 +2557,10 @@ client.project.update()
 <dl>
 <dd>
 
-**default_time_zone:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**default_time_zone:** `typing.Optional[str]` 
+
+The project's IANA fallback time zone. Set to null to clear the existing
+value.
     
 </dd>
 </dl>
@@ -3217,7 +3249,9 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.thread.create()
+client.thread.create(
+    user_uuid="user_uuid",
+)
 
 ```
 </dd>
@@ -3233,7 +3267,7 @@ client.thread.create()
 <dl>
 <dd>
 
-**thread_id:** `typing.Optional[str]` 
+**user_uuid:** `str` — The UUID of the user this thread belongs to.
     
 </dd>
 </dl>
@@ -3241,7 +3275,7 @@ client.thread.create()
 <dl>
 <dd>
 
-**user_uuid:** `typing.Optional[str]` 
+**thread_id:** `typing.Optional[str]` — An optional developer-assigned identifier for the thread.
     
 </dd>
 </dl>
@@ -3671,7 +3705,7 @@ client.thread.list_messages(
 <dd>
 
 ```python
-from zep_cloud import Zep
+from zep_cloud import Zep, AddMessage
 from zep_cloud.environment import ZepEnvironment
 
 client = Zep(
@@ -3681,6 +3715,9 @@ client = Zep(
 
 client.thread.add_messages(
     thread_uuid="thread_uuid",
+    messages=[
+        AddMessage()
+    ],
 )
 
 ```
@@ -3705,7 +3742,7 @@ client.thread.add_messages(
 <dl>
 <dd>
 
-**ignore_roles:** `typing.Optional[typing.List[str]]` 
+**messages:** `typing.List[AddMessage]` — The messages to add to the thread.
     
 </dd>
 </dl>
@@ -3713,7 +3750,10 @@ client.thread.add_messages(
 <dl>
 <dd>
 
-**messages:** `typing.Optional[typing.List[AddMessage]]` 
+**ignore_roles:** `typing.Optional[typing.List[str]]` 
+
+Message roles to skip during graph extraction; the messages are still
+stored.
     
 </dd>
 </dl>
@@ -3722,6 +3762,9 @@ client.thread.add_messages(
 <dd>
 
 **return_context:** `typing.Optional[bool]` 
+
+When true, returns the context block for the thread's most recent
+messages.
     
 </dd>
 </dl>
@@ -3730,6 +3773,9 @@ client.thread.add_messages(
 <dd>
 
 **strict_ontology:** `typing.Optional[bool]` 
+
+When true, prevents extraction of generic entity nodes that do not match
+the configured ontology.
     
 </dd>
 </dl>
@@ -3808,6 +3854,960 @@ client.thread.get_summary(
 </dl>
 </details>
 
+## UserGroup
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">create</a>(...) -> UserGroup</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.create(
+    name="name",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**name:** `str` — The name of the user group.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` — A description of the user group.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">list</a>(...) -> UserGroupPage</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.list(
+    limit=1,
+    cursor="cursor",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `SearchListRequest` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Page size
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` — Opaque page cursor
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">get</a>(...) -> UserGroup</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.get(
+    group_uuid="group_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — User group UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.delete(
+    group_uuid="group_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — User group UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">update</a>(...) -> UserGroup</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.update(
+    group_uuid="group_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — User group UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` — A description of the user group.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expected_version:** `typing.Optional[int]` — The user group's current version, used to detect concurrent updates.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` — The name of the user group.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">list_member_candidates</a>(...) -> UserPage</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.list_member_candidates(
+    group_uuid="group_uuid",
+    limit=1,
+    cursor="cursor",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — User group UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `SearchListRequest` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Page size
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` — Opaque page cursor
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">add_members</a>(...) -> MembershipMutationResult</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.add_members(
+    group_uuid="group_uuid",
+    user_uuids=[
+        "user_uuids"
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — User group UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `MutateMembersRequest` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">list_members</a>(...) -> UserPage</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.list_members(
+    group_uuid="group_uuid",
+    limit=1,
+    cursor="cursor",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — User group UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `SearchListRequest` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Page size
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` — Opaque page cursor
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">remove_members</a>(...) -> MembershipMutationResult</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.remove_members(
+    group_uuid="group_uuid",
+    user_uuids=[
+        "user_uuids"
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — User group UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `MutateMembersRequest` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">remove_member</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.remove_member(
+    group_uuid="group_uuid",
+    user_uuid="user_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**group_uuid:** `str` — User group UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_uuid:** `str` — User UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.user_group.<a href="src/zep_cloud/user_group/client.py">list_for_user</a>(...) -> UserGroupPage</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.user_group.list_for_user(
+    user_uuid="user_uuid",
+    limit=1,
+    cursor="cursor",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_uuid:** `str` — User UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Page size
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` — Opaque page cursor
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## User
 <details><summary><code>client.user.<a href="src/zep_cloud/user/client.py">create</a>(...) -> User</code></summary>
 <dl>
@@ -3846,7 +4846,7 @@ client.user.create()
 <dl>
 <dd>
 
-**disable_default_ontology:** `typing.Optional[bool]` 
+**disable_default_ontology:** `typing.Optional[bool]` — When true, disables the default ontology for the user's graph.
     
 </dd>
 </dl>
@@ -3854,7 +4854,7 @@ client.user.create()
 <dl>
 <dd>
 
-**email:** `typing.Optional[str]` 
+**email:** `typing.Optional[str]` — The email address of the user.
     
 </dd>
 </dl>
@@ -3862,7 +4862,7 @@ client.user.create()
 <dl>
 <dd>
 
-**first_name:** `typing.Optional[str]` 
+**first_name:** `typing.Optional[str]` — The user's first name.
     
 </dd>
 </dl>
@@ -3870,7 +4870,7 @@ client.user.create()
 <dl>
 <dd>
 
-**last_name:** `typing.Optional[str]` 
+**last_name:** `typing.Optional[str]` — The user's last name.
     
 </dd>
 </dl>
@@ -3878,7 +4878,7 @@ client.user.create()
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Metadata to store on the user.
     
 </dd>
 </dl>
@@ -3886,7 +4886,7 @@ client.user.create()
 <dl>
 <dd>
 
-**time_zone:** `typing.Optional[str]` 
+**time_zone:** `typing.Optional[str]` — The user's IANA time zone.
     
 </dd>
 </dl>
@@ -3894,7 +4894,7 @@ client.user.create()
 <dl>
 <dd>
 
-**user_id:** `typing.Optional[str]` 
+**user_id:** `typing.Optional[str]` — An optional developer-assigned identifier for the user.
     
 </dd>
 </dl>
@@ -3988,7 +4988,7 @@ client.user.list(
 <dl>
 <dd>
 
-**search:** `typing.Optional[str]` 
+**search:** `typing.Optional[str]` — Filters results to users whose user ID, email, or name contains this text.
     
 </dd>
 </dl>
@@ -4230,7 +5230,7 @@ client.user.update(
 <dl>
 <dd>
 
-**disable_default_ontology:** `typing.Optional[bool]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**disable_default_ontology:** `typing.Optional[bool]` — When true, disables the default ontology for the user's graph.
     
 </dd>
 </dl>
@@ -4238,7 +5238,7 @@ client.user.update(
 <dl>
 <dd>
 
-**email:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**email:** `typing.Optional[str]` — The email address of the user.
     
 </dd>
 </dl>
@@ -4246,7 +5246,7 @@ client.user.update(
 <dl>
 <dd>
 
-**first_name:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**first_name:** `typing.Optional[str]` — The user's first name.
     
 </dd>
 </dl>
@@ -4254,7 +5254,7 @@ client.user.update(
 <dl>
 <dd>
 
-**last_name:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**last_name:** `typing.Optional[str]` — The user's last name.
     
 </dd>
 </dl>
@@ -4262,7 +5262,7 @@ client.user.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Metadata to merge onto the user; a key set to null is removed.
     
 </dd>
 </dl>
@@ -4270,7 +5270,7 @@ client.user.update(
 <dl>
 <dd>
 
-**time_zone:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**time_zone:** `typing.Optional[str]` — The user's IANA time zone.
     
 </dd>
 </dl>
@@ -4671,6 +5671,7 @@ client = Zep(
 
 client.graph.episode.add(
     graph_uuid="graph_uuid",
+    data="data",
 )
 
 ```
@@ -4695,7 +5696,18 @@ client.graph.episode.add(
 <dl>
 <dd>
 
+**data:** `str` — The episode content to add to the graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **created_at:** `typing.Optional[str]` 
+
+The episode's reference time, used for temporal reasoning rather than
+ingestion time.
     
 </dd>
 </dl>
@@ -4703,7 +5715,7 @@ client.graph.episode.add(
 <dl>
 <dd>
 
-**data:** `typing.Optional[str]` 
+**document_id:** `typing.Optional[str]` — Groups this episode as a chunk of a document on the graph.
     
 </dd>
 </dl>
@@ -4711,7 +5723,7 @@ client.graph.episode.add(
 <dl>
 <dd>
 
-**document_id:** `typing.Optional[str]` 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Metadata to store on the episode.
     
 </dd>
 </dl>
@@ -4719,15 +5731,7 @@ client.graph.episode.add(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**source_description:** `typing.Optional[str]` 
+**source_description:** `typing.Optional[str]` — A description of the source of this episode.
     
 </dd>
 </dl>
@@ -4736,6 +5740,9 @@ client.graph.episode.add(
 <dd>
 
 **strict_ontology:** `typing.Optional[bool]` 
+
+When true, prevents extraction of generic entity nodes that do not match
+the configured ontology.
     
 </dd>
 </dl>
@@ -4743,7 +5750,7 @@ client.graph.episode.add(
 <dl>
 <dd>
 
-**type:** `typing.Optional[str]` 
+**type:** `typing.Optional[V4AddEpisodeRequestType]` — The data format of the episode: text, json, or message. Defaults to text.
     
 </dd>
 </dl>
@@ -5040,7 +6047,7 @@ client.graph.episode.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Metadata to merge onto the episode; a key set to null is removed.
     
 </dd>
 </dl>
@@ -5074,7 +6081,7 @@ client.graph.episode.update(
 <dd>
 
 ```python
-from zep_cloud import Zep
+from zep_cloud import Zep, EdgeNodeRef
 from zep_cloud.environment import ZepEnvironment
 
 client = Zep(
@@ -5084,6 +6091,10 @@ client = Zep(
 
 client.graph.edge.add(
     graph_uuid="graph_uuid",
+    fact="fact",
+    fact_name="fact_name",
+    source_node=EdgeNodeRef(),
+    target_node=EdgeNodeRef(),
 )
 
 ```
@@ -5108,7 +6119,10 @@ client.graph.edge.add(
 <dl>
 <dd>
 
-**attributes:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**fact:** `str` 
+
+The fact text describing the relationship between the source and target
+nodes.
     
 </dd>
 </dl>
@@ -5116,7 +6130,7 @@ client.graph.edge.add(
 <dl>
 <dd>
 
-**expired_at:** `typing.Optional[str]` 
+**fact_name:** `str` — The name of the edge, in upper snake case, for example RELATES_TO.
     
 </dd>
 </dl>
@@ -5124,7 +6138,10 @@ client.graph.edge.add(
 <dl>
 <dd>
 
-**fact:** `typing.Optional[str]` 
+**source_node:** `EdgeNodeRef` 
+
+The source node of the edge, referenced by uuid or created or matched by
+name.
     
 </dd>
 </dl>
@@ -5132,7 +6149,10 @@ client.graph.edge.add(
 <dl>
 <dd>
 
-**fact_name:** `typing.Optional[str]` 
+**target_node:** `EdgeNodeRef` 
+
+The target node of the edge, referenced by uuid or created or matched by
+name.
     
 </dd>
 </dl>
@@ -5140,7 +6160,7 @@ client.graph.edge.add(
 <dl>
 <dd>
 
-**invalid_at:** `typing.Optional[str]` 
+**attributes:** `typing.Optional[typing.Dict[str, typing.Any]]` — Additional attributes to store on the edge.
     
 </dd>
 </dl>
@@ -5148,7 +6168,7 @@ client.graph.edge.add(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**expired_at:** `typing.Optional[str]` — The time at which the fact was superseded or invalidated.
     
 </dd>
 </dl>
@@ -5156,7 +6176,7 @@ client.graph.edge.add(
 <dl>
 <dd>
 
-**source_node:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**invalid_at:** `typing.Optional[str]` — The time at which the fact stopped being true.
     
 </dd>
 </dl>
@@ -5164,7 +6184,7 @@ client.graph.edge.add(
 <dl>
 <dd>
 
-**target_node:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Metadata attached to the episode created for this edge.
     
 </dd>
 </dl>
@@ -5172,7 +6192,7 @@ client.graph.edge.add(
 <dl>
 <dd>
 
-**valid_at:** `typing.Optional[str]` 
+**valid_at:** `typing.Optional[str]` — The time at which the fact became true.
     
 </dd>
 </dl>
@@ -5470,6 +6490,9 @@ client.graph.edge.update(
 <dd>
 
 **attributes:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+
+Additional attributes to merge onto the edge; a key set to null is
+removed.
     
 </dd>
 </dl>
@@ -5477,7 +6500,10 @@ client.graph.edge.update(
 <dl>
 <dd>
 
-**fact:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**fact:** `typing.Optional[str]` 
+
+The fact text describing the relationship between the source and target
+nodes.
     
 </dd>
 </dl>
@@ -5511,7 +6537,7 @@ client.graph.edge.update(
 <dd>
 
 ```python
-from zep_cloud import Zep
+from zep_cloud import Zep, NodeInput
 from zep_cloud.environment import ZepEnvironment
 
 client = Zep(
@@ -5521,6 +6547,11 @@ client = Zep(
 
 client.graph.node.add(
     graph_uuid="graph_uuid",
+    nodes=[
+        NodeInput(
+            name="name",
+        )
+    ],
 )
 
 ```
@@ -5545,7 +6576,7 @@ client.graph.node.add(
 <dl>
 <dd>
 
-**nodes:** `typing.Optional[typing.List[typing.Dict[str, typing.Any]]]` 
+**nodes:** `typing.List[NodeInput]` — The nodes to add to the graph.
     
 </dd>
 </dl>
@@ -5843,6 +6874,9 @@ client.graph.node.update(
 <dd>
 
 **attributes:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+
+Additional attributes to merge onto the node; a key set to null is
+removed.
     
 </dd>
 </dl>
@@ -5850,7 +6884,7 @@ client.graph.node.update(
 <dl>
 <dd>
 
-**name:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**name:** `typing.Optional[str]` — The node's name.
     
 </dd>
 </dl>
@@ -5858,7 +6892,7 @@ client.graph.node.update(
 <dl>
 <dd>
 
-**summary:** `typing.Optional[str]` — Omit to leave unchanged, send JSON null to clear, or send a value to set.
+**summary:** `typing.Optional[str]` — A summary of the node.
     
 </dd>
 </dl>
@@ -5952,7 +6986,7 @@ client.graph.node.list_neighbors(
 <dl>
 <dd>
 
-**direction:** `typing.Optional[str]` 
+**direction:** `typing.Optional[V4NeighborsRequestDirection]` — The edge orientation to follow from the node: in, out, or both.
     
 </dd>
 </dl>
@@ -5960,7 +6994,7 @@ client.graph.node.list_neighbors(
 <dl>
 <dd>
 
-**filters:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**filters:** `typing.Optional[SearchFilters]` — Filters constraining the connecting edges and the neighbor nodes.
     
 </dd>
 </dl>
@@ -6345,7 +7379,7 @@ client.thread.message.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Metadata to merge onto the message; a key set to null is removed.
     
 </dd>
 </dl>

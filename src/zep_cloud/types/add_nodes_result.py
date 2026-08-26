@@ -11,11 +11,15 @@ from .task import Task
 class AddNodesResult(UniversalBaseModel):
     nodes: typing.Optional[typing.List[AddedNode]] = pydantic.Field(default=None)
     """
-    8.6: nodes is an accept-time acknowledgement carrying the assigned
-    identifier plus the fields the caller supplied, not a full Node.
+    An accept-time acknowledgement of the nodes you submitted, each carrying
+    its assigned identifier and the fields you supplied, not the full stored
+    node.
     """
 
-    task: typing.Optional[Task] = None
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The asynchronous task that tracks the nodes' extraction and indexing.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

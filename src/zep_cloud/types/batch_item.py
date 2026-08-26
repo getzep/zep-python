@@ -11,16 +11,52 @@ from .batch_item_status import BatchItemStatus
 
 
 class BatchItem(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    episode_uuid: typing.Optional[str] = None
-    graph_uuid: typing.Optional[str] = None
-    sequence_index: typing.Optional[int] = None
-    source_uuid: typing.Optional[str] = None
-    status: typing.Optional[BatchItemStatus] = None
-    thread_uuid: typing.Optional[str] = None
-    type: typing.Optional[BatchItemKind] = None
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the item was appended to the batch.
+    """
+
+    episode_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The identifier of the episode created for this item, equal to source_uuid.
+    """
+
+    graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The graph the item's episode is or will be ingested into.
+    """
+
+    sequence_index: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The item's position within the batch, in the order it was appended.
+    """
+
+    source_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the item's stored source row.
+    """
+
+    status: typing.Optional[BatchItemStatus] = pydantic.Field(default=None)
+    """
+    The processing status of the item: pending, queued, processing, succeeded,
+    failed, skipped, or canceled.
+    """
+
+    thread_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The thread the item's message is or will be added to. Present only for
+    thread_message items.
+    """
+
+    type: typing.Optional[BatchItemKind] = pydantic.Field(default=None)
+    """
+    The kind of item: graph_episode or thread_message.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the batch item."),
     ] = None
 
     if IS_PYDANTIC_V2:

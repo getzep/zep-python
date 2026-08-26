@@ -12,6 +12,8 @@ from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
+from ...errors.conflict_error import ConflictError
+from ...errors.forbidden_error import ForbiddenError
 from ...errors.not_found_error import NotFoundError
 from ...errors.unauthorized_error import UnauthorizedError
 from ...types.add_episode_result import AddEpisodeResult
@@ -19,6 +21,7 @@ from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.async_result import AsyncResult
 from ...types.episode import Episode
 from ...types.episode_page import EpisodePage
+from .types.v4add_episode_request_type import V4AddEpisodeRequestType
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -112,8 +115,30 @@ class RawEpisodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -140,13 +165,13 @@ class RawEpisodeClient:
         self,
         graph_uuid: str,
         *,
+        data: str,
         created_at: typing.Optional[str] = OMIT,
-        data: typing.Optional[str] = OMIT,
         document_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
-        type: typing.Optional[str] = OMIT,
+        type: typing.Optional[V4AddEpisodeRequestType] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AddEpisodeResult]:
@@ -156,19 +181,28 @@ class RawEpisodeClient:
         graph_uuid : str
             Graph UUID
 
-        created_at : typing.Optional[str]
+        data : str
+            The episode content to add to the graph.
 
-        data : typing.Optional[str]
+        created_at : typing.Optional[str]
+            The episode's reference time, used for temporal reasoning rather than
+            ingestion time.
 
         document_id : typing.Optional[str]
+            Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the episode.
 
         source_description : typing.Optional[str]
+            A description of the source of this episode.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology.
 
-        type : typing.Optional[str]
+        type : typing.Optional[V4AddEpisodeRequestType]
+            The data format of the episode: text, json, or message. Defaults to text.
 
         idempotency_key : typing.Optional[str]
 
@@ -231,8 +265,30 @@ class RawEpisodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -278,6 +334,7 @@ class RawEpisodeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -340,6 +397,17 @@ class RawEpisodeClient:
                 )
             if _response.status_code == 401:
                 raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -421,6 +489,17 @@ class RawEpisodeClient:
                 )
             if _response.status_code == 401:
                 raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -521,8 +600,30 @@ class RawEpisodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -564,6 +665,7 @@ class RawEpisodeClient:
             Episode UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to merge onto the episode; a key set to null is removed.
 
         idempotency_key : typing.Optional[str]
 
@@ -620,8 +722,30 @@ class RawEpisodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -735,8 +859,30 @@ class AsyncRawEpisodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -763,13 +909,13 @@ class AsyncRawEpisodeClient:
         self,
         graph_uuid: str,
         *,
+        data: str,
         created_at: typing.Optional[str] = OMIT,
-        data: typing.Optional[str] = OMIT,
         document_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
-        type: typing.Optional[str] = OMIT,
+        type: typing.Optional[V4AddEpisodeRequestType] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AddEpisodeResult]:
@@ -779,19 +925,28 @@ class AsyncRawEpisodeClient:
         graph_uuid : str
             Graph UUID
 
-        created_at : typing.Optional[str]
+        data : str
+            The episode content to add to the graph.
 
-        data : typing.Optional[str]
+        created_at : typing.Optional[str]
+            The episode's reference time, used for temporal reasoning rather than
+            ingestion time.
 
         document_id : typing.Optional[str]
+            Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the episode.
 
         source_description : typing.Optional[str]
+            A description of the source of this episode.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology.
 
-        type : typing.Optional[str]
+        type : typing.Optional[V4AddEpisodeRequestType]
+            The data format of the episode: text, json, or message. Defaults to text.
 
         idempotency_key : typing.Optional[str]
 
@@ -854,8 +1009,30 @@ class AsyncRawEpisodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -901,6 +1078,7 @@ class AsyncRawEpisodeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -966,6 +1144,17 @@ class AsyncRawEpisodeClient:
                 )
             if _response.status_code == 401:
                 raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1047,6 +1236,17 @@ class AsyncRawEpisodeClient:
                 )
             if _response.status_code == 401:
                 raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1147,8 +1347,30 @@ class AsyncRawEpisodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1190,6 +1412,7 @@ class AsyncRawEpisodeClient:
             Episode UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to merge onto the episode; a key set to null is removed.
 
         idempotency_key : typing.Optional[str]
 
@@ -1246,8 +1469,30 @@ class AsyncRawEpisodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

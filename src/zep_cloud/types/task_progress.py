@@ -7,7 +7,10 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class TaskProgress(UniversalBaseModel):
-    stage: typing.Optional[str] = None
+    stage: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The most recent processing stage reported by the worker handling the task.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

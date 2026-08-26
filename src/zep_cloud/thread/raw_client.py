@@ -13,6 +13,8 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
+from ..errors.conflict_error import ConflictError
+from ..errors.forbidden_error import ForbiddenError
 from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.add_message import AddMessage
@@ -155,17 +157,19 @@ class RawThreadClient:
     def create(
         self,
         *,
+        user_uuid: str,
         thread_id: typing.Optional[str] = OMIT,
-        user_uuid: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Thread]:
         """
         Parameters
         ----------
-        thread_id : typing.Optional[str]
+        user_uuid : str
+            The UUID of the user this thread belongs to.
 
-        user_uuid : typing.Optional[str]
+        thread_id : typing.Optional[str]
+            An optional developer-assigned identifier for the thread.
 
         idempotency_key : typing.Optional[str]
 
@@ -234,6 +238,17 @@ class RawThreadClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -260,10 +275,16 @@ class RawThreadClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -496,6 +517,17 @@ class RawThreadClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -575,6 +607,17 @@ class RawThreadClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -675,8 +718,30 @@ class RawThreadClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -805,8 +870,8 @@ class RawThreadClient:
         self,
         thread_uuid: str,
         *,
+        messages: typing.Sequence[AddMessage],
         ignore_roles: typing.Optional[typing.Sequence[str]] = OMIT,
-        messages: typing.Optional[typing.Sequence[AddMessage]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -818,13 +883,20 @@ class RawThreadClient:
         thread_uuid : str
             Thread UUID
 
-        ignore_roles : typing.Optional[typing.Sequence[str]]
+        messages : typing.Sequence[AddMessage]
+            The messages to add to the thread.
 
-        messages : typing.Optional[typing.Sequence[AddMessage]]
+        ignore_roles : typing.Optional[typing.Sequence[str]]
+            Message roles to skip during graph extraction; the messages are still
+            stored.
 
         return_context : typing.Optional[bool]
+            When true, returns the context block for the thread's most recent
+            messages.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology.
 
         idempotency_key : typing.Optional[str]
 
@@ -897,6 +969,17 @@ class RawThreadClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -955,6 +1038,17 @@ class RawThreadClient:
                 )
             if _response.status_code == 401:
                 raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1114,17 +1208,19 @@ class AsyncRawThreadClient:
     async def create(
         self,
         *,
+        user_uuid: str,
         thread_id: typing.Optional[str] = OMIT,
-        user_uuid: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Thread]:
         """
         Parameters
         ----------
-        thread_id : typing.Optional[str]
+        user_uuid : str
+            The UUID of the user this thread belongs to.
 
-        user_uuid : typing.Optional[str]
+        thread_id : typing.Optional[str]
+            An optional developer-assigned identifier for the thread.
 
         idempotency_key : typing.Optional[str]
 
@@ -1193,6 +1289,17 @@ class AsyncRawThreadClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -1219,10 +1326,16 @@ class AsyncRawThreadClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -1457,6 +1570,17 @@ class AsyncRawThreadClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -1536,6 +1660,17 @@ class AsyncRawThreadClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1639,8 +1774,30 @@ class AsyncRawThreadClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1772,8 +1929,8 @@ class AsyncRawThreadClient:
         self,
         thread_uuid: str,
         *,
+        messages: typing.Sequence[AddMessage],
         ignore_roles: typing.Optional[typing.Sequence[str]] = OMIT,
-        messages: typing.Optional[typing.Sequence[AddMessage]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -1785,13 +1942,20 @@ class AsyncRawThreadClient:
         thread_uuid : str
             Thread UUID
 
-        ignore_roles : typing.Optional[typing.Sequence[str]]
+        messages : typing.Sequence[AddMessage]
+            The messages to add to the thread.
 
-        messages : typing.Optional[typing.Sequence[AddMessage]]
+        ignore_roles : typing.Optional[typing.Sequence[str]]
+            Message roles to skip during graph extraction; the messages are still
+            stored.
 
         return_context : typing.Optional[bool]
+            When true, returns the context block for the thread's most recent
+            messages.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology.
 
         idempotency_key : typing.Optional[str]
 
@@ -1864,6 +2028,17 @@ class AsyncRawThreadClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -1922,6 +2097,17 @@ class AsyncRawThreadClient:
                 )
             if _response.status_code == 401:
                 raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

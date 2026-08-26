@@ -6,21 +6,59 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .edge_node_ref import EdgeNodeRef
 
 
 class AddedEdge(UniversalBaseModel):
-    attributes: typing.Optional[typing.Dict[str, typing.Any]] = None
-    expired_at: typing.Optional[str] = None
-    fact: typing.Optional[str] = None
-    fact_name: typing.Optional[str] = None
-    invalid_at: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    source_node: typing.Optional[typing.Dict[str, typing.Any]] = None
-    target_node: typing.Optional[typing.Dict[str, typing.Any]] = None
+    attributes: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Additional attributes of the edge.
+    """
+
+    expired_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the fact was superseded or removed.
+    """
+
+    fact: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The natural-language fact you submitted for this edge.
+    """
+
+    fact_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The name of the edge, in upper snake case, for example RELATES_TO.
+    """
+
+    invalid_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time at which the fact stopped being true.
+    """
+
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Custom metadata associated with the edge.
+    """
+
+    source_node: typing.Optional[EdgeNodeRef] = pydantic.Field(default=None)
+    """
+    The source node fields you supplied when creating this edge.
+    """
+
+    target_node: typing.Optional[EdgeNodeRef] = pydantic.Field(default=None)
+    """
+    The target node fields you supplied when creating this edge.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier assigned to the edge."),
     ] = None
-    valid_at: typing.Optional[str] = None
+    valid_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time from which the fact is considered true.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

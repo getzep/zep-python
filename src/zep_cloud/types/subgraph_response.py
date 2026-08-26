@@ -9,10 +9,28 @@ from .node import Node
 
 
 class SubgraphResponse(UniversalBaseModel):
-    edges: typing.Optional[typing.List[Edge]] = None
-    nodes: typing.Optional[typing.List[Node]] = None
-    truncated: typing.Optional[bool] = None
-    truncation_reason: typing.Optional[str] = None
+    edges: typing.Optional[typing.List[Edge]] = pydantic.Field(default=None)
+    """
+    Every traversed edge that passed the request filters; both endpoints of
+    every edge are present in nodes.
+    """
+
+    nodes: typing.Optional[typing.List[Node]] = pydantic.Field(default=None)
+    """
+    Every admitted seed node and every node reached within the traversal
+    budget.
+    """
+
+    truncated: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether any budget or limit reduced the result.
+    """
+
+    truncation_reason: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The binding limit that caused truncation, such as max_nodes or max_edges;
+    present only when truncated is true.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

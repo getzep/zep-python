@@ -10,12 +10,34 @@ from .role_type import RoleType
 
 
 class AddMessage(UniversalBaseModel):
-    content: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    name: typing.Optional[str] = None
-    role: typing.Optional[RoleType] = None
+    content: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The content of the message.
+    """
+
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Custom metadata to store with the message.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A customizable name for the sender of the message, for example "john" or
+    "sales_agent".
+    """
+
+    role: typing.Optional[RoleType] = pydantic.Field(default=None)
+    """
+    The role of the message's sender.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(
+            alias="uuid",
+            description="Reserved for future use. Message identifiers are always server-assigned,\nso this field must be left unset.",
+        ),
     ] = None
 
     if IS_PYDANTIC_V2:

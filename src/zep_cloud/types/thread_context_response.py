@@ -7,7 +7,12 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class ThreadContextResponse(UniversalBaseModel):
-    context: typing.Optional[str] = None
+    context: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The context block containing relevant facts, entities, and messages or
+    episodes from the user's graph, meant to be placed in the system prompt on
+    every turn.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

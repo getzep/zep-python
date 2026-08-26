@@ -9,13 +9,38 @@ from ..core.serialization import FieldMetadata
 
 
 class Batch(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    progress: typing.Optional[typing.Dict[str, typing.Any]] = None
-    status: typing.Optional[str] = None
-    strict_ontology: typing.Optional[bool] = None
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the batch was created.
+    """
+
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Custom metadata associated with the batch, supplied when it was created.
+    """
+
+    progress: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    The batch's processing progress, including its current stage and item
+    counts. Present only once processing has started.
+    """
+
+    status: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The processing status of the batch: draft, invalid, queued, processing,
+    succeeded, partial, failed, or canceled.
+    """
+
+    strict_ontology: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether ontology enforcement is applied when this batch is processed,
+    rejecting entities that do not match the configured ontology.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the batch."),
     ] = None
 
     if IS_PYDANTIC_V2:

@@ -9,8 +9,15 @@ from .task import Task
 
 
 class ProcessBatchResult(UniversalBaseModel):
-    batch: typing.Optional[Batch] = None
-    task: typing.Optional[Task] = None
+    batch: typing.Optional[Batch] = pydantic.Field(default=None)
+    """
+    The batch that was submitted for processing.
+    """
+
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The task tracking the batch's asynchronous processing.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

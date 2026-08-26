@@ -9,18 +9,64 @@ from ..core.serialization import FieldMetadata
 
 
 class ContextObservation(UniversalBaseModel):
-    attributes: typing.Optional[typing.Dict[str, typing.Any]] = None
-    created_at: typing.Optional[str] = None
-    episode_uuids: typing.Optional[typing.List[str]] = None
-    graph_uuid: typing.Optional[str] = None
-    labels: typing.Optional[typing.List[str]] = None
-    name: typing.Optional[str] = None
-    relevance: typing.Optional[float] = None
-    score: typing.Optional[float] = None
-    selection_rank: typing.Optional[int] = None
-    summary: typing.Optional[str] = None
+    attributes: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Additional attributes of the derived node, as defined by its entity type.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the observation was created.
+    """
+
+    episode_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The unique identifiers of the episodes that support this observation.
+    """
+
+    graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the graph this observation belongs to.
+    """
+
+    labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The labels identifying the type of this observation.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The name of the observation.
+    """
+
+    relevance: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    A cross-encoder-derived relevance score, present only when the
+    cross-encoder reranker scored this result; like score, it is omitted from
+    plain list results.
+    """
+
+    score: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The ranking score returned with every search result; omitted when the
+    observation appears in a plain list rather than a search result.
+    """
+
+    selection_rank: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The 1-based position this observation was selected in across all
+    context-assembly scopes.
+    """
+
+    summary: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A generated summary of the observation.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the observation, assigned by Zep."),
     ] = None
 
     if IS_PYDANTIC_V2:

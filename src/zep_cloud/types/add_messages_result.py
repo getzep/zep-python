@@ -9,9 +9,22 @@ from .task import Task
 
 
 class AddMessagesResult(UniversalBaseModel):
-    context: typing.Optional[str] = None
-    messages: typing.Optional[typing.List[Message]] = None
-    task: typing.Optional[Task] = None
+    context: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The context block assembled from the graph after adding the messages,
+    present only when return_context is true in the request.
+    """
+
+    messages: typing.Optional[typing.List[Message]] = pydantic.Field(default=None)
+    """
+    The messages that were added, each including its assigned identifier.
+    """
+
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The asynchronous task that tracks the messages' graph extraction and
+    indexing.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

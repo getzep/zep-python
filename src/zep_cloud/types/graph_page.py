@@ -8,9 +8,21 @@ from .graph import Graph
 
 
 class GraphPage(UniversalBaseModel):
-    items: typing.Optional[typing.List[Graph]] = None
-    next_cursor: typing.Optional[str] = None
-    total_size: typing.Optional[int] = None
+    items: typing.Optional[typing.List[Graph]] = pydantic.Field(default=None)
+    """
+    The graphs on this page.
+    """
+
+    next_cursor: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Opaque cursor for retrieving the next page, present only when more results
+    are available.
+    """
+
+    total_size: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The total number of graphs that match the request.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

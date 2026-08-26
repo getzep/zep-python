@@ -11,7 +11,10 @@ from ...core.pagination import AsyncPager, SyncPager
 from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
+from ...core.serialization import convert_and_respect_annotation_metadata
 from ...errors.bad_request_error import BadRequestError
+from ...errors.conflict_error import ConflictError
+from ...errors.forbidden_error import ForbiddenError
 from ...errors.not_found_error import NotFoundError
 from ...errors.unauthorized_error import UnauthorizedError
 from ...types.add_nodes_result import AddNodesResult
@@ -20,7 +23,10 @@ from ...types.async_result import AsyncResult
 from ...types.neighbor_entry import NeighborEntry
 from ...types.neighbor_page import NeighborPage
 from ...types.node import Node
+from ...types.node_input import NodeInput
 from ...types.node_page import NodePage
+from ...types.search_filters import SearchFilters
+from .types.v4neighbors_request_direction import V4NeighborsRequestDirection
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -35,7 +41,7 @@ class RawNodeClient:
         self,
         graph_uuid: str,
         *,
-        nodes: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        nodes: typing.Sequence[NodeInput],
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AddNodesResult]:
@@ -45,7 +51,8 @@ class RawNodeClient:
         graph_uuid : str
             Graph UUID
 
-        nodes : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        nodes : typing.Sequence[NodeInput]
+            The nodes to add to the graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -61,7 +68,9 @@ class RawNodeClient:
             f"graphs/{jsonable_encoder(graph_uuid)}/nodes",
             method="POST",
             json={
-                "nodes": nodes,
+                "nodes": convert_and_respect_annotation_metadata(
+                    object_=nodes, annotation=typing.Sequence[NodeInput], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -102,8 +111,30 @@ class RawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -149,6 +180,7 @@ class RawNodeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -220,8 +252,30 @@ class RawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -301,8 +355,30 @@ class RawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -392,8 +468,30 @@ class RawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -437,12 +535,14 @@ class RawNodeClient:
             Node UUID
 
         attributes : typing.Optional[typing.Dict[str, typing.Any]]
+            Additional attributes to merge onto the node; a key set to null is
+            removed.
 
         name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The node's name.
 
         summary : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            A summary of the node.
 
         idempotency_key : typing.Optional[str]
 
@@ -501,8 +601,30 @@ class RawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -532,8 +654,8 @@ class RawNodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        direction: typing.Optional[V4NeighborsRequestDirection] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[NeighborEntry, NeighborPage]:
@@ -552,9 +674,11 @@ class RawNodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        direction : typing.Optional[str]
+        direction : typing.Optional[V4NeighborsRequestDirection]
+            The edge orientation to follow from the node: in, out, or both.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the connecting edges and the neighbor nodes.
 
         idempotency_key : typing.Optional[str]
 
@@ -575,7 +699,9 @@ class RawNodeClient:
             },
             json={
                 "direction": direction,
-                "filters": filters,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=SearchFilters, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -629,8 +755,30 @@ class RawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -662,7 +810,7 @@ class AsyncRawNodeClient:
         self,
         graph_uuid: str,
         *,
-        nodes: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        nodes: typing.Sequence[NodeInput],
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AddNodesResult]:
@@ -672,7 +820,8 @@ class AsyncRawNodeClient:
         graph_uuid : str
             Graph UUID
 
-        nodes : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        nodes : typing.Sequence[NodeInput]
+            The nodes to add to the graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -688,7 +837,9 @@ class AsyncRawNodeClient:
             f"graphs/{jsonable_encoder(graph_uuid)}/nodes",
             method="POST",
             json={
-                "nodes": nodes,
+                "nodes": convert_and_respect_annotation_metadata(
+                    object_=nodes, annotation=typing.Sequence[NodeInput], direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -729,8 +880,30 @@ class AsyncRawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -776,6 +949,7 @@ class AsyncRawNodeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -850,8 +1024,30 @@ class AsyncRawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -931,8 +1127,30 @@ class AsyncRawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1022,8 +1240,30 @@ class AsyncRawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1067,12 +1307,14 @@ class AsyncRawNodeClient:
             Node UUID
 
         attributes : typing.Optional[typing.Dict[str, typing.Any]]
+            Additional attributes to merge onto the node; a key set to null is
+            removed.
 
         name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The node's name.
 
         summary : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            A summary of the node.
 
         idempotency_key : typing.Optional[str]
 
@@ -1131,8 +1373,30 @@ class AsyncRawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1162,8 +1426,8 @@ class AsyncRawNodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        direction: typing.Optional[V4NeighborsRequestDirection] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[NeighborEntry, NeighborPage]:
@@ -1182,9 +1446,11 @@ class AsyncRawNodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        direction : typing.Optional[str]
+        direction : typing.Optional[V4NeighborsRequestDirection]
+            The edge orientation to follow from the node: in, out, or both.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the connecting edges and the neighbor nodes.
 
         idempotency_key : typing.Optional[str]
 
@@ -1205,7 +1471,9 @@ class AsyncRawNodeClient:
             },
             json={
                 "direction": direction,
-                "filters": filters,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=SearchFilters, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -1262,8 +1530,30 @@ class AsyncRawNodeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
