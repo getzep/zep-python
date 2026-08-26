@@ -117,16 +117,34 @@ def test_edge_source_targets_are_passed_through():
                 TraveledTo,
                 [
                     EdgeSourceTarget(
-                        source_entity_type="Traveler",
-                        target_entity_type="Destination",
+                        source="Traveler",
+                        target="Destination",
                     )
                 ],
             )
         }
     )
     (target,) = edge_types[0].source_targets
-    assert target.source_entity_type == "Traveler"
-    assert target.target_entity_type == "Destination"
+    assert target.source == "Traveler"
+    assert target.target == "Destination"
+
+
+def test_edge_source_targets_serialize_under_their_wire_names():
+    # The model allows extra keys, so reading an attribute back proves nothing
+    # about the name that reaches the API. Serializing is where a wrong key
+    # shows up.
+    _, edge_types = build_ontology(
+        edges={
+            "TRAVELED_TO": (
+                TraveledTo,
+                [EdgeSourceTarget(source="Traveler", target="Destination")],
+            )
+        }
+    )
+
+    wire = edge_types[0].dict(by_alias=True, exclude_none=True)
+
+    assert wire["source_targets"] == [{"source": "Traveler", "target": "Destination"}]
 
 
 def test_an_edge_without_source_targets_omits_them():

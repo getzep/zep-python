@@ -34,7 +34,7 @@ declared once, as classes, and derives the payload from them::
         edges={
             "TRAVELED_TO": (
                 TraveledTo,
-                [EdgeSourceTarget(source_entity_type="Traveler", target_entity_type="Destination")],
+                [EdgeSourceTarget(source="Traveler", target="Destination")],
             ),
         },
     )
