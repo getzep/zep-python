@@ -4,11 +4,21 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .user_instruction import UserInstruction
 
 
 class UserSummaryInstructions(UniversalBaseModel):
-    inherited: typing.Optional[bool] = None
-    instructions: typing.Optional[typing.List[typing.Dict[str, typing.Any]]] = None
+    inherited: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether this is the project's default value rather than an override set on
+    this graph.
+    """
+
+    instructions: typing.Optional[typing.List[UserInstruction]] = pydantic.Field(default=None)
+    """
+    The custom instructions used when generating a user's summary at this
+    scope, each with a name and text.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

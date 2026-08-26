@@ -9,6 +9,7 @@ from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.async_result import AsyncResult
 from ..types.clone_graph_result import CloneGraphResult
+from ..types.custom_instruction import CustomInstruction
 from ..types.edge import Edge
 from ..types.edge_page import EdgePage
 from ..types.edge_type import EdgeType
@@ -25,11 +26,16 @@ from ..types.node_page import NodePage
 from ..types.observation import Observation
 from ..types.observation_page import ObservationPage
 from ..types.observation_steering import ObservationSteering
+from ..types.observation_type import ObservationType
 from ..types.ontology import Ontology
+from ..types.search_filters import SearchFilters
 from ..types.subgraph_response import SubgraphResponse
 from ..types.thread_summary import ThreadSummary
 from ..types.thread_summary_page import ThreadSummaryPage
+from ..types.v4search_request_reranker import V4SearchRequestReranker
 from .raw_client import AsyncRawGraphClient, RawGraphClient
+from .types.v4graph_context_request_recency_bias import V4GraphContextRequestRecencyBias
+from .types.v4subgraph_request_direction import V4SubgraphRequestDirection
 
 if typing.TYPE_CHECKING:
     from .document_summary.client import AsyncDocumentSummaryClient, DocumentSummaryClient
@@ -78,12 +84,16 @@ class GraphClient:
         Parameters
         ----------
         description : typing.Optional[str]
+            A description of the graph.
 
         graph_id : typing.Optional[str]
+            An optional developer-assigned identifier for the graph.
 
         name : typing.Optional[str]
+            A display name for the graph.
 
         time_zone : typing.Optional[str]
+            The graph's IANA time zone.
 
         idempotency_key : typing.Optional[str]
 
@@ -141,6 +151,8 @@ class GraphClient:
             asc or desc
 
         search : typing.Optional[str]
+            Filters results to graphs whose name, description, or graph ID contains
+            this text.
 
         idempotency_key : typing.Optional[str]
 
@@ -194,10 +206,16 @@ class GraphClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -312,13 +330,13 @@ class GraphClient:
             Graph UUID
 
         description : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            A description of the graph.
 
         name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The graph's display name.
 
         time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The graph's IANA time zone.
 
         idempotency_key : typing.Optional[str]
 
@@ -366,6 +384,7 @@ class GraphClient:
             Graph UUID
 
         target_graph_id : typing.Optional[str]
+            An optional name for the cloned graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -400,11 +419,11 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        query: str,
+        filters: typing.Optional[SearchFilters] = OMIT,
         include_results: typing.Optional[bool] = OMIT,
         max_characters: typing.Optional[int] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        recency_bias: typing.Optional[str] = OMIT,
+        recency_bias: typing.Optional[V4GraphContextRequestRecencyBias] = OMIT,
         template_uuid: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -415,17 +434,24 @@ class GraphClient:
         graph_uuid : str
             Graph UUID
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        query : str
+            The search query used to assemble the context block.
+
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which graph data can be selected for the context
+            block.
 
         include_results : typing.Optional[bool]
+            When true, includes the raw graph results selected for the context block.
 
         max_characters : typing.Optional[int]
+            The maximum number of characters in the assembled context block.
 
-        query : typing.Optional[str]
-
-        recency_bias : typing.Optional[str]
+        recency_bias : typing.Optional[V4GraphContextRequestRecencyBias]
+            Adjusts result selection to favor more recent graph data.
 
         template_uuid : typing.Optional[str]
+            The UUID of a context template used to render the context block.
 
         idempotency_key : typing.Optional[str]
 
@@ -446,14 +472,15 @@ class GraphClient:
         )
         client.graph.get_context(
             graph_uuid="graph_uuid",
+            query="query",
         )
         """
         _response = self._raw_client.get_context(
             graph_uuid,
+            query=query,
             filters=filters,
             include_results=include_results,
             max_characters=max_characters,
-            query=query,
             recency_bias=recency_bias,
             template_uuid=template_uuid,
             idempotency_key=idempotency_key,
@@ -497,7 +524,7 @@ class GraphClient:
         graph_uuid: str,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[CustomInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Instructions:
@@ -508,8 +535,12 @@ class GraphClient:
             Graph UUID
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[CustomInstruction]]
+            The custom extraction instructions in effect at this scope, each with a
+            name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -578,7 +609,7 @@ class GraphClient:
         *,
         inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ObservationSteering:
@@ -589,10 +620,16 @@ class GraphClient:
             Graph UUID
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         instruction : typing.Optional[str]
+            The natural-language instruction steering how observations are generated
+            at this scope.
 
-        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        types : typing.Optional[typing.Sequence[ObservationType]]
+            The named observation types, each with a description, that generation
+            should steer toward at this scope.
 
         idempotency_key : typing.Optional[str]
 
@@ -671,10 +708,14 @@ class GraphClient:
             Graph UUID
 
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
+            The edge types defined in the ontology in effect at this scope.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+            The entity types defined in the ontology in effect at this scope.
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -711,14 +752,14 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Edge, EdgePage]:
@@ -728,6 +769,9 @@ class GraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -735,16 +779,21 @@ class GraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -767,6 +816,7 @@ class GraphClient:
             graph_uuid="graph_uuid",
             limit=1,
             cursor="cursor",
+            query="query",
         )
         for item in response:
             yield item
@@ -776,13 +826,13 @@ class GraphClient:
         """
         return self._raw_client.search_edges(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -792,14 +842,14 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
@@ -809,6 +859,9 @@ class GraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -816,16 +869,21 @@ class GraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -848,6 +906,7 @@ class GraphClient:
             graph_uuid="graph_uuid",
             limit=1,
             cursor="cursor",
+            query="query",
         )
         for item in response:
             yield item
@@ -857,13 +916,13 @@ class GraphClient:
         """
         return self._raw_client.search_episodes(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -873,14 +932,14 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Node, NodePage]:
@@ -890,6 +949,9 @@ class GraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -897,16 +959,21 @@ class GraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -929,6 +996,7 @@ class GraphClient:
             graph_uuid="graph_uuid",
             limit=1,
             cursor="cursor",
+            query="query",
         )
         for item in response:
             yield item
@@ -938,13 +1006,13 @@ class GraphClient:
         """
         return self._raw_client.search_nodes(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -954,14 +1022,14 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Observation, ObservationPage]:
@@ -971,6 +1039,9 @@ class GraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -978,16 +1049,21 @@ class GraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -1010,6 +1086,7 @@ class GraphClient:
             graph_uuid="graph_uuid",
             limit=1,
             cursor="cursor",
+            query="query",
         )
         for item in response:
             yield item
@@ -1019,13 +1096,13 @@ class GraphClient:
         """
         return self._raw_client.search_observations(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -1035,14 +1112,14 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ThreadSummary, ThreadSummaryPage]:
@@ -1052,6 +1129,9 @@ class GraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -1059,16 +1139,21 @@ class GraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -1091,6 +1176,7 @@ class GraphClient:
             graph_uuid="graph_uuid",
             limit=1,
             cursor="cursor",
+            query="query",
         )
         for item in response:
             yield item
@@ -1100,13 +1186,13 @@ class GraphClient:
         """
         return self._raw_client.search_thread_summaries(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -1116,12 +1202,12 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
+        seed_node_uuids: typing.Sequence[str],
         depth: typing.Optional[int] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        direction: typing.Optional[V4SubgraphRequestDirection] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         max_edges: typing.Optional[int] = OMIT,
         max_nodes: typing.Optional[int] = OMIT,
-        seed_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SubgraphResponse:
@@ -1131,17 +1217,24 @@ class GraphClient:
         graph_uuid : str
             Graph UUID
 
+        seed_node_uuids : typing.Sequence[str]
+            The node UUIDs to expand from, in traversal-priority order.
+
         depth : typing.Optional[int]
+            The maximum traversal depth from the seed nodes. Defaults to 1.
 
-        direction : typing.Optional[str]
+        direction : typing.Optional[V4SubgraphRequestDirection]
+            The edge orientation to follow during expansion: in, out, or both.
+            Defaults to both.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the traversed edges and included nodes.
 
         max_edges : typing.Optional[int]
+            The maximum number of edges in the response. Defaults to 200.
 
         max_nodes : typing.Optional[int]
-
-        seed_node_uuids : typing.Optional[typing.Sequence[str]]
+            The maximum number of nodes in the response. Defaults to 100.
 
         idempotency_key : typing.Optional[str]
 
@@ -1162,16 +1255,17 @@ class GraphClient:
         )
         client.graph.get_subgraph(
             graph_uuid="graph_uuid",
+            seed_node_uuids=["seed_node_uuids"],
         )
         """
         _response = self._raw_client.get_subgraph(
             graph_uuid,
+            seed_node_uuids=seed_node_uuids,
             depth=depth,
             direction=direction,
             filters=filters,
             max_edges=max_edges,
             max_nodes=max_nodes,
-            seed_node_uuids=seed_node_uuids,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
@@ -1299,12 +1393,16 @@ class AsyncGraphClient:
         Parameters
         ----------
         description : typing.Optional[str]
+            A description of the graph.
 
         graph_id : typing.Optional[str]
+            An optional developer-assigned identifier for the graph.
 
         name : typing.Optional[str]
+            A display name for the graph.
 
         time_zone : typing.Optional[str]
+            The graph's IANA time zone.
 
         idempotency_key : typing.Optional[str]
 
@@ -1370,6 +1468,8 @@ class AsyncGraphClient:
             asc or desc
 
         search : typing.Optional[str]
+            Filters results to graphs whose name, description, or graph ID contains
+            this text.
 
         idempotency_key : typing.Optional[str]
 
@@ -1432,10 +1532,16 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -1574,13 +1680,13 @@ class AsyncGraphClient:
             Graph UUID
 
         description : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            A description of the graph.
 
         name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The graph's display name.
 
         time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The graph's IANA time zone.
 
         idempotency_key : typing.Optional[str]
 
@@ -1636,6 +1742,7 @@ class AsyncGraphClient:
             Graph UUID
 
         target_graph_id : typing.Optional[str]
+            An optional name for the cloned graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -1678,11 +1785,11 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        query: str,
+        filters: typing.Optional[SearchFilters] = OMIT,
         include_results: typing.Optional[bool] = OMIT,
         max_characters: typing.Optional[int] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        recency_bias: typing.Optional[str] = OMIT,
+        recency_bias: typing.Optional[V4GraphContextRequestRecencyBias] = OMIT,
         template_uuid: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1693,17 +1800,24 @@ class AsyncGraphClient:
         graph_uuid : str
             Graph UUID
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        query : str
+            The search query used to assemble the context block.
+
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which graph data can be selected for the context
+            block.
 
         include_results : typing.Optional[bool]
+            When true, includes the raw graph results selected for the context block.
 
         max_characters : typing.Optional[int]
+            The maximum number of characters in the assembled context block.
 
-        query : typing.Optional[str]
-
-        recency_bias : typing.Optional[str]
+        recency_bias : typing.Optional[V4GraphContextRequestRecencyBias]
+            Adjusts result selection to favor more recent graph data.
 
         template_uuid : typing.Optional[str]
+            The UUID of a context template used to render the context block.
 
         idempotency_key : typing.Optional[str]
 
@@ -1729,6 +1843,7 @@ class AsyncGraphClient:
         async def main() -> None:
             await client.graph.get_context(
                 graph_uuid="graph_uuid",
+                query="query",
             )
 
 
@@ -1736,10 +1851,10 @@ class AsyncGraphClient:
         """
         _response = await self._raw_client.get_context(
             graph_uuid,
+            query=query,
             filters=filters,
             include_results=include_results,
             max_characters=max_characters,
-            query=query,
             recency_bias=recency_bias,
             template_uuid=template_uuid,
             idempotency_key=idempotency_key,
@@ -1791,7 +1906,7 @@ class AsyncGraphClient:
         graph_uuid: str,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[CustomInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Instructions:
@@ -1802,8 +1917,12 @@ class AsyncGraphClient:
             Graph UUID
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[CustomInstruction]]
+            The custom extraction instructions in effect at this scope, each with a
+            name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -1888,7 +2007,7 @@ class AsyncGraphClient:
         *,
         inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ObservationSteering:
@@ -1899,10 +2018,16 @@ class AsyncGraphClient:
             Graph UUID
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         instruction : typing.Optional[str]
+            The natural-language instruction steering how observations are generated
+            at this scope.
 
-        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        types : typing.Optional[typing.Sequence[ObservationType]]
+            The named observation types, each with a description, that generation
+            should steer toward at this scope.
 
         idempotency_key : typing.Optional[str]
 
@@ -1999,10 +2124,14 @@ class AsyncGraphClient:
             Graph UUID
 
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
+            The edge types defined in the ontology in effect at this scope.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+            The entity types defined in the ontology in effect at this scope.
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -2047,14 +2176,14 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Edge, EdgePage]:
@@ -2064,6 +2193,9 @@ class AsyncGraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -2071,16 +2203,21 @@ class AsyncGraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -2108,6 +2245,7 @@ class AsyncGraphClient:
                 graph_uuid="graph_uuid",
                 limit=1,
                 cursor="cursor",
+                query="query",
             )
             async for item in response:
                 yield item
@@ -2121,13 +2259,13 @@ class AsyncGraphClient:
         """
         return await self._raw_client.search_edges(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -2137,14 +2275,14 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
@@ -2154,6 +2292,9 @@ class AsyncGraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -2161,16 +2302,21 @@ class AsyncGraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -2198,6 +2344,7 @@ class AsyncGraphClient:
                 graph_uuid="graph_uuid",
                 limit=1,
                 cursor="cursor",
+                query="query",
             )
             async for item in response:
                 yield item
@@ -2211,13 +2358,13 @@ class AsyncGraphClient:
         """
         return await self._raw_client.search_episodes(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -2227,14 +2374,14 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Node, NodePage]:
@@ -2244,6 +2391,9 @@ class AsyncGraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -2251,16 +2401,21 @@ class AsyncGraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -2288,6 +2443,7 @@ class AsyncGraphClient:
                 graph_uuid="graph_uuid",
                 limit=1,
                 cursor="cursor",
+                query="query",
             )
             async for item in response:
                 yield item
@@ -2301,13 +2457,13 @@ class AsyncGraphClient:
         """
         return await self._raw_client.search_nodes(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -2317,14 +2473,14 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Observation, ObservationPage]:
@@ -2334,6 +2490,9 @@ class AsyncGraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -2341,16 +2500,21 @@ class AsyncGraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -2378,6 +2542,7 @@ class AsyncGraphClient:
                 graph_uuid="graph_uuid",
                 limit=1,
                 cursor="cursor",
+                query="query",
             )
             async for item in response:
                 yield item
@@ -2391,13 +2556,13 @@ class AsyncGraphClient:
         """
         return await self._raw_client.search_observations(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -2407,14 +2572,14 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
+        query: str,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        query: typing.Optional[str] = OMIT,
-        reranker: typing.Optional[str] = OMIT,
+        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ThreadSummary, ThreadSummaryPage]:
@@ -2424,6 +2589,9 @@ class AsyncGraphClient:
         graph_uuid : str
             Graph UUID
 
+        query : str
+            The search query.
+
         limit : typing.Optional[int]
             Page size
 
@@ -2431,16 +2599,21 @@ class AsyncGraphClient:
             Opaque page cursor
 
         bfs_origin_node_uuids : typing.Optional[typing.Sequence[str]]
+            Nodes used as BFS origins for graph-distance-aware retrieval.
 
         center_node_uuid : typing.Optional[str]
+            The node to rank results by distance from. Required when reranker is
+            node_distance.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
+            The diversity weighting used for maximal marginal relevance reranking.
+            Required when reranker is mmr.
 
-        query : typing.Optional[str]
-
-        reranker : typing.Optional[str]
+        reranker : typing.Optional[V4SearchRequestReranker]
+            The reranking strategy applied to retrieved results. Defaults to rrf.
 
         idempotency_key : typing.Optional[str]
 
@@ -2468,6 +2641,7 @@ class AsyncGraphClient:
                 graph_uuid="graph_uuid",
                 limit=1,
                 cursor="cursor",
+                query="query",
             )
             async for item in response:
                 yield item
@@ -2481,13 +2655,13 @@ class AsyncGraphClient:
         """
         return await self._raw_client.search_thread_summaries(
             graph_uuid,
+            query=query,
             limit=limit,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
             filters=filters,
             mmr_lambda=mmr_lambda,
-            query=query,
             reranker=reranker,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -2497,12 +2671,12 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
+        seed_node_uuids: typing.Sequence[str],
         depth: typing.Optional[int] = OMIT,
-        direction: typing.Optional[str] = OMIT,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        direction: typing.Optional[V4SubgraphRequestDirection] = OMIT,
+        filters: typing.Optional[SearchFilters] = OMIT,
         max_edges: typing.Optional[int] = OMIT,
         max_nodes: typing.Optional[int] = OMIT,
-        seed_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SubgraphResponse:
@@ -2512,17 +2686,24 @@ class AsyncGraphClient:
         graph_uuid : str
             Graph UUID
 
+        seed_node_uuids : typing.Sequence[str]
+            The node UUIDs to expand from, in traversal-priority order.
+
         depth : typing.Optional[int]
+            The maximum traversal depth from the seed nodes. Defaults to 1.
 
-        direction : typing.Optional[str]
+        direction : typing.Optional[V4SubgraphRequestDirection]
+            The edge orientation to follow during expansion: in, out, or both.
+            Defaults to both.
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
+        filters : typing.Optional[SearchFilters]
+            Filters constraining the traversed edges and included nodes.
 
         max_edges : typing.Optional[int]
+            The maximum number of edges in the response. Defaults to 200.
 
         max_nodes : typing.Optional[int]
-
-        seed_node_uuids : typing.Optional[typing.Sequence[str]]
+            The maximum number of nodes in the response. Defaults to 100.
 
         idempotency_key : typing.Optional[str]
 
@@ -2548,6 +2729,7 @@ class AsyncGraphClient:
         async def main() -> None:
             await client.graph.get_subgraph(
                 graph_uuid="graph_uuid",
+                seed_node_uuids=["seed_node_uuids"],
             )
 
 
@@ -2555,12 +2737,12 @@ class AsyncGraphClient:
         """
         _response = await self._raw_client.get_subgraph(
             graph_uuid,
+            seed_node_uuids=seed_node_uuids,
             depth=depth,
             direction=direction,
             filters=filters,
             max_edges=max_edges,
             max_nodes=max_nodes,
-            seed_node_uuids=seed_node_uuids,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )

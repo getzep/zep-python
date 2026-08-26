@@ -40,8 +40,10 @@ class ContextClient:
         Parameters
         ----------
         name : typing.Optional[str]
+            A unique, human-readable name for the template.
 
         template : typing.Optional[str]
+            The template content used to render context blocks.
 
         idempotency_key : typing.Optional[str]
 
@@ -86,6 +88,7 @@ class ContextClient:
             Opaque page cursor
 
         name : typing.Optional[str]
+            Filters results to the context template with this exact name.
 
         idempotency_key : typing.Optional[str]
 
@@ -165,8 +168,10 @@ class ContextClient:
             Template UUID
 
         name : typing.Optional[str]
+            A unique, human-readable name for the template.
 
         template : typing.Optional[str]
+            The template content used to render context blocks.
 
         idempotency_key : typing.Optional[str]
 
@@ -264,8 +269,10 @@ class AsyncContextClient:
         Parameters
         ----------
         name : typing.Optional[str]
+            A unique, human-readable name for the template.
 
         template : typing.Optional[str]
+            The template content used to render context blocks.
 
         idempotency_key : typing.Optional[str]
 
@@ -318,6 +325,7 @@ class AsyncContextClient:
             Opaque page cursor
 
         name : typing.Optional[str]
+            Filters results to the context template with this exact name.
 
         idempotency_key : typing.Optional[str]
 
@@ -414,8 +422,10 @@ class AsyncContextClient:
             Template UUID
 
         name : typing.Optional[str]
+            A unique, human-readable name for the template.
 
         template : typing.Optional[str]
+            The template content used to render context blocks.
 
         idempotency_key : typing.Optional[str]
 

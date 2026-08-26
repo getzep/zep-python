@@ -8,7 +8,11 @@ from .task import Task
 
 
 class UserDeleteResult(UniversalBaseModel):
-    task: typing.Optional[Task] = None
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The task tracking the user's asynchronous deletion. Once it completes, the
+    user's threads, messages, and graph are removed as well.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

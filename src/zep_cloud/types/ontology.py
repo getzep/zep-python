@@ -9,9 +9,21 @@ from .entity_type import EntityType
 
 
 class Ontology(UniversalBaseModel):
-    edge_types: typing.Optional[typing.List[EdgeType]] = None
-    entity_types: typing.Optional[typing.List[EntityType]] = None
-    inherited: typing.Optional[bool] = None
+    edge_types: typing.Optional[typing.List[EdgeType]] = pydantic.Field(default=None)
+    """
+    The edge types defined in the ontology in effect at this scope.
+    """
+
+    entity_types: typing.Optional[typing.List[EntityType]] = pydantic.Field(default=None)
+    """
+    The entity types defined in the ontology in effect at this scope.
+    """
+
+    inherited: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether this is the project's default value rather than an override set on
+    this graph.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

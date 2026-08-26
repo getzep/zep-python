@@ -4,12 +4,27 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .observation_type import ObservationType
 
 
 class ObservationSteering(UniversalBaseModel):
-    inherited: typing.Optional[bool] = None
-    instruction: typing.Optional[str] = None
-    types: typing.Optional[typing.List[typing.Dict[str, typing.Any]]] = None
+    inherited: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether this is the project's default value rather than an override set on
+    this graph.
+    """
+
+    instruction: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The natural-language instruction steering how observations are generated
+    at this scope.
+    """
+
+    types: typing.Optional[typing.List[ObservationType]] = pydantic.Field(default=None)
+    """
+    The named observation types, each with a description, that generation
+    should steer toward at this scope.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

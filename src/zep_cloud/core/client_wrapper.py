@@ -27,12 +27,12 @@ class BaseClientWrapper:
         import platform
 
         headers: typing.Dict[str, str] = {
-            "User-Agent": "zep-cloud/4.0.0a4",
+            "User-Agent": "zep-cloud/4.0.0a5",
             "X-Fern-Language": "Python",
             "X-Fern-Runtime": f"python/{platform.python_version()}",
             "X-Fern-Platform": f"{platform.system().lower()}/{platform.release()}",
             "X-Fern-SDK-Name": "zep-cloud",
-            "X-Fern-SDK-Version": "4.0.0a4",
+            "X-Fern-SDK-Version": "4.0.0a5",
             **(self.get_custom_headers() or {}),
         }
         headers["Authorization"] = f"Api-Key {self.api_key}"

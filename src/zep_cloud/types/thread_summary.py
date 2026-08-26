@@ -9,20 +9,49 @@ from ..core.serialization import FieldMetadata
 
 
 class ThreadSummary(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    last_summarized_at: typing.Optional[str] = None
-    last_summarized_episode_valid_at: typing.Optional[str] = None
-    relevance: typing.Optional[float] = None
-    score: typing.Optional[float] = pydantic.Field(default=None)
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    8.7 puts score on every search result and relevance on the ones the
-    cross-encoder scored. Pointers keep both off the listing (8.4).
+    The time the summary was first created.
     """
 
-    summary: typing.Optional[str] = None
-    thread_uuid: typing.Optional[str] = None
+    last_summarized_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The wall-clock time of the most recent summary update.
+    """
+
+    last_summarized_episode_valid_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The latest episode reference time covered by the most recent summary
+    update.
+    """
+
+    relevance: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    A cross-encoder-derived relevance score, present only when the
+    cross-encoder reranker scored this result; like score, it is omitted from
+    plain list results.
+    """
+
+    score: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    A score accompanies every search result; it is omitted when the summary
+    appears in a plain list rather than a search result.
+    """
+
+    summary: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The generated summary text for the thread.
+    """
+
+    thread_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the thread this summary belongs to.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the thread summary."),
     ] = None
 
     if IS_PYDANTIC_V2:

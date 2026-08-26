@@ -7,6 +7,7 @@ from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.batch import Batch
 from ..types.batch_item import BatchItem
+from ..types.batch_item_input import BatchItemInput
 from ..types.batch_item_page import BatchItemPage
 from ..types.batch_items_response import BatchItemsResponse
 from ..types.batch_page import BatchPage
@@ -93,10 +94,15 @@ class BatchClient:
         Parameters
         ----------
         ignore_roles : typing.Optional[typing.Sequence[str]]
+            Message roles to skip during graph extraction for thread message items in
+            this batch.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the batch.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology for episodes in this batch.
 
         idempotency_key : typing.Optional[str]
 
@@ -245,7 +251,7 @@ class BatchClient:
         self,
         batch_uuid: str,
         *,
-        items: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        items: typing.Sequence[BatchItemInput],
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchItemsResponse:
@@ -255,7 +261,8 @@ class BatchClient:
         batch_uuid : str
             Batch UUID
 
-        items : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        items : typing.Sequence[BatchItemInput]
+            The batch items to append, each identified by its type field.
 
         idempotency_key : typing.Optional[str]
 
@@ -269,13 +276,18 @@ class BatchClient:
 
         Examples
         --------
-        from zep_cloud import Zep
+        from zep_cloud import BatchItemInput, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.batch.add_items(
             batch_uuid="batch_uuid",
+            items=[
+                BatchItemInput(
+                    type="graph_episode",
+                )
+            ],
         )
         """
         _response = self._raw_client.add_items(
@@ -408,10 +420,15 @@ class AsyncBatchClient:
         Parameters
         ----------
         ignore_roles : typing.Optional[typing.Sequence[str]]
+            Message roles to skip during graph extraction for thread message items in
+            this batch.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the batch.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology for episodes in this batch.
 
         idempotency_key : typing.Optional[str]
 
@@ -595,7 +612,7 @@ class AsyncBatchClient:
         self,
         batch_uuid: str,
         *,
-        items: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        items: typing.Sequence[BatchItemInput],
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchItemsResponse:
@@ -605,7 +622,8 @@ class AsyncBatchClient:
         batch_uuid : str
             Batch UUID
 
-        items : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        items : typing.Sequence[BatchItemInput]
+            The batch items to append, each identified by its type field.
 
         idempotency_key : typing.Optional[str]
 
@@ -621,7 +639,7 @@ class AsyncBatchClient:
         --------
         import asyncio
 
-        from zep_cloud import AsyncZep
+        from zep_cloud import AsyncZep, BatchItemInput
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -631,6 +649,11 @@ class AsyncBatchClient:
         async def main() -> None:
             await client.batch.add_items(
                 batch_uuid="batch_uuid",
+                items=[
+                    BatchItemInput(
+                        type="graph_episode",
+                    )
+                ],
             )
 
 

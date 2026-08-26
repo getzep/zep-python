@@ -8,9 +8,22 @@ from .task import Task
 
 
 class TaskPage(UniversalBaseModel):
-    items: typing.Optional[typing.List[Task]] = None
-    next_cursor: typing.Optional[str] = None
-    total_size: typing.Optional[int] = None
+    items: typing.Optional[typing.List[Task]] = pydantic.Field(default=None)
+    """
+    The tasks on this page.
+    """
+
+    next_cursor: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The cursor to pass as the next request's cursor to fetch the following
+    page; absent when no further pages remain.
+    """
+
+    total_size: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The total number of matching tasks, counted at the time of this response.
+    It does not indicate whether more pages remain.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

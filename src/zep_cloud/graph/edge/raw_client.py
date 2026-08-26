@@ -11,13 +11,17 @@ from ...core.pagination import AsyncPager, SyncPager
 from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
+from ...core.serialization import convert_and_respect_annotation_metadata
 from ...errors.bad_request_error import BadRequestError
+from ...errors.conflict_error import ConflictError
+from ...errors.forbidden_error import ForbiddenError
 from ...errors.not_found_error import NotFoundError
 from ...errors.unauthorized_error import UnauthorizedError
 from ...types.add_edge_result import AddEdgeResult
 from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.async_result import AsyncResult
 from ...types.edge import Edge
+from ...types.edge_node_ref import EdgeNodeRef
 from ...types.edge_page import EdgePage
 from pydantic import ValidationError
 
@@ -33,14 +37,14 @@ class RawEdgeClient:
         self,
         graph_uuid: str,
         *,
+        fact: str,
+        fact_name: str,
+        source_node: EdgeNodeRef,
+        target_node: EdgeNodeRef,
         attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
-        fact: typing.Optional[str] = OMIT,
-        fact_name: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        source_node: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        target_node: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         valid_at: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -51,23 +55,35 @@ class RawEdgeClient:
         graph_uuid : str
             Graph UUID
 
+        fact : str
+            The fact text describing the relationship between the source and target
+            nodes.
+
+        fact_name : str
+            The name of the edge, in upper snake case, for example RELATES_TO.
+
+        source_node : EdgeNodeRef
+            The source node of the edge, referenced by uuid or created or matched by
+            name.
+
+        target_node : EdgeNodeRef
+            The target node of the edge, referenced by uuid or created or matched by
+            name.
+
         attributes : typing.Optional[typing.Dict[str, typing.Any]]
+            Additional attributes to store on the edge.
 
         expired_at : typing.Optional[str]
-
-        fact : typing.Optional[str]
-
-        fact_name : typing.Optional[str]
+            The time at which the fact was superseded or invalidated.
 
         invalid_at : typing.Optional[str]
+            The time at which the fact stopped being true.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-
-        source_node : typing.Optional[typing.Dict[str, typing.Any]]
-
-        target_node : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata attached to the episode created for this edge.
 
         valid_at : typing.Optional[str]
+            The time at which the fact became true.
 
         idempotency_key : typing.Optional[str]
 
@@ -89,8 +105,12 @@ class RawEdgeClient:
                 "fact_name": fact_name,
                 "invalid_at": invalid_at,
                 "metadata": metadata,
-                "source_node": source_node,
-                "target_node": target_node,
+                "source_node": convert_and_respect_annotation_metadata(
+                    object_=source_node, annotation=EdgeNodeRef, direction="write"
+                ),
+                "target_node": convert_and_respect_annotation_metadata(
+                    object_=target_node, annotation=EdgeNodeRef, direction="write"
+                ),
                 "valid_at": valid_at,
             },
             headers={
@@ -132,8 +152,30 @@ class RawEdgeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -179,6 +221,7 @@ class RawEdgeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -250,8 +293,30 @@ class RawEdgeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -322,6 +387,17 @@ class RawEdgeClient:
                 )
             if _response.status_code == 401:
                 raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -422,8 +498,30 @@ class RawEdgeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -466,9 +564,12 @@ class RawEdgeClient:
             Edge UUID
 
         attributes : typing.Optional[typing.Dict[str, typing.Any]]
+            Additional attributes to merge onto the edge; a key set to null is
+            removed.
 
         fact : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The fact text describing the relationship between the source and target
+            nodes.
 
         idempotency_key : typing.Optional[str]
 
@@ -526,8 +627,30 @@ class RawEdgeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -559,14 +682,14 @@ class AsyncRawEdgeClient:
         self,
         graph_uuid: str,
         *,
+        fact: str,
+        fact_name: str,
+        source_node: EdgeNodeRef,
+        target_node: EdgeNodeRef,
         attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         expired_at: typing.Optional[str] = OMIT,
-        fact: typing.Optional[str] = OMIT,
-        fact_name: typing.Optional[str] = OMIT,
         invalid_at: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        source_node: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        target_node: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         valid_at: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -577,23 +700,35 @@ class AsyncRawEdgeClient:
         graph_uuid : str
             Graph UUID
 
+        fact : str
+            The fact text describing the relationship between the source and target
+            nodes.
+
+        fact_name : str
+            The name of the edge, in upper snake case, for example RELATES_TO.
+
+        source_node : EdgeNodeRef
+            The source node of the edge, referenced by uuid or created or matched by
+            name.
+
+        target_node : EdgeNodeRef
+            The target node of the edge, referenced by uuid or created or matched by
+            name.
+
         attributes : typing.Optional[typing.Dict[str, typing.Any]]
+            Additional attributes to store on the edge.
 
         expired_at : typing.Optional[str]
-
-        fact : typing.Optional[str]
-
-        fact_name : typing.Optional[str]
+            The time at which the fact was superseded or invalidated.
 
         invalid_at : typing.Optional[str]
+            The time at which the fact stopped being true.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-
-        source_node : typing.Optional[typing.Dict[str, typing.Any]]
-
-        target_node : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata attached to the episode created for this edge.
 
         valid_at : typing.Optional[str]
+            The time at which the fact became true.
 
         idempotency_key : typing.Optional[str]
 
@@ -615,8 +750,12 @@ class AsyncRawEdgeClient:
                 "fact_name": fact_name,
                 "invalid_at": invalid_at,
                 "metadata": metadata,
-                "source_node": source_node,
-                "target_node": target_node,
+                "source_node": convert_and_respect_annotation_metadata(
+                    object_=source_node, annotation=EdgeNodeRef, direction="write"
+                ),
+                "target_node": convert_and_respect_annotation_metadata(
+                    object_=target_node, annotation=EdgeNodeRef, direction="write"
+                ),
                 "valid_at": valid_at,
             },
             headers={
@@ -658,8 +797,30 @@ class AsyncRawEdgeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -705,6 +866,7 @@ class AsyncRawEdgeClient:
             Opaque page cursor
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Filters constraining which items are returned.
 
         idempotency_key : typing.Optional[str]
 
@@ -779,8 +941,30 @@ class AsyncRawEdgeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -851,6 +1035,17 @@ class AsyncRawEdgeClient:
                 )
             if _response.status_code == 401:
                 raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -951,8 +1146,30 @@ class AsyncRawEdgeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -995,9 +1212,12 @@ class AsyncRawEdgeClient:
             Edge UUID
 
         attributes : typing.Optional[typing.Dict[str, typing.Any]]
+            Additional attributes to merge onto the edge; a key set to null is
+            removed.
 
         fact : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The fact text describing the relationship between the source and target
+            nodes.
 
         idempotency_key : typing.Optional[str]
 
@@ -1055,8 +1275,30 @@ class AsyncRawEdgeClient:
                         ),
                     ),
                 )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

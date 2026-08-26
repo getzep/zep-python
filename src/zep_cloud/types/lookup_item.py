@@ -9,11 +9,25 @@ from ..core.serialization import FieldMetadata
 
 
 class LookupItem(UniversalBaseModel):
-    found: typing.Optional[bool] = None
-    legacy_id: typing.Optional[str] = None
-    resource_type: typing.Optional[str] = None
+    found: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether the identifier resolved to a resource visible to the caller.
+    """
+
+    legacy_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer-assigned identifier that was looked up.
+    """
+
+    resource_type: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The type of resource this entry resolves: user, thread, or graph.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The resource's unique identifier; present only when found is true."),
     ] = None
 
     if IS_PYDANTIC_V2:

@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class EdgeSourceTarget(UniversalBaseModel):
-    source_entity_type: typing.Optional[str] = None
-    target_entity_type: typing.Optional[str] = None
+    source: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The entity type an edge of this type originates from.
+    """
+
+    target: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The entity type an edge of this type points to.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

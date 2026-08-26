@@ -8,6 +8,7 @@ from ..core.request_options import RequestOptions
 from ..types.node import Node
 from ..types.user import User
 from ..types.user_delete_result import UserDeleteResult
+from ..types.user_instruction import UserInstruction
 from ..types.user_page import UserPage
 from ..types.user_summary_instructions import UserSummaryInstructions
 from .raw_client import AsyncRawUserClient, RawUserClient
@@ -48,18 +49,25 @@ class UserClient:
         Parameters
         ----------
         disable_default_ontology : typing.Optional[bool]
+            When true, disables the default ontology for the user's graph.
 
         email : typing.Optional[str]
+            The email address of the user.
 
         first_name : typing.Optional[str]
+            The user's first name.
 
         last_name : typing.Optional[str]
+            The user's last name.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the user.
 
         time_zone : typing.Optional[str]
+            The user's IANA time zone.
 
         user_id : typing.Optional[str]
+            An optional developer-assigned identifier for the user.
 
         idempotency_key : typing.Optional[str]
 
@@ -120,6 +128,7 @@ class UserClient:
             asc or desc
 
         search : typing.Optional[str]
+            Filters results to users whose user ID, email, or name contains this text.
 
         idempotency_key : typing.Optional[str]
 
@@ -173,10 +182,16 @@ class UserClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -292,21 +307,22 @@ class UserClient:
             User UUID
 
         disable_default_ontology : typing.Optional[bool]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            When true, disables the default ontology for the user's graph.
 
         email : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The email address of the user.
 
         first_name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's first name.
 
         last_name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's last name.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to merge onto the user; a key set to null is removed.
 
         time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's IANA time zone.
 
         idempotency_key : typing.Optional[str]
 
@@ -407,7 +423,7 @@ class UserClient:
         user_uuid: str,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[UserInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UserSummaryInstructions:
@@ -418,8 +434,12 @@ class UserClient:
             User UUID
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[UserInstruction]]
+            The custom instructions used when generating a user's summary at this
+            scope, each with a name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -484,18 +504,25 @@ class AsyncUserClient:
         Parameters
         ----------
         disable_default_ontology : typing.Optional[bool]
+            When true, disables the default ontology for the user's graph.
 
         email : typing.Optional[str]
+            The email address of the user.
 
         first_name : typing.Optional[str]
+            The user's first name.
 
         last_name : typing.Optional[str]
+            The user's last name.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to store on the user.
 
         time_zone : typing.Optional[str]
+            The user's IANA time zone.
 
         user_id : typing.Optional[str]
+            An optional developer-assigned identifier for the user.
 
         idempotency_key : typing.Optional[str]
 
@@ -564,6 +591,7 @@ class AsyncUserClient:
             asc or desc
 
         search : typing.Optional[str]
+            Filters results to users whose user ID, email, or name contains this text.
 
         idempotency_key : typing.Optional[str]
 
@@ -626,10 +654,16 @@ class AsyncUserClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -771,21 +805,22 @@ class AsyncUserClient:
             User UUID
 
         disable_default_ontology : typing.Optional[bool]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            When true, disables the default ontology for the user's graph.
 
         email : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The email address of the user.
 
         first_name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's first name.
 
         last_name : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's last name.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata to merge onto the user; a key set to null is removed.
 
         time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The user's IANA time zone.
 
         idempotency_key : typing.Optional[str]
 
@@ -910,7 +945,7 @@ class AsyncUserClient:
         user_uuid: str,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[UserInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UserSummaryInstructions:
@@ -921,8 +956,12 @@ class AsyncUserClient:
             User UUID
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[UserInstruction]]
+            The custom instructions used when generating a user's summary at this
+            scope, each with a name and text.
 
         idempotency_key : typing.Optional[str]
 

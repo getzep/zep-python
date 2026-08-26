@@ -8,9 +8,22 @@ from .context_results import ContextResults
 
 
 class GraphContextResponse(UniversalBaseModel):
-    context: typing.Optional[str] = None
-    results: typing.Optional[ContextResults] = None
-    truncated: typing.Optional[bool] = None
+    context: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The assembled context block of facts, entities, and episodes, ready to
+    insert into a system prompt.
+    """
+
+    results: typing.Optional[ContextResults] = pydantic.Field(default=None)
+    """
+    The individual edges, nodes, episodes, observations, and thread summaries
+    selected to build the context. Present only when requested.
+    """
+
+    truncated: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether the character budget limited the size of the context block.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -9,32 +9,111 @@ from ..core.serialization import FieldMetadata
 
 
 class Edge(UniversalBaseModel):
-    attributes: typing.Optional[typing.Dict[str, typing.Any]] = None
-    created_at: typing.Optional[str] = None
-    episode_uuids: typing.Optional[typing.List[str]] = None
-    expired_at: typing.Optional[str] = None
-    fact: typing.Optional[str] = None
-    graph_uuid: typing.Optional[str] = None
-    invalid_at: typing.Optional[str] = None
-    name: typing.Optional[str] = None
-    relevance: typing.Optional[float] = None
-    scope: typing.Optional[str] = None
-    score: typing.Optional[float] = None
-    source_node_labels: typing.Optional[typing.List[str]] = None
-    source_node_name: typing.Optional[str] = pydantic.Field(default=None)
+    attributes: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
     """
-    Endpoint-name and label projections are read-time and subject to the
-    ABAC omission rule of spec-2 section 4, so each is omitted when denied.
+    Additional attributes of the edge.
     """
 
-    source_node_uuid: typing.Optional[str] = None
-    target_node_labels: typing.Optional[typing.List[str]] = None
-    target_node_name: typing.Optional[str] = None
-    target_node_uuid: typing.Optional[str] = None
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the edge was created.
+    """
+
+    episode_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The episodes this edge was derived from.
+    """
+
+    expired_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the fact was superseded or removed.
+    """
+
+    fact: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The natural-language fact this edge represents.
+    """
+
+    graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the graph this edge belongs to.
+    """
+
+    invalid_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time at which the fact stopped being true.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The name of the edge, in upper snake case, for example RELATES_TO.
+    """
+
+    relevance: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    A cross-encoder-derived relevance score, present only when the
+    cross-encoder reranker scored this result; like score, it is omitted from
+    plain list results.
+    """
+
+    scope: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The kind of edge this is, for example entity or episodic.
+    """
+
+    score: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The ranking score returned with every search result; omitted when the edge
+    appears in a plain list rather than a search result.
+    """
+
+    source_node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The current labels of the source node. This is read at request time rather
+    than stored on the edge, and is omitted when the source node cannot be
+    resolved.
+    """
+
+    source_node_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The current name of the source node. This is read at request time rather
+    than stored on the edge, and is omitted when the source node cannot be
+    resolved.
+    """
+
+    source_node_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the edge's source node.
+    """
+
+    target_node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The current labels of the target node. This is read at request time rather
+    than stored on the edge, and is omitted when the target node cannot be
+    resolved.
+    """
+
+    target_node_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The current name of the target node. This is read at request time rather
+    than stored on the edge, and is omitted when the target node cannot be
+    resolved.
+    """
+
+    target_node_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the edge's target node.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the edge."),
     ] = None
-    valid_at: typing.Optional[str] = None
+    valid_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time from which the fact is considered true.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

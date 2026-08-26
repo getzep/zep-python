@@ -4,11 +4,21 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .custom_instruction import CustomInstruction
 
 
 class Instructions(UniversalBaseModel):
-    inherited: typing.Optional[bool] = None
-    instructions: typing.Optional[typing.List[typing.Dict[str, typing.Any]]] = None
+    inherited: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether this is the project's default value rather than an override set on
+    this graph.
+    """
+
+    instructions: typing.Optional[typing.List[CustomInstruction]] = pydantic.Field(default=None)
+    """
+    The custom extraction instructions in effect at this scope, each with a
+    name and text.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

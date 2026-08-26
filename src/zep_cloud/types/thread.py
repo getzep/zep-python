@@ -9,13 +9,35 @@ from ..core.serialization import FieldMetadata
 
 
 class Thread(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    graph_uuid: typing.Optional[str] = None
-    thread_id: typing.Optional[str] = None
-    updated_at: typing.Optional[str] = None
-    user_uuid: typing.Optional[str] = None
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the thread was created.
+    """
+
+    graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the owning user's graph.
+    """
+
+    thread_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer-assigned identifier of the thread.
+    """
+
+    updated_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the thread was last updated.
+    """
+
+    user_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the user the thread belongs to.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the thread."),
     ] = None
 
     if IS_PYDANTIC_V2:

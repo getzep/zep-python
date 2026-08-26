@@ -12,11 +12,30 @@ from .context_thread_summary import ContextThreadSummary
 
 
 class ContextResults(UniversalBaseModel):
-    edges: typing.Optional[typing.List[ContextEdge]] = None
-    episodes: typing.Optional[typing.List[ContextEpisode]] = None
-    nodes: typing.Optional[typing.List[ContextNode]] = None
-    observations: typing.Optional[typing.List[ContextObservation]] = None
-    thread_summaries: typing.Optional[typing.List[ContextThreadSummary]] = None
+    edges: typing.Optional[typing.List[ContextEdge]] = pydantic.Field(default=None)
+    """
+    The edges selected for inclusion in the assembled context.
+    """
+
+    episodes: typing.Optional[typing.List[ContextEpisode]] = pydantic.Field(default=None)
+    """
+    The episodes selected for inclusion in the assembled context.
+    """
+
+    nodes: typing.Optional[typing.List[ContextNode]] = pydantic.Field(default=None)
+    """
+    The nodes selected for inclusion in the assembled context.
+    """
+
+    observations: typing.Optional[typing.List[ContextObservation]] = pydantic.Field(default=None)
+    """
+    The observations selected for inclusion in the assembled context.
+    """
+
+    thread_summaries: typing.Optional[typing.List[ContextThreadSummary]] = pydantic.Field(default=None)
+    """
+    The thread summaries selected for inclusion in the assembled context.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

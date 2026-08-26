@@ -9,12 +9,31 @@ from ..core.serialization import FieldMetadata
 
 
 class Project(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    default_time_zone: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    name: typing.Optional[str] = None
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the project was created.
+    """
+
+    default_time_zone: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The project's default IANA time zone, used as the fallback when a resource
+    does not set its own.
+    """
+
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A human-readable description of the project.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The name of the project.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the project."),
     ] = None
 
     if IS_PYDANTIC_V2:

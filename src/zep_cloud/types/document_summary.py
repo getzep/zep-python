@@ -9,13 +9,35 @@ from ..core.serialization import FieldMetadata
 
 
 class DocumentSummary(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    document_id: typing.Optional[str] = None
-    last_summarized_at: typing.Optional[str] = None
-    last_summarized_episode_valid_at: typing.Optional[str] = None
-    summary: typing.Optional[str] = None
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the summary was created.
+    """
+
+    document_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer-assigned identifier of the document this summary covers.
+    """
+
+    last_summarized_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time the summary was most recently generated.
+    """
+
+    last_summarized_episode_valid_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The latest episode reference time covered by the summary.
+    """
+
+    summary: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    A generated summary of the document's episodes.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The unique identifier of the document summary."),
     ] = None
 
     if IS_PYDANTIC_V2:

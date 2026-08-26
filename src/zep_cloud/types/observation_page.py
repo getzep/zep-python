@@ -8,9 +8,22 @@ from .observation import Observation
 
 
 class ObservationPage(UniversalBaseModel):
-    items: typing.Optional[typing.List[Observation]] = None
-    next_cursor: typing.Optional[str] = None
-    total_size: typing.Optional[int] = None
+    items: typing.Optional[typing.List[Observation]] = pydantic.Field(default=None)
+    """
+    The observations on this page.
+    """
+
+    next_cursor: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The cursor to pass as the next request's cursor to fetch the following
+    page; absent when no further pages remain.
+    """
+
+    total_size: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Omitted for this collection; use next_cursor to detect the end of
+    pagination.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

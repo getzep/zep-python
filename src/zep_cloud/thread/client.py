@@ -111,17 +111,19 @@ class ThreadClient:
     def create(
         self,
         *,
+        user_uuid: str,
         thread_id: typing.Optional[str] = OMIT,
-        user_uuid: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Thread:
         """
         Parameters
         ----------
-        thread_id : typing.Optional[str]
+        user_uuid : str
+            The UUID of the user this thread belongs to.
 
-        user_uuid : typing.Optional[str]
+        thread_id : typing.Optional[str]
+            An optional developer-assigned identifier for the thread.
 
         idempotency_key : typing.Optional[str]
 
@@ -140,10 +142,12 @@ class ThreadClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        client.thread.create()
+        client.thread.create(
+            user_uuid="user_uuid",
+        )
         """
         _response = self._raw_client.create(
-            thread_id=thread_id, user_uuid=user_uuid, idempotency_key=idempotency_key, request_options=request_options
+            user_uuid=user_uuid, thread_id=thread_id, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
 
@@ -160,10 +164,16 @@ class ThreadClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -402,8 +412,8 @@ class ThreadClient:
         self,
         thread_uuid: str,
         *,
+        messages: typing.Sequence[AddMessage],
         ignore_roles: typing.Optional[typing.Sequence[str]] = OMIT,
-        messages: typing.Optional[typing.Sequence[AddMessage]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -415,13 +425,20 @@ class ThreadClient:
         thread_uuid : str
             Thread UUID
 
-        ignore_roles : typing.Optional[typing.Sequence[str]]
+        messages : typing.Sequence[AddMessage]
+            The messages to add to the thread.
 
-        messages : typing.Optional[typing.Sequence[AddMessage]]
+        ignore_roles : typing.Optional[typing.Sequence[str]]
+            Message roles to skip during graph extraction; the messages are still
+            stored.
 
         return_context : typing.Optional[bool]
+            When true, returns the context block for the thread's most recent
+            messages.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology.
 
         idempotency_key : typing.Optional[str]
 
@@ -435,19 +452,20 @@ class ThreadClient:
 
         Examples
         --------
-        from zep_cloud import Zep
+        from zep_cloud import AddMessage, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.thread.add_messages(
             thread_uuid="thread_uuid",
+            messages=[AddMessage()],
         )
         """
         _response = self._raw_client.add_messages(
             thread_uuid,
-            ignore_roles=ignore_roles,
             messages=messages,
+            ignore_roles=ignore_roles,
             return_context=return_context,
             strict_ontology=strict_ontology,
             idempotency_key=idempotency_key,
@@ -589,17 +607,19 @@ class AsyncThreadClient:
     async def create(
         self,
         *,
+        user_uuid: str,
         thread_id: typing.Optional[str] = OMIT,
-        user_uuid: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Thread:
         """
         Parameters
         ----------
-        thread_id : typing.Optional[str]
+        user_uuid : str
+            The UUID of the user this thread belongs to.
 
-        user_uuid : typing.Optional[str]
+        thread_id : typing.Optional[str]
+            An optional developer-assigned identifier for the thread.
 
         idempotency_key : typing.Optional[str]
 
@@ -623,13 +643,15 @@ class AsyncThreadClient:
 
 
         async def main() -> None:
-            await client.thread.create()
+            await client.thread.create(
+                user_uuid="user_uuid",
+            )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            thread_id=thread_id, user_uuid=user_uuid, idempotency_key=idempotency_key, request_options=request_options
+            user_uuid=user_uuid, thread_id=thread_id, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
 
@@ -646,10 +668,16 @@ class AsyncThreadClient:
         Parameters
         ----------
         graph_id : typing.Optional[str]
+            The developer-assigned graph ID to resolve to a UUID. Mutually exclusive
+            with user_id and thread_id.
 
         thread_id : typing.Optional[str]
+            The developer-assigned thread ID to resolve to a UUID. Mutually exclusive
+            with user_id and graph_id.
 
         user_id : typing.Optional[str]
+            The developer-assigned user ID to resolve to a UUID. Mutually exclusive
+            with thread_id and graph_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -942,8 +970,8 @@ class AsyncThreadClient:
         self,
         thread_uuid: str,
         *,
+        messages: typing.Sequence[AddMessage],
         ignore_roles: typing.Optional[typing.Sequence[str]] = OMIT,
-        messages: typing.Optional[typing.Sequence[AddMessage]] = OMIT,
         return_context: typing.Optional[bool] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -955,13 +983,20 @@ class AsyncThreadClient:
         thread_uuid : str
             Thread UUID
 
-        ignore_roles : typing.Optional[typing.Sequence[str]]
+        messages : typing.Sequence[AddMessage]
+            The messages to add to the thread.
 
-        messages : typing.Optional[typing.Sequence[AddMessage]]
+        ignore_roles : typing.Optional[typing.Sequence[str]]
+            Message roles to skip during graph extraction; the messages are still
+            stored.
 
         return_context : typing.Optional[bool]
+            When true, returns the context block for the thread's most recent
+            messages.
 
         strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic entity nodes that do not match
+            the configured ontology.
 
         idempotency_key : typing.Optional[str]
 
@@ -977,7 +1012,7 @@ class AsyncThreadClient:
         --------
         import asyncio
 
-        from zep_cloud import AsyncZep
+        from zep_cloud import AddMessage, AsyncZep
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -987,6 +1022,7 @@ class AsyncThreadClient:
         async def main() -> None:
             await client.thread.add_messages(
                 thread_uuid="thread_uuid",
+                messages=[AddMessage()],
             )
 
 
@@ -994,8 +1030,8 @@ class AsyncThreadClient:
         """
         _response = await self._raw_client.add_messages(
             thread_uuid,
-            ignore_roles=ignore_roles,
             messages=messages,
+            ignore_roles=ignore_roles,
             return_context=return_context,
             strict_ontology=strict_ontology,
             idempotency_key=idempotency_key,

@@ -4,12 +4,15 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
+from ..types.custom_instruction import CustomInstruction
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.instructions import Instructions
 from ..types.observation_steering import ObservationSteering
+from ..types.observation_type import ObservationType
 from ..types.ontology import Ontology
 from ..types.project import Project
+from ..types.user_instruction import UserInstruction
 from ..types.user_summary_instructions import UserSummaryInstructions
 from .raw_client import AsyncRawProjectClient, RawProjectClient
 
@@ -67,7 +70,8 @@ class ProjectClient:
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The project's IANA fallback time zone. Set to null to clear the existing
+            value.
 
         idempotency_key : typing.Optional[str]
 
@@ -121,7 +125,7 @@ class ProjectClient:
         self,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[CustomInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Instructions:
@@ -129,8 +133,12 @@ class ProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[CustomInstruction]]
+            The custom extraction instructions in effect at this scope, each with a
+            name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -190,7 +198,7 @@ class ProjectClient:
         *,
         inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ObservationSteering:
@@ -198,10 +206,16 @@ class ProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         instruction : typing.Optional[str]
+            The natural-language instruction steering how observations are generated
+            at this scope.
 
-        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        types : typing.Optional[typing.Sequence[ObservationType]]
+            The named observation types, each with a description, that generation
+            should steer toward at this scope.
 
         idempotency_key : typing.Optional[str]
 
@@ -268,10 +282,14 @@ class ProjectClient:
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
+            The edge types defined in the ontology in effect at this scope.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+            The entity types defined in the ontology in effect at this scope.
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -331,7 +349,7 @@ class ProjectClient:
         self,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[UserInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UserSummaryInstructions:
@@ -339,8 +357,12 @@ class ProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[UserInstruction]]
+            The custom instructions used when generating a user's summary at this
+            scope, each with a name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -428,7 +450,8 @@ class AsyncProjectClient:
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
-            Omit to leave unchanged, send JSON null to clear, or send a value to set.
+            The project's IANA fallback time zone. Set to null to clear the existing
+            value.
 
         idempotency_key : typing.Optional[str]
 
@@ -498,7 +521,7 @@ class AsyncProjectClient:
         self,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[CustomInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Instructions:
@@ -506,8 +529,12 @@ class AsyncProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[CustomInstruction]]
+            The custom extraction instructions in effect at this scope, each with a
+            name and text.
 
         idempotency_key : typing.Optional[str]
 
@@ -583,7 +610,7 @@ class AsyncProjectClient:
         *,
         inherited: typing.Optional[bool] = OMIT,
         instruction: typing.Optional[str] = OMIT,
-        types: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        types: typing.Optional[typing.Sequence[ObservationType]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ObservationSteering:
@@ -591,10 +618,16 @@ class AsyncProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         instruction : typing.Optional[str]
+            The natural-language instruction steering how observations are generated
+            at this scope.
 
-        types : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        types : typing.Optional[typing.Sequence[ObservationType]]
+            The named observation types, each with a description, that generation
+            should steer toward at this scope.
 
         idempotency_key : typing.Optional[str]
 
@@ -677,10 +710,14 @@ class AsyncProjectClient:
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
+            The edge types defined in the ontology in effect at this scope.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
+            The entity types defined in the ontology in effect at this scope.
 
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
         idempotency_key : typing.Optional[str]
 
@@ -756,7 +793,7 @@ class AsyncProjectClient:
         self,
         *,
         inherited: typing.Optional[bool] = OMIT,
-        instructions: typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]] = OMIT,
+        instructions: typing.Optional[typing.Sequence[UserInstruction]] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UserSummaryInstructions:
@@ -764,8 +801,12 @@ class AsyncProjectClient:
         Parameters
         ----------
         inherited : typing.Optional[bool]
+            Whether this is the project's default value rather than an override set on
+            this graph.
 
-        instructions : typing.Optional[typing.Sequence[typing.Dict[str, typing.Any]]]
+        instructions : typing.Optional[typing.Sequence[UserInstruction]]
+            The custom instructions used when generating a user's summary at this
+            scope, each with a name and text.
 
         idempotency_key : typing.Optional[str]
 
