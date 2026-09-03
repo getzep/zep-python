@@ -5,6 +5,7 @@ import email.utils
 import re
 import time
 import typing
+import uuid
 from contextlib import asynccontextmanager, contextmanager
 from random import random
 
@@ -21,6 +22,15 @@ from httpx._types import RequestFiles
 INITIAL_RETRY_DELAY_SECONDS = 1.0
 MAX_RETRY_DELAY_SECONDS = 60.0
 JITTER_FACTOR = 0.2  # 20% random jitter
+IDEMPOTENCY_HEADER = "Idempotency-Key"
+
+
+def _fill_idempotency_key(
+    headers: typing.Optional[typing.Dict[str, typing.Any]],
+) -> typing.Optional[typing.Dict[str, typing.Any]]:
+    if headers is None or IDEMPOTENCY_HEADER not in headers or headers[IDEMPOTENCY_HEADER] is not None:
+        return headers
+    return {**headers, IDEMPOTENCY_HEADER: str(uuid.uuid4())}
 
 
 def _parse_retry_after(response_headers: httpx.Headers) -> typing.Optional[float]:
@@ -304,6 +314,7 @@ class HttpClient:
         omit: typing.Optional[typing.Any] = None,
         force_multipart: typing.Optional[bool] = None,
     ) -> httpx.Response:
+        headers = _fill_idempotency_key(headers)
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
@@ -564,6 +575,7 @@ class AsyncHttpClient:
         omit: typing.Optional[typing.Any] = None,
         force_multipart: typing.Optional[bool] = None,
     ) -> httpx.Response:
+        headers = _fill_idempotency_key(headers)
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
