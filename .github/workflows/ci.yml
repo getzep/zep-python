@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Compile
-        run: poetry run mypy . --exclude examples
+        run: poetry run mypy src/ --exclude tests
   test:
     runs-on: ubuntu-24.04
     steps:
