@@ -83,6 +83,7 @@ class BatchClient:
         *,
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchSummary:
         """
@@ -97,6 +98,9 @@ class BatchClient:
             Has no effect on graph_episode items.
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -116,7 +120,10 @@ class BatchClient:
         client.batch.create()
         """
         _response = self._raw_client.create(
-            ignore_roles=ignore_roles, metadata=metadata, request_options=request_options
+            ignore_roles=ignore_roles,
+            metadata=metadata,
+            strict_ontology=strict_ontology,
+            request_options=request_options,
         )
         return _response.data
 
@@ -387,6 +394,7 @@ class AsyncBatchClient:
         *,
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchSummary:
         """
@@ -401,6 +409,9 @@ class AsyncBatchClient:
             Has no effect on graph_episode items.
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -428,7 +439,10 @@ class AsyncBatchClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            ignore_roles=ignore_roles, metadata=metadata, request_options=request_options
+            ignore_roles=ignore_roles,
+            metadata=metadata,
+            strict_ontology=strict_ontology,
+            request_options=request_options,
         )
         return _response.data
 

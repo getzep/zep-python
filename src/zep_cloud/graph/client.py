@@ -16,6 +16,7 @@ from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.episode_data import EpisodeData
+from ..types.episode_response import EpisodeResponse
 from ..types.graph import Graph
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
@@ -28,6 +29,7 @@ from ..types.recency_weight import RecencyWeight
 from ..types.reranker import Reranker
 from ..types.search_filters import SearchFilters
 from ..types.success_response import SuccessResponse
+from .document_summary.client import AsyncDocumentSummaryClient, DocumentSummaryClient
 from .edge.client import AsyncEdgeClient, EdgeClient
 from .episode.client import AsyncEpisodeClient, EpisodeClient
 from .node.client import AsyncNodeClient, NodeClient
@@ -42,6 +44,8 @@ OMIT = typing.cast(typing.Any, ...)
 class GraphClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._raw_client = RawGraphClient(client_wrapper=client_wrapper)
+        self.document_summary = DocumentSummaryClient(client_wrapper=client_wrapper)
+
         self.edge = EdgeClient(client_wrapper=client_wrapper)
 
         self.episode = EpisodeClient(client_wrapper=client_wrapper)
@@ -298,6 +302,7 @@ class GraphClient:
         data: str,
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
+        document_id: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
@@ -315,6 +320,10 @@ class GraphClient:
         type : GraphDataType
 
         created_at : typing.Optional[str]
+
+        document_id : typing.Optional[str]
+            Optional document ID that groups episodes as chunks of the same document
+            on a graph. Parallel to thread_id for message threads.
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -354,6 +363,7 @@ class GraphClient:
             data=data,
             type=type,
             created_at=created_at,
+            document_id=document_id,
             graph_id=graph_id,
             metadata=metadata,
             source_description=source_description,
@@ -367,6 +377,7 @@ class GraphClient:
         self,
         *,
         episodes: typing.Sequence[EpisodeData],
+        document_id: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -380,6 +391,9 @@ class GraphClient:
         Parameters
         ----------
         episodes : typing.Sequence[EpisodeData]
+
+        document_id : typing.Optional[str]
+            Optional document ID applied to every episode in this batch request.
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -416,6 +430,7 @@ class GraphClient:
         """
         _response = self._raw_client.add_batch(
             episodes=episodes,
+            document_id=document_id,
             graph_id=graph_id,
             strict_ontology=strict_ontology,
             user_id=user_id,
@@ -667,6 +682,45 @@ class GraphClient:
         )
         return _response.data
 
+    def get_episodes_for_document(
+        self, document_id: str, *, graph_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> EpisodeResponse:
+        """
+        Returns episodes associated with a document on a graph. Documents group episodes as chunks, parallel to how threads group messages.
+
+        Parameters
+        ----------
+        document_id : str
+            Document ID
+
+        graph_id : str
+            Graph ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EpisodeResponse
+            Episodes
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.get_episodes_for_document(
+            document_id="document_id",
+            graph_id="graph_id",
+        )
+        """
+        _response = self._raw_client.get_episodes_for_document(
+            document_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
     def list_all(
         self,
         *,
@@ -678,7 +732,14 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
-        Returns all graphs. In order to list users, use user.list_ordered instead
+        Returns a paginated directory of live standalone graphs in the
+        authenticated project. Optional `search` matches `graph_id`, `name`, and
+        `description` (metadata only; not graph contents).
+
+        Default `pageSize` is 50 (range 1–100). To list users, use
+        `user.list_ordered` instead. See the
+        [graph directory guide](/graph-directory) for pagination, relevance
+        ordering, and Memory MCP exposure.
 
         Parameters
         ----------
@@ -795,6 +856,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> DetectPatternsResponse:
         """
+        Deprecated. Pattern detection is not part of Public API v4.
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
         When a query is provided, uses hybrid search to discover seed nodes,
@@ -1018,7 +1080,7 @@ class GraphClient:
         search_filters : typing.Optional[SearchFilters]
             Filters constraining traversed edges and included nodes. Reuses the
             graph.search filter type. search_filters.episode_metadata_filters is
-            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+            rejected: it cannot be enforced during graph traversal.
 
         user_id : typing.Optional[str]
             user_id identifies the target user graph. Exactly one of user_id or
@@ -1201,6 +1263,8 @@ class GraphClient:
 class AsyncGraphClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._raw_client = AsyncRawGraphClient(client_wrapper=client_wrapper)
+        self.document_summary = AsyncDocumentSummaryClient(client_wrapper=client_wrapper)
+
         self.edge = AsyncEdgeClient(client_wrapper=client_wrapper)
 
         self.episode = AsyncEpisodeClient(client_wrapper=client_wrapper)
@@ -1497,6 +1561,7 @@ class AsyncGraphClient:
         data: str,
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
+        document_id: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
@@ -1514,6 +1579,10 @@ class AsyncGraphClient:
         type : GraphDataType
 
         created_at : typing.Optional[str]
+
+        document_id : typing.Optional[str]
+            Optional document ID that groups episodes as chunks of the same document
+            on a graph. Parallel to thread_id for message threads.
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -1561,6 +1630,7 @@ class AsyncGraphClient:
             data=data,
             type=type,
             created_at=created_at,
+            document_id=document_id,
             graph_id=graph_id,
             metadata=metadata,
             source_description=source_description,
@@ -1574,6 +1644,7 @@ class AsyncGraphClient:
         self,
         *,
         episodes: typing.Sequence[EpisodeData],
+        document_id: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -1587,6 +1658,9 @@ class AsyncGraphClient:
         Parameters
         ----------
         episodes : typing.Sequence[EpisodeData]
+
+        document_id : typing.Optional[str]
+            Optional document ID applied to every episode in this batch request.
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -1631,6 +1705,7 @@ class AsyncGraphClient:
         """
         _response = await self._raw_client.add_batch(
             episodes=episodes,
+            document_id=document_id,
             graph_id=graph_id,
             strict_ontology=strict_ontology,
             user_id=user_id,
@@ -1906,6 +1981,53 @@ class AsyncGraphClient:
         )
         return _response.data
 
+    async def get_episodes_for_document(
+        self, document_id: str, *, graph_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> EpisodeResponse:
+        """
+        Returns episodes associated with a document on a graph. Documents group episodes as chunks, parallel to how threads group messages.
+
+        Parameters
+        ----------
+        document_id : str
+            Document ID
+
+        graph_id : str
+            Graph ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EpisodeResponse
+            Episodes
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.get_episodes_for_document(
+                document_id="document_id",
+                graph_id="graph_id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_episodes_for_document(
+            document_id, graph_id=graph_id, request_options=request_options
+        )
+        return _response.data
+
     async def list_all(
         self,
         *,
@@ -1917,7 +2039,14 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphListResponse:
         """
-        Returns all graphs. In order to list users, use user.list_ordered instead
+        Returns a paginated directory of live standalone graphs in the
+        authenticated project. Optional `search` matches `graph_id`, `name`, and
+        `description` (metadata only; not graph contents).
+
+        Default `pageSize` is 50 (range 1–100). To list users, use
+        `user.list_ordered` instead. See the
+        [graph directory guide](/graph-directory) for pagination, relevance
+        ordering, and Memory MCP exposure.
 
         Parameters
         ----------
@@ -2050,6 +2179,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> DetectPatternsResponse:
         """
+        Deprecated. Pattern detection is not part of Public API v4.
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
         When a query is provided, uses hybrid search to discover seed nodes,
@@ -2289,7 +2419,7 @@ class AsyncGraphClient:
         search_filters : typing.Optional[SearchFilters]
             Filters constraining traversed edges and included nodes. Reuses the
             graph.search filter type. search_filters.episode_metadata_filters is
-            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+            rejected: it cannot be enforced during graph traversal.
 
         user_id : typing.Optional[str]
             user_id identifies the target user graph. Exactly one of user_id or

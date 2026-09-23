@@ -27,6 +27,7 @@ from ..types.entity_type import EntityType
 from ..types.entity_type_response import EntityTypeResponse
 from ..types.episode import Episode
 from ..types.episode_data import EpisodeData
+from ..types.episode_response import EpisodeResponse
 from ..types.graph import Graph
 from ..types.graph_data_type import GraphDataType
 from ..types.graph_list_response import GraphListResponse
@@ -523,6 +524,7 @@ class RawGraphClient:
         data: str,
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
+        document_id: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
@@ -540,6 +542,10 @@ class RawGraphClient:
         type : GraphDataType
 
         created_at : typing.Optional[str]
+
+        document_id : typing.Optional[str]
+            Optional document ID that groups episodes as chunks of the same document
+            on a graph. Parallel to thread_id for message threads.
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -569,6 +575,7 @@ class RawGraphClient:
             json={
                 "created_at": created_at,
                 "data": data,
+                "document_id": document_id,
                 "graph_id": graph_id,
                 "metadata": metadata,
                 "source_description": source_description,
@@ -627,6 +634,7 @@ class RawGraphClient:
         self,
         *,
         episodes: typing.Sequence[EpisodeData],
+        document_id: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -640,6 +648,9 @@ class RawGraphClient:
         Parameters
         ----------
         episodes : typing.Sequence[EpisodeData]
+
+        document_id : typing.Optional[str]
+            Optional document ID applied to every episode in this batch request.
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -662,6 +673,7 @@ class RawGraphClient:
             "graph-batch",
             method="POST",
             json={
+                "document_id": document_id,
                 "episodes": convert_and_respect_annotation_metadata(
                     object_=episodes, annotation=typing.Sequence[EpisodeData], direction="write"
                 ),
@@ -1073,6 +1085,88 @@ class RawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def get_episodes_for_document(
+        self, document_id: str, *, graph_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[EpisodeResponse]:
+        """
+        Returns episodes associated with a document on a graph. Documents group episodes as chunks, parallel to how threads group messages.
+
+        Parameters
+        ----------
+        document_id : str
+            Document ID
+
+        graph_id : str
+            Graph ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[EpisodeResponse]
+            Episodes
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graph/documents/{jsonable_encoder(document_id)}/episodes",
+            method="GET",
+            params={
+                "graph_id": graph_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EpisodeResponse,
+                    parse_obj_as(
+                        type_=EpisodeResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     def list_all(
         self,
         *,
@@ -1084,7 +1178,14 @@ class RawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GraphListResponse]:
         """
-        Returns all graphs. In order to list users, use user.list_ordered instead
+        Returns a paginated directory of live standalone graphs in the
+        authenticated project. Optional `search` matches `graph_id`, `name`, and
+        `description` (metadata only; not graph contents).
+
+        Default `pageSize` is 50 (range 1–100). To list users, use
+        `user.list_ordered` instead. See the
+        [graph directory guide](/graph-directory) for pagination, relevance
+        ordering, and Memory MCP exposure.
 
         Parameters
         ----------
@@ -1266,6 +1367,7 @@ class RawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[DetectPatternsResponse]:
         """
+        Deprecated. Pattern detection is not part of Public API v4.
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
         When a query is provided, uses hybrid search to discover seed nodes,
@@ -1593,7 +1695,7 @@ class RawGraphClient:
         search_filters : typing.Optional[SearchFilters]
             Filters constraining traversed edges and included nodes. Reuses the
             graph.search filter type. search_filters.episode_metadata_filters is
-            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+            rejected: it cannot be enforced during graph traversal.
 
         user_id : typing.Optional[str]
             user_id identifies the target user graph. Exactly one of user_id or
@@ -2473,6 +2575,7 @@ class AsyncRawGraphClient:
         data: str,
         type: GraphDataType,
         created_at: typing.Optional[str] = OMIT,
+        document_id: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
@@ -2490,6 +2593,10 @@ class AsyncRawGraphClient:
         type : GraphDataType
 
         created_at : typing.Optional[str]
+
+        document_id : typing.Optional[str]
+            Optional document ID that groups episodes as chunks of the same document
+            on a graph. Parallel to thread_id for message threads.
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -2519,6 +2626,7 @@ class AsyncRawGraphClient:
             json={
                 "created_at": created_at,
                 "data": data,
+                "document_id": document_id,
                 "graph_id": graph_id,
                 "metadata": metadata,
                 "source_description": source_description,
@@ -2577,6 +2685,7 @@ class AsyncRawGraphClient:
         self,
         *,
         episodes: typing.Sequence[EpisodeData],
+        document_id: typing.Optional[str] = OMIT,
         graph_id: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         user_id: typing.Optional[str] = OMIT,
@@ -2590,6 +2699,9 @@ class AsyncRawGraphClient:
         Parameters
         ----------
         episodes : typing.Sequence[EpisodeData]
+
+        document_id : typing.Optional[str]
+            Optional document ID applied to every episode in this batch request.
 
         graph_id : typing.Optional[str]
             graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
@@ -2612,6 +2724,7 @@ class AsyncRawGraphClient:
             "graph-batch",
             method="POST",
             json={
+                "document_id": document_id,
                 "episodes": convert_and_respect_annotation_metadata(
                     object_=episodes, annotation=typing.Sequence[EpisodeData], direction="write"
                 ),
@@ -3023,6 +3136,88 @@ class AsyncRawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    async def get_episodes_for_document(
+        self, document_id: str, *, graph_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[EpisodeResponse]:
+        """
+        Returns episodes associated with a document on a graph. Documents group episodes as chunks, parallel to how threads group messages.
+
+        Parameters
+        ----------
+        document_id : str
+            Document ID
+
+        graph_id : str
+            Graph ID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[EpisodeResponse]
+            Episodes
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graph/documents/{jsonable_encoder(document_id)}/episodes",
+            method="GET",
+            params={
+                "graph_id": graph_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EpisodeResponse,
+                    parse_obj_as(
+                        type_=EpisodeResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     async def list_all(
         self,
         *,
@@ -3034,7 +3229,14 @@ class AsyncRawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GraphListResponse]:
         """
-        Returns all graphs. In order to list users, use user.list_ordered instead
+        Returns a paginated directory of live standalone graphs in the
+        authenticated project. Optional `search` matches `graph_id`, `name`, and
+        `description` (metadata only; not graph contents).
+
+        Default `pageSize` is 50 (range 1–100). To list users, use
+        `user.list_ordered` instead. See the
+        [graph directory guide](/graph-directory) for pagination, relevance
+        ordering, and Memory MCP exposure.
 
         Parameters
         ----------
@@ -3216,6 +3418,7 @@ class AsyncRawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[DetectPatternsResponse]:
         """
+        Deprecated. Pattern detection is not part of Public API v4.
         Detects structural patterns in a knowledge graph including relationship frequencies,
         multi-hop paths, co-occurrences, hubs, and clusters.
         When a query is provided, uses hybrid search to discover seed nodes,
@@ -3543,7 +3746,7 @@ class AsyncRawGraphClient:
         search_filters : typing.Optional[SearchFilters]
             Filters constraining traversed edges and included nodes. Reuses the
             graph.search filter type. search_filters.episode_metadata_filters is
-            rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+            rejected: it cannot be enforced during graph traversal.
 
         user_id : typing.Optional[str]
             user_id identifies the target user graph. Exactly one of user_id or

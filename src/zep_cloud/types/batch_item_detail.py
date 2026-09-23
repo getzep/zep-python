@@ -10,6 +10,7 @@ from .batch_item_status import BatchItemStatus
 
 class BatchItemDetail(UniversalBaseModel):
     created_at: typing.Optional[str] = None
+    document_id: typing.Optional[str] = None
     episode_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
     EpisodeUUID is the UUID of the episode that will be (or has been) created

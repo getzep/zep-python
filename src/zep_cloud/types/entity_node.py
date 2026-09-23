@@ -19,6 +19,21 @@ class EntityNode(UniversalBaseModel):
     Creation time of the node
     """
 
+    episodes: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The UUIDs of the live episodes that mention this node, newest first. The
+    list is complete when `episodes_truncated` is false. The list is empty
+    when the node has more than 100 source episodes; list episodes with the
+    `mentioned_node_uuids` filter to read them.
+    """
+
+    episodes_truncated: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    True when the node has more than 100 source episodes, so `episodes` is
+    empty, or when provenance is unavailable. False means `episodes` is the
+    complete set.
+    """
+
     labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     Labels associated with the node

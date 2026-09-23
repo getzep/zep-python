@@ -129,6 +129,7 @@ class RawBatchClient:
         *,
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[BatchSummary]:
         """
@@ -144,6 +145,9 @@ class RawBatchClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -158,6 +162,7 @@ class RawBatchClient:
             json={
                 "ignore_roles": ignore_roles,
                 "metadata": metadata,
+                "strict_ontology": strict_ontology,
             },
             headers={
                 "content-type": "application/json",
@@ -822,6 +827,7 @@ class AsyncRawBatchClient:
         *,
         ignore_roles: typing.Optional[typing.Sequence[RoleType]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        strict_ontology: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[BatchSummary]:
         """
@@ -837,6 +843,9 @@ class AsyncRawBatchClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
+        strict_ontology : typing.Optional[bool]
+            When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -851,6 +860,7 @@ class AsyncRawBatchClient:
             json={
                 "ignore_roles": ignore_roles,
                 "metadata": metadata,
+                "strict_ontology": strict_ontology,
             },
             headers={
                 "content-type": "application/json",

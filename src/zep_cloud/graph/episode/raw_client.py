@@ -9,6 +9,7 @@ from ...core.http_response import AsyncHttpResponse, HttpResponse
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
+from ...core.serialization import convert_and_respect_annotation_metadata
 from ...errors.bad_request_error import BadRequestError
 from ...errors.forbidden_error import ForbiddenError
 from ...errors.internal_server_error import InternalServerError
@@ -17,6 +18,7 @@ from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.episode import Episode
 from ...types.episode_mentions import EpisodeMentions
 from ...types.episode_response import EpisodeResponse
+from ...types.metadata_filter_group import MetadataFilterGroup
 from ...types.success_response import SuccessResponse
 
 # this is used as the default value for optional parameters
@@ -108,6 +110,7 @@ class RawEpisodeClient:
         *,
         cursor: typing.Optional[str] = OMIT,
         direction: typing.Optional[str] = OMIT,
+        episode_metadata_filters: typing.Optional[MetadataFilterGroup] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         order_by: typing.Optional[str] = OMIT,
@@ -128,13 +131,19 @@ class RawEpisodeClient:
         direction : typing.Optional[str]
             Sort direction. One of "asc" or "desc". Defaults to "desc".
 
+        episode_metadata_filters : typing.Optional[MetadataFilterGroup]
+            Restricts results to episodes whose stored metadata matches this
+            predicate. Same type and limits as graph.search episode_metadata_filters.
+
         limit : typing.Optional[int]
             Maximum number of episodes to return. An explicit value is clamped to
             50; when omitted, the default page size (100) applies.
 
         mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
             Restricts results to episodes that mention any of the listed node
-            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+            UUIDs. The list can also contain episode UUIDs: an episode UUID
+            matches that episode, so one request can return a known set of
+            episodes. At most 256 entries; each must be a syntactically valid UUID.
 
         order_by : typing.Optional[str]
             Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
@@ -153,6 +162,9 @@ class RawEpisodeClient:
             json={
                 "cursor": cursor,
                 "direction": direction,
+                "episode_metadata_filters": convert_and_respect_annotation_metadata(
+                    object_=episode_metadata_filters, annotation=MetadataFilterGroup, direction="write"
+                ),
                 "limit": limit,
                 "mentioned_node_uuids": mentioned_node_uuids,
                 "order_by": order_by,
@@ -282,6 +294,7 @@ class RawEpisodeClient:
         *,
         cursor: typing.Optional[str] = OMIT,
         direction: typing.Optional[str] = OMIT,
+        episode_metadata_filters: typing.Optional[MetadataFilterGroup] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         order_by: typing.Optional[str] = OMIT,
@@ -302,13 +315,19 @@ class RawEpisodeClient:
         direction : typing.Optional[str]
             Sort direction. One of "asc" or "desc". Defaults to "desc".
 
+        episode_metadata_filters : typing.Optional[MetadataFilterGroup]
+            Restricts results to episodes whose stored metadata matches this
+            predicate. Same type and limits as graph.search episode_metadata_filters.
+
         limit : typing.Optional[int]
             Maximum number of episodes to return. An explicit value is clamped to
             50; when omitted, the default page size (100) applies.
 
         mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
             Restricts results to episodes that mention any of the listed node
-            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+            UUIDs. The list can also contain episode UUIDs: an episode UUID
+            matches that episode, so one request can return a known set of
+            episodes. At most 256 entries; each must be a syntactically valid UUID.
 
         order_by : typing.Optional[str]
             Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
@@ -327,6 +346,9 @@ class RawEpisodeClient:
             json={
                 "cursor": cursor,
                 "direction": direction,
+                "episode_metadata_filters": convert_and_respect_annotation_metadata(
+                    object_=episode_metadata_filters, annotation=MetadataFilterGroup, direction="write"
+                ),
                 "limit": limit,
                 "mentioned_node_uuids": mentioned_node_uuids,
                 "order_by": order_by,
@@ -766,6 +788,7 @@ class AsyncRawEpisodeClient:
         *,
         cursor: typing.Optional[str] = OMIT,
         direction: typing.Optional[str] = OMIT,
+        episode_metadata_filters: typing.Optional[MetadataFilterGroup] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         order_by: typing.Optional[str] = OMIT,
@@ -786,13 +809,19 @@ class AsyncRawEpisodeClient:
         direction : typing.Optional[str]
             Sort direction. One of "asc" or "desc". Defaults to "desc".
 
+        episode_metadata_filters : typing.Optional[MetadataFilterGroup]
+            Restricts results to episodes whose stored metadata matches this
+            predicate. Same type and limits as graph.search episode_metadata_filters.
+
         limit : typing.Optional[int]
             Maximum number of episodes to return. An explicit value is clamped to
             50; when omitted, the default page size (100) applies.
 
         mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
             Restricts results to episodes that mention any of the listed node
-            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+            UUIDs. The list can also contain episode UUIDs: an episode UUID
+            matches that episode, so one request can return a known set of
+            episodes. At most 256 entries; each must be a syntactically valid UUID.
 
         order_by : typing.Optional[str]
             Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
@@ -811,6 +840,9 @@ class AsyncRawEpisodeClient:
             json={
                 "cursor": cursor,
                 "direction": direction,
+                "episode_metadata_filters": convert_and_respect_annotation_metadata(
+                    object_=episode_metadata_filters, annotation=MetadataFilterGroup, direction="write"
+                ),
                 "limit": limit,
                 "mentioned_node_uuids": mentioned_node_uuids,
                 "order_by": order_by,
@@ -940,6 +972,7 @@ class AsyncRawEpisodeClient:
         *,
         cursor: typing.Optional[str] = OMIT,
         direction: typing.Optional[str] = OMIT,
+        episode_metadata_filters: typing.Optional[MetadataFilterGroup] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         order_by: typing.Optional[str] = OMIT,
@@ -960,13 +993,19 @@ class AsyncRawEpisodeClient:
         direction : typing.Optional[str]
             Sort direction. One of "asc" or "desc". Defaults to "desc".
 
+        episode_metadata_filters : typing.Optional[MetadataFilterGroup]
+            Restricts results to episodes whose stored metadata matches this
+            predicate. Same type and limits as graph.search episode_metadata_filters.
+
         limit : typing.Optional[int]
             Maximum number of episodes to return. An explicit value is clamped to
             50; when omitted, the default page size (100) applies.
 
         mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
             Restricts results to episodes that mention any of the listed node
-            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+            UUIDs. The list can also contain episode UUIDs: an episode UUID
+            matches that episode, so one request can return a known set of
+            episodes. At most 256 entries; each must be a syntactically valid UUID.
 
         order_by : typing.Optional[str]
             Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
@@ -985,6 +1024,9 @@ class AsyncRawEpisodeClient:
             json={
                 "cursor": cursor,
                 "direction": direction,
+                "episode_metadata_filters": convert_and_respect_annotation_metadata(
+                    object_=episode_metadata_filters, annotation=MetadataFilterGroup, direction="write"
+                ),
                 "limit": limit,
                 "mentioned_node_uuids": mentioned_node_uuids,
                 "order_by": order_by,

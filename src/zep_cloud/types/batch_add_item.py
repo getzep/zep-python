@@ -14,6 +14,12 @@ class BatchAddItem(UniversalBaseModel):
     created_at: typing.Optional[str] = None
     data: typing.Optional[str] = None
     data_type: typing.Optional[GraphDataType] = None
+    document_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Optional document ID for graph_episode items. Groups episodes as document
+    chunks. Ignored for thread_message items.
+    """
+
     graph_id: typing.Optional[str] = None
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     name: typing.Optional[str] = None

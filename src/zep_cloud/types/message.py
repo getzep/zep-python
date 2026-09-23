@@ -22,7 +22,7 @@ class Message(UniversalBaseModel):
 
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)
     """
-    The metadata associated with the message.
+    The metadata associated with the message. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
     """
 
     name: typing.Optional[str] = pydantic.Field(default=None)

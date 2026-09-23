@@ -19,6 +19,7 @@ class BatchSummary(UniversalBaseModel):
     processed_at: typing.Optional[str] = None
     progress: typing.Optional[BatchProgress] = None
     status: typing.Optional[BatchStatus] = None
+    strict_ontology: typing.Optional[bool] = None
     updated_at: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
