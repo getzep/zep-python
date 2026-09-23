@@ -9,6 +9,13 @@ from ..core.serialization import FieldMetadata
 
 
 class Graph(UniversalBaseModel):
+    canonical_graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    CanonicalGraphUUID is graphs.uuid, the v4 graph address (spec-3 §13.5).
+    Omitted when the graphs row does not yet exist. Distinct from UUID,
+    which is the group-row identifier.
+    """
+
     created_at: typing.Optional[str] = None
     description: typing.Optional[str] = None
     graph_id: typing.Optional[str] = None

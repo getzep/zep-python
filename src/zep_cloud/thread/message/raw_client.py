@@ -38,6 +38,7 @@ class RawMessageClient:
             The UUID of the message.
 
         metadata : typing.Dict[str, typing.Optional[typing.Any]]
+            Metadata to store on the message. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -121,6 +122,7 @@ class AsyncRawMessageClient:
             The UUID of the message.
 
         metadata : typing.Dict[str, typing.Optional[typing.Any]]
+            Metadata to store on the message. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

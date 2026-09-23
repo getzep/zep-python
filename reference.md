@@ -1218,6 +1218,14 @@ Has no effect on graph_episode items.
 <dl>
 <dd>
 
+**strict_ontology:** `typing.Optional[bool]` — When true, prevents extraction of generic Entity nodes that do not match the configured ontology.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -2480,6 +2488,17 @@ client.graph.add(
 <dl>
 <dd>
 
+**document_id:** `typing.Optional[str]` 
+
+Optional document ID that groups episodes as chunks of the same document
+on a graph. Parallel to thread_id for message threads.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **graph_id:** `typing.Optional[str]` — graph_id is the ID of the graph to which the data will be added. If adding to the user graph, please use user_id field instead.
     
 </dd>
@@ -2590,6 +2609,14 @@ client.graph.add_batch(
 <dd>
 
 **episodes:** `typing.Sequence[EpisodeData]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**document_id:** `typing.Optional[str]` — Optional document ID applied to every episode in this batch request.
     
 </dd>
 </dl>
@@ -3066,6 +3093,85 @@ client.graph.create(
 </dl>
 </details>
 
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">get_episodes_for_document</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns episodes associated with a document on a graph. Documents group episodes as chunks, parallel to how threads group messages.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.get_episodes_for_document(
+    document_id="document_id",
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**document_id:** `str` — Document ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">list_all</a>(...)</code></summary>
 <dl>
 <dd>
@@ -3078,7 +3184,14 @@ client.graph.create(
 <dl>
 <dd>
 
-Returns all graphs. In order to list users, use user.list_ordered instead
+Returns a paginated directory of live standalone graphs in the
+authenticated project. Optional `search` matches `graph_id`, `name`, and
+`description` (metadata only; not graph contents).
+
+Default `pageSize` is 50 (range 1–100). To list users, use
+`user.list_ordered` instead. See the
+[graph directory guide](/graph-directory) for pagination, relevance
+ordering, and Memory MCP exposure.
 </dd>
 </dl>
 </dd>
@@ -3274,6 +3387,7 @@ client.graph.add_nodes(
 <dl>
 <dd>
 
+Deprecated. Pattern detection is not part of Public API v4.
 Detects structural patterns in a knowledge graph including relationship frequencies,
 multi-hop paths, co-occurrences, hubs, and clusters.
 When a query is provided, uses hybrid search to discover seed nodes,
@@ -3710,7 +3824,7 @@ Maximum number of nodes in the response, including admitted seeds.
 
 Filters constraining traversed edges and included nodes. Reuses the
 graph.search filter type. search_filters.episode_metadata_filters is
-rejected: it cannot be enforced during graph traversal (spec-2 §9.4).
+rejected: it cannot be enforced during graph traversal.
     
 </dd>
 </dl>
@@ -4726,6 +4840,76 @@ client.thread.get_user_context(
 <dd>
 
 **template_id:** `typing.Optional[str]` — Optional template ID to use for custom context rendering.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.thread.<a href="src/zep_cloud/thread/client.py">get_episodes</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns graph episodes associated with a thread. Parallel to get_episodes_for_document for documents.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.thread.get_episodes(
+    thread_id="threadId",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**thread_id:** `str` — The ID of the thread
     
 </dd>
 </dl>
@@ -6060,6 +6244,132 @@ client.user.warm(
 </dl>
 </details>
 
+## Graph DocumentSummary
+<details><summary><code>client.graph.document_summary.<a href="src/zep_cloud/graph/document_summary/client.py">get_by_graph_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns incremental document summaries associated with the graph. Document summaries are derived similarly to thread summaries.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="YOUR_API_KEY",
+)
+client.graph.document_summary.get_by_graph_id(
+    graph_id="graph_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_id:** `str` — Graph ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` 
+
+Opaque cursor for pagination, obtained from the Zep-Next-Cursor response header
+of the previous page. Encodes the sort field, direction, and continuation position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `typing.Optional[str]` — Sort direction. One of "asc" or "desc" (default "desc").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[SearchFilters]` — Optional filters applied to the listed artifacts. Reuses the graph.search filter type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Maximum number of items to return
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**uuid_cursor:** `typing.Optional[str]` 
+
+UUID based cursor, used for pagination. Should be the UUID of the last item in the previous page.
+
+Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor response header.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Graph Edge
 <details><summary><code>client.graph.edge.<a href="src/zep_cloud/graph/edge/client.py">get_by_graph_id</a>(...)</code></summary>
 <dl>
@@ -6726,6 +7036,17 @@ response header of the previous page.
 <dl>
 <dd>
 
+**episode_metadata_filters:** `typing.Optional[MetadataFilterGroup]` 
+
+Restricts results to episodes whose stored metadata matches this
+predicate. Same type and limits as graph.search episode_metadata_filters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` 
 
 Maximum number of episodes to return. An explicit value is clamped to
@@ -6740,7 +7061,9 @@ Maximum number of episodes to return. An explicit value is clamped to
 **mentioned_node_uuids:** `typing.Optional[typing.Sequence[str]]` 
 
 Restricts results to episodes that mention any of the listed node
-UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+UUIDs. The list can also contain episode UUIDs: an episode UUID
+matches that episode, so one request can return a known set of
+episodes. At most 256 entries; each must be a syntactically valid UUID.
     
 </dd>
 </dl>
@@ -6924,6 +7247,17 @@ response header of the previous page.
 <dl>
 <dd>
 
+**episode_metadata_filters:** `typing.Optional[MetadataFilterGroup]` 
+
+Restricts results to episodes whose stored metadata matches this
+predicate. Same type and limits as graph.search episode_metadata_filters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **limit:** `typing.Optional[int]` 
 
 Maximum number of episodes to return. An explicit value is clamped to
@@ -6938,7 +7272,9 @@ Maximum number of episodes to return. An explicit value is clamped to
 **mentioned_node_uuids:** `typing.Optional[typing.Sequence[str]]` 
 
 Restricts results to episodes that mention any of the listed node
-UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+UUIDs. The list can also contain episode UUIDs: an episode UUID
+matches that episode, so one request can return a known set of
+episodes. At most 256 entries; each must be a syntactically valid UUID.
     
 </dd>
 </dl>
@@ -7588,7 +7924,7 @@ client.graph.node.get_edges(
 <dl>
 <dd>
 
-Deprecated. Use episode listing with `mentioned_node_uuids` (`POST /graph/episodes/graph/{graph_id}` or `POST /graph/episodes/user/{user_id}`) instead. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
+Deprecated. Read the `episodes` field on the node; when `episodes_truncated` is true, use the episode list SDK methods `graph.episode.list_by_graph_id` or `graph.episode.list_by_user_id` with the `mentioned_node_uuids` filter. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 </dd>
 </dl>
 </dd>
@@ -7742,7 +8078,7 @@ Direction field above.
 **filters:** `typing.Optional[SearchFilters]` 
 
 Filters constraining the connecting edges (edge types, dates, and the
-section-3 node-/episode-anchored fields) and the neighbor nodes
+node- and episode-anchored UUID fields) and the neighbor nodes
 (node_labels/exclude_node_labels). Reuses the graph.search filter
 type.
     
@@ -8660,7 +8996,7 @@ client.thread.message.update(
 <dl>
 <dd>
 
-**metadata:** `typing.Dict[str, typing.Optional[typing.Any]]` 
+**metadata:** `typing.Dict[str, typing.Optional[typing.Any]]` — Metadata to store on the message. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
     
 </dd>
 </dl>

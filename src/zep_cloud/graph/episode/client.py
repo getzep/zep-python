@@ -7,6 +7,7 @@ from ...core.request_options import RequestOptions
 from ...types.episode import Episode
 from ...types.episode_mentions import EpisodeMentions
 from ...types.episode_response import EpisodeResponse
+from ...types.metadata_filter_group import MetadataFilterGroup
 from ...types.success_response import SuccessResponse
 from .raw_client import AsyncRawEpisodeClient, RawEpisodeClient
 
@@ -76,6 +77,7 @@ class EpisodeClient:
         *,
         cursor: typing.Optional[str] = OMIT,
         direction: typing.Optional[str] = OMIT,
+        episode_metadata_filters: typing.Optional[MetadataFilterGroup] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         order_by: typing.Optional[str] = OMIT,
@@ -96,13 +98,19 @@ class EpisodeClient:
         direction : typing.Optional[str]
             Sort direction. One of "asc" or "desc". Defaults to "desc".
 
+        episode_metadata_filters : typing.Optional[MetadataFilterGroup]
+            Restricts results to episodes whose stored metadata matches this
+            predicate. Same type and limits as graph.search episode_metadata_filters.
+
         limit : typing.Optional[int]
             Maximum number of episodes to return. An explicit value is clamped to
             50; when omitted, the default page size (100) applies.
 
         mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
             Restricts results to episodes that mention any of the listed node
-            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+            UUIDs. The list can also contain episode UUIDs: an episode UUID
+            matches that episode, so one request can return a known set of
+            episodes. At most 256 entries; each must be a syntactically valid UUID.
 
         order_by : typing.Optional[str]
             Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
@@ -130,6 +138,7 @@ class EpisodeClient:
             graph_id,
             cursor=cursor,
             direction=direction,
+            episode_metadata_filters=episode_metadata_filters,
             limit=limit,
             mentioned_node_uuids=mentioned_node_uuids,
             order_by=order_by,
@@ -184,6 +193,7 @@ class EpisodeClient:
         *,
         cursor: typing.Optional[str] = OMIT,
         direction: typing.Optional[str] = OMIT,
+        episode_metadata_filters: typing.Optional[MetadataFilterGroup] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         order_by: typing.Optional[str] = OMIT,
@@ -204,13 +214,19 @@ class EpisodeClient:
         direction : typing.Optional[str]
             Sort direction. One of "asc" or "desc". Defaults to "desc".
 
+        episode_metadata_filters : typing.Optional[MetadataFilterGroup]
+            Restricts results to episodes whose stored metadata matches this
+            predicate. Same type and limits as graph.search episode_metadata_filters.
+
         limit : typing.Optional[int]
             Maximum number of episodes to return. An explicit value is clamped to
             50; when omitted, the default page size (100) applies.
 
         mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
             Restricts results to episodes that mention any of the listed node
-            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+            UUIDs. The list can also contain episode UUIDs: an episode UUID
+            matches that episode, so one request can return a known set of
+            episodes. At most 256 entries; each must be a syntactically valid UUID.
 
         order_by : typing.Optional[str]
             Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
@@ -238,6 +254,7 @@ class EpisodeClient:
             user_id,
             cursor=cursor,
             direction=direction,
+            episode_metadata_filters=episode_metadata_filters,
             limit=limit,
             mentioned_node_uuids=mentioned_node_uuids,
             order_by=order_by,
@@ -452,6 +469,7 @@ class AsyncEpisodeClient:
         *,
         cursor: typing.Optional[str] = OMIT,
         direction: typing.Optional[str] = OMIT,
+        episode_metadata_filters: typing.Optional[MetadataFilterGroup] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         order_by: typing.Optional[str] = OMIT,
@@ -472,13 +490,19 @@ class AsyncEpisodeClient:
         direction : typing.Optional[str]
             Sort direction. One of "asc" or "desc". Defaults to "desc".
 
+        episode_metadata_filters : typing.Optional[MetadataFilterGroup]
+            Restricts results to episodes whose stored metadata matches this
+            predicate. Same type and limits as graph.search episode_metadata_filters.
+
         limit : typing.Optional[int]
             Maximum number of episodes to return. An explicit value is clamped to
             50; when omitted, the default page size (100) applies.
 
         mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
             Restricts results to episodes that mention any of the listed node
-            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+            UUIDs. The list can also contain episode UUIDs: an episode UUID
+            matches that episode, so one request can return a known set of
+            episodes. At most 256 entries; each must be a syntactically valid UUID.
 
         order_by : typing.Optional[str]
             Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
@@ -514,6 +538,7 @@ class AsyncEpisodeClient:
             graph_id,
             cursor=cursor,
             direction=direction,
+            episode_metadata_filters=episode_metadata_filters,
             limit=limit,
             mentioned_node_uuids=mentioned_node_uuids,
             order_by=order_by,
@@ -576,6 +601,7 @@ class AsyncEpisodeClient:
         *,
         cursor: typing.Optional[str] = OMIT,
         direction: typing.Optional[str] = OMIT,
+        episode_metadata_filters: typing.Optional[MetadataFilterGroup] = OMIT,
         limit: typing.Optional[int] = OMIT,
         mentioned_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         order_by: typing.Optional[str] = OMIT,
@@ -596,13 +622,19 @@ class AsyncEpisodeClient:
         direction : typing.Optional[str]
             Sort direction. One of "asc" or "desc". Defaults to "desc".
 
+        episode_metadata_filters : typing.Optional[MetadataFilterGroup]
+            Restricts results to episodes whose stored metadata matches this
+            predicate. Same type and limits as graph.search episode_metadata_filters.
+
         limit : typing.Optional[int]
             Maximum number of episodes to return. An explicit value is clamped to
             50; when omitted, the default page size (100) applies.
 
         mentioned_node_uuids : typing.Optional[typing.Sequence[str]]
             Restricts results to episodes that mention any of the listed node
-            UUIDs. At most 256 entries; each must be a syntactically valid UUID.
+            UUIDs. The list can also contain episode UUIDs: an episode UUID
+            matches that episode, so one request can return a known set of
+            episodes. At most 256 entries; each must be a syntactically valid UUID.
 
         order_by : typing.Optional[str]
             Field to sort by. One of "uuid" or "created_at". Defaults to "uuid".
@@ -638,6 +670,7 @@ class AsyncEpisodeClient:
             user_id,
             cursor=cursor,
             direction=direction,
+            episode_metadata_filters=episode_metadata_filters,
             limit=limit,
             mentioned_node_uuids=mentioned_node_uuids,
             order_by=order_by,

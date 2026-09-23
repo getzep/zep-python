@@ -10,6 +10,11 @@ from ..core.serialization import FieldMetadata
 
 class Thread(UniversalBaseModel):
     created_at: typing.Optional[str] = None
+    graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    GraphUUID is the graphs.uuid of the owning user's graph (spec-3 section 13.5).
+    """
+
     project_uuid: typing.Optional[str] = None
     thread_id: typing.Optional[str] = None
     user_id: typing.Optional[str] = None

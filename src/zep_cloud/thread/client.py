@@ -5,6 +5,7 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.add_thread_messages_response import AddThreadMessagesResponse
+from ..types.episode_response import EpisodeResponse
 from ..types.message import Message
 from ..types.message_list_response import MessageListResponse
 from ..types.role_type import RoleType
@@ -198,6 +199,39 @@ class ThreadClient:
         _response = self._raw_client.get_user_context(
             thread_id, template_id=template_id, request_options=request_options
         )
+        return _response.data
+
+    def get_episodes(
+        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> EpisodeResponse:
+        """
+        Returns graph episodes associated with a thread. Parallel to get_episodes_for_document for documents.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EpisodeResponse
+            Episodes
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.thread.get_episodes(
+            thread_id="threadId",
+        )
+        """
+        _response = self._raw_client.get_episodes(thread_id, request_options=request_options)
         return _response.data
 
     def get(
@@ -633,6 +667,47 @@ class AsyncThreadClient:
         _response = await self._raw_client.get_user_context(
             thread_id, template_id=template_id, request_options=request_options
         )
+        return _response.data
+
+    async def get_episodes(
+        self, thread_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> EpisodeResponse:
+        """
+        Returns graph episodes associated with a thread. Parallel to get_episodes_for_document for documents.
+
+        Parameters
+        ----------
+        thread_id : str
+            The ID of the thread
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EpisodeResponse
+            Episodes
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.thread.get_episodes(
+                thread_id="threadId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_episodes(thread_id, request_options=request_options)
         return _response.data
 
     async def get(

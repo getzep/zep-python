@@ -14,6 +14,12 @@ class User(UniversalBaseModel):
     disable_default_ontology: typing.Optional[bool] = None
     email: typing.Optional[str] = None
     first_name: typing.Optional[str] = None
+    graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    GraphUUID is the graphs.uuid of the user's graph (spec-3 section 13.5).
+    Omitted when the graph row does not exist. Read-only; never accepted as input.
+    """
+
     id: typing.Optional[int] = None
     last_name: typing.Optional[str] = None
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = pydantic.Field(default=None)

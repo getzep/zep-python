@@ -34,6 +34,12 @@ class EntityEdge(UniversalBaseModel):
     Fact representing the edge and nodes that it connects
     """
 
+    hyperedge_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    HyperedgeUUID groups the pairwise edges projected from the same atomic
+    multi-entity fact. Omitted when the edge is not part of a hyperedge.
+    """
+
     invalid_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     Datetime of when the fact stopped being true
@@ -68,7 +74,7 @@ class EntityEdge(UniversalBaseModel):
     source_node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     SourceNodeLabels are the labels of the source node at read time. Same
-    read-time-projection semantics as SourceNodeName (spec-2 §4).
+    read-time-projection semantics as SourceNodeName.
     """
 
     source_node_name: typing.Optional[str] = pydantic.Field(default=None)
@@ -77,7 +83,7 @@ class EntityEdge(UniversalBaseModel):
     read-time projection of current node state, not a stored edge
     attribute: a subsequent node rename is reflected on the next read.
     Omitted (the edge is still returned) if the source node cannot be
-    resolved, for example if it was deleted concurrently (spec-2 §4).
+    resolved, for example if it was deleted concurrently.
     """
 
     source_node_uuid: str = pydantic.Field()
@@ -88,13 +94,13 @@ class EntityEdge(UniversalBaseModel):
     target_node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     TargetNodeLabels are the labels of the target node at read time. Same
-    read-time-projection semantics as SourceNodeName (spec-2 §4).
+    read-time-projection semantics as SourceNodeName.
     """
 
     target_node_name: typing.Optional[str] = pydantic.Field(default=None)
     """
     TargetNodeName is the name of the target node at read time. Same
-    read-time-projection semantics as SourceNodeName (spec-2 §4).
+    read-time-projection semantics as SourceNodeName.
     """
 
     target_node_uuid: str = pydantic.Field()

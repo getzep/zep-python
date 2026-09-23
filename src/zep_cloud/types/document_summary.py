@@ -8,25 +8,27 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
-class ThreadSummary(UniversalBaseModel):
+class DocumentSummary(UniversalBaseModel):
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     CreatedAt is when the summary node was first created.
     """
 
+    document_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    DocumentID is the customer-facing document identifier.
+    """
+
     last_summarized_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     LastSummarizedAt is the wall-clock timestamp of the most recent
-    summary update. This is an ingestion-time watermark; for the
-    event-time recency of the summary's content, use
-    LastSummarizedEpisodeValidAt instead.
+    summary update.
     """
 
     last_summarized_episode_valid_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     LastSummarizedEpisodeValidAt is the maximum episode reference time
-    (valid_at) covered by the most recent summary. Use this when
-    answering "how recent is this summary's content in event-time?".
+    (valid_at) covered by the most recent summary.
     """
 
     summary: typing.Optional[str] = pydantic.Field(default=None)
@@ -34,17 +36,9 @@ class ThreadSummary(UniversalBaseModel):
     Summary is the incremental summary content.
     """
 
-    thread_id: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    ThreadID is the ID of the thread this summary belongs to.
-    When a thread was created without an explicit thread_id, this
-    field falls back to the thread's UUID. Clients should treat it
-    as an opaque identifier.
-    """
-
     uuid_: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="uuid")] = pydantic.Field(default=None)
     """
-    UUID of the derived thread summary node.
+    UUID of the document summary (derived) node.
     """
 
     if IS_PYDANTIC_V2:

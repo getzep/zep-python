@@ -31,6 +31,7 @@ from .date_filter import DateFilter
 from .derived_node import DerivedNode
 from .detect_config import DetectConfig
 from .detect_patterns_response import DetectPatternsResponse
+from .document_summary import DocumentSummary
 from .edge_type import EdgeType
 from .entity_edge import EntityEdge
 from .entity_edge_source_target import EntityEdgeSourceTarget
@@ -133,6 +134,7 @@ __all__ = [
     "DerivedNode",
     "DetectConfig",
     "DetectPatternsResponse",
+    "DocumentSummary",
     "EdgeType",
     "EntityEdge",
     "EntityEdgeSourceTarget",

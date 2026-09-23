@@ -13,6 +13,11 @@ from .role_type import RoleType
 class Episode(UniversalBaseModel):
     content: str
     created_at: str
+    document_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Optional document ID, will be present if the episode is part of a document
+    """
+
     metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = None
     processed: typing.Optional[bool] = None
     relevance: typing.Optional[float] = pydantic.Field(default=None)

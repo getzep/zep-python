@@ -2,6 +2,6 @@
 
 # isort: skip_file
 
-from . import edge, episode, node, observation, thread_summary
+from . import document_summary, edge, episode, node, observation, thread_summary
 
-__all__ = ["edge", "episode", "node", "observation", "thread_summary"]
+__all__ = ["document_summary", "edge", "episode", "node", "observation", "thread_summary"]

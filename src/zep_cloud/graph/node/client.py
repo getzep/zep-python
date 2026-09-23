@@ -212,7 +212,7 @@ class NodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EpisodeResponse:
         """
-        Deprecated. Use episode listing with `mentioned_node_uuids` (`POST /graph/episodes/graph/{graph_id}` or `POST /graph/episodes/user/{user_id}`) instead. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
+        Deprecated. Read the `episodes` field on the node; when `episodes_truncated` is true, use the episode list SDK methods `graph.episode.list_by_graph_id` or `graph.episode.list_by_user_id` with the `mentioned_node_uuids` filter. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -277,7 +277,7 @@ class NodeClient:
 
         filters : typing.Optional[SearchFilters]
             Filters constraining the connecting edges (edge types, dates, and the
-            section-3 node-/episode-anchored fields) and the neighbor nodes
+            node- and episode-anchored UUID fields) and the neighbor nodes
             (node_labels/exclude_node_labels). Reuses the graph.search filter
             type.
 
@@ -657,7 +657,7 @@ class AsyncNodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EpisodeResponse:
         """
-        Deprecated. Use episode listing with `mentioned_node_uuids` (`POST /graph/episodes/graph/{graph_id}` or `POST /graph/episodes/user/{user_id}`) instead. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
+        Deprecated. Read the `episodes` field on the node; when `episodes_truncated` is true, use the episode list SDK methods `graph.episode.list_by_graph_id` or `graph.episode.list_by_user_id` with the `mentioned_node_uuids` filter. Returns episodes that mentioned a given node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -730,7 +730,7 @@ class AsyncNodeClient:
 
         filters : typing.Optional[SearchFilters]
             Filters constraining the connecting edges (edge types, dates, and the
-            section-3 node-/episode-anchored fields) and the neighbor nodes
+            node- and episode-anchored UUID fields) and the neighbor nodes
             (node_labels/exclude_node_labels). Reuses the graph.search filter
             type.
 
