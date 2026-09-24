@@ -19,6 +19,13 @@ class EntityNode(UniversalBaseModel):
     Creation time of the node
     """
 
+    degree: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The count of live entity edges that touch this node (the edge scopes
+    the entity edge list returns). Present only when the list request
+    orders by degree.
+    """
+
     episodes: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     The UUIDs of the live episodes that mention this node, newest first. The

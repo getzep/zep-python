@@ -6338,7 +6338,12 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` 
+
+Field to sort by. One of "created_at", "valid_at", "degree", or "uuid"
+(default "uuid"). "degree" sorts by the count of live entity edges that
+touch each node (the edge scopes the entity edge list returns) and is
+supported on the node list endpoints only.
     
 </dd>
 </dl>
@@ -6464,7 +6469,12 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` 
+
+Field to sort by. One of "created_at", "valid_at", "degree", or "uuid"
+(default "uuid"). "degree" sorts by the count of live entity edges that
+touch each node (the edge scopes the entity edge list returns) and is
+supported on the node list endpoints only.
     
 </dd>
 </dl>
@@ -6589,7 +6599,12 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` 
+
+Field to sort by. One of "created_at", "valid_at", "degree", or "uuid"
+(default "uuid"). "degree" sorts by the count of live entity edges that
+touch each node (the edge scopes the entity edge list returns) and is
+supported on the node list endpoints only.
     
 </dd>
 </dl>
@@ -7685,7 +7700,12 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` 
+
+Field to sort by. One of "created_at", "valid_at", "degree", or "uuid"
+(default "uuid"). "degree" sorts by the count of live entity edges that
+touch each node (the edge scopes the entity edge list returns) and is
+supported on the node list endpoints only.
     
 </dd>
 </dl>
@@ -7810,7 +7830,12 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` 
+
+Field to sort by. One of "created_at", "valid_at", "degree", or "uuid"
+(default "uuid"). "degree" sorts by the count of live entity edges that
+touch each node (the edge scopes the entity edge list returns) and is
+supported on the node list endpoints only.
     
 </dd>
 </dl>
@@ -8458,7 +8483,12 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` 
+
+Field to sort by. One of "created_at", "valid_at", "degree", or "uuid"
+(default "uuid"). "degree" sorts by the count of live entity edges that
+touch each node (the edge scopes the entity edge list returns) and is
+supported on the node list endpoints only.
     
 </dd>
 </dl>
@@ -8583,7 +8613,12 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` 
+
+Field to sort by. One of "created_at", "valid_at", "degree", or "uuid"
+(default "uuid"). "degree" sorts by the count of live entity edges that
+touch each node (the edge scopes the entity edge list returns) and is
+supported on the node list endpoints only.
     
 </dd>
 </dl>
@@ -8779,7 +8814,12 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` 
+
+Field to sort by. One of "created_at", "valid_at", "degree", or "uuid"
+(default "uuid"). "degree" sorts by the count of live entity edges that
+touch each node (the edge scopes the entity edge list returns) and is
+supported on the node list endpoints only.
     
 </dd>
 </dl>
@@ -8904,7 +8944,12 @@ of the previous page. Encodes the sort field, direction, and continuation positi
 <dl>
 <dd>
 
-**order_by:** `typing.Optional[str]` — Field to sort by. One of "created_at", "valid_at", or "uuid" (default "uuid").
+**order_by:** `typing.Optional[str]` 
+
+Field to sort by. One of "created_at", "valid_at", "degree", or "uuid"
+(default "uuid"). "degree" sorts by the count of live entity edges that
+touch each node (the edge scopes the entity edge list returns) and is
+supported on the node list endpoints only.
     
 </dd>
 </dl>
