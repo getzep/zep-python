@@ -765,7 +765,8 @@ def test_client_sends_admin_bearer_with_project_header(
 
 
 def _string_enum_values(annotation: object) -> set[str]:
-    if typing.get_origin(annotation) in (typing.Union, types.UnionType):
+    union_origin = getattr(types, "UnionType", typing.Union)
+    if typing.get_origin(annotation) in (typing.Union, union_origin):
         return set().union(
             *(
                 _string_enum_values(argument)
