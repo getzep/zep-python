@@ -61,7 +61,7 @@ SECTION_4_2_OPERATIONS: list[tuple[str, str, str, bool, bool]] = [
         False,
         False,
     ),
-    ("agent.learning.get", "GET", "/agents/{agent_uuid}/learning", True, False),
+    ("agent.learning.get", "GET", "/agents/{agent_uuid}/learning", False, False),
     ("agent.learning.list_runs", "GET", "/agents/{agent_uuid}/learning-runs", True, False),
     ("agent.skill.create", "POST", "/agents/{agent_uuid}/skills", False, False),
     ("agent.skill.import_package", "POST", "/agents/{agent_uuid}/skills/import", False, False),
@@ -395,10 +395,6 @@ D3_REASON = (
     "require the bearer scheme too), so the generated client requires api_key and overwrites "
     "the Authorization header."
 )
-D5_REASON = (
-    "Spec 3 section 4.2 marks agent.learning.get as paginated, but the v4 contract returns one "
-    "AgentLearningState with no cursor, so the generated method returns no pager."
-)
 CALLER_KEY = "contract-caller-key"
 PROJECT_UUID = "00000000-0000-4000-8000-000000000001"
 BASE_URL = "https://contract.test"
@@ -516,7 +512,7 @@ def test_client_exposes_no_method_outside_section_4_2(
     ("operation", "method", "path", "paginated", "post_read"),
     [
         pytest.param(*row, marks=pytest.mark.xfail(strict=True, reason=reason), id=row[0])
-        if (reason := _missing_operation_reason(row[0]) or (D5_REASON if row[0] == "agent.learning.get" else None))
+        if (reason := _missing_operation_reason(row[0]))
         else pytest.param(*row, id=row[0])
         for row in SECTION_4_2_OPERATIONS
         if row[3]
