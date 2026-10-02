@@ -49,7 +49,7 @@ SECTION_4_2_OPERATIONS: list[tuple[str, str, str, bool, bool]] = [
     ("agent.update", "PATCH", "/agents/{agent_uuid}", False, False),
     ("agent.declare_breaking_change", "POST", "/agents/{agent_uuid}/breaking-changes", False, False),
     ("agent.get_context", "POST", "/agents/{agent_uuid}/context", False, True),
-    ("agent.split.plan", "POST", "/agents/{agent_uuid}/split-plan", False, False),
+    ("agent.split.plan", "POST", "/agents/{agent_uuid}/split-plan", False, True),
     ("agent.literal_policy.get", "GET", "/agents/{agent_uuid}/literal-policy", False, False),
     ("agent.literal_policy.update", "PUT", "/agents/{agent_uuid}/literal-policy", False, False),
     ("agent.skill.candidate.list", "GET", "/agents/{agent_uuid}/skill-candidates", True, False),
@@ -360,6 +360,7 @@ MISSING_FROM_ALPHA5 = {
 }
 
 ALPHA5_POST_READ_EXPOSES_IDEMPOTENCY = {
+    "agent.split.plan",
     "context.list_templates",
     "user.list",
     "user.lookup",
