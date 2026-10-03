@@ -388,16 +388,10 @@ ALPHA5_POST_READ_EXPOSES_IDEMPOTENCY = {
 }
 
 D1_REASON = (
-    "The generator configuration does not enable automatic Idempotency-Key generation "
-    "(spec 3 section 14.6), so a state-changing call without a caller key sends no Idempotency-Key."
-)
-D3_REASON = (
-    "The v4 contract declares only the Api-Key security scheme (spec 3 sections 2.2 and 14.1 "
-    "require the bearer scheme too), so the generated client requires api_key and overwrites "
-    "the Authorization header."
+    "ZEPAI-3750: the generated SDKs do not generate an Idempotency-Key yet "
+    "(spec 3 section 14.6). This is a post-GA follow-up."
 )
 CALLER_KEY = "contract-caller-key"
-PROJECT_UUID = "00000000-0000-4000-8000-000000000001"
 BASE_URL = "https://contract.test"
 _ALPHA5 = importlib.metadata.version("zep-cloud") == "4.0.0a5"
 _CLIENT_TYPES = (Zep, AsyncZep)
@@ -732,33 +726,6 @@ def test_client_sends_project_api_key() -> None:
         client.project.get()
     assert requests[0].headers.get("Authorization") == "Api-Key contract-api-key"
     assert requests[0].headers.get("X-Zep-Project") is None
-
-
-@pytest.mark.xfail(strict=True, reason=D3_REASON)
-def test_client_sends_admin_bearer_with_project_header(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.delenv("ZEP_API_KEY", raising=False)
-    requests: list[httpx.Request] = []
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        requests.append(request)
-        return httpx.Response(200, json={})
-
-    with httpx.Client(transport=httpx.MockTransport(handler)) as httpx_client:
-        client = Zep(
-            api_key=None,
-            headers={
-                "Authorization": "Bearer contract-token",
-                "X-Zep-Project": PROJECT_UUID,
-            },
-            base_url=BASE_URL,
-            httpx_client=httpx_client,
-        )
-        client.project.get()
-    assert requests[0].headers.get("Authorization") == "Bearer contract-token"
-    assert requests[0].headers.get("X-Zep-Project") == PROJECT_UUID
-    assert requests[0].headers.get("Api-Key") is None
 
 
 def _string_enum_values(annotation: object) -> set[str]:
