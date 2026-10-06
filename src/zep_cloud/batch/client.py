@@ -13,6 +13,7 @@ from ..types.batch_items_response import BatchItemsResponse
 from ..types.batch_page import BatchPage
 from ..types.process_batch_result import ProcessBatchResult
 from .raw_client import AsyncRawBatchClient, RawBatchClient
+from .types.batch_list_request_status import BatchListRequestStatus
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -38,7 +39,7 @@ class BatchClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        status: typing.Optional[str] = None,
+        status: typing.Optional[BatchListRequestStatus] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Batch, BatchPage]:
         """
@@ -50,7 +51,7 @@ class BatchClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        status : typing.Optional[str]
+        status : typing.Optional[BatchListRequestStatus]
             Batch status filter
 
         request_options : typing.Optional[RequestOptions]
@@ -68,11 +69,7 @@ class BatchClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        response = client.batch.list(
-            limit=1,
-            cursor="cursor",
-            status="status",
-        )
+        response = client.batch.list()
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
@@ -236,8 +233,6 @@ class BatchClient:
         )
         response = client.batch.list_items(
             batch_uuid="batch_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -355,7 +350,7 @@ class AsyncBatchClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        status: typing.Optional[str] = None,
+        status: typing.Optional[BatchListRequestStatus] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Batch, BatchPage]:
         """
@@ -367,7 +362,7 @@ class AsyncBatchClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        status : typing.Optional[str]
+        status : typing.Optional[BatchListRequestStatus]
             Batch status filter
 
         request_options : typing.Optional[RequestOptions]
@@ -390,11 +385,7 @@ class AsyncBatchClient:
 
 
         async def main() -> None:
-            response = await client.batch.list(
-                limit=1,
-                cursor="cursor",
-                status="status",
-            )
+            response = await client.batch.list()
             async for item in response:
                 yield item
 
@@ -591,8 +582,6 @@ class AsyncBatchClient:
         async def main() -> None:
             response = await client.batch.list_items(
                 batch_uuid="batch_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item

@@ -10,14 +10,15 @@ from .context_results import ContextResults
 class GraphContextResponse(UniversalBaseModel):
     context: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The assembled context block of facts, entities, and episodes, ready to
-    insert into a system prompt.
+    The assembled context block of facts, entities, observations, and thread
+    summaries. Pass it through the model provider's untrusted-data channel.
     """
 
     results: typing.Optional[ContextResults] = pydantic.Field(default=None)
     """
     The individual edges, nodes, episodes, observations, and thread summaries
-    selected to build the context. Present only when requested.
+    selected to build the context. Episodes are always empty because context
+    assembly does not select episodes. Present only when requested.
     """
 
     truncated: typing.Optional[bool] = pydantic.Field(default=None)

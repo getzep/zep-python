@@ -6,8 +6,14 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .v4add_episode_request_type import V4AddEpisodeRequestType
-_dynamic_imports: typing.Dict[str, str] = {"V4AddEpisodeRequestType": ".v4add_episode_request_type"}
+    from .add_episode_request_type import AddEpisodeRequestType
+    from .episode_list_request_order import EpisodeListRequestOrder
+    from .episode_list_request_order_by import EpisodeListRequestOrderBy
+_dynamic_imports: typing.Dict[str, str] = {
+    "AddEpisodeRequestType": ".add_episode_request_type",
+    "EpisodeListRequestOrder": ".episode_list_request_order",
+    "EpisodeListRequestOrderBy": ".episode_list_request_order_by",
+}
 
 
 def __getattr__(attr_name: str) -> typing.Any:
@@ -31,4 +37,4 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["V4AddEpisodeRequestType"]
+__all__ = ["AddEpisodeRequestType", "EpisodeListRequestOrder", "EpisodeListRequestOrderBy"]

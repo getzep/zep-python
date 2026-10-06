@@ -8,7 +8,10 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
 from ..types.async_result import AsyncResult
+from ..types.clone_graph_request import CloneGraphRequest
 from ..types.clone_graph_result import CloneGraphResult
+from ..types.content_policy_event import ContentPolicyEvent
+from ..types.content_policy_event_page import ContentPolicyEventPage
 from ..types.custom_instruction import CustomInstruction
 from ..types.edge import Edge
 from ..types.edge_page import EdgePage
@@ -17,6 +20,8 @@ from ..types.entity_type import EntityType
 from ..types.episode import Episode
 from ..types.episode_page import EpisodePage
 from ..types.graph import Graph
+from ..types.graph_content_policy import GraphContentPolicy
+from ..types.graph_content_policy_request import GraphContentPolicyRequest
 from ..types.graph_context_response import GraphContextResponse
 from ..types.graph_delete_result import GraphDeleteResult
 from ..types.graph_page import GraphPage
@@ -29,18 +34,21 @@ from ..types.observation_steering import ObservationSteering
 from ..types.observation_type import ObservationType
 from ..types.ontology import Ontology
 from ..types.search_filters import SearchFilters
+from ..types.search_request_reranker import SearchRequestReranker
 from ..types.subgraph_response import SubgraphResponse
 from ..types.thread_summary import ThreadSummary
 from ..types.thread_summary_page import ThreadSummaryPage
-from ..types.v4search_request_reranker import V4SearchRequestReranker
 from .raw_client import AsyncRawGraphClient, RawGraphClient
-from .types.v4graph_context_request_recency_bias import V4GraphContextRequestRecencyBias
-from .types.v4subgraph_request_direction import V4SubgraphRequestDirection
+from .types.graph_context_request_recency_bias import GraphContextRequestRecencyBias
+from .types.graph_list_request_order import GraphListRequestOrder
+from .types.graph_list_request_order_by import GraphListRequestOrderBy
+from .types.subgraph_request_direction import SubgraphRequestDirection
 
 if typing.TYPE_CHECKING:
     from .document_summary.client import AsyncDocumentSummaryClient, DocumentSummaryClient
     from .edge.client import AsyncEdgeClient, EdgeClient
     from .episode.client import AsyncEpisodeClient, EpisodeClient
+    from .hyperedge.client import AsyncHyperedgeClient, HyperedgeClient
     from .node.client import AsyncNodeClient, NodeClient
     from .observation.client import AsyncObservationClient, ObservationClient
     from .thread_summary.client import AsyncThreadSummaryClient, ThreadSummaryClient
@@ -55,6 +63,7 @@ class GraphClient:
         self._document_summary: typing.Optional[DocumentSummaryClient] = None
         self._episode: typing.Optional[EpisodeClient] = None
         self._edge: typing.Optional[EdgeClient] = None
+        self._hyperedge: typing.Optional[HyperedgeClient] = None
         self._node: typing.Optional[NodeClient] = None
         self._observation: typing.Optional[ObservationClient] = None
         self._thread_summary: typing.Optional[ThreadSummaryClient] = None
@@ -73,8 +82,8 @@ class GraphClient:
     def create(
         self,
         *,
+        content_policy: typing.Optional[GraphContentPolicyRequest] = OMIT,
         description: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -83,11 +92,13 @@ class GraphClient:
         """
         Parameters
         ----------
+        content_policy : typing.Optional[GraphContentPolicyRequest]
+            Content policy additions for the graph. The graph binds the current
+            project content policy plus these additions, and the binding does not
+            change after creation.
+
         description : typing.Optional[str]
             A description of the graph.
-
-        graph_id : typing.Optional[str]
-            An optional developer-assigned identifier for the graph.
 
         name : typing.Optional[str]
             A display name for the graph.
@@ -115,8 +126,8 @@ class GraphClient:
         client.graph.create()
         """
         _response = self._raw_client.create(
+            content_policy=content_policy,
             description=description,
-            graph_id=graph_id,
             name=name,
             time_zone=time_zone,
             idempotency_key=idempotency_key,
@@ -129,10 +140,9 @@ class GraphClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[GraphListRequestOrderBy] = None,
+        order: typing.Optional[GraphListRequestOrder] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Graph, GraphPage]:
         """
@@ -144,17 +154,15 @@ class GraphClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[GraphListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[GraphListRequestOrder]
             asc or desc
 
         search : typing.Optional[str]
             Filters results to graphs whose name, description, or graph ID contains
             this text.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -171,12 +179,7 @@ class GraphClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        response = client.graph.list(
-            limit=1,
-            cursor="cursor",
-            order_by="order_by",
-            order="order",
-        )
+        response = client.graph.list()
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
@@ -184,13 +187,7 @@ class GraphClient:
             yield page
         """
         return self._raw_client.list(
-            limit=limit,
-            cursor=cursor,
-            order_by=order_by,
-            order=order,
-            search=search,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            limit=limit, cursor=cursor, order_by=order_by, order=order, search=search, request_options=request_options
         )
 
     def lookup(
@@ -199,7 +196,6 @@ class GraphClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
         """
@@ -216,8 +212,6 @@ class GraphClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -237,11 +231,7 @@ class GraphClient:
         client.graph.lookup()
         """
         _response = self._raw_client.lookup(
-            graph_id=graph_id,
-            thread_id=thread_id,
-            user_id=user_id,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_id=graph_id, thread_id=thread_id, user_id=user_id, request_options=request_options
         )
         return _response.data
 
@@ -373,7 +363,7 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
-        target_graph_id: typing.Optional[str] = OMIT,
+        request: CloneGraphRequest,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CloneGraphResult:
@@ -383,8 +373,7 @@ class GraphClient:
         graph_uuid : str
             Graph UUID
 
-        target_graph_id : typing.Optional[str]
-            An optional name for the cloned graph.
+        request : CloneGraphRequest
 
         idempotency_key : typing.Optional[str]
 
@@ -405,15 +394,100 @@ class GraphClient:
         )
         client.graph.clone(
             graph_uuid="graph_uuid",
+            request={"key": "value"},
         )
         """
         _response = self._raw_client.clone(
-            graph_uuid,
-            target_graph_id=target_graph_id,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_uuid, request=request, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
+
+    def get_content_policy(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> GraphContentPolicy:
+        """
+        Returns the content policy the graph bound at creation. The policy of a graph does not change after creation. A graph without a content policy returns revision 0 with no categories and no rules.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphContentPolicy
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.get_content_policy(
+            graph_uuid="graph_uuid",
+        )
+        """
+        _response = self._raw_client.get_content_policy(graph_uuid, request_options=request_options)
+        return _response.data
+
+    def list_content_policy_events(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[ContentPolicyEvent, ContentPolicyEventPage]:
+        """
+        Lists the content policy decisions recorded for a graph, newest first. Each event carries identifiers only. A graph without a content policy returns an empty list.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Exact-match filters. Supported keys: episode_uuid and drop_reason.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[ContentPolicyEvent, ContentPolicyEventPage]
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.graph.list_content_policy_events(
+            graph_uuid="graph_uuid",
+        )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
+        """
+        return self._raw_client.list_content_policy_events(
+            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
+        )
 
     def get_context(
         self,
@@ -423,9 +497,8 @@ class GraphClient:
         filters: typing.Optional[SearchFilters] = OMIT,
         include_results: typing.Optional[bool] = OMIT,
         max_characters: typing.Optional[int] = OMIT,
-        recency_bias: typing.Optional[V4GraphContextRequestRecencyBias] = OMIT,
+        recency_bias: typing.Optional[GraphContextRequestRecencyBias] = OMIT,
         template_uuid: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphContextResponse:
         """
@@ -447,13 +520,11 @@ class GraphClient:
         max_characters : typing.Optional[int]
             The maximum number of characters in the assembled context block.
 
-        recency_bias : typing.Optional[V4GraphContextRequestRecencyBias]
+        recency_bias : typing.Optional[GraphContextRequestRecencyBias]
             Adjusts result selection to favor more recent graph data.
 
         template_uuid : typing.Optional[str]
             The UUID of a context template used to render the context block.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -483,7 +554,6 @@ class GraphClient:
             max_characters=max_characters,
             recency_bias=recency_bias,
             template_uuid=template_uuid,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data
@@ -696,6 +766,7 @@ class GraphClient:
         graph_uuid: str,
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         inherited: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -709,6 +780,9 @@ class GraphClient:
 
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
+
+        entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -741,6 +815,7 @@ class GraphClient:
         _response = self._raw_client.set_ontology(
             graph_uuid,
             edge_types=edge_types,
+            entity_type_hierarchy=entity_type_hierarchy,
             entity_types=entity_types,
             inherited=inherited,
             idempotency_key=idempotency_key,
@@ -759,8 +834,7 @@ class GraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Edge, EdgePage]:
         """
@@ -792,10 +866,8 @@ class GraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -814,8 +886,6 @@ class GraphClient:
         )
         response = client.graph.search_edges(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
             query="query",
         )
         for item in response:
@@ -834,7 +904,6 @@ class GraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -849,8 +918,7 @@ class GraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
         """
@@ -882,10 +950,8 @@ class GraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -904,8 +970,6 @@ class GraphClient:
         )
         response = client.graph.search_episodes(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
             query="query",
         )
         for item in response:
@@ -924,7 +988,6 @@ class GraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -939,8 +1002,7 @@ class GraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Node, NodePage]:
         """
@@ -972,10 +1034,8 @@ class GraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -994,8 +1054,6 @@ class GraphClient:
         )
         response = client.graph.search_nodes(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
             query="query",
         )
         for item in response:
@@ -1014,7 +1072,6 @@ class GraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -1029,8 +1086,7 @@ class GraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Observation, ObservationPage]:
         """
@@ -1062,10 +1118,8 @@ class GraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1084,8 +1138,6 @@ class GraphClient:
         )
         response = client.graph.search_observations(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
             query="query",
         )
         for item in response:
@@ -1104,7 +1156,6 @@ class GraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -1119,8 +1170,7 @@ class GraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ThreadSummary, ThreadSummaryPage]:
         """
@@ -1152,10 +1202,8 @@ class GraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1174,8 +1222,6 @@ class GraphClient:
         )
         response = client.graph.search_thread_summaries(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
             query="query",
         )
         for item in response:
@@ -1194,7 +1240,6 @@ class GraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -1204,11 +1249,10 @@ class GraphClient:
         *,
         seed_node_uuids: typing.Sequence[str],
         depth: typing.Optional[int] = OMIT,
-        direction: typing.Optional[V4SubgraphRequestDirection] = OMIT,
+        direction: typing.Optional[SubgraphRequestDirection] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         max_edges: typing.Optional[int] = OMIT,
         max_nodes: typing.Optional[int] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SubgraphResponse:
         """
@@ -1223,7 +1267,7 @@ class GraphClient:
         depth : typing.Optional[int]
             The maximum traversal depth from the seed nodes. Defaults to 1.
 
-        direction : typing.Optional[V4SubgraphRequestDirection]
+        direction : typing.Optional[SubgraphRequestDirection]
             The edge orientation to follow during expansion: in, out, or both.
             Defaults to both.
 
@@ -1235,8 +1279,6 @@ class GraphClient:
 
         max_nodes : typing.Optional[int]
             The maximum number of nodes in the response. Defaults to 100.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1266,7 +1308,6 @@ class GraphClient:
             filters=filters,
             max_edges=max_edges,
             max_nodes=max_nodes,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data
@@ -1333,6 +1374,14 @@ class GraphClient:
         return self._edge
 
     @property
+    def hyperedge(self):
+        if self._hyperedge is None:
+            from .hyperedge.client import HyperedgeClient  # noqa: E402
+
+            self._hyperedge = HyperedgeClient(client_wrapper=self._client_wrapper)
+        return self._hyperedge
+
+    @property
     def node(self):
         if self._node is None:
             from .node.client import NodeClient  # noqa: E402
@@ -1364,6 +1413,7 @@ class AsyncGraphClient:
         self._document_summary: typing.Optional[AsyncDocumentSummaryClient] = None
         self._episode: typing.Optional[AsyncEpisodeClient] = None
         self._edge: typing.Optional[AsyncEdgeClient] = None
+        self._hyperedge: typing.Optional[AsyncHyperedgeClient] = None
         self._node: typing.Optional[AsyncNodeClient] = None
         self._observation: typing.Optional[AsyncObservationClient] = None
         self._thread_summary: typing.Optional[AsyncThreadSummaryClient] = None
@@ -1382,8 +1432,8 @@ class AsyncGraphClient:
     async def create(
         self,
         *,
+        content_policy: typing.Optional[GraphContentPolicyRequest] = OMIT,
         description: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -1392,11 +1442,13 @@ class AsyncGraphClient:
         """
         Parameters
         ----------
+        content_policy : typing.Optional[GraphContentPolicyRequest]
+            Content policy additions for the graph. The graph binds the current
+            project content policy plus these additions, and the binding does not
+            change after creation.
+
         description : typing.Optional[str]
             A description of the graph.
-
-        graph_id : typing.Optional[str]
-            An optional developer-assigned identifier for the graph.
 
         name : typing.Optional[str]
             A display name for the graph.
@@ -1432,8 +1484,8 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
+            content_policy=content_policy,
             description=description,
-            graph_id=graph_id,
             name=name,
             time_zone=time_zone,
             idempotency_key=idempotency_key,
@@ -1446,10 +1498,9 @@ class AsyncGraphClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[GraphListRequestOrderBy] = None,
+        order: typing.Optional[GraphListRequestOrder] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Graph, GraphPage]:
         """
@@ -1461,17 +1512,15 @@ class AsyncGraphClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[GraphListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[GraphListRequestOrder]
             asc or desc
 
         search : typing.Optional[str]
             Filters results to graphs whose name, description, or graph ID contains
             this text.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1493,12 +1542,7 @@ class AsyncGraphClient:
 
 
         async def main() -> None:
-            response = await client.graph.list(
-                limit=1,
-                cursor="cursor",
-                order_by="order_by",
-                order="order",
-            )
+            response = await client.graph.list()
             async for item in response:
                 yield item
 
@@ -1510,13 +1554,7 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            limit=limit,
-            cursor=cursor,
-            order_by=order_by,
-            order=order,
-            search=search,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            limit=limit, cursor=cursor, order_by=order_by, order=order, search=search, request_options=request_options
         )
 
     async def lookup(
@@ -1525,7 +1563,6 @@ class AsyncGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Graph:
         """
@@ -1542,8 +1579,6 @@ class AsyncGraphClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1571,11 +1606,7 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.lookup(
-            graph_id=graph_id,
-            thread_id=thread_id,
-            user_id=user_id,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_id=graph_id, thread_id=thread_id, user_id=user_id, request_options=request_options
         )
         return _response.data
 
@@ -1731,7 +1762,7 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
-        target_graph_id: typing.Optional[str] = OMIT,
+        request: CloneGraphRequest,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CloneGraphResult:
@@ -1741,8 +1772,7 @@ class AsyncGraphClient:
         graph_uuid : str
             Graph UUID
 
-        target_graph_id : typing.Optional[str]
-            An optional name for the cloned graph.
+        request : CloneGraphRequest
 
         idempotency_key : typing.Optional[str]
 
@@ -1768,18 +1798,120 @@ class AsyncGraphClient:
         async def main() -> None:
             await client.graph.clone(
                 graph_uuid="graph_uuid",
+                request={"key": "value"},
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.clone(
-            graph_uuid,
-            target_graph_id=target_graph_id,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_uuid, request=request, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
+
+    async def get_content_policy(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> GraphContentPolicy:
+        """
+        Returns the content policy the graph bound at creation. The policy of a graph does not change after creation. A graph without a content policy returns revision 0 with no categories and no rules.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphContentPolicy
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.get_content_policy(
+                graph_uuid="graph_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_content_policy(graph_uuid, request_options=request_options)
+        return _response.data
+
+    async def list_content_policy_events(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[ContentPolicyEvent, ContentPolicyEventPage]:
+        """
+        Lists the content policy decisions recorded for a graph, newest first. Each event carries identifiers only. A graph without a content policy returns an empty list.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Exact-match filters. Supported keys: episode_uuid and drop_reason.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[ContentPolicyEvent, ContentPolicyEventPage]
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            response = await client.graph.list_content_policy_events(
+                graph_uuid="graph_uuid",
+            )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
+
+
+        asyncio.run(main())
+        """
+        return await self._raw_client.list_content_policy_events(
+            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
+        )
 
     async def get_context(
         self,
@@ -1789,9 +1921,8 @@ class AsyncGraphClient:
         filters: typing.Optional[SearchFilters] = OMIT,
         include_results: typing.Optional[bool] = OMIT,
         max_characters: typing.Optional[int] = OMIT,
-        recency_bias: typing.Optional[V4GraphContextRequestRecencyBias] = OMIT,
+        recency_bias: typing.Optional[GraphContextRequestRecencyBias] = OMIT,
         template_uuid: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphContextResponse:
         """
@@ -1813,13 +1944,11 @@ class AsyncGraphClient:
         max_characters : typing.Optional[int]
             The maximum number of characters in the assembled context block.
 
-        recency_bias : typing.Optional[V4GraphContextRequestRecencyBias]
+        recency_bias : typing.Optional[GraphContextRequestRecencyBias]
             Adjusts result selection to favor more recent graph data.
 
         template_uuid : typing.Optional[str]
             The UUID of a context template used to render the context block.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1857,7 +1986,6 @@ class AsyncGraphClient:
             max_characters=max_characters,
             recency_bias=recency_bias,
             template_uuid=template_uuid,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data
@@ -2112,6 +2240,7 @@ class AsyncGraphClient:
         graph_uuid: str,
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         inherited: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -2125,6 +2254,9 @@ class AsyncGraphClient:
 
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
+
+        entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -2165,6 +2297,7 @@ class AsyncGraphClient:
         _response = await self._raw_client.set_ontology(
             graph_uuid,
             edge_types=edge_types,
+            entity_type_hierarchy=entity_type_hierarchy,
             entity_types=entity_types,
             inherited=inherited,
             idempotency_key=idempotency_key,
@@ -2183,8 +2316,7 @@ class AsyncGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Edge, EdgePage]:
         """
@@ -2216,10 +2348,8 @@ class AsyncGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2243,8 +2373,6 @@ class AsyncGraphClient:
         async def main() -> None:
             response = await client.graph.search_edges(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
                 query="query",
             )
             async for item in response:
@@ -2267,7 +2395,6 @@ class AsyncGraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -2282,8 +2409,7 @@ class AsyncGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
         """
@@ -2315,10 +2441,8 @@ class AsyncGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2342,8 +2466,6 @@ class AsyncGraphClient:
         async def main() -> None:
             response = await client.graph.search_episodes(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
                 query="query",
             )
             async for item in response:
@@ -2366,7 +2488,6 @@ class AsyncGraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -2381,8 +2502,7 @@ class AsyncGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Node, NodePage]:
         """
@@ -2414,10 +2534,8 @@ class AsyncGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2441,8 +2559,6 @@ class AsyncGraphClient:
         async def main() -> None:
             response = await client.graph.search_nodes(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
                 query="query",
             )
             async for item in response:
@@ -2465,7 +2581,6 @@ class AsyncGraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -2480,8 +2595,7 @@ class AsyncGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Observation, ObservationPage]:
         """
@@ -2513,10 +2627,8 @@ class AsyncGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2540,8 +2652,6 @@ class AsyncGraphClient:
         async def main() -> None:
             response = await client.graph.search_observations(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
                 query="query",
             )
             async for item in response:
@@ -2564,7 +2674,6 @@ class AsyncGraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -2579,8 +2688,7 @@ class AsyncGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ThreadSummary, ThreadSummaryPage]:
         """
@@ -2612,10 +2720,8 @@ class AsyncGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2639,8 +2745,6 @@ class AsyncGraphClient:
         async def main() -> None:
             response = await client.graph.search_thread_summaries(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
                 query="query",
             )
             async for item in response:
@@ -2663,7 +2767,6 @@ class AsyncGraphClient:
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -2673,11 +2776,10 @@ class AsyncGraphClient:
         *,
         seed_node_uuids: typing.Sequence[str],
         depth: typing.Optional[int] = OMIT,
-        direction: typing.Optional[V4SubgraphRequestDirection] = OMIT,
+        direction: typing.Optional[SubgraphRequestDirection] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         max_edges: typing.Optional[int] = OMIT,
         max_nodes: typing.Optional[int] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SubgraphResponse:
         """
@@ -2692,7 +2794,7 @@ class AsyncGraphClient:
         depth : typing.Optional[int]
             The maximum traversal depth from the seed nodes. Defaults to 1.
 
-        direction : typing.Optional[V4SubgraphRequestDirection]
+        direction : typing.Optional[SubgraphRequestDirection]
             The edge orientation to follow during expansion: in, out, or both.
             Defaults to both.
 
@@ -2704,8 +2806,6 @@ class AsyncGraphClient:
 
         max_nodes : typing.Optional[int]
             The maximum number of nodes in the response. Defaults to 100.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2743,7 +2843,6 @@ class AsyncGraphClient:
             filters=filters,
             max_edges=max_edges,
             max_nodes=max_nodes,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
         return _response.data
@@ -2818,6 +2917,14 @@ class AsyncGraphClient:
 
             self._edge = AsyncEdgeClient(client_wrapper=self._client_wrapper)
         return self._edge
+
+    @property
+    def hyperedge(self):
+        if self._hyperedge is None:
+            from .hyperedge.client import AsyncHyperedgeClient  # noqa: E402
+
+            self._hyperedge = AsyncHyperedgeClient(client_wrapper=self._client_wrapper)
+        return self._hyperedge
 
     @property
     def node(self):

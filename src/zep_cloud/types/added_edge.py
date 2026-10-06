@@ -45,9 +45,23 @@ class AddedEdge(UniversalBaseModel):
     The source node fields you supplied when creating this edge.
     """
 
+    source_node_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The source node UUID is set when deduplicate is false. It is the UUID you
+    supplied, or the UUID Zep assigned to a node that the request creates.
+    When deduplicate is true, read the endpoint from the task result.
+    """
+
     target_node: typing.Optional[EdgeNodeRef] = pydantic.Field(default=None)
     """
     The target node fields you supplied when creating this edge.
+    """
+
+    target_node_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The target node UUID is set when deduplicate is false. It is the UUID you
+    supplied, or the UUID Zep assigned to a node that the request creates.
+    When deduplicate is true, read the endpoint from the task result.
     """
 
     uuid_: typing_extensions.Annotated[
@@ -55,6 +69,10 @@ class AddedEdge(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The unique identifier assigned to the edge."),
     ] = None
+    """
+    The unique identifier assigned to the edge.
+    """
+
     valid_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     The time from which the fact is considered true.

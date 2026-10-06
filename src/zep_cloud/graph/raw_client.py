@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
-from ..core.jsonable_encoder import jsonable_encoder
+from ..core.idempotency import generate_idempotency_key
+from ..core.jsonable_encoder import encode_path_param
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
@@ -19,7 +20,10 @@ from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.async_result import AsyncResult
+from ..types.clone_graph_request import CloneGraphRequest
 from ..types.clone_graph_result import CloneGraphResult
+from ..types.content_policy_event import ContentPolicyEvent
+from ..types.content_policy_event_page import ContentPolicyEventPage
 from ..types.custom_instruction import CustomInstruction
 from ..types.edge import Edge
 from ..types.edge_page import EdgePage
@@ -28,6 +32,8 @@ from ..types.entity_type import EntityType
 from ..types.episode import Episode
 from ..types.episode_page import EpisodePage
 from ..types.graph import Graph
+from ..types.graph_content_policy import GraphContentPolicy
+from ..types.graph_content_policy_request import GraphContentPolicyRequest
 from ..types.graph_context_response import GraphContextResponse
 from ..types.graph_delete_result import GraphDeleteResult
 from ..types.graph_page import GraphPage
@@ -40,12 +46,14 @@ from ..types.observation_steering import ObservationSteering
 from ..types.observation_type import ObservationType
 from ..types.ontology import Ontology
 from ..types.search_filters import SearchFilters
+from ..types.search_request_reranker import SearchRequestReranker
 from ..types.subgraph_response import SubgraphResponse
 from ..types.thread_summary import ThreadSummary
 from ..types.thread_summary_page import ThreadSummaryPage
-from ..types.v4search_request_reranker import V4SearchRequestReranker
-from .types.v4graph_context_request_recency_bias import V4GraphContextRequestRecencyBias
-from .types.v4subgraph_request_direction import V4SubgraphRequestDirection
+from .types.graph_context_request_recency_bias import GraphContextRequestRecencyBias
+from .types.graph_list_request_order import GraphListRequestOrder
+from .types.graph_list_request_order_by import GraphListRequestOrderBy
+from .types.subgraph_request_direction import SubgraphRequestDirection
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -59,8 +67,8 @@ class RawGraphClient:
     def create(
         self,
         *,
+        content_policy: typing.Optional[GraphContentPolicyRequest] = OMIT,
         description: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -69,11 +77,13 @@ class RawGraphClient:
         """
         Parameters
         ----------
+        content_policy : typing.Optional[GraphContentPolicyRequest]
+            Content policy additions for the graph. The graph binds the current
+            project content policy plus these additions, and the binding does not
+            change after creation.
+
         description : typing.Optional[str]
             A description of the graph.
-
-        graph_id : typing.Optional[str]
-            An optional developer-assigned identifier for the graph.
 
         name : typing.Optional[str]
             A display name for the graph.
@@ -95,14 +105,16 @@ class RawGraphClient:
             "graphs",
             method="POST",
             json={
+                "content_policy": convert_and_respect_annotation_metadata(
+                    object_=content_policy, annotation=GraphContentPolicyRequest, direction="write"
+                ),
                 "description": description,
-                "graph_id": graph_id,
                 "name": name,
                 "time_zone": time_zone,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -190,10 +202,9 @@ class RawGraphClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[GraphListRequestOrderBy] = None,
+        order: typing.Optional[GraphListRequestOrder] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Graph, GraphPage]:
         """
@@ -205,17 +216,15 @@ class RawGraphClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[GraphListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[GraphListRequestOrder]
             asc or desc
 
         search : typing.Optional[str]
             Filters results to graphs whose name, description, or graph ID contains
             this text.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -239,7 +248,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -262,7 +271,6 @@ class RawGraphClient:
                     order_by=order_by,
                     order=order,
                     search=search,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -329,7 +337,6 @@ class RawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Graph]:
         """
@@ -346,8 +353,6 @@ class RawGraphClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -367,7 +372,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -444,7 +449,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -539,10 +544,10 @@ class RawGraphClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -660,7 +665,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}",
             method="PATCH",
             json={
                 "description": description,
@@ -669,7 +674,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -756,7 +761,7 @@ class RawGraphClient:
         self,
         graph_uuid: str,
         *,
-        target_graph_id: typing.Optional[str] = OMIT,
+        request: CloneGraphRequest,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[CloneGraphResult]:
@@ -766,8 +771,7 @@ class RawGraphClient:
         graph_uuid : str
             Graph UUID
 
-        target_graph_id : typing.Optional[str]
-            An optional name for the cloned graph.
+        request : CloneGraphRequest
 
         idempotency_key : typing.Optional[str]
 
@@ -780,14 +784,12 @@ class RawGraphClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/clone",
+            f"graphs/{encode_path_param(graph_uuid)}/clone",
             method="POST",
-            json={
-                "target_graph_id": target_graph_id,
-            },
+            json=request,
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -870,6 +872,225 @@ class RawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def get_content_policy(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[GraphContentPolicy]:
+        """
+        Returns the content policy the graph bound at creation. The policy of a graph does not change after creation. A graph without a content policy returns revision 0 with no categories and no rules.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[GraphContentPolicy]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/content-policy",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphContentPolicy,
+                    parse_obj_as(
+                        type_=GraphContentPolicy,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def list_content_policy_events(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[ContentPolicyEvent, ContentPolicyEventPage]:
+        """
+        Lists the content policy decisions recorded for a graph, newest first. Each event carries identifiers only. A graph without a content policy returns an empty list.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Exact-match filters. Supported keys: episode_uuid and drop_reason.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[ContentPolicyEvent, ContentPolicyEventPage]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/content-policy/events/list",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "filters": filters,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    ContentPolicyEventPage,
+                    parse_obj_as(
+                        type_=ContentPolicyEventPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list_content_policy_events(
+                    graph_uuid,
+                    limit=limit,
+                    cursor=_parsed_next,
+                    filters=filters,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     def get_context(
         self,
         graph_uuid: str,
@@ -878,9 +1099,8 @@ class RawGraphClient:
         filters: typing.Optional[SearchFilters] = OMIT,
         include_results: typing.Optional[bool] = OMIT,
         max_characters: typing.Optional[int] = OMIT,
-        recency_bias: typing.Optional[V4GraphContextRequestRecencyBias] = OMIT,
+        recency_bias: typing.Optional[GraphContextRequestRecencyBias] = OMIT,
         template_uuid: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GraphContextResponse]:
         """
@@ -902,13 +1122,11 @@ class RawGraphClient:
         max_characters : typing.Optional[int]
             The maximum number of characters in the assembled context block.
 
-        recency_bias : typing.Optional[V4GraphContextRequestRecencyBias]
+        recency_bias : typing.Optional[GraphContextRequestRecencyBias]
             Adjusts result selection to favor more recent graph data.
 
         template_uuid : typing.Optional[str]
             The UUID of a context template used to render the context block.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -919,7 +1137,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/context",
+            f"graphs/{encode_path_param(graph_uuid)}/context",
             method="POST",
             json={
                 "filters": convert_and_respect_annotation_metadata(
@@ -933,7 +1151,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1034,7 +1252,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/instructions",
+            f"graphs/{encode_path_param(graph_uuid)}/instructions",
             method="GET",
             request_options=request_options,
         )
@@ -1128,7 +1346,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/instructions",
+            f"graphs/{encode_path_param(graph_uuid)}/instructions",
             method="PUT",
             json={
                 "inherited": inherited,
@@ -1138,7 +1356,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1217,7 +1435,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/observation-steering",
+            f"graphs/{encode_path_param(graph_uuid)}/observation-steering",
             method="GET",
             request_options=request_options,
         )
@@ -1316,7 +1534,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/observation-steering",
+            f"graphs/{encode_path_param(graph_uuid)}/observation-steering",
             method="PUT",
             json={
                 "inherited": inherited,
@@ -1327,7 +1545,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1406,7 +1624,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/ontology",
+            f"graphs/{encode_path_param(graph_uuid)}/ontology",
             method="GET",
             request_options=request_options,
         )
@@ -1471,6 +1689,7 @@ class RawGraphClient:
         graph_uuid: str,
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         inherited: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -1484,6 +1703,9 @@ class RawGraphClient:
 
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
+
+        entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -1503,12 +1725,13 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/ontology",
+            f"graphs/{encode_path_param(graph_uuid)}/ontology",
             method="PUT",
             json={
                 "edge_types": convert_and_respect_annotation_metadata(
                     object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
                 ),
+                "entity_type_hierarchy": entity_type_hierarchy,
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
@@ -1516,7 +1739,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1588,8 +1811,7 @@ class RawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Edge, EdgePage]:
         """
@@ -1621,10 +1843,8 @@ class RawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1635,7 +1855,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/edges",
+            f"graphs/{encode_path_param(graph_uuid)}/search/edges",
             method="POST",
             params={
                 "limit": limit,
@@ -1653,7 +1873,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1680,7 +1900,6 @@ class RawGraphClient:
                     filters=filters,
                     mmr_lambda=mmr_lambda,
                     reranker=reranker,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -1752,8 +1971,7 @@ class RawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
         """
@@ -1785,10 +2003,8 @@ class RawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1799,7 +2015,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/episodes",
+            f"graphs/{encode_path_param(graph_uuid)}/search/episodes",
             method="POST",
             params={
                 "limit": limit,
@@ -1817,7 +2033,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1844,7 +2060,6 @@ class RawGraphClient:
                     filters=filters,
                     mmr_lambda=mmr_lambda,
                     reranker=reranker,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -1916,8 +2131,7 @@ class RawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Node, NodePage]:
         """
@@ -1949,10 +2163,8 @@ class RawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1963,7 +2175,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/nodes",
+            f"graphs/{encode_path_param(graph_uuid)}/search/nodes",
             method="POST",
             params={
                 "limit": limit,
@@ -1981,7 +2193,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2008,7 +2220,6 @@ class RawGraphClient:
                     filters=filters,
                     mmr_lambda=mmr_lambda,
                     reranker=reranker,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -2080,8 +2291,7 @@ class RawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Observation, ObservationPage]:
         """
@@ -2113,10 +2323,8 @@ class RawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2127,7 +2335,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/observations",
+            f"graphs/{encode_path_param(graph_uuid)}/search/observations",
             method="POST",
             params={
                 "limit": limit,
@@ -2145,7 +2353,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2172,7 +2380,6 @@ class RawGraphClient:
                     filters=filters,
                     mmr_lambda=mmr_lambda,
                     reranker=reranker,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -2244,8 +2451,7 @@ class RawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ThreadSummary, ThreadSummaryPage]:
         """
@@ -2277,10 +2483,8 @@ class RawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2291,7 +2495,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/thread-summaries",
+            f"graphs/{encode_path_param(graph_uuid)}/search/thread-summaries",
             method="POST",
             params={
                 "limit": limit,
@@ -2309,7 +2513,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2336,7 +2540,6 @@ class RawGraphClient:
                     filters=filters,
                     mmr_lambda=mmr_lambda,
                     reranker=reranker,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -2403,11 +2606,10 @@ class RawGraphClient:
         *,
         seed_node_uuids: typing.Sequence[str],
         depth: typing.Optional[int] = OMIT,
-        direction: typing.Optional[V4SubgraphRequestDirection] = OMIT,
+        direction: typing.Optional[SubgraphRequestDirection] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         max_edges: typing.Optional[int] = OMIT,
         max_nodes: typing.Optional[int] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[SubgraphResponse]:
         """
@@ -2422,7 +2624,7 @@ class RawGraphClient:
         depth : typing.Optional[int]
             The maximum traversal depth from the seed nodes. Defaults to 1.
 
-        direction : typing.Optional[V4SubgraphRequestDirection]
+        direction : typing.Optional[SubgraphRequestDirection]
             The edge orientation to follow during expansion: in, out, or both.
             Defaults to both.
 
@@ -2435,8 +2637,6 @@ class RawGraphClient:
         max_nodes : typing.Optional[int]
             The maximum number of nodes in the response. Defaults to 100.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -2446,7 +2646,7 @@ class RawGraphClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/subgraph",
+            f"graphs/{encode_path_param(graph_uuid)}/subgraph",
             method="POST",
             json={
                 "depth": depth,
@@ -2460,7 +2660,7 @@ class RawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2556,10 +2756,10 @@ class RawGraphClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/warm",
+            f"graphs/{encode_path_param(graph_uuid)}/warm",
             method="POST",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -2649,8 +2849,8 @@ class AsyncRawGraphClient:
     async def create(
         self,
         *,
+        content_policy: typing.Optional[GraphContentPolicyRequest] = OMIT,
         description: typing.Optional[str] = OMIT,
-        graph_id: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -2659,11 +2859,13 @@ class AsyncRawGraphClient:
         """
         Parameters
         ----------
+        content_policy : typing.Optional[GraphContentPolicyRequest]
+            Content policy additions for the graph. The graph binds the current
+            project content policy plus these additions, and the binding does not
+            change after creation.
+
         description : typing.Optional[str]
             A description of the graph.
-
-        graph_id : typing.Optional[str]
-            An optional developer-assigned identifier for the graph.
 
         name : typing.Optional[str]
             A display name for the graph.
@@ -2685,14 +2887,16 @@ class AsyncRawGraphClient:
             "graphs",
             method="POST",
             json={
+                "content_policy": convert_and_respect_annotation_metadata(
+                    object_=content_policy, annotation=GraphContentPolicyRequest, direction="write"
+                ),
                 "description": description,
-                "graph_id": graph_id,
                 "name": name,
                 "time_zone": time_zone,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2780,10 +2984,9 @@ class AsyncRawGraphClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[GraphListRequestOrderBy] = None,
+        order: typing.Optional[GraphListRequestOrder] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Graph, GraphPage]:
         """
@@ -2795,17 +2998,15 @@ class AsyncRawGraphClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[GraphListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[GraphListRequestOrder]
             asc or desc
 
         search : typing.Optional[str]
             Filters results to graphs whose name, description, or graph ID contains
             this text.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2829,7 +3030,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2854,7 +3055,6 @@ class AsyncRawGraphClient:
                         order_by=order_by,
                         order=order,
                         search=search,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -2922,7 +3122,6 @@ class AsyncRawGraphClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Graph]:
         """
@@ -2939,8 +3138,6 @@ class AsyncRawGraphClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2960,7 +3157,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -3039,7 +3236,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -3134,10 +3331,10 @@ class AsyncRawGraphClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -3255,7 +3452,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}",
             method="PATCH",
             json={
                 "description": description,
@@ -3264,7 +3461,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -3351,7 +3548,7 @@ class AsyncRawGraphClient:
         self,
         graph_uuid: str,
         *,
-        target_graph_id: typing.Optional[str] = OMIT,
+        request: CloneGraphRequest,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[CloneGraphResult]:
@@ -3361,8 +3558,7 @@ class AsyncRawGraphClient:
         graph_uuid : str
             Graph UUID
 
-        target_graph_id : typing.Optional[str]
-            An optional name for the cloned graph.
+        request : CloneGraphRequest
 
         idempotency_key : typing.Optional[str]
 
@@ -3375,14 +3571,12 @@ class AsyncRawGraphClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/clone",
+            f"graphs/{encode_path_param(graph_uuid)}/clone",
             method="POST",
-            json={
-                "target_graph_id": target_graph_id,
-            },
+            json=request,
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -3465,6 +3659,228 @@ class AsyncRawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    async def get_content_policy(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[GraphContentPolicy]:
+        """
+        Returns the content policy the graph bound at creation. The policy of a graph does not change after creation. A graph without a content policy returns revision 0 with no categories and no rules.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[GraphContentPolicy]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/content-policy",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GraphContentPolicy,
+                    parse_obj_as(
+                        type_=GraphContentPolicy,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def list_content_policy_events(
+        self,
+        graph_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[ContentPolicyEvent, ContentPolicyEventPage]:
+        """
+        Lists the content policy decisions recorded for a graph, newest first. Each event carries identifiers only. A graph without a content policy returns an empty list.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        filters : typing.Optional[typing.Dict[str, typing.Any]]
+            Exact-match filters. Supported keys: episode_uuid and drop_reason.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[ContentPolicyEvent, ContentPolicyEventPage]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/content-policy/events/list",
+            method="POST",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            json={
+                "filters": filters,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    ContentPolicyEventPage,
+                    parse_obj_as(
+                        type_=ContentPolicyEventPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list_content_policy_events(
+                        graph_uuid,
+                        limit=limit,
+                        cursor=_parsed_next,
+                        filters=filters,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     async def get_context(
         self,
         graph_uuid: str,
@@ -3473,9 +3889,8 @@ class AsyncRawGraphClient:
         filters: typing.Optional[SearchFilters] = OMIT,
         include_results: typing.Optional[bool] = OMIT,
         max_characters: typing.Optional[int] = OMIT,
-        recency_bias: typing.Optional[V4GraphContextRequestRecencyBias] = OMIT,
+        recency_bias: typing.Optional[GraphContextRequestRecencyBias] = OMIT,
         template_uuid: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GraphContextResponse]:
         """
@@ -3497,13 +3912,11 @@ class AsyncRawGraphClient:
         max_characters : typing.Optional[int]
             The maximum number of characters in the assembled context block.
 
-        recency_bias : typing.Optional[V4GraphContextRequestRecencyBias]
+        recency_bias : typing.Optional[GraphContextRequestRecencyBias]
             Adjusts result selection to favor more recent graph data.
 
         template_uuid : typing.Optional[str]
             The UUID of a context template used to render the context block.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -3514,7 +3927,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/context",
+            f"graphs/{encode_path_param(graph_uuid)}/context",
             method="POST",
             json={
                 "filters": convert_and_respect_annotation_metadata(
@@ -3528,7 +3941,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -3629,7 +4042,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/instructions",
+            f"graphs/{encode_path_param(graph_uuid)}/instructions",
             method="GET",
             request_options=request_options,
         )
@@ -3723,7 +4136,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/instructions",
+            f"graphs/{encode_path_param(graph_uuid)}/instructions",
             method="PUT",
             json={
                 "inherited": inherited,
@@ -3733,7 +4146,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -3812,7 +4225,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/observation-steering",
+            f"graphs/{encode_path_param(graph_uuid)}/observation-steering",
             method="GET",
             request_options=request_options,
         )
@@ -3911,7 +4324,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/observation-steering",
+            f"graphs/{encode_path_param(graph_uuid)}/observation-steering",
             method="PUT",
             json={
                 "inherited": inherited,
@@ -3922,7 +4335,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -4001,7 +4414,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/ontology",
+            f"graphs/{encode_path_param(graph_uuid)}/ontology",
             method="GET",
             request_options=request_options,
         )
@@ -4066,6 +4479,7 @@ class AsyncRawGraphClient:
         graph_uuid: str,
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         inherited: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
@@ -4079,6 +4493,9 @@ class AsyncRawGraphClient:
 
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
+
+        entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -4098,12 +4515,13 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/ontology",
+            f"graphs/{encode_path_param(graph_uuid)}/ontology",
             method="PUT",
             json={
                 "edge_types": convert_and_respect_annotation_metadata(
                     object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
                 ),
+                "entity_type_hierarchy": entity_type_hierarchy,
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
@@ -4111,7 +4529,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -4183,8 +4601,7 @@ class AsyncRawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Edge, EdgePage]:
         """
@@ -4216,10 +4633,8 @@ class AsyncRawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -4230,7 +4645,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/edges",
+            f"graphs/{encode_path_param(graph_uuid)}/search/edges",
             method="POST",
             params={
                 "limit": limit,
@@ -4248,7 +4663,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -4277,7 +4692,6 @@ class AsyncRawGraphClient:
                         filters=filters,
                         mmr_lambda=mmr_lambda,
                         reranker=reranker,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -4350,8 +4764,7 @@ class AsyncRawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
         """
@@ -4383,10 +4796,8 @@ class AsyncRawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -4397,7 +4808,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/episodes",
+            f"graphs/{encode_path_param(graph_uuid)}/search/episodes",
             method="POST",
             params={
                 "limit": limit,
@@ -4415,7 +4826,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -4444,7 +4855,6 @@ class AsyncRawGraphClient:
                         filters=filters,
                         mmr_lambda=mmr_lambda,
                         reranker=reranker,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -4517,8 +4927,7 @@ class AsyncRawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Node, NodePage]:
         """
@@ -4550,10 +4959,8 @@ class AsyncRawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -4564,7 +4971,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/nodes",
+            f"graphs/{encode_path_param(graph_uuid)}/search/nodes",
             method="POST",
             params={
                 "limit": limit,
@@ -4582,7 +4989,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -4611,7 +5018,6 @@ class AsyncRawGraphClient:
                         filters=filters,
                         mmr_lambda=mmr_lambda,
                         reranker=reranker,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -4684,8 +5090,7 @@ class AsyncRawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Observation, ObservationPage]:
         """
@@ -4717,10 +5122,8 @@ class AsyncRawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -4731,7 +5134,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/observations",
+            f"graphs/{encode_path_param(graph_uuid)}/search/observations",
             method="POST",
             params={
                 "limit": limit,
@@ -4749,7 +5152,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -4778,7 +5181,6 @@ class AsyncRawGraphClient:
                         filters=filters,
                         mmr_lambda=mmr_lambda,
                         reranker=reranker,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -4851,8 +5253,7 @@ class AsyncRawGraphClient:
         center_node_uuid: typing.Optional[str] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[V4SearchRequestReranker] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
+        reranker: typing.Optional[SearchRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ThreadSummary, ThreadSummaryPage]:
         """
@@ -4884,10 +5285,8 @@ class AsyncRawGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[V4SearchRequestReranker]
+        reranker : typing.Optional[SearchRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -4898,7 +5297,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/search/thread-summaries",
+            f"graphs/{encode_path_param(graph_uuid)}/search/thread-summaries",
             method="POST",
             params={
                 "limit": limit,
@@ -4916,7 +5315,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -4945,7 +5344,6 @@ class AsyncRawGraphClient:
                         filters=filters,
                         mmr_lambda=mmr_lambda,
                         reranker=reranker,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -5013,11 +5411,10 @@ class AsyncRawGraphClient:
         *,
         seed_node_uuids: typing.Sequence[str],
         depth: typing.Optional[int] = OMIT,
-        direction: typing.Optional[V4SubgraphRequestDirection] = OMIT,
+        direction: typing.Optional[SubgraphRequestDirection] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         max_edges: typing.Optional[int] = OMIT,
         max_nodes: typing.Optional[int] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[SubgraphResponse]:
         """
@@ -5032,7 +5429,7 @@ class AsyncRawGraphClient:
         depth : typing.Optional[int]
             The maximum traversal depth from the seed nodes. Defaults to 1.
 
-        direction : typing.Optional[V4SubgraphRequestDirection]
+        direction : typing.Optional[SubgraphRequestDirection]
             The edge orientation to follow during expansion: in, out, or both.
             Defaults to both.
 
@@ -5045,8 +5442,6 @@ class AsyncRawGraphClient:
         max_nodes : typing.Optional[int]
             The maximum number of nodes in the response. Defaults to 100.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -5056,7 +5451,7 @@ class AsyncRawGraphClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/subgraph",
+            f"graphs/{encode_path_param(graph_uuid)}/subgraph",
             method="POST",
             json={
                 "depth": depth,
@@ -5070,7 +5465,7 @@ class AsyncRawGraphClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -5166,10 +5561,10 @@ class AsyncRawGraphClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/warm",
+            f"graphs/{encode_path_param(graph_uuid)}/warm",
             method="POST",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )

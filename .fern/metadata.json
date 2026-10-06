@@ -1,7 +1,7 @@
 {
-  "cliVersion": "5.50.1",
+  "cliVersion": "5.146.2",
   "generatorName": "fernapi/fern-python-sdk",
-  "generatorVersion": "4.64.1",
+  "generatorVersion": "5.34.3",
   "generatorConfig": {
     "package_name": "zep_cloud",
     "client": {
@@ -9,8 +9,13 @@
       "class_name": "BaseClient",
       "exported_filename": "client.py",
       "exported_class_name": "Zep"
-    }
+    },
+    "pyproject_python_version": "^3.10"
   },
-  "originGitCommit": "70d7aaa9c19f07072ca0c09b2e89a8f3c87001d4",
-  "sdkVersion": "4.0.0a5"
+  "originGitCommit": "26e9820bad75494d5ac535a7f939856d42587c22",
+  "originGitCommitIsDirty": true,
+  "invokedBy": "ci",
+  "requestedVersion": "4.0.0b1",
+  "ciProvider": "github",
+  "sdkVersion": "4.0.0b1"
 }

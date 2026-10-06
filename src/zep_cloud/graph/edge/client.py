@@ -5,10 +5,10 @@ import typing
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.pagination import AsyncPager, SyncPager
 from ...core.request_options import RequestOptions
-from ...types.add_edge_result import AddEdgeResult
+from ...types.add_edges_result import AddEdgesResult
 from ...types.async_result import AsyncResult
 from ...types.edge import Edge
-from ...types.edge_node_ref import EdgeNodeRef
+from ...types.edge_input import EdgeInput
 from ...types.edge_page import EdgePage
 from .raw_client import AsyncRawEdgeClient, RawEdgeClient
 
@@ -35,53 +35,27 @@ class EdgeClient:
         self,
         graph_uuid: str,
         *,
-        fact: str,
-        fact_name: str,
-        source_node: EdgeNodeRef,
-        target_node: EdgeNodeRef,
-        attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
+        edges: typing.Sequence[EdgeInput],
+        deduplicate: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AddEdgeResult:
+    ) -> AddEdgesResult:
         """
+        Adds 1 to 100 edges. A name creates a node when deduplicate is false. When deduplicate is true, Zep matches a node by name first.
+        Example: {"edges":[{"fact":"Ada works at Acme Corp","fact_name":"WORKS_AT","source_node":{"uuid":"f47ac10b-58cc-4372-a567-0e02b2c3d479"},"target_node":{"uuid":"f47ac10b-58cc-4372-a567-0e02b2c3d480"}},{"fact":"Ada leads a team","fact_name":"LEADS","source_node":{"name":"Ada Lovelace","labels":["Person"]},"target_node":{"name":"Engineering","labels":["Department"]}}],"deduplicate":false}
+
         Parameters
         ----------
         graph_uuid : str
             Graph UUID
 
-        fact : str
-            The fact text describing the relationship between the source and target
-            nodes.
+        edges : typing.Sequence[EdgeInput]
+            The edges to add to the graph. The request accepts 1 to 100 edges.
 
-        fact_name : str
-            The name of the edge, in upper snake case, for example RELATES_TO.
-
-        source_node : EdgeNodeRef
-            The source node of the edge, referenced by uuid or created or matched by
-            name.
-
-        target_node : EdgeNodeRef
-            The target node of the edge, referenced by uuid or created or matched by
-            name.
-
-        attributes : typing.Optional[typing.Dict[str, typing.Any]]
-            Additional attributes to store on the edge.
-
-        expired_at : typing.Optional[str]
-            The time at which the fact was superseded or invalidated.
-
-        invalid_at : typing.Optional[str]
-            The time at which the fact stopped being true.
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata attached to the episode created for this edge.
-
-        valid_at : typing.Optional[str]
-            The time at which the fact became true.
+        deduplicate : typing.Optional[bool]
+            When true, Zep compares each edge with graph edges and can merge a
+            duplicate or invalidate a contradicted edge. This adds an LLM call per
+            edge. The default is false.
 
         idempotency_key : typing.Optional[str]
 
@@ -90,35 +64,32 @@ class EdgeClient:
 
         Returns
         -------
-        AddEdgeResult
+        AddEdgesResult
             Accepted
 
         Examples
         --------
-        from zep_cloud import EdgeNodeRef, Zep
+        from zep_cloud import EdgeInput, EdgeNodeRef, Zep
 
         client = Zep(
             api_key="YOUR_API_KEY",
         )
         client.graph.edge.add(
             graph_uuid="graph_uuid",
-            fact="fact",
-            fact_name="fact_name",
-            source_node=EdgeNodeRef(),
-            target_node=EdgeNodeRef(),
+            edges=[
+                EdgeInput(
+                    fact="Ada works at Acme Corp",
+                    fact_name="WORKS_AT",
+                    source_node=EdgeNodeRef(),
+                    target_node=EdgeNodeRef(),
+                )
+            ],
         )
         """
         _response = self._raw_client.add(
             graph_uuid,
-            fact=fact,
-            fact_name=fact_name,
-            source_node=source_node,
-            target_node=target_node,
-            attributes=attributes,
-            expired_at=expired_at,
-            invalid_at=invalid_at,
-            metadata=metadata,
-            valid_at=valid_at,
+            edges=edges,
+            deduplicate=deduplicate,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
@@ -131,7 +102,6 @@ class EdgeClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Edge, EdgePage]:
         """
@@ -148,8 +118,6 @@ class EdgeClient:
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -168,8 +136,6 @@ class EdgeClient:
         )
         response = client.graph.edge.list(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -178,12 +144,7 @@ class EdgeClient:
             yield page
         """
         return self._raw_client.list(
-            graph_uuid,
-            limit=limit,
-            cursor=cursor,
-            filters=filters,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
         )
 
     def get(self, graph_uuid: str, edge_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> Edge:
@@ -274,6 +235,11 @@ class EdgeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Edge:
         """
+        Updates one edge. When the edge belongs to a hyperedge, changing fact
+        rewrites it on every member of that hyperedge in one all-or-nothing
+        write, because the members share it. Attribute-only edits touch this
+        edge alone.
+
         Parameters
         ----------
         graph_uuid : str
@@ -342,53 +308,27 @@ class AsyncEdgeClient:
         self,
         graph_uuid: str,
         *,
-        fact: str,
-        fact_name: str,
-        source_node: EdgeNodeRef,
-        target_node: EdgeNodeRef,
-        attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
+        edges: typing.Sequence[EdgeInput],
+        deduplicate: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AddEdgeResult:
+    ) -> AddEdgesResult:
         """
+        Adds 1 to 100 edges. A name creates a node when deduplicate is false. When deduplicate is true, Zep matches a node by name first.
+        Example: {"edges":[{"fact":"Ada works at Acme Corp","fact_name":"WORKS_AT","source_node":{"uuid":"f47ac10b-58cc-4372-a567-0e02b2c3d479"},"target_node":{"uuid":"f47ac10b-58cc-4372-a567-0e02b2c3d480"}},{"fact":"Ada leads a team","fact_name":"LEADS","source_node":{"name":"Ada Lovelace","labels":["Person"]},"target_node":{"name":"Engineering","labels":["Department"]}}],"deduplicate":false}
+
         Parameters
         ----------
         graph_uuid : str
             Graph UUID
 
-        fact : str
-            The fact text describing the relationship between the source and target
-            nodes.
+        edges : typing.Sequence[EdgeInput]
+            The edges to add to the graph. The request accepts 1 to 100 edges.
 
-        fact_name : str
-            The name of the edge, in upper snake case, for example RELATES_TO.
-
-        source_node : EdgeNodeRef
-            The source node of the edge, referenced by uuid or created or matched by
-            name.
-
-        target_node : EdgeNodeRef
-            The target node of the edge, referenced by uuid or created or matched by
-            name.
-
-        attributes : typing.Optional[typing.Dict[str, typing.Any]]
-            Additional attributes to store on the edge.
-
-        expired_at : typing.Optional[str]
-            The time at which the fact was superseded or invalidated.
-
-        invalid_at : typing.Optional[str]
-            The time at which the fact stopped being true.
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata attached to the episode created for this edge.
-
-        valid_at : typing.Optional[str]
-            The time at which the fact became true.
+        deduplicate : typing.Optional[bool]
+            When true, Zep compares each edge with graph edges and can merge a
+            duplicate or invalidate a contradicted edge. This adds an LLM call per
+            edge. The default is false.
 
         idempotency_key : typing.Optional[str]
 
@@ -397,14 +337,14 @@ class AsyncEdgeClient:
 
         Returns
         -------
-        AddEdgeResult
+        AddEdgesResult
             Accepted
 
         Examples
         --------
         import asyncio
 
-        from zep_cloud import AsyncZep, EdgeNodeRef
+        from zep_cloud import AsyncZep, EdgeInput, EdgeNodeRef
 
         client = AsyncZep(
             api_key="YOUR_API_KEY",
@@ -414,10 +354,14 @@ class AsyncEdgeClient:
         async def main() -> None:
             await client.graph.edge.add(
                 graph_uuid="graph_uuid",
-                fact="fact",
-                fact_name="fact_name",
-                source_node=EdgeNodeRef(),
-                target_node=EdgeNodeRef(),
+                edges=[
+                    EdgeInput(
+                        fact="Ada works at Acme Corp",
+                        fact_name="WORKS_AT",
+                        source_node=EdgeNodeRef(),
+                        target_node=EdgeNodeRef(),
+                    )
+                ],
             )
 
 
@@ -425,15 +369,8 @@ class AsyncEdgeClient:
         """
         _response = await self._raw_client.add(
             graph_uuid,
-            fact=fact,
-            fact_name=fact_name,
-            source_node=source_node,
-            target_node=target_node,
-            attributes=attributes,
-            expired_at=expired_at,
-            invalid_at=invalid_at,
-            metadata=metadata,
-            valid_at=valid_at,
+            edges=edges,
+            deduplicate=deduplicate,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
@@ -446,7 +383,6 @@ class AsyncEdgeClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Edge, EdgePage]:
         """
@@ -463,8 +399,6 @@ class AsyncEdgeClient:
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -488,8 +422,6 @@ class AsyncEdgeClient:
         async def main() -> None:
             response = await client.graph.edge.list(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -502,12 +434,7 @@ class AsyncEdgeClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            graph_uuid,
-            limit=limit,
-            cursor=cursor,
-            filters=filters,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
         )
 
     async def get(
@@ -616,6 +543,11 @@ class AsyncEdgeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Edge:
         """
+        Updates one edge. When the edge belongs to a hyperedge, changing fact
+        rewrites it on every member of that hyperedge in one all-or-nothing
+        write, because the members share it. Attribute-only edits touch this
+        edge alone.
+
         Parameters
         ----------
         graph_uuid : str

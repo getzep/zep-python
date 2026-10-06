@@ -19,6 +19,27 @@ class ContextNode(UniversalBaseModel):
     The time the node was created.
     """
 
+    degree: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The count of live entity edges that touch this node, in both directions.
+    Present only when the list request orders by `degree`.
+    """
+
+    episode_uuids: typing.List[str] = pydantic.Field()
+    """
+    The UUIDs of the live episodes that mention this node, newest first. The
+    list is complete when `episode_uuids_truncated` is false. The list holds
+    the newest 100 when the node has more than 100 source episodes; list
+    episodes with the `mentioned_node_uuids` filter to read them all.
+    """
+
+    episode_uuids_truncated: bool = pydantic.Field()
+    """
+    True when the node has more than 100 source episodes, so `episode_uuids`
+    holds only the newest 100, or when provenance is unavailable. False means
+    `episode_uuids` is the complete set.
+    """
+
     graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
     The unique identifier of the graph this node belongs to.
@@ -63,6 +84,9 @@ class ContextNode(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The node UUID, assigned by Zep."),
     ] = None
+    """
+    The node UUID, assigned by Zep.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

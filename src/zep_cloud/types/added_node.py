@@ -44,6 +44,9 @@ class AddedNode(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The node UUID, assigned by Zep."),
     ] = None
+    """
+    The node UUID, assigned by Zep.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

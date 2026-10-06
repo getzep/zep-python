@@ -4,9 +4,9 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .v4batch_item_input_data_type import V4BatchItemInputDataType
-from .v4batch_item_input_role import V4BatchItemInputRole
-from .v4batch_item_input_type import V4BatchItemInputType
+from .batch_item_input_data_type import BatchItemInputDataType
+from .batch_item_input_role import BatchItemInputRole
+from .batch_item_input_type import BatchItemInputType
 
 
 class BatchItemInput(UniversalBaseModel):
@@ -15,12 +15,18 @@ class BatchItemInput(UniversalBaseModel):
     The message content, for a thread_message item.
     """
 
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The item's reference time, used for temporal reasoning rather than
+    ingestion time. Applies to both graph_episode and thread_message items.
+    """
+
     data: typing.Optional[str] = pydantic.Field(default=None)
     """
     The episode content, for a graph_episode item.
     """
 
-    data_type: typing.Optional[V4BatchItemInputDataType] = pydantic.Field(default=None)
+    data_type: typing.Optional[BatchItemInputDataType] = pydantic.Field(default=None)
     """
     The data format of the episode: text, json, or message.
     """
@@ -37,7 +43,7 @@ class BatchItemInput(UniversalBaseModel):
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
     """
-    Metadata to store on the item.
+    Metadata to store on the item. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
     """
 
     name: typing.Optional[str] = pydantic.Field(default=None)
@@ -45,7 +51,7 @@ class BatchItemInput(UniversalBaseModel):
     A customizable name for the sender of the message.
     """
 
-    role: typing.Optional[V4BatchItemInputRole] = pydantic.Field(default=None)
+    role: typing.Optional[BatchItemInputRole] = pydantic.Field(default=None)
     """
     The role of the message's sender, for a thread_message item.
     """
@@ -60,7 +66,7 @@ class BatchItemInput(UniversalBaseModel):
     The thread this message is added to, for a thread_message item.
     """
 
-    type: V4BatchItemInputType = pydantic.Field()
+    type: BatchItemInputType = pydantic.Field()
     """
     The kind of item: graph_episode or thread_message.
     """

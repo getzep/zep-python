@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
-from ..core.jsonable_encoder import jsonable_encoder
+from ..core.idempotency import generate_idempotency_key
+from ..core.jsonable_encoder import encode_path_param
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
@@ -24,6 +25,7 @@ from ..types.batch_item_page import BatchItemPage
 from ..types.batch_items_response import BatchItemsResponse
 from ..types.batch_page import BatchPage
 from ..types.process_batch_result import ProcessBatchResult
+from .types.batch_list_request_status import BatchListRequestStatus
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -39,7 +41,7 @@ class RawBatchClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        status: typing.Optional[str] = None,
+        status: typing.Optional[BatchListRequestStatus] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Batch, BatchPage]:
         """
@@ -51,7 +53,7 @@ class RawBatchClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        status : typing.Optional[str]
+        status : typing.Optional[BatchListRequestStatus]
             Batch status filter
 
         request_options : typing.Optional[RequestOptions]
@@ -180,7 +182,7 @@ class RawBatchClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -268,7 +270,7 @@ class RawBatchClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}",
+            f"batches/{encode_path_param(batch_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -351,10 +353,10 @@ class RawBatchClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}",
+            f"batches/{encode_path_param(batch_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -447,7 +449,7 @@ class RawBatchClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}/items",
+            f"batches/{encode_path_param(batch_uuid)}/items",
             method="GET",
             params={
                 "limit": limit,
@@ -548,7 +550,7 @@ class RawBatchClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}/items",
+            f"batches/{encode_path_param(batch_uuid)}/items",
             method="POST",
             json={
                 "items": convert_and_respect_annotation_metadata(
@@ -557,7 +559,7 @@ class RawBatchClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -653,10 +655,10 @@ class RawBatchClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}/process",
+            f"batches/{encode_path_param(batch_uuid)}/process",
             method="POST",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -737,7 +739,7 @@ class AsyncRawBatchClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        status: typing.Optional[str] = None,
+        status: typing.Optional[BatchListRequestStatus] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Batch, BatchPage]:
         """
@@ -749,7 +751,7 @@ class AsyncRawBatchClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        status : typing.Optional[str]
+        status : typing.Optional[BatchListRequestStatus]
             Batch status filter
 
         request_options : typing.Optional[RequestOptions]
@@ -881,7 +883,7 @@ class AsyncRawBatchClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -971,7 +973,7 @@ class AsyncRawBatchClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}",
+            f"batches/{encode_path_param(batch_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -1054,10 +1056,10 @@ class AsyncRawBatchClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}",
+            f"batches/{encode_path_param(batch_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -1150,7 +1152,7 @@ class AsyncRawBatchClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}/items",
+            f"batches/{encode_path_param(batch_uuid)}/items",
             method="GET",
             params={
                 "limit": limit,
@@ -1254,7 +1256,7 @@ class AsyncRawBatchClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}/items",
+            f"batches/{encode_path_param(batch_uuid)}/items",
             method="POST",
             json={
                 "items": convert_and_respect_annotation_metadata(
@@ -1263,7 +1265,7 @@ class AsyncRawBatchClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1359,10 +1361,10 @@ class AsyncRawBatchClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"batches/{jsonable_encoder(batch_uuid)}/process",
+            f"batches/{encode_path_param(batch_uuid)}/process",
             method="POST",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )

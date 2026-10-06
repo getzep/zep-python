@@ -52,6 +52,9 @@ class Message(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The unique identifier of the message."),
     ] = None
+    """
+    The unique identifier of the message.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

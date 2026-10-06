@@ -10,8 +10,8 @@ class ThreadContextResponse(UniversalBaseModel):
     context: typing.Optional[str] = pydantic.Field(default=None)
     """
     The context block containing relevant facts, entities, and messages or
-    episodes from the user's graph, meant to be placed in the system prompt on
-    every turn.
+    episodes from the user's graph. Pass it through the model provider's
+    untrusted-data channel.
     """
 
     if IS_PYDANTIC_V2:

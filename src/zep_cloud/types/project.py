@@ -25,6 +25,12 @@ class Project(UniversalBaseModel):
     A human-readable description of the project.
     """
 
+    include_policy_violating_episodes: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    When true, episode reads on graphs with a content policy include the
+    episodes that violated the policy. The default is false.
+    """
+
     name: typing.Optional[str] = pydantic.Field(default=None)
     """
     The name of the project.
@@ -35,6 +41,9 @@ class Project(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The unique identifier of the project."),
     ] = None
+    """
+    The unique identifier of the project.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

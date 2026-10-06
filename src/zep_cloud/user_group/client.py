@@ -82,7 +82,6 @@ class UserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[UserGroup, UserGroupPage]:
         """
@@ -99,8 +98,6 @@ class UserGroupClient:
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -116,19 +113,14 @@ class UserGroupClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        response = client.user_group.list(
-            limit=1,
-            cursor="cursor",
-        )
+        response = client.user_group.list()
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
         for page in response.iter_pages():
             yield page
         """
-        return self._raw_client.list(
-            limit=limit, cursor=cursor, search=search, idempotency_key=idempotency_key, request_options=request_options
-        )
+        return self._raw_client.list(limit=limit, cursor=cursor, search=search, request_options=request_options)
 
     def get(self, group_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> UserGroup:
         """
@@ -266,7 +258,6 @@ class UserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[User, UserPage]:
         """
@@ -286,8 +277,6 @@ class UserGroupClient:
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -305,8 +294,6 @@ class UserGroupClient:
         )
         response = client.user_group.list_member_candidates(
             group_uuid="group_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -315,12 +302,7 @@ class UserGroupClient:
             yield page
         """
         return self._raw_client.list_member_candidates(
-            group_uuid,
-            limit=limit,
-            cursor=cursor,
-            search=search,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            group_uuid, limit=limit, cursor=cursor, search=search, request_options=request_options
         )
 
     def add_members(
@@ -376,7 +358,6 @@ class UserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[User, UserPage]:
         """
@@ -396,8 +377,6 @@ class UserGroupClient:
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -415,8 +394,6 @@ class UserGroupClient:
         )
         response = client.user_group.list_members(
             group_uuid="group_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -425,12 +402,7 @@ class UserGroupClient:
             yield page
         """
         return self._raw_client.list_members(
-            group_uuid,
-            limit=limit,
-            cursor=cursor,
-            search=search,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            group_uuid, limit=limit, cursor=cursor, search=search, request_options=request_options
         )
 
     def remove_members(
@@ -563,8 +535,6 @@ class UserGroupClient:
         )
         response = client.user_group.list_for_user(
             user_uuid="user_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -649,7 +619,6 @@ class AsyncUserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[UserGroup, UserGroupPage]:
         """
@@ -665,8 +634,6 @@ class AsyncUserGroupClient:
 
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -688,10 +655,7 @@ class AsyncUserGroupClient:
 
 
         async def main() -> None:
-            response = await client.user_group.list(
-                limit=1,
-                cursor="cursor",
-            )
+            response = await client.user_group.list()
             async for item in response:
                 yield item
 
@@ -702,9 +666,7 @@ class AsyncUserGroupClient:
 
         asyncio.run(main())
         """
-        return await self._raw_client.list(
-            limit=limit, cursor=cursor, search=search, idempotency_key=idempotency_key, request_options=request_options
-        )
+        return await self._raw_client.list(limit=limit, cursor=cursor, search=search, request_options=request_options)
 
     async def get(self, group_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> UserGroup:
         """
@@ -866,7 +828,6 @@ class AsyncUserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[User, UserPage]:
         """
@@ -885,8 +846,6 @@ class AsyncUserGroupClient:
 
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -910,8 +869,6 @@ class AsyncUserGroupClient:
         async def main() -> None:
             response = await client.user_group.list_member_candidates(
                 group_uuid="group_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -924,12 +881,7 @@ class AsyncUserGroupClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_member_candidates(
-            group_uuid,
-            limit=limit,
-            cursor=cursor,
-            search=search,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            group_uuid, limit=limit, cursor=cursor, search=search, request_options=request_options
         )
 
     async def add_members(
@@ -993,7 +945,6 @@ class AsyncUserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[User, UserPage]:
         """
@@ -1012,8 +963,6 @@ class AsyncUserGroupClient:
 
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1037,8 +986,6 @@ class AsyncUserGroupClient:
         async def main() -> None:
             response = await client.user_group.list_members(
                 group_uuid="group_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -1051,12 +998,7 @@ class AsyncUserGroupClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_members(
-            group_uuid,
-            limit=limit,
-            cursor=cursor,
-            search=search,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            group_uuid, limit=limit, cursor=cursor, search=search, request_options=request_options
         )
 
     async def remove_members(
@@ -1210,8 +1152,6 @@ class AsyncUserGroupClient:
         async def main() -> None:
             response = await client.user_group.list_for_user(
                 user_uuid="user_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item

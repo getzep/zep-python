@@ -34,6 +34,10 @@ class UserGroup(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The unique identifier of the user group."),
     ] = None
+    """
+    The unique identifier of the user group.
+    """
+
     version: typing.Optional[int] = pydantic.Field(default=None)
     """
     The user group's version, used for optimistic concurrency on updates.

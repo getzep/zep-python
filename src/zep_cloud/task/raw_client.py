@@ -6,7 +6,7 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
-from ..core.jsonable_encoder import jsonable_encoder
+from ..core.jsonable_encoder import encode_path_param
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
@@ -137,7 +137,7 @@ class RawTaskClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"tasks/{jsonable_encoder(task_uuid)}",
+            f"tasks/{encode_path_param(task_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -320,7 +320,7 @@ class AsyncRawTaskClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"tasks/{jsonable_encoder(task_uuid)}",
+            f"tasks/{encode_path_param(task_uuid)}",
             method="GET",
             request_options=request_options,
         )

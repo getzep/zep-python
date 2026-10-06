@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ...core.api_error import ApiError as core_api_error_ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
-from ...core.jsonable_encoder import jsonable_encoder
+from ...core.idempotency import generate_idempotency_key
+from ...core.jsonable_encoder import encode_path_param
 from ...core.pagination import AsyncPager, SyncPager
 from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
@@ -26,7 +27,11 @@ from ...types.node import Node
 from ...types.node_input import NodeInput
 from ...types.node_page import NodePage
 from ...types.search_filters import SearchFilters
-from .types.v4neighbors_request_direction import V4NeighborsRequestDirection
+from .types.neighbors_request_direction import NeighborsRequestDirection
+from .types.node_list_neighbors_request_order import NodeListNeighborsRequestOrder
+from .types.node_list_neighbors_request_order_by import NodeListNeighborsRequestOrderBy
+from .types.node_list_request_order import NodeListRequestOrder
+from .types.node_list_request_order_by import NodeListRequestOrderBy
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -65,7 +70,7 @@ class RawNodeClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes",
             method="POST",
             json={
                 "nodes": convert_and_respect_annotation_metadata(
@@ -74,7 +79,7 @@ class RawNodeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -163,8 +168,9 @@ class RawNodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[NodeListRequestOrderBy] = None,
+        order: typing.Optional[NodeListRequestOrder] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Node, NodePage]:
         """
@@ -179,10 +185,14 @@ class RawNodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[NodeListRequestOrderBy]
+            Sort key: uuid (default) or degree
+
+        order : typing.Optional[NodeListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -193,18 +203,20 @@ class RawNodeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/list",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/list",
             method="POST",
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
                 "filters": filters,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -225,8 +237,9 @@ class RawNodeClient:
                     graph_uuid,
                     limit=limit,
                     cursor=_parsed_next,
+                    order_by=order_by,
+                    order=order,
                     filters=filters,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -319,7 +332,7 @@ class RawNodeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/{jsonable_encoder(node_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -429,10 +442,10 @@ class RawNodeClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/{jsonable_encoder(node_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -555,7 +568,7 @@ class RawNodeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/{jsonable_encoder(node_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}",
             method="PATCH",
             json={
                 "attributes": attributes,
@@ -564,7 +577,7 @@ class RawNodeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -654,9 +667,10 @@ class RawNodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        direction: typing.Optional[V4NeighborsRequestDirection] = OMIT,
+        order_by: typing.Optional[NodeListNeighborsRequestOrderBy] = None,
+        order: typing.Optional[NodeListNeighborsRequestOrder] = None,
+        direction: typing.Optional[NeighborsRequestDirection] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[NeighborEntry, NeighborPage]:
         """
@@ -674,13 +688,17 @@ class RawNodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        direction : typing.Optional[V4NeighborsRequestDirection]
+        order_by : typing.Optional[NodeListNeighborsRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[NodeListNeighborsRequestOrder]
+            Sort direction: asc or desc
+
+        direction : typing.Optional[NeighborsRequestDirection]
             The edge orientation to follow from the node: in, out, or both.
 
         filters : typing.Optional[SearchFilters]
             Filters constraining the connecting edges and the neighbor nodes.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -691,11 +709,13 @@ class RawNodeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/{jsonable_encoder(node_uuid)}/neighbors",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}/neighbors",
             method="POST",
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
                 "direction": direction,
@@ -705,7 +725,7 @@ class RawNodeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -727,9 +747,10 @@ class RawNodeClient:
                     node_uuid,
                     limit=limit,
                     cursor=_parsed_next,
+                    order_by=order_by,
+                    order=order,
                     direction=direction,
                     filters=filters,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -834,7 +855,7 @@ class AsyncRawNodeClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes",
             method="POST",
             json={
                 "nodes": convert_and_respect_annotation_metadata(
@@ -843,7 +864,7 @@ class AsyncRawNodeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -932,8 +953,9 @@ class AsyncRawNodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[NodeListRequestOrderBy] = None,
+        order: typing.Optional[NodeListRequestOrder] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Node, NodePage]:
         """
@@ -948,10 +970,14 @@ class AsyncRawNodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[NodeListRequestOrderBy]
+            Sort key: uuid (default) or degree
+
+        order : typing.Optional[NodeListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -962,18 +988,20 @@ class AsyncRawNodeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/list",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/list",
             method="POST",
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
                 "filters": filters,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -996,8 +1024,9 @@ class AsyncRawNodeClient:
                         graph_uuid,
                         limit=limit,
                         cursor=_parsed_next,
+                        order_by=order_by,
+                        order=order,
                         filters=filters,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -1091,7 +1120,7 @@ class AsyncRawNodeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/{jsonable_encoder(node_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -1201,10 +1230,10 @@ class AsyncRawNodeClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/{jsonable_encoder(node_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -1327,7 +1356,7 @@ class AsyncRawNodeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/{jsonable_encoder(node_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}",
             method="PATCH",
             json={
                 "attributes": attributes,
@@ -1336,7 +1365,7 @@ class AsyncRawNodeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1426,9 +1455,10 @@ class AsyncRawNodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        direction: typing.Optional[V4NeighborsRequestDirection] = OMIT,
+        order_by: typing.Optional[NodeListNeighborsRequestOrderBy] = None,
+        order: typing.Optional[NodeListNeighborsRequestOrder] = None,
+        direction: typing.Optional[NeighborsRequestDirection] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[NeighborEntry, NeighborPage]:
         """
@@ -1446,13 +1476,17 @@ class AsyncRawNodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        direction : typing.Optional[V4NeighborsRequestDirection]
+        order_by : typing.Optional[NodeListNeighborsRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[NodeListNeighborsRequestOrder]
+            Sort direction: asc or desc
+
+        direction : typing.Optional[NeighborsRequestDirection]
             The edge orientation to follow from the node: in, out, or both.
 
         filters : typing.Optional[SearchFilters]
             Filters constraining the connecting edges and the neighbor nodes.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1463,11 +1497,13 @@ class AsyncRawNodeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/nodes/{jsonable_encoder(node_uuid)}/neighbors",
+            f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}/neighbors",
             method="POST",
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
                 "direction": direction,
@@ -1477,7 +1513,7 @@ class AsyncRawNodeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1501,9 +1537,10 @@ class AsyncRawNodeClient:
                         node_uuid,
                         limit=limit,
                         cursor=_parsed_next,
+                        order_by=order_by,
+                        order=order,
                         direction=direction,
                         filters=filters,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 

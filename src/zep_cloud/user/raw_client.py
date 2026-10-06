@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
-from ..core.jsonable_encoder import jsonable_encoder
+from ..core.idempotency import generate_idempotency_key
+from ..core.jsonable_encoder import encode_path_param
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
@@ -18,12 +19,15 @@ from ..errors.forbidden_error import ForbiddenError
 from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.graph_content_policy_request import GraphContentPolicyRequest
 from ..types.node import Node
 from ..types.user import User
 from ..types.user_delete_result import UserDeleteResult
 from ..types.user_instruction import UserInstruction
 from ..types.user_page import UserPage
 from ..types.user_summary_instructions import UserSummaryInstructions
+from .types.user_list_request_order import UserListRequestOrder
+from .types.user_list_request_order_by import UserListRequestOrderBy
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -37,19 +41,24 @@ class RawUserClient:
     def create(
         self,
         *,
+        content_policy: typing.Optional[GraphContentPolicyRequest] = OMIT,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[User]:
         """
         Parameters
         ----------
+        content_policy : typing.Optional[GraphContentPolicyRequest]
+            Content policy additions for the user's graph. The graph binds the
+            current project content policy plus these additions, and the binding
+            does not change after creation.
+
         disable_default_ontology : typing.Optional[bool]
             When true, disables the default ontology for the user's graph.
 
@@ -68,9 +77,6 @@ class RawUserClient:
         time_zone : typing.Optional[str]
             The user's IANA time zone.
 
-        user_id : typing.Optional[str]
-            An optional developer-assigned identifier for the user.
-
         idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
@@ -85,17 +91,19 @@ class RawUserClient:
             "users",
             method="POST",
             json={
+                "content_policy": convert_and_respect_annotation_metadata(
+                    object_=content_policy, annotation=GraphContentPolicyRequest, direction="write"
+                ),
                 "disable_default_ontology": disable_default_ontology,
                 "email": email,
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
                 "time_zone": time_zone,
-                "user_id": user_id,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -172,10 +180,9 @@ class RawUserClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[UserListRequestOrderBy] = None,
+        order: typing.Optional[UserListRequestOrder] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[User, UserPage]:
         """
@@ -187,16 +194,14 @@ class RawUserClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[UserListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[UserListRequestOrder]
             asc or desc
 
         search : typing.Optional[str]
             Filters results to users whose user ID, email, or name contains this text.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -220,7 +225,7 @@ class RawUserClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -243,7 +248,6 @@ class RawUserClient:
                     order_by=order_by,
                     order=order,
                     search=search,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -299,7 +303,6 @@ class RawUserClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[User]:
         """
@@ -316,8 +319,6 @@ class RawUserClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -337,7 +338,7 @@ class RawUserClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -414,7 +415,7 @@ class RawUserClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}",
+            f"users/{encode_path_param(user_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -498,10 +499,10 @@ class RawUserClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}",
+            f"users/{encode_path_param(user_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -620,7 +621,7 @@ class RawUserClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}",
+            f"users/{encode_path_param(user_uuid)}",
             method="PATCH",
             json={
                 "disable_default_ontology": disable_default_ontology,
@@ -632,7 +633,7 @@ class RawUserClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -722,7 +723,7 @@ class RawUserClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}/node",
+            f"users/{encode_path_param(user_uuid)}/node",
             method="GET",
             request_options=request_options,
         )
@@ -822,7 +823,7 @@ class RawUserClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}/summary-instructions",
+            f"users/{encode_path_param(user_uuid)}/summary-instructions",
             method="GET",
             request_options=request_options,
         )
@@ -916,7 +917,7 @@ class RawUserClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}/summary-instructions",
+            f"users/{encode_path_param(user_uuid)}/summary-instructions",
             method="PUT",
             json={
                 "inherited": inherited,
@@ -926,7 +927,7 @@ class RawUserClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -995,19 +996,24 @@ class AsyncRawUserClient:
     async def create(
         self,
         *,
+        content_policy: typing.Optional[GraphContentPolicyRequest] = OMIT,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[User]:
         """
         Parameters
         ----------
+        content_policy : typing.Optional[GraphContentPolicyRequest]
+            Content policy additions for the user's graph. The graph binds the
+            current project content policy plus these additions, and the binding
+            does not change after creation.
+
         disable_default_ontology : typing.Optional[bool]
             When true, disables the default ontology for the user's graph.
 
@@ -1026,9 +1032,6 @@ class AsyncRawUserClient:
         time_zone : typing.Optional[str]
             The user's IANA time zone.
 
-        user_id : typing.Optional[str]
-            An optional developer-assigned identifier for the user.
-
         idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
@@ -1043,17 +1046,19 @@ class AsyncRawUserClient:
             "users",
             method="POST",
             json={
+                "content_policy": convert_and_respect_annotation_metadata(
+                    object_=content_policy, annotation=GraphContentPolicyRequest, direction="write"
+                ),
                 "disable_default_ontology": disable_default_ontology,
                 "email": email,
                 "first_name": first_name,
                 "last_name": last_name,
                 "metadata": metadata,
                 "time_zone": time_zone,
-                "user_id": user_id,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1130,10 +1135,9 @@ class AsyncRawUserClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[UserListRequestOrderBy] = None,
+        order: typing.Optional[UserListRequestOrder] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[User, UserPage]:
         """
@@ -1145,16 +1149,14 @@ class AsyncRawUserClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[UserListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[UserListRequestOrder]
             asc or desc
 
         search : typing.Optional[str]
             Filters results to users whose user ID, email, or name contains this text.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1178,7 +1180,7 @@ class AsyncRawUserClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1203,7 +1205,6 @@ class AsyncRawUserClient:
                         order_by=order_by,
                         order=order,
                         search=search,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -1260,7 +1261,6 @@ class AsyncRawUserClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[User]:
         """
@@ -1277,8 +1277,6 @@ class AsyncRawUserClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1298,7 +1296,7 @@ class AsyncRawUserClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1377,7 +1375,7 @@ class AsyncRawUserClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}",
+            f"users/{encode_path_param(user_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -1461,10 +1459,10 @@ class AsyncRawUserClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}",
+            f"users/{encode_path_param(user_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -1583,7 +1581,7 @@ class AsyncRawUserClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}",
+            f"users/{encode_path_param(user_uuid)}",
             method="PATCH",
             json={
                 "disable_default_ontology": disable_default_ontology,
@@ -1595,7 +1593,7 @@ class AsyncRawUserClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1685,7 +1683,7 @@ class AsyncRawUserClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}/node",
+            f"users/{encode_path_param(user_uuid)}/node",
             method="GET",
             request_options=request_options,
         )
@@ -1785,7 +1783,7 @@ class AsyncRawUserClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}/summary-instructions",
+            f"users/{encode_path_param(user_uuid)}/summary-instructions",
             method="GET",
             request_options=request_options,
         )
@@ -1879,7 +1877,7 @@ class AsyncRawUserClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}/summary-instructions",
+            f"users/{encode_path_param(user_uuid)}/summary-instructions",
             method="PUT",
             json={
                 "inherited": inherited,
@@ -1889,7 +1887,7 @@ class AsyncRawUserClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,

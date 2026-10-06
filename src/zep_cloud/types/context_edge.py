@@ -39,6 +39,12 @@ class ContextEdge(UniversalBaseModel):
     The unique identifier of the graph this edge belongs to.
     """
 
+    hyperedge_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the hyperedge this edge is a member of. Omitted
+    when the edge is not part of a hyperedge.
+    """
+
     invalid_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     The time at which the fact stopped being true.
@@ -116,6 +122,10 @@ class ContextEdge(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The unique identifier of the edge."),
     ] = None
+    """
+    The unique identifier of the edge.
+    """
+
     valid_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     The time from which the fact is considered true.

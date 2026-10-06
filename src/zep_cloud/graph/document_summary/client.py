@@ -35,7 +35,6 @@ class DocumentSummaryClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[DocumentSummary, DocumentSummaryPage]:
         """
@@ -52,8 +51,6 @@ class DocumentSummaryClient:
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -72,8 +69,6 @@ class DocumentSummaryClient:
         )
         response = client.graph.document_summary.list(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -82,12 +77,7 @@ class DocumentSummaryClient:
             yield page
         """
         return self._raw_client.list(
-            graph_uuid,
-            limit=limit,
-            cursor=cursor,
-            filters=filters,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
         )
 
 
@@ -113,7 +103,6 @@ class AsyncDocumentSummaryClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[DocumentSummary, DocumentSummaryPage]:
         """
@@ -130,8 +119,6 @@ class AsyncDocumentSummaryClient:
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -155,8 +142,6 @@ class AsyncDocumentSummaryClient:
         async def main() -> None:
             response = await client.graph.document_summary.list(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -169,10 +154,5 @@ class AsyncDocumentSummaryClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            graph_uuid,
-            limit=limit,
-            cursor=cursor,
-            filters=filters,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
         )

@@ -19,6 +19,9 @@ from ..types.thread_delete_result import ThreadDeleteResult
 from ..types.thread_page import ThreadPage
 from ..types.thread_summary import ThreadSummary
 from .raw_client import AsyncRawThreadClient, RawThreadClient
+from .types.thread_list_messages_request_order import ThreadListMessagesRequestOrder
+from .types.thread_list_request_order import ThreadListRequestOrder
+from .types.thread_list_request_order_by import ThreadListRequestOrderBy
 
 if typing.TYPE_CHECKING:
     from .message.client import AsyncMessageClient, MessageClient
@@ -48,8 +51,8 @@ class ThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[ThreadListRequestOrderBy] = None,
+        order: typing.Optional[ThreadListRequestOrder] = None,
         user_uuid: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Thread, ThreadPage]:
@@ -62,10 +65,10 @@ class ThreadClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[ThreadListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[ThreadListRequestOrder]
             asc or desc
 
         user_uuid : typing.Optional[str]
@@ -86,13 +89,7 @@ class ThreadClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        response = client.thread.list(
-            limit=1,
-            cursor="cursor",
-            order_by="order_by",
-            order="order",
-            user_uuid="user_uuid",
-        )
+        response = client.thread.list()
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
@@ -112,7 +109,6 @@ class ThreadClient:
         self,
         *,
         user_uuid: str,
-        thread_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Thread:
@@ -121,9 +117,6 @@ class ThreadClient:
         ----------
         user_uuid : str
             The UUID of the user this thread belongs to.
-
-        thread_id : typing.Optional[str]
-            An optional developer-assigned identifier for the thread.
 
         idempotency_key : typing.Optional[str]
 
@@ -147,7 +140,7 @@ class ThreadClient:
         )
         """
         _response = self._raw_client.create(
-            user_uuid=user_uuid, thread_id=thread_id, idempotency_key=idempotency_key, request_options=request_options
+            user_uuid=user_uuid, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
 
@@ -157,7 +150,6 @@ class ThreadClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Thread:
         """
@@ -174,8 +166,6 @@ class ThreadClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -195,11 +185,7 @@ class ThreadClient:
         client.thread.lookup()
         """
         _response = self._raw_client.lookup(
-            graph_id=graph_id,
-            thread_id=thread_id,
-            user_id=user_id,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_id=graph_id, thread_id=thread_id, user_id=user_id, request_options=request_options
         )
         return _response.data
 
@@ -304,7 +290,6 @@ class ThreadClient:
         )
         client.thread.get_context(
             thread_uuid="thread_uuid",
-            template_uuid="template_uuid",
         )
         """
         _response = self._raw_client.get_context(
@@ -349,8 +334,6 @@ class ThreadClient:
         )
         response = client.thread.list_episodes(
             thread_uuid="thread_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -366,6 +349,8 @@ class ThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[typing.Literal["created_at"]] = None,
+        order: typing.Optional[ThreadListMessagesRequestOrder] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Message, MessagePage]:
         """
@@ -379,6 +364,12 @@ class ThreadClient:
 
         cursor : typing.Optional[str]
             Opaque page cursor
+
+        order_by : typing.Optional[typing.Literal["created_at"]]
+            Sort field
+
+        order : typing.Optional[ThreadListMessagesRequestOrder]
+            Sort direction: asc or desc
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -397,8 +388,6 @@ class ThreadClient:
         )
         response = client.thread.list_messages(
             thread_uuid="thread_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -406,7 +395,9 @@ class ThreadClient:
         for page in response.iter_pages():
             yield page
         """
-        return self._raw_client.list_messages(thread_uuid, limit=limit, cursor=cursor, request_options=request_options)
+        return self._raw_client.list_messages(
+            thread_uuid, limit=limit, cursor=cursor, order_by=order_by, order=order, request_options=request_options
+        )
 
     def add_messages(
         self,
@@ -535,8 +526,8 @@ class AsyncThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[ThreadListRequestOrderBy] = None,
+        order: typing.Optional[ThreadListRequestOrder] = None,
         user_uuid: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Thread, ThreadPage]:
@@ -549,10 +540,10 @@ class AsyncThreadClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[ThreadListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[ThreadListRequestOrder]
             asc or desc
 
         user_uuid : typing.Optional[str]
@@ -578,13 +569,7 @@ class AsyncThreadClient:
 
 
         async def main() -> None:
-            response = await client.thread.list(
-                limit=1,
-                cursor="cursor",
-                order_by="order_by",
-                order="order",
-                user_uuid="user_uuid",
-            )
+            response = await client.thread.list()
             async for item in response:
                 yield item
 
@@ -608,7 +593,6 @@ class AsyncThreadClient:
         self,
         *,
         user_uuid: str,
-        thread_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Thread:
@@ -617,9 +601,6 @@ class AsyncThreadClient:
         ----------
         user_uuid : str
             The UUID of the user this thread belongs to.
-
-        thread_id : typing.Optional[str]
-            An optional developer-assigned identifier for the thread.
 
         idempotency_key : typing.Optional[str]
 
@@ -651,7 +632,7 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            user_uuid=user_uuid, thread_id=thread_id, idempotency_key=idempotency_key, request_options=request_options
+            user_uuid=user_uuid, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
 
@@ -661,7 +642,6 @@ class AsyncThreadClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Thread:
         """
@@ -678,8 +658,6 @@ class AsyncThreadClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -707,11 +685,7 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.lookup(
-            graph_id=graph_id,
-            thread_id=thread_id,
-            user_id=user_id,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_id=graph_id, thread_id=thread_id, user_id=user_id, request_options=request_options
         )
         return _response.data
 
@@ -837,7 +811,6 @@ class AsyncThreadClient:
         async def main() -> None:
             await client.thread.get_context(
                 thread_uuid="thread_uuid",
-                template_uuid="template_uuid",
             )
 
 
@@ -890,8 +863,6 @@ class AsyncThreadClient:
         async def main() -> None:
             response = await client.thread.list_episodes(
                 thread_uuid="thread_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -913,6 +884,8 @@ class AsyncThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[typing.Literal["created_at"]] = None,
+        order: typing.Optional[ThreadListMessagesRequestOrder] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Message, MessagePage]:
         """
@@ -926,6 +899,12 @@ class AsyncThreadClient:
 
         cursor : typing.Optional[str]
             Opaque page cursor
+
+        order_by : typing.Optional[typing.Literal["created_at"]]
+            Sort field
+
+        order : typing.Optional[ThreadListMessagesRequestOrder]
+            Sort direction: asc or desc
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -949,8 +928,6 @@ class AsyncThreadClient:
         async def main() -> None:
             response = await client.thread.list_messages(
                 thread_uuid="thread_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -963,7 +940,7 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_messages(
-            thread_uuid, limit=limit, cursor=cursor, request_options=request_options
+            thread_uuid, limit=limit, cursor=cursor, order_by=order_by, order=order, request_options=request_options
         )
 
     async def add_messages(

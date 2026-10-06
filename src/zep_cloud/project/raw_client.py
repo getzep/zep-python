@@ -6,15 +6,23 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
+from ..core.idempotency import generate_idempotency_key
+from ..core.jsonable_encoder import encode_path_param
+from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
 from ..errors.conflict_error import ConflictError
+from ..errors.forbidden_error import ForbiddenError
 from ..errors.not_found_error import NotFoundError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
+from ..types.content_policy import ContentPolicy
+from ..types.content_policy_category_request import ContentPolicyCategoryRequest
+from ..types.content_policy_revision_page import ContentPolicyRevisionPage
+from ..types.content_policy_rule_request import ContentPolicyRuleRequest
 from ..types.custom_instruction import CustomInstruction
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
@@ -112,6 +120,7 @@ class RawProjectClient:
         self,
         *,
         default_time_zone: typing.Optional[str] = OMIT,
+        include_policy_violating_episodes: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Project]:
@@ -121,6 +130,10 @@ class RawProjectClient:
         default_time_zone : typing.Optional[str]
             The project's IANA fallback time zone. Set to null to clear the existing
             value.
+
+        include_policy_violating_episodes : typing.Optional[bool]
+            When true, episode reads on graphs with a content policy include the
+            episodes that violated the policy.
 
         idempotency_key : typing.Optional[str]
 
@@ -137,10 +150,11 @@ class RawProjectClient:
             method="PATCH",
             json={
                 "default_time_zone": default_time_zone,
+                "include_policy_violating_episodes": include_policy_violating_episodes,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -190,6 +204,364 @@ class RawProjectClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_content_policy(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[ContentPolicy]:
+        """
+        Returns the current content policy revision of the project. A new graph binds this revision at creation.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ContentPolicy]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/content-policy",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ContentPolicy,
+                    parse_obj_as(
+                        type_=ContentPolicy,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def set_content_policy(
+        self,
+        *,
+        categories: typing.Optional[typing.Sequence[ContentPolicyCategoryRequest]] = OMIT,
+        rules: typing.Optional[typing.Sequence[ContentPolicyRuleRequest]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[ContentPolicy]:
+        """
+        Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. An empty policy (no categories and no rules) removes the content policy for new graphs.
+
+        Parameters
+        ----------
+        categories : typing.Optional[typing.Sequence[ContentPolicyCategoryRequest]]
+            The categories of the policy. Maximum 16. An empty list with no rules
+            means no content policy.
+
+        rules : typing.Optional[typing.Sequence[ContentPolicyRuleRequest]]
+            The rules of the policy. Maximum 32.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ContentPolicy]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/content-policy",
+            method="PUT",
+            json={
+                "categories": convert_and_respect_annotation_metadata(
+                    object_=categories, annotation=typing.Sequence[ContentPolicyCategoryRequest], direction="write"
+                ),
+                "rules": convert_and_respect_annotation_metadata(
+                    object_=rules, annotation=typing.Sequence[ContentPolicyRuleRequest], direction="write"
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ContentPolicy,
+                    parse_obj_as(
+                        type_=ContentPolicy,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def list_content_policy_revisions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[ContentPolicy, ContentPolicyRevisionPage]:
+        """
+        Lists every revision of the project content policy, newest first, including revision 0.
+
+        Parameters
+        ----------
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[ContentPolicy, ContentPolicyRevisionPage]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/content-policy/revisions",
+            method="GET",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    ContentPolicyRevisionPage,
+                    parse_obj_as(
+                        type_=ContentPolicyRevisionPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list_content_policy_revisions(
+                    limit=limit,
+                    cursor=_parsed_next,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_content_policy_revision(
+        self, revision_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[ContentPolicy]:
+        """
+        Parameters
+        ----------
+        revision_uuid : str
+            Revision UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ContentPolicy]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"project/content-policy/revisions/{encode_path_param(revision_uuid)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ContentPolicy,
+                    parse_obj_as(
+                        type_=ContentPolicy,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -327,7 +699,7 @@ class RawProjectClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -509,7 +881,7 @@ class RawProjectClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -647,16 +1019,22 @@ class RawProjectClient:
         self,
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         inherited: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Ontology]:
         """
+        Replaces the entity types and the edge types that the project uses.
+
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
+
+        entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -682,6 +1060,7 @@ class RawProjectClient:
                 "edge_types": convert_and_respect_annotation_metadata(
                     object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
                 ),
+                "entity_type_hierarchy": entity_type_hierarchy,
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
@@ -689,7 +1068,7 @@ class RawProjectClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -865,7 +1244,7 @@ class RawProjectClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1008,6 +1387,7 @@ class AsyncRawProjectClient:
         self,
         *,
         default_time_zone: typing.Optional[str] = OMIT,
+        include_policy_violating_episodes: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Project]:
@@ -1017,6 +1397,10 @@ class AsyncRawProjectClient:
         default_time_zone : typing.Optional[str]
             The project's IANA fallback time zone. Set to null to clear the existing
             value.
+
+        include_policy_violating_episodes : typing.Optional[bool]
+            When true, episode reads on graphs with a content policy include the
+            episodes that violated the policy.
 
         idempotency_key : typing.Optional[str]
 
@@ -1033,10 +1417,11 @@ class AsyncRawProjectClient:
             method="PATCH",
             json={
                 "default_time_zone": default_time_zone,
+                "include_policy_violating_episodes": include_policy_violating_episodes,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1086,6 +1471,367 @@ class AsyncRawProjectClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_content_policy(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[ContentPolicy]:
+        """
+        Returns the current content policy revision of the project. A new graph binds this revision at creation.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ContentPolicy]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/content-policy",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ContentPolicy,
+                    parse_obj_as(
+                        type_=ContentPolicy,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_content_policy(
+        self,
+        *,
+        categories: typing.Optional[typing.Sequence[ContentPolicyCategoryRequest]] = OMIT,
+        rules: typing.Optional[typing.Sequence[ContentPolicyRuleRequest]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[ContentPolicy]:
+        """
+        Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. An empty policy (no categories and no rules) removes the content policy for new graphs.
+
+        Parameters
+        ----------
+        categories : typing.Optional[typing.Sequence[ContentPolicyCategoryRequest]]
+            The categories of the policy. Maximum 16. An empty list with no rules
+            means no content policy.
+
+        rules : typing.Optional[typing.Sequence[ContentPolicyRuleRequest]]
+            The rules of the policy. Maximum 32.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ContentPolicy]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/content-policy",
+            method="PUT",
+            json={
+                "categories": convert_and_respect_annotation_metadata(
+                    object_=categories, annotation=typing.Sequence[ContentPolicyCategoryRequest], direction="write"
+                ),
+                "rules": convert_and_respect_annotation_metadata(
+                    object_=rules, annotation=typing.Sequence[ContentPolicyRuleRequest], direction="write"
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ContentPolicy,
+                    parse_obj_as(
+                        type_=ContentPolicy,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def list_content_policy_revisions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[ContentPolicy, ContentPolicyRevisionPage]:
+        """
+        Lists every revision of the project content policy, newest first, including revision 0.
+
+        Parameters
+        ----------
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[ContentPolicy, ContentPolicyRevisionPage]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/content-policy/revisions",
+            method="GET",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    ContentPolicyRevisionPage,
+                    parse_obj_as(
+                        type_=ContentPolicyRevisionPage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list_content_policy_revisions(
+                        limit=limit,
+                        cursor=_parsed_next,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_content_policy_revision(
+        self, revision_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[ContentPolicy]:
+        """
+        Parameters
+        ----------
+        revision_uuid : str
+            Revision UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ContentPolicy]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"project/content-policy/revisions/{encode_path_param(revision_uuid)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ContentPolicy,
+                    parse_obj_as(
+                        type_=ContentPolicy,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1223,7 +1969,7 @@ class AsyncRawProjectClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1405,7 +2151,7 @@ class AsyncRawProjectClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1545,16 +2291,22 @@ class AsyncRawProjectClient:
         self,
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         inherited: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Ontology]:
         """
+        Replaces the entity types and the edge types that the project uses.
+
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
+
+        entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -1580,6 +2332,7 @@ class AsyncRawProjectClient:
                 "edge_types": convert_and_respect_annotation_metadata(
                     object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
                 ),
+                "entity_type_hierarchy": entity_type_hierarchy,
                 "entity_types": convert_and_respect_annotation_metadata(
                     object_=entity_types, annotation=typing.Sequence[EntityType], direction="write"
                 ),
@@ -1587,7 +2340,7 @@ class AsyncRawProjectClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1763,7 +2516,7 @@ class AsyncRawProjectClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,

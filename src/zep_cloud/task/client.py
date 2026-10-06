@@ -56,10 +56,7 @@ class TaskClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        response = client.task.list(
-            limit=1,
-            cursor="cursor",
-        )
+        response = client.task.list()
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
@@ -149,10 +146,7 @@ class AsyncTaskClient:
 
 
         async def main() -> None:
-            response = await client.task.list(
-                limit=1,
-                cursor="cursor",
-            )
+            response = await client.task.list()
             async for item in response:
                 yield item
 

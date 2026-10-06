@@ -3,7 +3,12 @@
 import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
+from ..types.content_policy import ContentPolicy
+from ..types.content_policy_category_request import ContentPolicyCategoryRequest
+from ..types.content_policy_revision_page import ContentPolicyRevisionPage
+from ..types.content_policy_rule_request import ContentPolicyRuleRequest
 from ..types.custom_instruction import CustomInstruction
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
@@ -63,6 +68,7 @@ class ProjectClient:
         self,
         *,
         default_time_zone: typing.Optional[str] = OMIT,
+        include_policy_violating_episodes: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Project:
@@ -72,6 +78,10 @@ class ProjectClient:
         default_time_zone : typing.Optional[str]
             The project's IANA fallback time zone. Set to null to clear the existing
             value.
+
+        include_policy_violating_episodes : typing.Optional[bool]
+            When true, episode reads on graphs with a content policy include the
+            episodes that violated the policy.
 
         idempotency_key : typing.Optional[str]
 
@@ -93,8 +103,156 @@ class ProjectClient:
         client.project.update()
         """
         _response = self._raw_client.update(
-            default_time_zone=default_time_zone, idempotency_key=idempotency_key, request_options=request_options
+            default_time_zone=default_time_zone,
+            include_policy_violating_episodes=include_policy_violating_episodes,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
         )
+        return _response.data
+
+    def get_content_policy(self, *, request_options: typing.Optional[RequestOptions] = None) -> ContentPolicy:
+        """
+        Returns the current content policy revision of the project. A new graph binds this revision at creation.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ContentPolicy
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.get_content_policy()
+        """
+        _response = self._raw_client.get_content_policy(request_options=request_options)
+        return _response.data
+
+    def set_content_policy(
+        self,
+        *,
+        categories: typing.Optional[typing.Sequence[ContentPolicyCategoryRequest]] = OMIT,
+        rules: typing.Optional[typing.Sequence[ContentPolicyRuleRequest]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ContentPolicy:
+        """
+        Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. An empty policy (no categories and no rules) removes the content policy for new graphs.
+
+        Parameters
+        ----------
+        categories : typing.Optional[typing.Sequence[ContentPolicyCategoryRequest]]
+            The categories of the policy. Maximum 16. An empty list with no rules
+            means no content policy.
+
+        rules : typing.Optional[typing.Sequence[ContentPolicyRuleRequest]]
+            The rules of the policy. Maximum 32.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ContentPolicy
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.set_content_policy()
+        """
+        _response = self._raw_client.set_content_policy(
+            categories=categories, rules=rules, idempotency_key=idempotency_key, request_options=request_options
+        )
+        return _response.data
+
+    def list_content_policy_revisions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[ContentPolicy, ContentPolicyRevisionPage]:
+        """
+        Lists every revision of the project content policy, newest first, including revision 0.
+
+        Parameters
+        ----------
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[ContentPolicy, ContentPolicyRevisionPage]
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.project.list_content_policy_revisions()
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
+        """
+        return self._raw_client.list_content_policy_revisions(
+            limit=limit, cursor=cursor, request_options=request_options
+        )
+
+    def get_content_policy_revision(
+        self, revision_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ContentPolicy:
+        """
+        Parameters
+        ----------
+        revision_uuid : str
+            Revision UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ContentPolicy
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.get_content_policy_revision(
+            revision_uuid="revision_uuid",
+        )
+        """
+        _response = self._raw_client.get_content_policy_revision(revision_uuid, request_options=request_options)
         return _response.data
 
     def get_instructions(self, *, request_options: typing.Optional[RequestOptions] = None) -> Instructions:
@@ -273,16 +431,22 @@ class ProjectClient:
         self,
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         inherited: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Ontology:
         """
+        Replaces the entity types and the edge types that the project uses.
+
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
+
+        entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -312,6 +476,7 @@ class ProjectClient:
         """
         _response = self._raw_client.set_ontology(
             edge_types=edge_types,
+            entity_type_hierarchy=entity_type_hierarchy,
             entity_types=entity_types,
             inherited=inherited,
             idempotency_key=idempotency_key,
@@ -443,6 +608,7 @@ class AsyncProjectClient:
         self,
         *,
         default_time_zone: typing.Optional[str] = OMIT,
+        include_policy_violating_episodes: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Project:
@@ -452,6 +618,10 @@ class AsyncProjectClient:
         default_time_zone : typing.Optional[str]
             The project's IANA fallback time zone. Set to null to clear the existing
             value.
+
+        include_policy_violating_episodes : typing.Optional[bool]
+            When true, episode reads on graphs with a content policy include the
+            episodes that violated the policy.
 
         idempotency_key : typing.Optional[str]
 
@@ -481,8 +651,189 @@ class AsyncProjectClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            default_time_zone=default_time_zone, idempotency_key=idempotency_key, request_options=request_options
+            default_time_zone=default_time_zone,
+            include_policy_violating_episodes=include_policy_violating_episodes,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
         )
+        return _response.data
+
+    async def get_content_policy(self, *, request_options: typing.Optional[RequestOptions] = None) -> ContentPolicy:
+        """
+        Returns the current content policy revision of the project. A new graph binds this revision at creation.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ContentPolicy
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.get_content_policy()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_content_policy(request_options=request_options)
+        return _response.data
+
+    async def set_content_policy(
+        self,
+        *,
+        categories: typing.Optional[typing.Sequence[ContentPolicyCategoryRequest]] = OMIT,
+        rules: typing.Optional[typing.Sequence[ContentPolicyRuleRequest]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ContentPolicy:
+        """
+        Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. An empty policy (no categories and no rules) removes the content policy for new graphs.
+
+        Parameters
+        ----------
+        categories : typing.Optional[typing.Sequence[ContentPolicyCategoryRequest]]
+            The categories of the policy. Maximum 16. An empty list with no rules
+            means no content policy.
+
+        rules : typing.Optional[typing.Sequence[ContentPolicyRuleRequest]]
+            The rules of the policy. Maximum 32.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ContentPolicy
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.set_content_policy()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_content_policy(
+            categories=categories, rules=rules, idempotency_key=idempotency_key, request_options=request_options
+        )
+        return _response.data
+
+    async def list_content_policy_revisions(
+        self,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[ContentPolicy, ContentPolicyRevisionPage]:
+        """
+        Lists every revision of the project content policy, newest first, including revision 0.
+
+        Parameters
+        ----------
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[ContentPolicy, ContentPolicyRevisionPage]
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            response = await client.project.list_content_policy_revisions()
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
+
+
+        asyncio.run(main())
+        """
+        return await self._raw_client.list_content_policy_revisions(
+            limit=limit, cursor=cursor, request_options=request_options
+        )
+
+    async def get_content_policy_revision(
+        self, revision_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ContentPolicy:
+        """
+        Parameters
+        ----------
+        revision_uuid : str
+            Revision UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ContentPolicy
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.get_content_policy_revision(
+                revision_uuid="revision_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_content_policy_revision(revision_uuid, request_options=request_options)
         return _response.data
 
     async def get_instructions(self, *, request_options: typing.Optional[RequestOptions] = None) -> Instructions:
@@ -701,16 +1052,22 @@ class AsyncProjectClient:
         self,
         *,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
+        entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
         inherited: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Ontology:
         """
+        Replaces the entity types and the edge types that the project uses.
+
         Parameters
         ----------
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
+
+        entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -748,6 +1105,7 @@ class AsyncProjectClient:
         """
         _response = await self._raw_client.set_ontology(
             edge_types=edge_types,
+            entity_type_hierarchy=entity_type_hierarchy,
             entity_types=entity_types,
             inherited=inherited,
             idempotency_key=idempotency_key,

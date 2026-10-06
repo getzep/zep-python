@@ -32,7 +32,6 @@ class LookupClient:
         graphs: typing.Optional[typing.Sequence[str]] = OMIT,
         threads: typing.Optional[typing.Sequence[str]] = OMIT,
         users: typing.Optional[typing.Sequence[str]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> LookupBatchResponse:
         """
@@ -46,8 +45,6 @@ class LookupClient:
 
         users : typing.Optional[typing.Sequence[str]]
             Developer-assigned user IDs to resolve to UUIDs.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -66,13 +63,7 @@ class LookupClient:
         )
         client.lookup.batch()
         """
-        _response = self._raw_client.batch(
-            graphs=graphs,
-            threads=threads,
-            users=users,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
-        )
+        _response = self._raw_client.batch(graphs=graphs, threads=threads, users=users, request_options=request_options)
         return _response.data
 
 
@@ -97,7 +88,6 @@ class AsyncLookupClient:
         graphs: typing.Optional[typing.Sequence[str]] = OMIT,
         threads: typing.Optional[typing.Sequence[str]] = OMIT,
         users: typing.Optional[typing.Sequence[str]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> LookupBatchResponse:
         """
@@ -111,8 +101,6 @@ class AsyncLookupClient:
 
         users : typing.Optional[typing.Sequence[str]]
             Developer-assigned user IDs to resolve to UUIDs.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -140,10 +128,6 @@ class AsyncLookupClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.batch(
-            graphs=graphs,
-            threads=threads,
-            users=users,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graphs=graphs, threads=threads, users=users, request_options=request_options
         )
         return _response.data

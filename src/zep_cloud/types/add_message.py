@@ -15,9 +15,15 @@ class AddMessage(UniversalBaseModel):
     The content of the message.
     """
 
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The message's reference time, used for temporal reasoning rather than
+    ingestion time. Defaults to the ingestion time.
+    """
+
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
     """
-    Custom metadata to store with the message.
+    Custom metadata to store with the message. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
     """
 
     name: typing.Optional[str] = pydantic.Field(default=None)
@@ -39,6 +45,10 @@ class AddMessage(UniversalBaseModel):
             description="Reserved for future use. Message identifiers are always server-assigned,\nso this field must be left unset.",
         ),
     ] = None
+    """
+    Reserved for future use. Message identifiers are always server-assigned,
+    so this field must be left unset.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

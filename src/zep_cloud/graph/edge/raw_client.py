@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ...core.api_error import ApiError as core_api_error_ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
-from ...core.jsonable_encoder import jsonable_encoder
+from ...core.idempotency import generate_idempotency_key
+from ...core.jsonable_encoder import encode_path_param
 from ...core.pagination import AsyncPager, SyncPager
 from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
@@ -17,11 +18,11 @@ from ...errors.conflict_error import ConflictError
 from ...errors.forbidden_error import ForbiddenError
 from ...errors.not_found_error import NotFoundError
 from ...errors.unauthorized_error import UnauthorizedError
-from ...types.add_edge_result import AddEdgeResult
+from ...types.add_edges_result import AddEdgesResult
 from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.async_result import AsyncResult
 from ...types.edge import Edge
-from ...types.edge_node_ref import EdgeNodeRef
+from ...types.edge_input import EdgeInput
 from ...types.edge_page import EdgePage
 from pydantic import ValidationError
 
@@ -37,53 +38,27 @@ class RawEdgeClient:
         self,
         graph_uuid: str,
         *,
-        fact: str,
-        fact_name: str,
-        source_node: EdgeNodeRef,
-        target_node: EdgeNodeRef,
-        attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
+        edges: typing.Sequence[EdgeInput],
+        deduplicate: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[AddEdgeResult]:
+    ) -> HttpResponse[AddEdgesResult]:
         """
+        Adds 1 to 100 edges. A name creates a node when deduplicate is false. When deduplicate is true, Zep matches a node by name first.
+        Example: {"edges":[{"fact":"Ada works at Acme Corp","fact_name":"WORKS_AT","source_node":{"uuid":"f47ac10b-58cc-4372-a567-0e02b2c3d479"},"target_node":{"uuid":"f47ac10b-58cc-4372-a567-0e02b2c3d480"}},{"fact":"Ada leads a team","fact_name":"LEADS","source_node":{"name":"Ada Lovelace","labels":["Person"]},"target_node":{"name":"Engineering","labels":["Department"]}}],"deduplicate":false}
+
         Parameters
         ----------
         graph_uuid : str
             Graph UUID
 
-        fact : str
-            The fact text describing the relationship between the source and target
-            nodes.
+        edges : typing.Sequence[EdgeInput]
+            The edges to add to the graph. The request accepts 1 to 100 edges.
 
-        fact_name : str
-            The name of the edge, in upper snake case, for example RELATES_TO.
-
-        source_node : EdgeNodeRef
-            The source node of the edge, referenced by uuid or created or matched by
-            name.
-
-        target_node : EdgeNodeRef
-            The target node of the edge, referenced by uuid or created or matched by
-            name.
-
-        attributes : typing.Optional[typing.Dict[str, typing.Any]]
-            Additional attributes to store on the edge.
-
-        expired_at : typing.Optional[str]
-            The time at which the fact was superseded or invalidated.
-
-        invalid_at : typing.Optional[str]
-            The time at which the fact stopped being true.
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata attached to the episode created for this edge.
-
-        valid_at : typing.Optional[str]
-            The time at which the fact became true.
+        deduplicate : typing.Optional[bool]
+            When true, Zep compares each edge with graph edges and can merge a
+            duplicate or invalidate a contradicted edge. This adds an LLM call per
+            edge. The default is false.
 
         idempotency_key : typing.Optional[str]
 
@@ -92,30 +67,21 @@ class RawEdgeClient:
 
         Returns
         -------
-        HttpResponse[AddEdgeResult]
+        HttpResponse[AddEdgesResult]
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges",
+            f"graphs/{encode_path_param(graph_uuid)}/edges",
             method="POST",
             json={
-                "attributes": attributes,
-                "expired_at": expired_at,
-                "fact": fact,
-                "fact_name": fact_name,
-                "invalid_at": invalid_at,
-                "metadata": metadata,
-                "source_node": convert_and_respect_annotation_metadata(
-                    object_=source_node, annotation=EdgeNodeRef, direction="write"
+                "deduplicate": deduplicate,
+                "edges": convert_and_respect_annotation_metadata(
+                    object_=edges, annotation=typing.Sequence[EdgeInput], direction="write"
                 ),
-                "target_node": convert_and_respect_annotation_metadata(
-                    object_=target_node, annotation=EdgeNodeRef, direction="write"
-                ),
-                "valid_at": valid_at,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -123,9 +89,9 @@ class RawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    AddEdgeResult,
+                    AddEdgesResult,
                     parse_obj_as(
-                        type_=AddEdgeResult,  # type: ignore
+                        type_=AddEdgesResult,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -205,7 +171,6 @@ class RawEdgeClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Edge, EdgePage]:
         """
@@ -223,8 +188,6 @@ class RawEdgeClient:
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -234,7 +197,7 @@ class RawEdgeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges/list",
+            f"graphs/{encode_path_param(graph_uuid)}/edges/list",
             method="POST",
             params={
                 "limit": limit,
@@ -245,7 +208,7 @@ class RawEdgeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -267,7 +230,6 @@ class RawEdgeClient:
                     limit=limit,
                     cursor=_parsed_next,
                     filters=filters,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -360,7 +322,7 @@ class RawEdgeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges/{jsonable_encoder(edge_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/edges/{encode_path_param(edge_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -459,10 +421,10 @@ class RawEdgeClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges/{jsonable_encoder(edge_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/edges/{encode_path_param(edge_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -555,6 +517,11 @@ class RawEdgeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Edge]:
         """
+        Updates one edge. When the edge belongs to a hyperedge, changing fact
+        rewrites it on every member of that hyperedge in one all-or-nothing
+        write, because the members share it. Attribute-only edits touch this
+        edge alone.
+
         Parameters
         ----------
         graph_uuid : str
@@ -582,7 +549,7 @@ class RawEdgeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges/{jsonable_encoder(edge_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/edges/{encode_path_param(edge_uuid)}",
             method="PATCH",
             json={
                 "attributes": attributes,
@@ -590,7 +557,7 @@ class RawEdgeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -682,53 +649,27 @@ class AsyncRawEdgeClient:
         self,
         graph_uuid: str,
         *,
-        fact: str,
-        fact_name: str,
-        source_node: EdgeNodeRef,
-        target_node: EdgeNodeRef,
-        attributes: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        expired_at: typing.Optional[str] = OMIT,
-        invalid_at: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        valid_at: typing.Optional[str] = OMIT,
+        edges: typing.Sequence[EdgeInput],
+        deduplicate: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[AddEdgeResult]:
+    ) -> AsyncHttpResponse[AddEdgesResult]:
         """
+        Adds 1 to 100 edges. A name creates a node when deduplicate is false. When deduplicate is true, Zep matches a node by name first.
+        Example: {"edges":[{"fact":"Ada works at Acme Corp","fact_name":"WORKS_AT","source_node":{"uuid":"f47ac10b-58cc-4372-a567-0e02b2c3d479"},"target_node":{"uuid":"f47ac10b-58cc-4372-a567-0e02b2c3d480"}},{"fact":"Ada leads a team","fact_name":"LEADS","source_node":{"name":"Ada Lovelace","labels":["Person"]},"target_node":{"name":"Engineering","labels":["Department"]}}],"deduplicate":false}
+
         Parameters
         ----------
         graph_uuid : str
             Graph UUID
 
-        fact : str
-            The fact text describing the relationship between the source and target
-            nodes.
+        edges : typing.Sequence[EdgeInput]
+            The edges to add to the graph. The request accepts 1 to 100 edges.
 
-        fact_name : str
-            The name of the edge, in upper snake case, for example RELATES_TO.
-
-        source_node : EdgeNodeRef
-            The source node of the edge, referenced by uuid or created or matched by
-            name.
-
-        target_node : EdgeNodeRef
-            The target node of the edge, referenced by uuid or created or matched by
-            name.
-
-        attributes : typing.Optional[typing.Dict[str, typing.Any]]
-            Additional attributes to store on the edge.
-
-        expired_at : typing.Optional[str]
-            The time at which the fact was superseded or invalidated.
-
-        invalid_at : typing.Optional[str]
-            The time at which the fact stopped being true.
-
-        metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata attached to the episode created for this edge.
-
-        valid_at : typing.Optional[str]
-            The time at which the fact became true.
+        deduplicate : typing.Optional[bool]
+            When true, Zep compares each edge with graph edges and can merge a
+            duplicate or invalidate a contradicted edge. This adds an LLM call per
+            edge. The default is false.
 
         idempotency_key : typing.Optional[str]
 
@@ -737,30 +678,21 @@ class AsyncRawEdgeClient:
 
         Returns
         -------
-        AsyncHttpResponse[AddEdgeResult]
+        AsyncHttpResponse[AddEdgesResult]
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges",
+            f"graphs/{encode_path_param(graph_uuid)}/edges",
             method="POST",
             json={
-                "attributes": attributes,
-                "expired_at": expired_at,
-                "fact": fact,
-                "fact_name": fact_name,
-                "invalid_at": invalid_at,
-                "metadata": metadata,
-                "source_node": convert_and_respect_annotation_metadata(
-                    object_=source_node, annotation=EdgeNodeRef, direction="write"
+                "deduplicate": deduplicate,
+                "edges": convert_and_respect_annotation_metadata(
+                    object_=edges, annotation=typing.Sequence[EdgeInput], direction="write"
                 ),
-                "target_node": convert_and_respect_annotation_metadata(
-                    object_=target_node, annotation=EdgeNodeRef, direction="write"
-                ),
-                "valid_at": valid_at,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -768,9 +700,9 @@ class AsyncRawEdgeClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    AddEdgeResult,
+                    AddEdgesResult,
                     parse_obj_as(
-                        type_=AddEdgeResult,  # type: ignore
+                        type_=AddEdgesResult,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -850,7 +782,6 @@ class AsyncRawEdgeClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Edge, EdgePage]:
         """
@@ -868,8 +799,6 @@ class AsyncRawEdgeClient:
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -879,7 +808,7 @@ class AsyncRawEdgeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges/list",
+            f"graphs/{encode_path_param(graph_uuid)}/edges/list",
             method="POST",
             params={
                 "limit": limit,
@@ -890,7 +819,7 @@ class AsyncRawEdgeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -914,7 +843,6 @@ class AsyncRawEdgeClient:
                         limit=limit,
                         cursor=_parsed_next,
                         filters=filters,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -1008,7 +936,7 @@ class AsyncRawEdgeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges/{jsonable_encoder(edge_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/edges/{encode_path_param(edge_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -1107,10 +1035,10 @@ class AsyncRawEdgeClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges/{jsonable_encoder(edge_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/edges/{encode_path_param(edge_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -1203,6 +1131,11 @@ class AsyncRawEdgeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Edge]:
         """
+        Updates one edge. When the edge belongs to a hyperedge, changing fact
+        rewrites it on every member of that hyperedge in one all-or-nothing
+        write, because the members share it. Attribute-only edits touch this
+        edge alone.
+
         Parameters
         ----------
         graph_uuid : str
@@ -1230,7 +1163,7 @@ class AsyncRawEdgeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/edges/{jsonable_encoder(edge_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/edges/{encode_path_param(edge_uuid)}",
             method="PATCH",
             json={
                 "attributes": attributes,
@@ -1238,7 +1171,7 @@ class AsyncRawEdgeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
