@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ...core.api_error import ApiError as core_api_error_ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
-from ...core.jsonable_encoder import jsonable_encoder
+from ...core.idempotency import generate_idempotency_key
+from ...core.jsonable_encoder import encode_path_param
 from ...core.pagination import AsyncPager, SyncPager
 from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
@@ -20,8 +21,13 @@ from ...types.add_episode_result import AddEpisodeResult
 from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.async_result import AsyncResult
 from ...types.episode import Episode
+from ...types.episode_debug_log import EpisodeDebugLog
 from ...types.episode_page import EpisodePage
-from .types.v4add_episode_request_type import V4AddEpisodeRequestType
+from ...types.ingestion_trace import IngestionTrace
+from ...types.ingestion_trace_page import IngestionTracePage
+from .types.add_episode_request_type import AddEpisodeRequestType
+from .types.episode_list_request_order import EpisodeListRequestOrder
+from .types.episode_list_request_order_by import EpisodeListRequestOrderBy
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -65,7 +71,7 @@ class RawEpisodeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/documents/{jsonable_encoder(document_id)}/episodes",
+            f"graphs/{encode_path_param(graph_uuid)}/documents/{encode_path_param(document_id)}/episodes",
             method="GET",
             params={
                 "limit": limit,
@@ -171,7 +177,7 @@ class RawEpisodeClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
-        type: typing.Optional[V4AddEpisodeRequestType] = OMIT,
+        type: typing.Optional[AddEpisodeRequestType] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AddEpisodeResult]:
@@ -192,7 +198,7 @@ class RawEpisodeClient:
             Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to store on the episode.
+            Metadata to store on the episode. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
             A description of the source of this episode.
@@ -201,7 +207,7 @@ class RawEpisodeClient:
             When true, prevents extraction of generic entity nodes that do not match
             the configured ontology.
 
-        type : typing.Optional[V4AddEpisodeRequestType]
+        type : typing.Optional[AddEpisodeRequestType]
             The data format of the episode: text, json, or message. Defaults to text.
 
         idempotency_key : typing.Optional[str]
@@ -215,7 +221,7 @@ class RawEpisodeClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes",
             method="POST",
             json={
                 "created_at": created_at,
@@ -228,7 +234,7 @@ class RawEpisodeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -317,11 +323,19 @@ class RawEpisodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[EpisodeListRequestOrderBy] = None,
+        order: typing.Optional[EpisodeListRequestOrder] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
         """
+        Lists the episodes of a graph. `filters.mentioned_node_uuids` restricts
+        the results to episodes that mention any of the listed node UUIDs. The
+        list can also contain episode UUIDs: an episode UUID matches that episode,
+        so one request can return a known set of episodes. At most 256 entries.
+        `filters.metadata_filters` restricts the results to episodes whose stored
+        metadata matches the predicate.
+
         Parameters
         ----------
         graph_uuid : str
@@ -333,10 +347,14 @@ class RawEpisodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[EpisodeListRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[EpisodeListRequestOrder]
+            Sort direction: asc or desc
+
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -347,18 +365,20 @@ class RawEpisodeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes/list",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/list",
             method="POST",
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
                 "filters": filters,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -379,8 +399,9 @@ class RawEpisodeClient:
                     graph_uuid,
                     limit=limit,
                     cursor=_parsed_next,
+                    order_by=order_by,
+                    order=order,
                     filters=filters,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -462,7 +483,7 @@ class RawEpisodeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes/{jsonable_encoder(episode_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -561,10 +582,10 @@ class RawEpisodeClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes/{jsonable_encoder(episode_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -665,7 +686,7 @@ class RawEpisodeClient:
             Episode UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to merge onto the episode; a key set to null is removed.
+            Metadata to merge onto the episode; a key set to null is removed. Max 10 keys after the merge. Values must be strings, numbers, booleans, or arrays of scalars.
 
         idempotency_key : typing.Optional[str]
 
@@ -678,14 +699,14 @@ class RawEpisodeClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes/{jsonable_encoder(episode_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}",
             method="PATCH",
             json={
                 "metadata": metadata,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -768,6 +789,220 @@ class RawEpisodeClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def get_debug_logs(
+        self, graph_uuid: str, episode_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[EpisodeDebugLog]:
+        """
+        Returns the ingestion workflow log of an episode. The log exists only when debug logging was enabled for the project when the episode was ingested (see `debug_log.enable`). The log holds episode content, so an API key with an ABAC policy needs an explicit grant of this action; the `readonly` macro does not grant it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        episode_uuid : str
+            Episode UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[EpisodeDebugLog]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}/debug-logs",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EpisodeDebugLog,
+                    parse_obj_as(
+                        type_=EpisodeDebugLog,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def list_ingestion_traces(
+        self,
+        graph_uuid: str,
+        episode_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[IngestionTrace, IngestionTracePage]:
+        """
+        Returns the ingestion traces of an episode, oldest first. Each trace records the input and the output of one ingestion step, with an explanation on each output entry that has one. Traces exist only when ingestion tracing was enabled for the project when the episode was ingested (see `debug_log.enable`). An episode with no traces returns a page with an empty `items` array. Traces hold episode content, prompt input, and model output, so an API key with an ABAC policy needs an explicit grant of this action; the `readonly` macro does not grant it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        episode_uuid : str
+            Episode UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[IngestionTrace, IngestionTracePage]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}/ingestion-traces",
+            method="GET",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    IngestionTracePage,
+                    parse_obj_as(
+                        type_=IngestionTracePage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list_ingestion_traces(
+                    graph_uuid,
+                    episode_uuid,
+                    limit=limit,
+                    cursor=_parsed_next,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
 
 class AsyncRawEpisodeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -806,7 +1041,7 @@ class AsyncRawEpisodeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/documents/{jsonable_encoder(document_id)}/episodes",
+            f"graphs/{encode_path_param(graph_uuid)}/documents/{encode_path_param(document_id)}/episodes",
             method="GET",
             params={
                 "limit": limit,
@@ -915,7 +1150,7 @@ class AsyncRawEpisodeClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
-        type: typing.Optional[V4AddEpisodeRequestType] = OMIT,
+        type: typing.Optional[AddEpisodeRequestType] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AddEpisodeResult]:
@@ -936,7 +1171,7 @@ class AsyncRawEpisodeClient:
             Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to store on the episode.
+            Metadata to store on the episode. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
             A description of the source of this episode.
@@ -945,7 +1180,7 @@ class AsyncRawEpisodeClient:
             When true, prevents extraction of generic entity nodes that do not match
             the configured ontology.
 
-        type : typing.Optional[V4AddEpisodeRequestType]
+        type : typing.Optional[AddEpisodeRequestType]
             The data format of the episode: text, json, or message. Defaults to text.
 
         idempotency_key : typing.Optional[str]
@@ -959,7 +1194,7 @@ class AsyncRawEpisodeClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes",
             method="POST",
             json={
                 "created_at": created_at,
@@ -972,7 +1207,7 @@ class AsyncRawEpisodeClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1061,11 +1296,19 @@ class AsyncRawEpisodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[EpisodeListRequestOrderBy] = None,
+        order: typing.Optional[EpisodeListRequestOrder] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
         """
+        Lists the episodes of a graph. `filters.mentioned_node_uuids` restricts
+        the results to episodes that mention any of the listed node UUIDs. The
+        list can also contain episode UUIDs: an episode UUID matches that episode,
+        so one request can return a known set of episodes. At most 256 entries.
+        `filters.metadata_filters` restricts the results to episodes whose stored
+        metadata matches the predicate.
+
         Parameters
         ----------
         graph_uuid : str
@@ -1077,10 +1320,14 @@ class AsyncRawEpisodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[EpisodeListRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[EpisodeListRequestOrder]
+            Sort direction: asc or desc
+
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1091,18 +1338,20 @@ class AsyncRawEpisodeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes/list",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/list",
             method="POST",
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
                 "filters": filters,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1125,8 +1374,9 @@ class AsyncRawEpisodeClient:
                         graph_uuid,
                         limit=limit,
                         cursor=_parsed_next,
+                        order_by=order_by,
+                        order=order,
                         filters=filters,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -1209,7 +1459,7 @@ class AsyncRawEpisodeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes/{jsonable_encoder(episode_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -1308,10 +1558,10 @@ class AsyncRawEpisodeClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes/{jsonable_encoder(episode_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -1412,7 +1662,7 @@ class AsyncRawEpisodeClient:
             Episode UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to merge onto the episode; a key set to null is removed.
+            Metadata to merge onto the episode; a key set to null is removed. Max 10 keys after the merge. Values must be strings, numbers, booleans, or arrays of scalars.
 
         idempotency_key : typing.Optional[str]
 
@@ -1425,14 +1675,14 @@ class AsyncRawEpisodeClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/episodes/{jsonable_encoder(episode_uuid)}",
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}",
             method="PATCH",
             json={
                 "metadata": metadata,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1493,6 +1743,223 @@ class AsyncRawEpisodeClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_debug_logs(
+        self, graph_uuid: str, episode_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[EpisodeDebugLog]:
+        """
+        Returns the ingestion workflow log of an episode. The log exists only when debug logging was enabled for the project when the episode was ingested (see `debug_log.enable`). The log holds episode content, so an API key with an ABAC policy needs an explicit grant of this action; the `readonly` macro does not grant it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        episode_uuid : str
+            Episode UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[EpisodeDebugLog]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}/debug-logs",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    EpisodeDebugLog,
+                    parse_obj_as(
+                        type_=EpisodeDebugLog,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def list_ingestion_traces(
+        self,
+        graph_uuid: str,
+        episode_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[IngestionTrace, IngestionTracePage]:
+        """
+        Returns the ingestion traces of an episode, oldest first. Each trace records the input and the output of one ingestion step, with an explanation on each output entry that has one. Traces exist only when ingestion tracing was enabled for the project when the episode was ingested (see `debug_log.enable`). An episode with no traces returns a page with an empty `items` array. Traces hold episode content, prompt input, and model output, so an API key with an ABAC policy needs an explicit grant of this action; the `readonly` macro does not grant it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        episode_uuid : str
+            Episode UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[IngestionTrace, IngestionTracePage]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/episodes/{encode_path_param(episode_uuid)}/ingestion-traces",
+            method="GET",
+            params={
+                "limit": limit,
+                "cursor": cursor,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    IngestionTracePage,
+                    parse_obj_as(
+                        type_=IngestionTracePage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list_ingestion_traces(
+                        graph_uuid,
+                        episode_uuid,
+                        limit=limit,
+                        cursor=_parsed_next,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

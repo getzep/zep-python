@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
-from ..core.jsonable_encoder import jsonable_encoder
+from ..core.idempotency import generate_idempotency_key
+from ..core.jsonable_encoder import encode_path_param
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
@@ -70,7 +71,7 @@ class RawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -159,7 +160,6 @@ class RawUserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[UserGroup, UserGroupPage]:
         """
@@ -175,8 +175,6 @@ class RawUserGroupClient:
 
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -198,7 +196,7 @@ class RawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -219,7 +217,6 @@ class RawUserGroupClient:
                     limit=limit,
                     cursor=_parsed_next,
                     search=search,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -300,7 +297,7 @@ class RawUserGroupClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}",
+            f"user-groups/{encode_path_param(group_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -396,10 +393,10 @@ class RawUserGroupClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}",
+            f"user-groups/{encode_path_param(group_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -512,7 +509,7 @@ class RawUserGroupClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}",
+            f"user-groups/{encode_path_param(group_uuid)}",
             method="PATCH",
             json={
                 "description": description,
@@ -521,7 +518,7 @@ class RawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -611,7 +608,6 @@ class RawUserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[User, UserPage]:
         """
@@ -631,8 +627,6 @@ class RawUserGroupClient:
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -642,7 +636,7 @@ class RawUserGroupClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/member-candidates/list",
+            f"user-groups/{encode_path_param(group_uuid)}/member-candidates/list",
             method="POST",
             params={
                 "limit": limit,
@@ -653,7 +647,7 @@ class RawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -675,7 +669,6 @@ class RawUserGroupClient:
                     limit=limit,
                     cursor=_parsed_next,
                     search=search,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -777,14 +770,14 @@ class RawUserGroupClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/members",
+            f"user-groups/{encode_path_param(group_uuid)}/members",
             method="POST",
             json={
                 "user_uuids": user_uuids,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -874,7 +867,6 @@ class RawUserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[User, UserPage]:
         """
@@ -894,8 +886,6 @@ class RawUserGroupClient:
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -905,7 +895,7 @@ class RawUserGroupClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/members/list",
+            f"user-groups/{encode_path_param(group_uuid)}/members/list",
             method="POST",
             params={
                 "limit": limit,
@@ -916,7 +906,7 @@ class RawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -938,7 +928,6 @@ class RawUserGroupClient:
                     limit=limit,
                     cursor=_parsed_next,
                     search=search,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -1029,14 +1018,14 @@ class RawUserGroupClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/members/remove",
+            f"user-groups/{encode_path_param(group_uuid)}/members/remove",
             method="POST",
             json={
                 "user_uuids": user_uuids,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1148,10 +1137,10 @@ class RawUserGroupClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/members/{jsonable_encoder(user_uuid)}",
+            f"user-groups/{encode_path_param(group_uuid)}/members/{encode_path_param(user_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -1257,7 +1246,7 @@ class RawUserGroupClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}/user-groups",
+            f"users/{encode_path_param(user_uuid)}/user-groups",
             method="GET",
             params={
                 "limit": limit,
@@ -1395,7 +1384,7 @@ class AsyncRawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1484,7 +1473,6 @@ class AsyncRawUserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[UserGroup, UserGroupPage]:
         """
@@ -1500,8 +1488,6 @@ class AsyncRawUserGroupClient:
 
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1523,7 +1509,7 @@ class AsyncRawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1546,7 +1532,6 @@ class AsyncRawUserGroupClient:
                         limit=limit,
                         cursor=_parsed_next,
                         search=search,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -1628,7 +1613,7 @@ class AsyncRawUserGroupClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}",
+            f"user-groups/{encode_path_param(group_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -1724,10 +1709,10 @@ class AsyncRawUserGroupClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}",
+            f"user-groups/{encode_path_param(group_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -1840,7 +1825,7 @@ class AsyncRawUserGroupClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}",
+            f"user-groups/{encode_path_param(group_uuid)}",
             method="PATCH",
             json={
                 "description": description,
@@ -1849,7 +1834,7 @@ class AsyncRawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1939,7 +1924,6 @@ class AsyncRawUserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[User, UserPage]:
         """
@@ -1959,8 +1943,6 @@ class AsyncRawUserGroupClient:
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -1970,7 +1952,7 @@ class AsyncRawUserGroupClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/member-candidates/list",
+            f"user-groups/{encode_path_param(group_uuid)}/member-candidates/list",
             method="POST",
             params={
                 "limit": limit,
@@ -1981,7 +1963,7 @@ class AsyncRawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2005,7 +1987,6 @@ class AsyncRawUserGroupClient:
                         limit=limit,
                         cursor=_parsed_next,
                         search=search,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -2108,14 +2089,14 @@ class AsyncRawUserGroupClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/members",
+            f"user-groups/{encode_path_param(group_uuid)}/members",
             method="POST",
             json={
                 "user_uuids": user_uuids,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2205,7 +2186,6 @@ class AsyncRawUserGroupClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[User, UserPage]:
         """
@@ -2225,8 +2205,6 @@ class AsyncRawUserGroupClient:
         search : typing.Optional[str]
             Filters results to items matching this free-text search term.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -2236,7 +2214,7 @@ class AsyncRawUserGroupClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/members/list",
+            f"user-groups/{encode_path_param(group_uuid)}/members/list",
             method="POST",
             params={
                 "limit": limit,
@@ -2247,7 +2225,7 @@ class AsyncRawUserGroupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2271,7 +2249,6 @@ class AsyncRawUserGroupClient:
                         limit=limit,
                         cursor=_parsed_next,
                         search=search,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -2363,14 +2340,14 @@ class AsyncRawUserGroupClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/members/remove",
+            f"user-groups/{encode_path_param(group_uuid)}/members/remove",
             method="POST",
             json={
                 "user_uuids": user_uuids,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2482,10 +2459,10 @@ class AsyncRawUserGroupClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"user-groups/{jsonable_encoder(group_uuid)}/members/{jsonable_encoder(user_uuid)}",
+            f"user-groups/{encode_path_param(group_uuid)}/members/{encode_path_param(user_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -2591,7 +2568,7 @@ class AsyncRawUserGroupClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"users/{jsonable_encoder(user_uuid)}/user-groups",
+            f"users/{encode_path_param(user_uuid)}/user-groups",
             method="GET",
             params={
                 "limit": limit,

@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
-from ..core.jsonable_encoder import jsonable_encoder
+from ..core.idempotency import generate_idempotency_key
+from ..core.jsonable_encoder import encode_path_param
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
@@ -29,6 +30,9 @@ from ..types.thread_context_response import ThreadContextResponse
 from ..types.thread_delete_result import ThreadDeleteResult
 from ..types.thread_page import ThreadPage
 from ..types.thread_summary import ThreadSummary
+from .types.thread_list_messages_request_order import ThreadListMessagesRequestOrder
+from .types.thread_list_request_order import ThreadListRequestOrder
+from .types.thread_list_request_order_by import ThreadListRequestOrderBy
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -44,8 +48,8 @@ class RawThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[ThreadListRequestOrderBy] = None,
+        order: typing.Optional[ThreadListRequestOrder] = None,
         user_uuid: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Thread, ThreadPage]:
@@ -58,10 +62,10 @@ class RawThreadClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[ThreadListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[ThreadListRequestOrder]
             asc or desc
 
         user_uuid : typing.Optional[str]
@@ -158,7 +162,6 @@ class RawThreadClient:
         self,
         *,
         user_uuid: str,
-        thread_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Thread]:
@@ -167,9 +170,6 @@ class RawThreadClient:
         ----------
         user_uuid : str
             The UUID of the user this thread belongs to.
-
-        thread_id : typing.Optional[str]
-            An optional developer-assigned identifier for the thread.
 
         idempotency_key : typing.Optional[str]
 
@@ -185,12 +185,11 @@ class RawThreadClient:
             "threads",
             method="POST",
             json={
-                "thread_id": thread_id,
                 "user_uuid": user_uuid,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -268,7 +267,6 @@ class RawThreadClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Thread]:
         """
@@ -285,8 +283,6 @@ class RawThreadClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -306,7 +302,7 @@ class RawThreadClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -383,7 +379,7 @@ class RawThreadClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}",
+            f"threads/{encode_path_param(thread_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -467,10 +463,10 @@ class RawThreadClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}",
+            f"threads/{encode_path_param(thread_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -566,7 +562,7 @@ class RawThreadClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/context",
+            f"threads/{encode_path_param(thread_uuid)}/context",
             method="GET",
             params={
                 "template_uuid": template_uuid,
@@ -669,7 +665,7 @@ class RawThreadClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/episodes",
+            f"threads/{encode_path_param(thread_uuid)}/episodes",
             method="GET",
             params={
                 "limit": limit,
@@ -770,6 +766,8 @@ class RawThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[typing.Literal["created_at"]] = None,
+        order: typing.Optional[ThreadListMessagesRequestOrder] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Message, MessagePage]:
         """
@@ -784,6 +782,12 @@ class RawThreadClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[typing.Literal["created_at"]]
+            Sort field
+
+        order : typing.Optional[ThreadListMessagesRequestOrder]
+            Sort direction: asc or desc
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -793,11 +797,13 @@ class RawThreadClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/messages",
+            f"threads/{encode_path_param(thread_uuid)}/messages",
             method="GET",
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             request_options=request_options,
         )
@@ -817,6 +823,8 @@ class RawThreadClient:
                     thread_uuid,
                     limit=limit,
                     cursor=_parsed_next,
+                    order_by=order_by,
+                    order=order,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -909,7 +917,7 @@ class RawThreadClient:
             Accepted
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/messages",
+            f"threads/{encode_path_param(thread_uuid)}/messages",
             method="POST",
             json={
                 "ignore_roles": ignore_roles,
@@ -921,7 +929,7 @@ class RawThreadClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1011,7 +1019,7 @@ class RawThreadClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/summary",
+            f"threads/{encode_path_param(thread_uuid)}/summary",
             method="GET",
             request_options=request_options,
         )
@@ -1092,8 +1100,8 @@ class AsyncRawThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[ThreadListRequestOrderBy] = None,
+        order: typing.Optional[ThreadListRequestOrder] = None,
         user_uuid: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Thread, ThreadPage]:
@@ -1106,10 +1114,10 @@ class AsyncRawThreadClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[ThreadListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[ThreadListRequestOrder]
             asc or desc
 
         user_uuid : typing.Optional[str]
@@ -1209,7 +1217,6 @@ class AsyncRawThreadClient:
         self,
         *,
         user_uuid: str,
-        thread_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Thread]:
@@ -1218,9 +1225,6 @@ class AsyncRawThreadClient:
         ----------
         user_uuid : str
             The UUID of the user this thread belongs to.
-
-        thread_id : typing.Optional[str]
-            An optional developer-assigned identifier for the thread.
 
         idempotency_key : typing.Optional[str]
 
@@ -1236,12 +1240,11 @@ class AsyncRawThreadClient:
             "threads",
             method="POST",
             json={
-                "thread_id": thread_id,
                 "user_uuid": user_uuid,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1319,7 +1322,6 @@ class AsyncRawThreadClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Thread]:
         """
@@ -1336,8 +1338,6 @@ class AsyncRawThreadClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1357,7 +1357,7 @@ class AsyncRawThreadClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -1436,7 +1436,7 @@ class AsyncRawThreadClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}",
+            f"threads/{encode_path_param(thread_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -1520,10 +1520,10 @@ class AsyncRawThreadClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}",
+            f"threads/{encode_path_param(thread_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -1619,7 +1619,7 @@ class AsyncRawThreadClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/context",
+            f"threads/{encode_path_param(thread_uuid)}/context",
             method="GET",
             params={
                 "template_uuid": template_uuid,
@@ -1722,7 +1722,7 @@ class AsyncRawThreadClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/episodes",
+            f"threads/{encode_path_param(thread_uuid)}/episodes",
             method="GET",
             params={
                 "limit": limit,
@@ -1826,6 +1826,8 @@ class AsyncRawThreadClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[typing.Literal["created_at"]] = None,
+        order: typing.Optional[ThreadListMessagesRequestOrder] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Message, MessagePage]:
         """
@@ -1840,6 +1842,12 @@ class AsyncRawThreadClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[typing.Literal["created_at"]]
+            Sort field
+
+        order : typing.Optional[ThreadListMessagesRequestOrder]
+            Sort direction: asc or desc
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -1849,11 +1857,13 @@ class AsyncRawThreadClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/messages",
+            f"threads/{encode_path_param(thread_uuid)}/messages",
             method="GET",
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             request_options=request_options,
         )
@@ -1875,6 +1885,8 @@ class AsyncRawThreadClient:
                         thread_uuid,
                         limit=limit,
                         cursor=_parsed_next,
+                        order_by=order_by,
+                        order=order,
                         request_options=request_options,
                     )
 
@@ -1968,7 +1980,7 @@ class AsyncRawThreadClient:
             Accepted
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/messages",
+            f"threads/{encode_path_param(thread_uuid)}/messages",
             method="POST",
             json={
                 "ignore_roles": ignore_roles,
@@ -1980,7 +1992,7 @@ class AsyncRawThreadClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -2070,7 +2082,7 @@ class AsyncRawThreadClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/summary",
+            f"threads/{encode_path_param(thread_uuid)}/summary",
             method="GET",
             request_options=request_options,
         )

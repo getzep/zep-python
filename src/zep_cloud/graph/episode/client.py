@@ -8,9 +8,14 @@ from ...core.request_options import RequestOptions
 from ...types.add_episode_result import AddEpisodeResult
 from ...types.async_result import AsyncResult
 from ...types.episode import Episode
+from ...types.episode_debug_log import EpisodeDebugLog
 from ...types.episode_page import EpisodePage
+from ...types.ingestion_trace import IngestionTrace
+from ...types.ingestion_trace_page import IngestionTracePage
 from .raw_client import AsyncRawEpisodeClient, RawEpisodeClient
-from .types.v4add_episode_request_type import V4AddEpisodeRequestType
+from .types.add_episode_request_type import AddEpisodeRequestType
+from .types.episode_list_request_order import EpisodeListRequestOrder
+from .types.episode_list_request_order_by import EpisodeListRequestOrderBy
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -73,8 +78,6 @@ class EpisodeClient:
         response = client.graph.episode.list_for_document(
             graph_uuid="graph_uuid",
             document_id="document_id",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -96,7 +99,7 @@ class EpisodeClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
-        type: typing.Optional[V4AddEpisodeRequestType] = OMIT,
+        type: typing.Optional[AddEpisodeRequestType] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddEpisodeResult:
@@ -117,7 +120,7 @@ class EpisodeClient:
             Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to store on the episode.
+            Metadata to store on the episode. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
             A description of the source of this episode.
@@ -126,7 +129,7 @@ class EpisodeClient:
             When true, prevents extraction of generic entity nodes that do not match
             the configured ontology.
 
-        type : typing.Optional[V4AddEpisodeRequestType]
+        type : typing.Optional[AddEpisodeRequestType]
             The data format of the episode: text, json, or message. Defaults to text.
 
         idempotency_key : typing.Optional[str]
@@ -171,11 +174,19 @@ class EpisodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[EpisodeListRequestOrderBy] = None,
+        order: typing.Optional[EpisodeListRequestOrder] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
         """
+        Lists the episodes of a graph. `filters.mentioned_node_uuids` restricts
+        the results to episodes that mention any of the listed node UUIDs. The
+        list can also contain episode UUIDs: an episode UUID matches that episode,
+        so one request can return a known set of episodes. At most 256 entries.
+        `filters.metadata_filters` restricts the results to episodes whose stored
+        metadata matches the predicate.
+
         Parameters
         ----------
         graph_uuid : str
@@ -187,10 +198,14 @@ class EpisodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[EpisodeListRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[EpisodeListRequestOrder]
+            Sort direction: asc or desc
+
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -209,8 +224,6 @@ class EpisodeClient:
         )
         response = client.graph.episode.list(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -222,8 +235,9 @@ class EpisodeClient:
             graph_uuid,
             limit=limit,
             cursor=cursor,
+            order_by=order_by,
+            order=order,
             filters=filters,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -325,7 +339,7 @@ class EpisodeClient:
             Episode UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to merge onto the episode; a key set to null is removed.
+            Metadata to merge onto the episode; a key set to null is removed. Max 10 keys after the merge. Values must be strings, numbers, booleans, or arrays of scalars.
 
         idempotency_key : typing.Optional[str]
 
@@ -357,6 +371,98 @@ class EpisodeClient:
             request_options=request_options,
         )
         return _response.data
+
+    def get_debug_logs(
+        self, graph_uuid: str, episode_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> EpisodeDebugLog:
+        """
+        Returns the ingestion workflow log of an episode. The log exists only when debug logging was enabled for the project when the episode was ingested (see `debug_log.enable`). The log holds episode content, so an API key with an ABAC policy needs an explicit grant of this action; the `readonly` macro does not grant it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        episode_uuid : str
+            Episode UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EpisodeDebugLog
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.episode.get_debug_logs(
+            graph_uuid="graph_uuid",
+            episode_uuid="episode_uuid",
+        )
+        """
+        _response = self._raw_client.get_debug_logs(graph_uuid, episode_uuid, request_options=request_options)
+        return _response.data
+
+    def list_ingestion_traces(
+        self,
+        graph_uuid: str,
+        episode_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[IngestionTrace, IngestionTracePage]:
+        """
+        Returns the ingestion traces of an episode, oldest first. Each trace records the input and the output of one ingestion step, with an explanation on each output entry that has one. Traces exist only when ingestion tracing was enabled for the project when the episode was ingested (see `debug_log.enable`). An episode with no traces returns a page with an empty `items` array. Traces hold episode content, prompt input, and model output, so an API key with an ABAC policy needs an explicit grant of this action; the `readonly` macro does not grant it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        episode_uuid : str
+            Episode UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[IngestionTrace, IngestionTracePage]
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.graph.episode.list_ingestion_traces(
+            graph_uuid="graph_uuid",
+            episode_uuid="episode_uuid",
+        )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
+        """
+        return self._raw_client.list_ingestion_traces(
+            graph_uuid, episode_uuid, limit=limit, cursor=cursor, request_options=request_options
+        )
 
 
 class AsyncEpisodeClient:
@@ -421,8 +527,6 @@ class AsyncEpisodeClient:
             response = await client.graph.episode.list_for_document(
                 graph_uuid="graph_uuid",
                 document_id="document_id",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -448,7 +552,7 @@ class AsyncEpisodeClient:
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
-        type: typing.Optional[V4AddEpisodeRequestType] = OMIT,
+        type: typing.Optional[AddEpisodeRequestType] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AddEpisodeResult:
@@ -469,7 +573,7 @@ class AsyncEpisodeClient:
             Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to store on the episode.
+            Metadata to store on the episode. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
 
         source_description : typing.Optional[str]
             A description of the source of this episode.
@@ -478,7 +582,7 @@ class AsyncEpisodeClient:
             When true, prevents extraction of generic entity nodes that do not match
             the configured ontology.
 
-        type : typing.Optional[V4AddEpisodeRequestType]
+        type : typing.Optional[AddEpisodeRequestType]
             The data format of the episode: text, json, or message. Defaults to text.
 
         idempotency_key : typing.Optional[str]
@@ -531,11 +635,19 @@ class AsyncEpisodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[EpisodeListRequestOrderBy] = None,
+        order: typing.Optional[EpisodeListRequestOrder] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
         """
+        Lists the episodes of a graph. `filters.mentioned_node_uuids` restricts
+        the results to episodes that mention any of the listed node UUIDs. The
+        list can also contain episode UUIDs: an episode UUID matches that episode,
+        so one request can return a known set of episodes. At most 256 entries.
+        `filters.metadata_filters` restricts the results to episodes whose stored
+        metadata matches the predicate.
+
         Parameters
         ----------
         graph_uuid : str
@@ -547,10 +659,14 @@ class AsyncEpisodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[EpisodeListRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[EpisodeListRequestOrder]
+            Sort direction: asc or desc
+
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -574,8 +690,6 @@ class AsyncEpisodeClient:
         async def main() -> None:
             response = await client.graph.episode.list(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -591,8 +705,9 @@ class AsyncEpisodeClient:
             graph_uuid,
             limit=limit,
             cursor=cursor,
+            order_by=order_by,
+            order=order,
             filters=filters,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -710,7 +825,7 @@ class AsyncEpisodeClient:
             Episode UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to merge onto the episode; a key set to null is removed.
+            Metadata to merge onto the episode; a key set to null is removed. Max 10 keys after the merge. Values must be strings, numbers, booleans, or arrays of scalars.
 
         idempotency_key : typing.Optional[str]
 
@@ -750,3 +865,112 @@ class AsyncEpisodeClient:
             request_options=request_options,
         )
         return _response.data
+
+    async def get_debug_logs(
+        self, graph_uuid: str, episode_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> EpisodeDebugLog:
+        """
+        Returns the ingestion workflow log of an episode. The log exists only when debug logging was enabled for the project when the episode was ingested (see `debug_log.enable`). The log holds episode content, so an API key with an ABAC policy needs an explicit grant of this action; the `readonly` macro does not grant it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        episode_uuid : str
+            Episode UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EpisodeDebugLog
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.episode.get_debug_logs(
+                graph_uuid="graph_uuid",
+                episode_uuid="episode_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_debug_logs(graph_uuid, episode_uuid, request_options=request_options)
+        return _response.data
+
+    async def list_ingestion_traces(
+        self,
+        graph_uuid: str,
+        episode_uuid: str,
+        *,
+        limit: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[IngestionTrace, IngestionTracePage]:
+        """
+        Returns the ingestion traces of an episode, oldest first. Each trace records the input and the output of one ingestion step, with an explanation on each output entry that has one. Traces exist only when ingestion tracing was enabled for the project when the episode was ingested (see `debug_log.enable`). An episode with no traces returns a page with an empty `items` array. Traces hold episode content, prompt input, and model output, so an API key with an ABAC policy needs an explicit grant of this action; the `readonly` macro does not grant it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        episode_uuid : str
+            Episode UUID
+
+        limit : typing.Optional[int]
+            Page size
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[IngestionTrace, IngestionTracePage]
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            response = await client.graph.episode.list_ingestion_traces(
+                graph_uuid="graph_uuid",
+                episode_uuid="episode_uuid",
+            )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
+
+
+        asyncio.run(main())
+        """
+        return await self._raw_client.list_ingestion_traces(
+            graph_uuid, episode_uuid, limit=limit, cursor=cursor, request_options=request_options
+        )

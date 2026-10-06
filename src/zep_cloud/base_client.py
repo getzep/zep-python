@@ -12,13 +12,16 @@ from .core.logging import LogConfig, Logger
 from .environment import ZepEnvironment
 
 if typing.TYPE_CHECKING:
+    from .agent.client import AgentClient, AsyncAgentClient
     from .batch.client import AsyncBatchClient, BatchClient
     from .context.client import AsyncContextClient, ContextClient
+    from .debug_log.client import AsyncDebugLogClient, DebugLogClient
     from .graph.client import AsyncGraphClient, GraphClient
     from .lookup.client import AsyncLookupClient, LookupClient
     from .project.client import AsyncProjectClient, ProjectClient
     from .task.client import AsyncTaskClient, TaskClient
     from .thread.client import AsyncThreadClient, ThreadClient
+    from .trace_connection.client import AsyncTraceConnectionClient, TraceConnectionClient
     from .user.client import AsyncUserClient, UserClient
     from .user_group.client import AsyncUserGroupClient, UserGroupClient
 
@@ -48,6 +51,15 @@ class BaseClient:
     timeout : typing.Optional[float]
         The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
+    max_retries : typing.Optional[int]
+        The default maximum number of retries for failed requests. Defaults to 2. Per-request `max_retries` in `request_options` takes precedence over this value.
+
+    stream_reconnection_enabled : typing.Optional[bool]
+        Whether to automatically reconnect on stream disconnection for resumable streaming endpoints. Defaults to True. Per-request `stream_reconnection_enabled` in `request_options` takes precedence over this value.
+
+    max_stream_reconnection_attempts : typing.Optional[int]
+        The maximum number of reconnection attempts for resumable streaming endpoints. Defaults to no limit. Per-request `max_stream_reconnection_attempts` in `request_options` takes precedence over this value.
+
     follow_redirects : typing.Optional[bool]
         Whether the default httpx client follows redirects or not, this is irrelevant if a custom httpx client is passed in.
 
@@ -71,16 +83,19 @@ class BaseClient:
         *,
         base_url: typing.Optional[str] = None,
         environment: ZepEnvironment = ZepEnvironment.DEFAULT,
-        api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
+        api_key: typing.Optional[str] = None,
         headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
+        max_retries: typing.Optional[int] = None,
+        stream_reconnection_enabled: typing.Optional[bool] = None,
+        max_stream_reconnection_attempts: typing.Optional[int] = None,
         follow_redirects: typing.Optional[bool] = True,
         httpx_client: typing.Optional[httpx.Client] = None,
         logging: typing.Optional[typing.Union[LogConfig, Logger]] = None,
     ):
-        _defaulted_timeout = (
-            timeout if timeout is not None else 60 if httpx_client is None else httpx_client.timeout.read
-        )
+        _defaulted_timeout = timeout if timeout is not None else 60 if httpx_client is None else None
+        _defaulted_max_retries = max_retries if max_retries is not None else 2
+        api_key = api_key if api_key is not None else os.getenv("ZEP_API_KEY")
         if api_key is None:
             raise ApiError(body="The client must be instantiated be either passing in api_key or setting ZEP_API_KEY")
         self._client_wrapper = SyncClientWrapper(
@@ -93,17 +108,31 @@ class BaseClient:
             if follow_redirects is not None
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
+            max_retries=_defaulted_max_retries,
+            stream_reconnection_enabled=stream_reconnection_enabled,
+            max_stream_reconnection_attempts=max_stream_reconnection_attempts,
             logging=logging,
         )
+        self._agent: typing.Optional[AgentClient] = None
         self._batch: typing.Optional[BatchClient] = None
         self._context: typing.Optional[ContextClient] = None
+        self._debug_log: typing.Optional[DebugLogClient] = None
         self._graph: typing.Optional[GraphClient] = None
         self._lookup: typing.Optional[LookupClient] = None
         self._project: typing.Optional[ProjectClient] = None
         self._task: typing.Optional[TaskClient] = None
         self._thread: typing.Optional[ThreadClient] = None
+        self._trace_connection: typing.Optional[TraceConnectionClient] = None
         self._user_group: typing.Optional[UserGroupClient] = None
         self._user: typing.Optional[UserClient] = None
+
+    @property
+    def agent(self):
+        if self._agent is None:
+            from .agent.client import AgentClient  # noqa: E402
+
+            self._agent = AgentClient(client_wrapper=self._client_wrapper)
+        return self._agent
 
     @property
     def batch(self):
@@ -120,6 +149,14 @@ class BaseClient:
 
             self._context = ContextClient(client_wrapper=self._client_wrapper)
         return self._context
+
+    @property
+    def debug_log(self):
+        if self._debug_log is None:
+            from .debug_log.client import DebugLogClient  # noqa: E402
+
+            self._debug_log = DebugLogClient(client_wrapper=self._client_wrapper)
+        return self._debug_log
 
     @property
     def graph(self):
@@ -162,6 +199,14 @@ class BaseClient:
         return self._thread
 
     @property
+    def trace_connection(self):
+        if self._trace_connection is None:
+            from .trace_connection.client import TraceConnectionClient  # noqa: E402
+
+            self._trace_connection = TraceConnectionClient(client_wrapper=self._client_wrapper)
+        return self._trace_connection
+
+    @property
     def user_group(self):
         if self._user_group is None:
             from .user_group.client import UserGroupClient  # noqa: E402
@@ -176,6 +221,24 @@ class BaseClient:
 
             self._user = UserClient(client_wrapper=self._client_wrapper)
         return self._user
+
+
+def _make_default_async_client(
+    timeout: typing.Optional[float],
+    follow_redirects: typing.Optional[bool],
+) -> httpx.AsyncClient:
+    try:
+        import httpx_aiohttp  # type: ignore[import-not-found]
+    except ImportError:
+        pass
+    else:
+        if follow_redirects is not None:
+            return httpx_aiohttp.HttpxAiohttpClient(timeout=timeout, follow_redirects=follow_redirects)
+        return httpx_aiohttp.HttpxAiohttpClient(timeout=timeout)
+
+    if follow_redirects is not None:
+        return httpx.AsyncClient(timeout=timeout, follow_redirects=follow_redirects)
+    return httpx.AsyncClient(timeout=timeout)
 
 
 class AsyncBaseClient:
@@ -203,6 +266,15 @@ class AsyncBaseClient:
     timeout : typing.Optional[float]
         The timeout to be used, in seconds, for requests. By default the timeout is 60 seconds, unless a custom httpx client is used, in which case this default is not enforced.
 
+    max_retries : typing.Optional[int]
+        The default maximum number of retries for failed requests. Defaults to 2. Per-request `max_retries` in `request_options` takes precedence over this value.
+
+    stream_reconnection_enabled : typing.Optional[bool]
+        Whether to automatically reconnect on stream disconnection for resumable streaming endpoints. Defaults to True. Per-request `stream_reconnection_enabled` in `request_options` takes precedence over this value.
+
+    max_stream_reconnection_attempts : typing.Optional[int]
+        The maximum number of reconnection attempts for resumable streaming endpoints. Defaults to no limit. Per-request `max_stream_reconnection_attempts` in `request_options` takes precedence over this value.
+
     follow_redirects : typing.Optional[bool]
         Whether the default httpx client follows redirects or not, this is irrelevant if a custom httpx client is passed in.
 
@@ -226,16 +298,19 @@ class AsyncBaseClient:
         *,
         base_url: typing.Optional[str] = None,
         environment: ZepEnvironment = ZepEnvironment.DEFAULT,
-        api_key: typing.Optional[str] = os.getenv("ZEP_API_KEY"),
+        api_key: typing.Optional[str] = None,
         headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
+        max_retries: typing.Optional[int] = None,
+        stream_reconnection_enabled: typing.Optional[bool] = None,
+        max_stream_reconnection_attempts: typing.Optional[int] = None,
         follow_redirects: typing.Optional[bool] = True,
         httpx_client: typing.Optional[httpx.AsyncClient] = None,
         logging: typing.Optional[typing.Union[LogConfig, Logger]] = None,
     ):
-        _defaulted_timeout = (
-            timeout if timeout is not None else 60 if httpx_client is None else httpx_client.timeout.read
-        )
+        _defaulted_timeout = timeout if timeout is not None else 60 if httpx_client is None else None
+        _defaulted_max_retries = max_retries if max_retries is not None else 2
+        api_key = api_key if api_key is not None else os.getenv("ZEP_API_KEY")
         if api_key is None:
             raise ApiError(body="The client must be instantiated be either passing in api_key or setting ZEP_API_KEY")
         self._client_wrapper = AsyncClientWrapper(
@@ -244,21 +319,33 @@ class AsyncBaseClient:
             headers=headers,
             httpx_client=httpx_client
             if httpx_client is not None
-            else httpx.AsyncClient(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
-            if follow_redirects is not None
-            else httpx.AsyncClient(timeout=_defaulted_timeout),
+            else _make_default_async_client(timeout=_defaulted_timeout, follow_redirects=follow_redirects),
             timeout=_defaulted_timeout,
+            max_retries=_defaulted_max_retries,
+            stream_reconnection_enabled=stream_reconnection_enabled,
+            max_stream_reconnection_attempts=max_stream_reconnection_attempts,
             logging=logging,
         )
+        self._agent: typing.Optional[AsyncAgentClient] = None
         self._batch: typing.Optional[AsyncBatchClient] = None
         self._context: typing.Optional[AsyncContextClient] = None
+        self._debug_log: typing.Optional[AsyncDebugLogClient] = None
         self._graph: typing.Optional[AsyncGraphClient] = None
         self._lookup: typing.Optional[AsyncLookupClient] = None
         self._project: typing.Optional[AsyncProjectClient] = None
         self._task: typing.Optional[AsyncTaskClient] = None
         self._thread: typing.Optional[AsyncThreadClient] = None
+        self._trace_connection: typing.Optional[AsyncTraceConnectionClient] = None
         self._user_group: typing.Optional[AsyncUserGroupClient] = None
         self._user: typing.Optional[AsyncUserClient] = None
+
+    @property
+    def agent(self):
+        if self._agent is None:
+            from .agent.client import AsyncAgentClient  # noqa: E402
+
+            self._agent = AsyncAgentClient(client_wrapper=self._client_wrapper)
+        return self._agent
 
     @property
     def batch(self):
@@ -275,6 +362,14 @@ class AsyncBaseClient:
 
             self._context = AsyncContextClient(client_wrapper=self._client_wrapper)
         return self._context
+
+    @property
+    def debug_log(self):
+        if self._debug_log is None:
+            from .debug_log.client import AsyncDebugLogClient  # noqa: E402
+
+            self._debug_log = AsyncDebugLogClient(client_wrapper=self._client_wrapper)
+        return self._debug_log
 
     @property
     def graph(self):
@@ -315,6 +410,14 @@ class AsyncBaseClient:
 
             self._thread = AsyncThreadClient(client_wrapper=self._client_wrapper)
         return self._thread
+
+    @property
+    def trace_connection(self):
+        if self._trace_connection is None:
+            from .trace_connection.client import AsyncTraceConnectionClient  # noqa: E402
+
+            self._trace_connection = AsyncTraceConnectionClient(client_wrapper=self._client_wrapper)
+        return self._trace_connection
 
     @property
     def user_group(self):

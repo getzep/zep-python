@@ -6,6 +6,7 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
+from ..core.idempotency import generate_idempotency_key
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
@@ -30,7 +31,6 @@ class RawLookupClient:
         graphs: typing.Optional[typing.Sequence[str]] = OMIT,
         threads: typing.Optional[typing.Sequence[str]] = OMIT,
         users: typing.Optional[typing.Sequence[str]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[LookupBatchResponse]:
         """
@@ -44,8 +44,6 @@ class RawLookupClient:
 
         users : typing.Optional[typing.Sequence[str]]
             Developer-assigned user IDs to resolve to UUIDs.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -65,7 +63,7 @@ class RawLookupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -137,7 +135,6 @@ class AsyncRawLookupClient:
         graphs: typing.Optional[typing.Sequence[str]] = OMIT,
         threads: typing.Optional[typing.Sequence[str]] = OMIT,
         users: typing.Optional[typing.Sequence[str]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[LookupBatchResponse]:
         """
@@ -151,8 +148,6 @@ class AsyncRawLookupClient:
 
         users : typing.Optional[typing.Sequence[str]]
             Developer-assigned user IDs to resolve to UUIDs.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -172,7 +167,7 @@ class AsyncRawLookupClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,

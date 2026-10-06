@@ -62,6 +62,9 @@ class Observation(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The unique identifier of the observation, assigned by Zep."),
     ] = None
+    """
+    The unique identifier of the observation, assigned by Zep.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

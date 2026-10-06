@@ -21,7 +21,7 @@ class EdgeNodeRef(UniversalBaseModel):
 
     name: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The name of the node to create or match.
+    The name of the node to create, or to match when deduplication is enabled.
     """
 
     summary: typing.Optional[str] = pydantic.Field(default=None)
@@ -34,6 +34,9 @@ class EdgeNodeRef(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The unique identifier of an existing node to attach the edge to."),
     ] = None
+    """
+    The unique identifier of an existing node to attach the edge to.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -14,7 +14,11 @@ from ...types.node_input import NodeInput
 from ...types.node_page import NodePage
 from ...types.search_filters import SearchFilters
 from .raw_client import AsyncRawNodeClient, RawNodeClient
-from .types.v4neighbors_request_direction import V4NeighborsRequestDirection
+from .types.neighbors_request_direction import NeighborsRequestDirection
+from .types.node_list_neighbors_request_order import NodeListNeighborsRequestOrder
+from .types.node_list_neighbors_request_order_by import NodeListNeighborsRequestOrderBy
+from .types.node_list_request_order import NodeListRequestOrder
+from .types.node_list_request_order_by import NodeListRequestOrderBy
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -89,8 +93,9 @@ class NodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[NodeListRequestOrderBy] = None,
+        order: typing.Optional[NodeListRequestOrder] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Node, NodePage]:
         """
@@ -105,10 +110,14 @@ class NodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[NodeListRequestOrderBy]
+            Sort key: uuid (default) or degree
+
+        order : typing.Optional[NodeListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -127,8 +136,6 @@ class NodeClient:
         )
         response = client.graph.node.list(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -140,8 +147,9 @@ class NodeClient:
             graph_uuid,
             limit=limit,
             cursor=cursor,
+            order_by=order_by,
+            order=order,
             filters=filters,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -292,9 +300,10 @@ class NodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        direction: typing.Optional[V4NeighborsRequestDirection] = OMIT,
+        order_by: typing.Optional[NodeListNeighborsRequestOrderBy] = None,
+        order: typing.Optional[NodeListNeighborsRequestOrder] = None,
+        direction: typing.Optional[NeighborsRequestDirection] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[NeighborEntry, NeighborPage]:
         """
@@ -312,13 +321,17 @@ class NodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        direction : typing.Optional[V4NeighborsRequestDirection]
+        order_by : typing.Optional[NodeListNeighborsRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[NodeListNeighborsRequestOrder]
+            Sort direction: asc or desc
+
+        direction : typing.Optional[NeighborsRequestDirection]
             The edge orientation to follow from the node: in, out, or both.
 
         filters : typing.Optional[SearchFilters]
             Filters constraining the connecting edges and the neighbor nodes.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -338,8 +351,6 @@ class NodeClient:
         response = client.graph.node.list_neighbors(
             graph_uuid="graph_uuid",
             node_uuid="node_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -352,9 +363,10 @@ class NodeClient:
             node_uuid,
             limit=limit,
             cursor=cursor,
+            order_by=order_by,
+            order=order,
             direction=direction,
             filters=filters,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -436,8 +448,9 @@ class AsyncNodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[NodeListRequestOrderBy] = None,
+        order: typing.Optional[NodeListRequestOrder] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Node, NodePage]:
         """
@@ -452,10 +465,14 @@ class AsyncNodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[NodeListRequestOrderBy]
+            Sort key: uuid (default) or degree
+
+        order : typing.Optional[NodeListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -479,8 +496,6 @@ class AsyncNodeClient:
         async def main() -> None:
             response = await client.graph.node.list(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -496,8 +511,9 @@ class AsyncNodeClient:
             graph_uuid,
             limit=limit,
             cursor=cursor,
+            order_by=order_by,
+            order=order,
             filters=filters,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )
 
@@ -674,9 +690,10 @@ class AsyncNodeClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        direction: typing.Optional[V4NeighborsRequestDirection] = OMIT,
+        order_by: typing.Optional[NodeListNeighborsRequestOrderBy] = None,
+        order: typing.Optional[NodeListNeighborsRequestOrder] = None,
+        direction: typing.Optional[NeighborsRequestDirection] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[NeighborEntry, NeighborPage]:
         """
@@ -694,13 +711,17 @@ class AsyncNodeClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        direction : typing.Optional[V4NeighborsRequestDirection]
+        order_by : typing.Optional[NodeListNeighborsRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[NodeListNeighborsRequestOrder]
+            Sort direction: asc or desc
+
+        direction : typing.Optional[NeighborsRequestDirection]
             The edge orientation to follow from the node: in, out, or both.
 
         filters : typing.Optional[SearchFilters]
             Filters constraining the connecting edges and the neighbor nodes.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -725,8 +746,6 @@ class AsyncNodeClient:
             response = await client.graph.node.list_neighbors(
                 graph_uuid="graph_uuid",
                 node_uuid="node_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -743,8 +762,9 @@ class AsyncNodeClient:
             node_uuid,
             limit=limit,
             cursor=cursor,
+            order_by=order_by,
+            order=order,
             direction=direction,
             filters=filters,
-            idempotency_key=idempotency_key,
             request_options=request_options,
         )

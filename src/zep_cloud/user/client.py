@@ -5,6 +5,7 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.request_options import RequestOptions
+from ..types.graph_content_policy_request import GraphContentPolicyRequest
 from ..types.node import Node
 from ..types.user import User
 from ..types.user_delete_result import UserDeleteResult
@@ -12,6 +13,8 @@ from ..types.user_instruction import UserInstruction
 from ..types.user_page import UserPage
 from ..types.user_summary_instructions import UserSummaryInstructions
 from .raw_client import AsyncRawUserClient, RawUserClient
+from .types.user_list_request_order import UserListRequestOrder
+from .types.user_list_request_order_by import UserListRequestOrderBy
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -35,19 +38,24 @@ class UserClient:
     def create(
         self,
         *,
+        content_policy: typing.Optional[GraphContentPolicyRequest] = OMIT,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
         Parameters
         ----------
+        content_policy : typing.Optional[GraphContentPolicyRequest]
+            Content policy additions for the user's graph. The graph binds the
+            current project content policy plus these additions, and the binding
+            does not change after creation.
+
         disable_default_ontology : typing.Optional[bool]
             When true, disables the default ontology for the user's graph.
 
@@ -65,9 +73,6 @@ class UserClient:
 
         time_zone : typing.Optional[str]
             The user's IANA time zone.
-
-        user_id : typing.Optional[str]
-            An optional developer-assigned identifier for the user.
 
         idempotency_key : typing.Optional[str]
 
@@ -89,13 +94,13 @@ class UserClient:
         client.user.create()
         """
         _response = self._raw_client.create(
+            content_policy=content_policy,
             disable_default_ontology=disable_default_ontology,
             email=email,
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
             time_zone=time_zone,
-            user_id=user_id,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
@@ -106,10 +111,9 @@ class UserClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[UserListRequestOrderBy] = None,
+        order: typing.Optional[UserListRequestOrder] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[User, UserPage]:
         """
@@ -121,16 +125,14 @@ class UserClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[UserListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[UserListRequestOrder]
             asc or desc
 
         search : typing.Optional[str]
             Filters results to users whose user ID, email, or name contains this text.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -147,12 +149,7 @@ class UserClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        response = client.user.list(
-            limit=1,
-            cursor="cursor",
-            order_by="order_by",
-            order="order",
-        )
+        response = client.user.list()
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
@@ -160,13 +157,7 @@ class UserClient:
             yield page
         """
         return self._raw_client.list(
-            limit=limit,
-            cursor=cursor,
-            order_by=order_by,
-            order=order,
-            search=search,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            limit=limit, cursor=cursor, order_by=order_by, order=order, search=search, request_options=request_options
         )
 
     def lookup(
@@ -175,7 +166,6 @@ class UserClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -192,8 +182,6 @@ class UserClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -213,11 +201,7 @@ class UserClient:
         client.user.lookup()
         """
         _response = self._raw_client.lookup(
-            graph_id=graph_id,
-            thread_id=thread_id,
-            user_id=user_id,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_id=graph_id, thread_id=thread_id, user_id=user_id, request_options=request_options
         )
         return _response.data
 
@@ -490,19 +474,24 @@ class AsyncUserClient:
     async def create(
         self,
         *,
+        content_policy: typing.Optional[GraphContentPolicyRequest] = OMIT,
         disable_default_ontology: typing.Optional[bool] = OMIT,
         email: typing.Optional[str] = OMIT,
         first_name: typing.Optional[str] = OMIT,
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
-        user_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
         Parameters
         ----------
+        content_policy : typing.Optional[GraphContentPolicyRequest]
+            Content policy additions for the user's graph. The graph binds the
+            current project content policy plus these additions, and the binding
+            does not change after creation.
+
         disable_default_ontology : typing.Optional[bool]
             When true, disables the default ontology for the user's graph.
 
@@ -520,9 +509,6 @@ class AsyncUserClient:
 
         time_zone : typing.Optional[str]
             The user's IANA time zone.
-
-        user_id : typing.Optional[str]
-            An optional developer-assigned identifier for the user.
 
         idempotency_key : typing.Optional[str]
 
@@ -552,13 +538,13 @@ class AsyncUserClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
+            content_policy=content_policy,
             disable_default_ontology=disable_default_ontology,
             email=email,
             first_name=first_name,
             last_name=last_name,
             metadata=metadata,
             time_zone=time_zone,
-            user_id=user_id,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
@@ -569,10 +555,9 @@ class AsyncUserClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        order_by: typing.Optional[str] = None,
-        order: typing.Optional[str] = None,
+        order_by: typing.Optional[UserListRequestOrderBy] = None,
+        order: typing.Optional[UserListRequestOrder] = None,
         search: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[User, UserPage]:
         """
@@ -584,16 +569,14 @@ class AsyncUserClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        order_by : typing.Optional[str]
+        order_by : typing.Optional[UserListRequestOrderBy]
             Sort field
 
-        order : typing.Optional[str]
+        order : typing.Optional[UserListRequestOrder]
             asc or desc
 
         search : typing.Optional[str]
             Filters results to users whose user ID, email, or name contains this text.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -615,12 +598,7 @@ class AsyncUserClient:
 
 
         async def main() -> None:
-            response = await client.user.list(
-                limit=1,
-                cursor="cursor",
-                order_by="order_by",
-                order="order",
-            )
+            response = await client.user.list()
             async for item in response:
                 yield item
 
@@ -632,13 +610,7 @@ class AsyncUserClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            limit=limit,
-            cursor=cursor,
-            order_by=order_by,
-            order=order,
-            search=search,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            limit=limit, cursor=cursor, order_by=order_by, order=order, search=search, request_options=request_options
         )
 
     async def lookup(
@@ -647,7 +619,6 @@ class AsyncUserClient:
         graph_id: typing.Optional[str] = OMIT,
         thread_id: typing.Optional[str] = OMIT,
         user_id: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
         """
@@ -664,8 +635,6 @@ class AsyncUserClient:
         user_id : typing.Optional[str]
             The developer-assigned user ID to resolve to a UUID. Mutually exclusive
             with thread_id and graph_id.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -693,11 +662,7 @@ class AsyncUserClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.lookup(
-            graph_id=graph_id,
-            thread_id=thread_id,
-            user_id=user_id,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_id=graph_id, thread_id=thread_id, user_id=user_id, request_options=request_options
         )
         return _response.data
 

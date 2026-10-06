@@ -5,7 +5,8 @@ from json.decoder import JSONDecodeError
 
 from ...core.api_error import ApiError as core_api_error_ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from ...core.jsonable_encoder import jsonable_encoder
+from ...core.idempotency import generate_idempotency_key
+from ...core.jsonable_encoder import encode_path_param
 from ...core.pagination import AsyncPager, SyncPager
 from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
@@ -35,7 +36,6 @@ class RawThreadSummaryClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ThreadSummary, ThreadSummaryPage]:
         """
@@ -53,8 +53,6 @@ class RawThreadSummaryClient:
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -64,7 +62,7 @@ class RawThreadSummaryClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/thread-summaries/list",
+            f"graphs/{encode_path_param(graph_uuid)}/thread-summaries/list",
             method="POST",
             params={
                 "limit": limit,
@@ -75,7 +73,7 @@ class RawThreadSummaryClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -97,7 +95,6 @@ class RawThreadSummaryClient:
                     limit=limit,
                     cursor=_parsed_next,
                     filters=filters,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -181,7 +178,6 @@ class AsyncRawThreadSummaryClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ThreadSummary, ThreadSummaryPage]:
         """
@@ -199,8 +195,6 @@ class AsyncRawThreadSummaryClient:
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
 
-        idempotency_key : typing.Optional[str]
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -210,7 +204,7 @@ class AsyncRawThreadSummaryClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{jsonable_encoder(graph_uuid)}/thread-summaries/list",
+            f"graphs/{encode_path_param(graph_uuid)}/thread-summaries/list",
             method="POST",
             params={
                 "limit": limit,
@@ -221,7 +215,7 @@ class AsyncRawThreadSummaryClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -245,7 +239,6 @@ class AsyncRawThreadSummaryClient:
                         limit=limit,
                         cursor=_parsed_next,
                         filters=filters,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 

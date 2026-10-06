@@ -35,7 +35,6 @@ class ObservationClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Observation, ObservationPage]:
         """
@@ -52,8 +51,6 @@ class ObservationClient:
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -72,8 +69,6 @@ class ObservationClient:
         )
         response = client.graph.observation.list(
             graph_uuid="graph_uuid",
-            limit=1,
-            cursor="cursor",
         )
         for item in response:
             yield item
@@ -82,12 +77,7 @@ class ObservationClient:
             yield page
         """
         return self._raw_client.list(
-            graph_uuid,
-            limit=limit,
-            cursor=cursor,
-            filters=filters,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
         )
 
     def get(
@@ -148,7 +138,6 @@ class AsyncObservationClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Observation, ObservationPage]:
         """
@@ -165,8 +154,6 @@ class AsyncObservationClient:
 
         filters : typing.Optional[typing.Dict[str, typing.Any]]
             Filters constraining which items are returned.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -190,8 +177,6 @@ class AsyncObservationClient:
         async def main() -> None:
             response = await client.graph.observation.list(
                 graph_uuid="graph_uuid",
-                limit=1,
-                cursor="cursor",
             )
             async for item in response:
                 yield item
@@ -204,12 +189,7 @@ class AsyncObservationClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            graph_uuid,
-            limit=limit,
-            cursor=cursor,
-            filters=filters,
-            idempotency_key=idempotency_key,
-            request_options=request_options,
+            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
         )
 
     async def get(

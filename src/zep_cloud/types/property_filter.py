@@ -4,25 +4,24 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .comparison_operator import ComparisonOperator
+from .property_filter_operator import PropertyFilterOperator
+from .property_filter_value import PropertyFilterValue
 
 
 class PropertyFilter(UniversalBaseModel):
-    comparison_operator: ComparisonOperator = pydantic.Field()
+    operator: typing.Optional[PropertyFilterOperator] = pydantic.Field(default=None)
     """
-    Comparison operator for property filter
-    """
-
-    property_name: str = pydantic.Field()
-    """
-    Property name to filter on
+    The lowercase comparison operator.
     """
 
-    property_value: typing.Optional[typing.Any] = pydantic.Field(default=None)
+    property_name: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Property value to match on. Accepted types: string, int, float64, bool, or nil.
-    Invalid types (e.g., arrays, objects) will be rejected by validation.
-    Must be non-nil for non-null operators (`=`, `<>`, `>`, `<`, `>=`, `<=`).
+    The property name to compare.
+    """
+
+    value: typing.Optional[PropertyFilterValue] = pydantic.Field(default=None)
+    """
+    The comparison value. Use an array for in. Its string members must be non-empty, contain no comma, and have no surrounding whitespace.
     """
 
     if IS_PYDANTIC_V2:

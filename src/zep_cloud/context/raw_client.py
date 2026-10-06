@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError as core_api_error_ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
-from ..core.jsonable_encoder import jsonable_encoder
+from ..core.idempotency import generate_idempotency_key
+from ..core.jsonable_encoder import encode_path_param
 from ..core.pagination import AsyncPager, SyncPager
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
@@ -64,7 +65,7 @@ class RawContextClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -142,7 +143,6 @@ class RawContextClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         name: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ContextTemplate, ContextTemplatePage]:
         """
@@ -156,8 +156,6 @@ class RawContextClient:
 
         name : typing.Optional[str]
             Filters results to the context template with this exact name.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -179,7 +177,7 @@ class RawContextClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -200,7 +198,6 @@ class RawContextClient:
                     limit=limit,
                     cursor=_parsed_next,
                     name=name,
-                    idempotency_key=idempotency_key,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -228,17 +225,6 @@ class RawContextClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -279,7 +265,7 @@ class RawContextClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"context-templates/{jsonable_encoder(template_uuid)}",
+            f"context-templates/{encode_path_param(template_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -371,7 +357,7 @@ class RawContextClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"context-templates/{jsonable_encoder(template_uuid)}",
+            f"context-templates/{encode_path_param(template_uuid)}",
             method="PUT",
             json={
                 "name": name,
@@ -379,7 +365,7 @@ class RawContextClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -474,10 +460,10 @@ class RawContextClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"context-templates/{jsonable_encoder(template_uuid)}",
+            f"context-templates/{encode_path_param(template_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )
@@ -582,7 +568,7 @@ class AsyncRawContextClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -660,7 +646,6 @@ class AsyncRawContextClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         name: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ContextTemplate, ContextTemplatePage]:
         """
@@ -674,8 +659,6 @@ class AsyncRawContextClient:
 
         name : typing.Optional[str]
             Filters results to the context template with this exact name.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -697,7 +680,7 @@ class AsyncRawContextClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -720,7 +703,6 @@ class AsyncRawContextClient:
                         limit=limit,
                         cursor=_parsed_next,
                         name=name,
-                        idempotency_key=idempotency_key,
                         request_options=request_options,
                     )
 
@@ -749,17 +731,6 @@ class AsyncRawContextClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -800,7 +771,7 @@ class AsyncRawContextClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"context-templates/{jsonable_encoder(template_uuid)}",
+            f"context-templates/{encode_path_param(template_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -892,7 +863,7 @@ class AsyncRawContextClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"context-templates/{jsonable_encoder(template_uuid)}",
+            f"context-templates/{encode_path_param(template_uuid)}",
             method="PUT",
             json={
                 "name": name,
@@ -900,7 +871,7 @@ class AsyncRawContextClient:
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -995,10 +966,10 @@ class AsyncRawContextClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"context-templates/{jsonable_encoder(template_uuid)}",
+            f"context-templates/{encode_path_param(template_uuid)}",
             method="DELETE",
             headers={
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
         )

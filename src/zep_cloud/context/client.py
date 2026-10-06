@@ -75,7 +75,6 @@ class ContextClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         name: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ContextTemplate, ContextTemplatePage]:
         """
@@ -89,8 +88,6 @@ class ContextClient:
 
         name : typing.Optional[str]
             Filters results to the context template with this exact name.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -107,19 +104,14 @@ class ContextClient:
         client = Zep(
             api_key="YOUR_API_KEY",
         )
-        response = client.context.list_templates(
-            limit=1,
-            cursor="cursor",
-        )
+        response = client.context.list_templates()
         for item in response:
             yield item
         # alternatively, you can paginate page-by-page
         for page in response.iter_pages():
             yield page
         """
-        return self._raw_client.list_templates(
-            limit=limit, cursor=cursor, name=name, idempotency_key=idempotency_key, request_options=request_options
-        )
+        return self._raw_client.list_templates(limit=limit, cursor=cursor, name=name, request_options=request_options)
 
     def get_template(
         self, template_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -312,7 +304,6 @@ class AsyncContextClient:
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         name: typing.Optional[str] = OMIT,
-        idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ContextTemplate, ContextTemplatePage]:
         """
@@ -326,8 +317,6 @@ class AsyncContextClient:
 
         name : typing.Optional[str]
             Filters results to the context template with this exact name.
-
-        idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -349,10 +338,7 @@ class AsyncContextClient:
 
 
         async def main() -> None:
-            response = await client.context.list_templates(
-                limit=1,
-                cursor="cursor",
-            )
+            response = await client.context.list_templates()
             async for item in response:
                 yield item
 
@@ -364,7 +350,7 @@ class AsyncContextClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_templates(
-            limit=limit, cursor=cursor, name=name, idempotency_key=idempotency_key, request_options=request_options
+            limit=limit, cursor=cursor, name=name, request_options=request_options
         )
 
     async def get_template(

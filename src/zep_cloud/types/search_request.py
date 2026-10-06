@@ -7,7 +7,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update_forward_refs
 from .search_filters import SearchFilters
-from .v4search_request_reranker import V4SearchRequestReranker
+from .search_request_reranker import SearchRequestReranker
 
 
 class SearchRequest(UniversalBaseModel):
@@ -38,7 +38,7 @@ class SearchRequest(UniversalBaseModel):
     The search query.
     """
 
-    reranker: typing.Optional[V4SearchRequestReranker] = pydantic.Field(default=None)
+    reranker: typing.Optional[SearchRequestReranker] = pydantic.Field(default=None)
     """
     The reranking strategy applied to retrieved results. Defaults to rrf.
     """

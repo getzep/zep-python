@@ -6,11 +6,15 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .v4graph_context_request_recency_bias import V4GraphContextRequestRecencyBias
-    from .v4subgraph_request_direction import V4SubgraphRequestDirection
+    from .graph_context_request_recency_bias import GraphContextRequestRecencyBias
+    from .graph_list_request_order import GraphListRequestOrder
+    from .graph_list_request_order_by import GraphListRequestOrderBy
+    from .subgraph_request_direction import SubgraphRequestDirection
 _dynamic_imports: typing.Dict[str, str] = {
-    "V4GraphContextRequestRecencyBias": ".v4graph_context_request_recency_bias",
-    "V4SubgraphRequestDirection": ".v4subgraph_request_direction",
+    "GraphContextRequestRecencyBias": ".graph_context_request_recency_bias",
+    "GraphListRequestOrder": ".graph_list_request_order",
+    "GraphListRequestOrderBy": ".graph_list_request_order_by",
+    "SubgraphRequestDirection": ".subgraph_request_direction",
 }
 
 
@@ -35,4 +39,9 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["V4GraphContextRequestRecencyBias", "V4SubgraphRequestDirection"]
+__all__ = [
+    "GraphContextRequestRecencyBias",
+    "GraphListRequestOrder",
+    "GraphListRequestOrderBy",
+    "SubgraphRequestDirection",
+]

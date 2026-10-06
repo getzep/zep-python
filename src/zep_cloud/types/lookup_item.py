@@ -29,6 +29,9 @@ class LookupItem(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The resource's unique identifier; present only when found is true."),
     ] = None
+    """
+    The resource's unique identifier; present only when found is true.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

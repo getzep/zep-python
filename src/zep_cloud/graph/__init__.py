@@ -6,18 +6,41 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .types import V4GraphContextRequestRecencyBias, V4SubgraphRequestDirection
-    from . import document_summary, edge, episode, node, observation, thread_summary
-    from .episode import V4AddEpisodeRequestType
-    from .node import V4NeighborsRequestDirection
+    from .types import (
+        GraphContextRequestRecencyBias,
+        GraphListRequestOrder,
+        GraphListRequestOrderBy,
+        SubgraphRequestDirection,
+    )
+    from . import document_summary, edge, episode, hyperedge, node, observation, thread_summary
+    from .episode import AddEpisodeRequestType, EpisodeListRequestOrder, EpisodeListRequestOrderBy
+    from .hyperedge import HyperedgeListRequestOrder, HyperedgeListRequestOrderBy
+    from .node import (
+        NeighborsRequestDirection,
+        NodeListNeighborsRequestOrder,
+        NodeListNeighborsRequestOrderBy,
+        NodeListRequestOrder,
+        NodeListRequestOrderBy,
+    )
 _dynamic_imports: typing.Dict[str, str] = {
-    "V4AddEpisodeRequestType": ".episode",
-    "V4GraphContextRequestRecencyBias": ".types",
-    "V4NeighborsRequestDirection": ".node",
-    "V4SubgraphRequestDirection": ".types",
+    "AddEpisodeRequestType": ".episode",
+    "EpisodeListRequestOrder": ".episode",
+    "EpisodeListRequestOrderBy": ".episode",
+    "GraphContextRequestRecencyBias": ".types",
+    "GraphListRequestOrder": ".types",
+    "GraphListRequestOrderBy": ".types",
+    "HyperedgeListRequestOrder": ".hyperedge",
+    "HyperedgeListRequestOrderBy": ".hyperedge",
+    "NeighborsRequestDirection": ".node",
+    "NodeListNeighborsRequestOrder": ".node",
+    "NodeListNeighborsRequestOrderBy": ".node",
+    "NodeListRequestOrder": ".node",
+    "NodeListRequestOrderBy": ".node",
+    "SubgraphRequestDirection": ".types",
     "document_summary": ".document_summary",
     "edge": ".edge",
     "episode": ".episode",
+    "hyperedge": ".hyperedge",
     "node": ".node",
     "observation": ".observation",
     "thread_summary": ".thread_summary",
@@ -46,13 +69,24 @@ def __dir__():
 
 
 __all__ = [
-    "V4AddEpisodeRequestType",
-    "V4GraphContextRequestRecencyBias",
-    "V4NeighborsRequestDirection",
-    "V4SubgraphRequestDirection",
+    "AddEpisodeRequestType",
+    "EpisodeListRequestOrder",
+    "EpisodeListRequestOrderBy",
+    "GraphContextRequestRecencyBias",
+    "GraphListRequestOrder",
+    "GraphListRequestOrderBy",
+    "HyperedgeListRequestOrder",
+    "HyperedgeListRequestOrderBy",
+    "NeighborsRequestDirection",
+    "NodeListNeighborsRequestOrder",
+    "NodeListNeighborsRequestOrderBy",
+    "NodeListRequestOrder",
+    "NodeListRequestOrderBy",
+    "SubgraphRequestDirection",
     "document_summary",
     "edge",
     "episode",
+    "hyperedge",
     "node",
     "observation",
     "thread_summary",

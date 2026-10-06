@@ -6,6 +6,7 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .episode_content_policy import EpisodeContentPolicy
 from .graph_data_type import GraphDataType
 from .role_type import RoleType
 
@@ -14,6 +15,12 @@ class Episode(UniversalBaseModel):
     content: typing.Optional[str] = pydantic.Field(default=None)
     """
     The raw content of the episode.
+    """
+
+    content_policy: typing.Optional[EpisodeContentPolicy] = pydantic.Field(default=None)
+    """
+    The content policy state of the episode, present only on a graph with a
+    bound content policy rule.
     """
 
     created_at: typing.Optional[str] = pydantic.Field(default=None)
@@ -88,6 +95,10 @@ class Episode(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The unique identifier of the episode."),
     ] = None
+    """
+    The unique identifier of the episode.
+    """
+
     valid_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     The time the episode's content became true or was observed, used for

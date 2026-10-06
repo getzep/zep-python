@@ -6,24 +6,24 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update_forward_refs
-from .episode_metadata_filter import EpisodeMetadataFilter
-from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
+from .metadata_filter import MetadataFilter
+from .metadata_filter_group_type import MetadataFilterGroupType
 
 
 class MetadataFilterGroup(UniversalBaseModel):
-    filters: typing.Optional[typing.List[EpisodeMetadataFilter]] = pydantic.Field(default=None)
+    filters: typing.Optional[typing.List[MetadataFilter]] = pydantic.Field(default=None)
     """
-    Leaf filters (predicates on metadata key-value pairs)
+    The metadata predicates in this group.
     """
 
     groups: typing.Optional[typing.List["MetadataFilterGroup"]] = pydantic.Field(default=None)
     """
-    Nested sub-groups for composing complex boolean expressions
+    The nested metadata groups in this group.
     """
 
-    type: GraphitiMetadataFilterGroupType = pydantic.Field()
+    type: typing.Optional[MetadataFilterGroupType] = pydantic.Field(default=None)
     """
-    Logical operator: "and" or "or"
+    The logical operator for this group.
     """
 
     if IS_PYDANTIC_V2:

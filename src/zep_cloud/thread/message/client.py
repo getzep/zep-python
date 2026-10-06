@@ -80,7 +80,7 @@ class MessageClient:
             Message UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to merge onto the message; a key set to null is removed.
+            Metadata to merge onto the message; a key set to null is removed. Max 10 keys after the merge. Values must be strings, numbers, booleans, or arrays of scalars.
 
         idempotency_key : typing.Optional[str]
 
@@ -191,7 +191,7 @@ class AsyncMessageClient:
             Message UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to merge onto the message; a key set to null is removed.
+            Metadata to merge onto the message; a key set to null is removed. Max 10 keys after the merge. Values must be strings, numbers, booleans, or arrays of scalars.
 
         idempotency_key : typing.Optional[str]
 

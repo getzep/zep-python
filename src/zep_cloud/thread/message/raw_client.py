@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ...core.api_error import ApiError as core_api_error_ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
-from ...core.jsonable_encoder import jsonable_encoder
+from ...core.idempotency import generate_idempotency_key
+from ...core.jsonable_encoder import encode_path_param
 from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
@@ -47,7 +48,7 @@ class RawMessageClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/messages/{jsonable_encoder(message_uuid)}",
+            f"threads/{encode_path_param(thread_uuid)}/messages/{encode_path_param(message_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -126,7 +127,7 @@ class RawMessageClient:
             Message UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to merge onto the message; a key set to null is removed.
+            Metadata to merge onto the message; a key set to null is removed. Max 10 keys after the merge. Values must be strings, numbers, booleans, or arrays of scalars.
 
         idempotency_key : typing.Optional[str]
 
@@ -139,14 +140,14 @@ class RawMessageClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/messages/{jsonable_encoder(message_uuid)}",
+            f"threads/{encode_path_param(thread_uuid)}/messages/{encode_path_param(message_uuid)}",
             method="PATCH",
             json={
                 "metadata": metadata,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,
@@ -244,7 +245,7 @@ class AsyncRawMessageClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/messages/{jsonable_encoder(message_uuid)}",
+            f"threads/{encode_path_param(thread_uuid)}/messages/{encode_path_param(message_uuid)}",
             method="GET",
             request_options=request_options,
         )
@@ -323,7 +324,7 @@ class AsyncRawMessageClient:
             Message UUID
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
-            Metadata to merge onto the message; a key set to null is removed.
+            Metadata to merge onto the message; a key set to null is removed. Max 10 keys after the merge. Values must be strings, numbers, booleans, or arrays of scalars.
 
         idempotency_key : typing.Optional[str]
 
@@ -336,14 +337,14 @@ class AsyncRawMessageClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"threads/{jsonable_encoder(thread_uuid)}/messages/{jsonable_encoder(message_uuid)}",
+            f"threads/{encode_path_param(thread_uuid)}/messages/{encode_path_param(message_uuid)}",
             method="PATCH",
             json={
                 "metadata": metadata,
             },
             headers={
                 "content-type": "application/json",
-                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else None,
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
             },
             request_options=request_options,
             omit=OMIT,

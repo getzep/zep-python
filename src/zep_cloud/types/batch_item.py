@@ -8,9 +8,16 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .batch_item_kind import BatchItemKind
 from .batch_item_status import BatchItemStatus
+from .episode_content_policy import EpisodeContentPolicy
 
 
 class BatchItem(UniversalBaseModel):
+    content_policy: typing.Optional[EpisodeContentPolicy] = pydantic.Field(default=None)
+    """
+    The content policy state of the item's episode, present only on a graph
+    with a bound content policy rule and only once the item is processed.
+    """
+
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     The time the item was appended to the batch.
@@ -58,6 +65,9 @@ class BatchItem(UniversalBaseModel):
         FieldMetadata(alias="uuid"),
         pydantic.Field(alias="uuid", description="The unique identifier of the batch item."),
     ] = None
+    """
+    The unique identifier of the batch item.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

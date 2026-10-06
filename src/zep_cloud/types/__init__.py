@@ -6,26 +6,127 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .add_edge_result import AddEdgeResult
+    from .add_agent_skill_use_outcome_request import AddAgentSkillUseOutcomeRequest
+    from .add_agent_skill_use_outcome_request_outcome import AddAgentSkillUseOutcomeRequestOutcome
+    from .add_edges_result import AddEdgesResult
     from .add_episode_result import AddEpisodeResult
+    from .add_hyperedge_edge_result import AddHyperedgeEdgeResult
+    from .add_hyperedge_result import AddHyperedgeResult
     from .add_message import AddMessage
     from .add_messages_result import AddMessagesResult
     from .add_nodes_result import AddNodesResult
     from .added_edge import AddedEdge
+    from .added_hyperedge import AddedHyperedge
+    from .added_hyperedge_edge import AddedHyperedgeEdge
     from .added_node import AddedNode
+    from .agent import Agent
+    from .agent_breaking_change import AgentBreakingChange
+    from .agent_context import AgentContext
+    from .agent_context_evidence_counts import AgentContextEvidenceCounts
+    from .agent_context_partial_source import AgentContextPartialSource
+    from .agent_context_resource import AgentContextResource
+    from .agent_context_skill_snapshot import AgentContextSkillSnapshot
+    from .agent_context_skipped_skill import AgentContextSkippedSkill
+    from .agent_delete_result import AgentDeleteResult
+    from .agent_learning_state import AgentLearningState
+    from .agent_literal_policy import AgentLiteralPolicy
+    from .agent_literal_policy_classes import AgentLiteralPolicyClasses
+    from .agent_literal_policy_values import AgentLiteralPolicyValues
+    from .agent_memory_evaluation_policy import AgentMemoryEvaluationPolicy
+    from .agent_memory_evaluation_requirement import AgentMemoryEvaluationRequirement
+    from .agent_memory_settings import AgentMemorySettings
+    from .agent_memory_settings_approval import AgentMemorySettingsApproval
+    from .agent_memory_settings_compilation_mode import AgentMemorySettingsCompilationMode
+    from .agent_page import AgentPage
+    from .agent_skill import AgentSkill
+    from .agent_skill_admission_decision import AgentSkillAdmissionDecision
+    from .agent_skill_candidate import AgentSkillCandidate
+    from .agent_skill_candidate_base_version import AgentSkillCandidateBaseVersion
+    from .agent_skill_candidate_evaluation import AgentSkillCandidateEvaluation
+    from .agent_skill_candidate_evidence import AgentSkillCandidateEvidence
+    from .agent_skill_candidate_review import AgentSkillCandidateReview
+    from .agent_skill_candidate_review_result import AgentSkillCandidateReviewResult
+    from .agent_skill_candidate_review_summary import AgentSkillCandidateReviewSummary
+    from .agent_skill_compilation_outcome import AgentSkillCompilationOutcome
+    from .agent_skill_compilation_outcome_rejection_class import AgentSkillCompilationOutcomeRejectionClass
+    from .agent_skill_evaluation import AgentSkillEvaluation
+    from .agent_skill_evidence import AgentSkillEvidence
+    from .agent_skill_publication_lineage import AgentSkillPublicationLineage
+    from .agent_skill_relationship import AgentSkillRelationship
+    from .agent_skill_search_hit import AgentSkillSearchHit
+    from .agent_skill_search_hit_maturity import AgentSkillSearchHitMaturity
+    from .agent_skill_search_response import AgentSkillSearchResponse
+    from .agent_skill_use import AgentSkillUse
+    from .agent_skill_use_outcome import AgentSkillUseOutcome
+    from .agent_skill_version import AgentSkillVersion
+    from .agent_skill_version_comparison import AgentSkillVersionComparison
+    from .agent_split_plan import AgentSplitPlan
+    from .agent_split_plan_destination import AgentSplitPlanDestination
+    from .agent_split_plan_destination_request import AgentSplitPlanDestinationRequest
+    from .agent_split_plan_skill_reference import AgentSplitPlanSkillReference
+    from .agent_split_plan_skill_selection_request import AgentSplitPlanSkillSelectionRequest
+    from .agent_split_plan_source import AgentSplitPlanSource
+    from .agent_status import AgentStatus
+    from .agent_trajectory import AgentTrajectory
+    from .agent_trajectory_close_verifier import AgentTrajectoryCloseVerifier
+    from .agent_trajectory_event import AgentTrajectoryEvent
+    from .agent_trajectory_event_context import AgentTrajectoryEventContext
+    from .agent_trajectory_event_page import AgentTrajectoryEventPage
+    from .agent_trajectory_event_processing_state import AgentTrajectoryEventProcessingState
+    from .agent_trajectory_event_source import AgentTrajectoryEventSource
+    from .agent_trajectory_event_source_copy_mode import AgentTrajectoryEventSourceCopyMode
+    from .agent_trajectory_event_source_retention_mode import AgentTrajectoryEventSourceRetentionMode
+    from .agent_trajectory_event_type import AgentTrajectoryEventType
+    from .agent_trajectory_finalization_result import AgentTrajectoryFinalizationResult
+    from .agent_trajectory_internal import AgentTrajectoryInternal
+    from .agent_trajectory_lifecycle import AgentTrajectoryLifecycle
+    from .agent_trajectory_outcome import AgentTrajectoryOutcome
+    from .agent_trajectory_page import AgentTrajectoryPage
+    from .agent_trajectory_processing_state import AgentTrajectoryProcessingState
+    from .agent_trajectory_resource_ref import AgentTrajectoryResourceRef
+    from .agent_trajectory_sequence_range import AgentTrajectorySequenceRange
+    from .agent_trajectory_source import AgentTrajectorySource
+    from .agent_trajectory_source_deletion_result import AgentTrajectorySourceDeletionResult
+    from .agent_trajectory_summary_creation_reason import AgentTrajectorySummaryCreationReason
+    from .agent_trajectory_summary_omission_reason import AgentTrajectorySummaryOmissionReason
+    from .agent_trajectory_summary_omitted_range import AgentTrajectorySummaryOmittedRange
+    from .agent_trajectory_summary_page import AgentTrajectorySummaryPage
+    from .agent_trajectory_summary_version import AgentTrajectorySummaryVersion
+    from .agent_trajectory_verification import AgentTrajectoryVerification
+    from .agent_verification_strength import AgentVerificationStrength
+    from .agent_verifier import AgentVerifier
+    from .agent_verifier_assertion_outcome import AgentVerifierAssertionOutcome
+    from .agent_verifier_evidence_invalidation_result import AgentVerifierEvidenceInvalidationResult
+    from .agent_verifier_principal import AgentVerifierPrincipal
+    from .agent_verifier_principal_binding import AgentVerifierPrincipalBinding
+    from .agent_verifier_principal_binding_input import AgentVerifierPrincipalBindingInput
+    from .agent_verifier_status import AgentVerifierStatus
     from .api_error import ApiError
     from .artifact_list_request import ArtifactListRequest
     from .async_result import AsyncResult
     from .batch import Batch
     from .batch_item import BatchItem
     from .batch_item_input import BatchItemInput
+    from .batch_item_input_data_type import BatchItemInputDataType
+    from .batch_item_input_role import BatchItemInputRole
+    from .batch_item_input_type import BatchItemInputType
     from .batch_item_kind import BatchItemKind
     from .batch_item_page import BatchItemPage
     from .batch_item_status import BatchItemStatus
     from .batch_items_response import BatchItemsResponse
     from .batch_page import BatchPage
+    from .clone_graph_request import CloneGraphRequest
     from .clone_graph_result import CloneGraphResult
-    from .comparison_operator import ComparisonOperator
+    from .content_policy import ContentPolicy
+    from .content_policy_category import ContentPolicyCategory
+    from .content_policy_category_request import ContentPolicyCategoryRequest
+    from .content_policy_event import ContentPolicyEvent
+    from .content_policy_event_artifact_kind import ContentPolicyEventArtifactKind
+    from .content_policy_event_drop_reason import ContentPolicyEventDropReason
+    from .content_policy_event_page import ContentPolicyEventPage
+    from .content_policy_revision_page import ContentPolicyRevisionPage
+    from .content_policy_rule import ContentPolicyRule
+    from .content_policy_rule_request import ContentPolicyRuleRequest
     from .context_edge import ContextEdge
     from .context_episode import ContextEpisode
     from .context_node import ContextNode
@@ -34,12 +135,23 @@ if typing.TYPE_CHECKING:
     from .context_template import ContextTemplate
     from .context_template_page import ContextTemplatePage
     from .context_thread_summary import ContextThreadSummary
+    from .create_agent_request import CreateAgentRequest
     from .create_context_template_request import CreateContextTemplateRequest
     from .custom_instruction import CustomInstruction
     from .date_filter import DateFilter
+    from .date_filter_field import DateFilterField
+    from .date_filter_group import DateFilterGroup
+    from .date_filter_operator import DateFilterOperator
+    from .date_filters import DateFilters
+    from .debug_log_entry import DebugLogEntry
+    from .debug_log_level import DebugLogLevel
+    from .debug_log_status import DebugLogStatus
+    from .debug_logging_enablement import DebugLoggingEnablement
+    from .delete_agent_trajectory_request import DeleteAgentTrajectoryRequest
     from .document_summary import DocumentSummary
     from .document_summary_page import DocumentSummaryPage
     from .edge import Edge
+    from .edge_input import EdgeInput
     from .edge_node_ref import EdgeNodeRef
     from .edge_page import EdgePage
     from .edge_source_target import EdgeSourceTarget
@@ -48,15 +160,37 @@ if typing.TYPE_CHECKING:
     from .entity_property_type import EntityPropertyType
     from .entity_type import EntityType
     from .episode import Episode
-    from .episode_metadata_filter import EpisodeMetadataFilter
+    from .episode_content_policy import EpisodeContentPolicy
+    from .episode_content_policy_status import EpisodeContentPolicyStatus
+    from .episode_debug_log import EpisodeDebugLog
     from .episode_page import EpisodePage
     from .error_body import ErrorBody
     from .graph import Graph
+    from .graph_content_policy import GraphContentPolicy
+    from .graph_content_policy_request import GraphContentPolicyRequest
     from .graph_context_response import GraphContextResponse
     from .graph_data_type import GraphDataType
     from .graph_delete_result import GraphDeleteResult
     from .graph_page import GraphPage
-    from .graphiti_metadata_filter_group_type import GraphitiMetadataFilterGroupType
+    from .hyperedge import Hyperedge
+    from .hyperedge_edge import HyperedgeEdge
+    from .hyperedge_input import HyperedgeInput
+    from .hyperedge_page import HyperedgePage
+    from .imported_trajectory_reference import ImportedTrajectoryReference
+    from .ingestion_trace import IngestionTrace
+    from .ingestion_trace_edge import IngestionTraceEdge
+    from .ingestion_trace_edge_invalidation import IngestionTraceEdgeInvalidation
+    from .ingestion_trace_edge_reference import IngestionTraceEdgeReference
+    from .ingestion_trace_entity_type import IngestionTraceEntityType
+    from .ingestion_trace_episode import IngestionTraceEpisode
+    from .ingestion_trace_input import IngestionTraceInput
+    from .ingestion_trace_node import IngestionTraceNode
+    from .ingestion_trace_node_duplicate import IngestionTraceNodeDuplicate
+    from .ingestion_trace_node_resolution import IngestionTraceNodeResolution
+    from .ingestion_trace_output import IngestionTraceOutput
+    from .ingestion_trace_page import IngestionTracePage
+    from .ingestion_trace_status import IngestionTraceStatus
+    from .ingestion_trace_step import IngestionTraceStep
     from .instructions import Instructions
     from .lookup_batch_response import LookupBatchResponse
     from .lookup_item import LookupItem
@@ -64,27 +198,60 @@ if typing.TYPE_CHECKING:
     from .membership_mutation_result import MembershipMutationResult
     from .message import Message
     from .message_page import MessagePage
+    from .metadata_filter import MetadataFilter
     from .metadata_filter_group import MetadataFilterGroup
+    from .metadata_filter_group_type import MetadataFilterGroupType
+    from .metadata_filter_operator import MetadataFilterOperator
+    from .metadata_filter_value import MetadataFilterValue
+    from .metadata_filter_value_three_item import MetadataFilterValueThreeItem
     from .mutate_members_request import MutateMembersRequest
     from .neighbor_entry import NeighborEntry
     from .neighbor_page import NeighborPage
     from .node import Node
     from .node_input import NodeInput
     from .node_page import NodePage
+    from .objective_mapping_rule import ObjectiveMappingRule
+    from .objective_mapping_rule_source import ObjectiveMappingRuleSource
     from .observation import Observation
     from .observation_page import ObservationPage
     from .observation_steering import ObservationSteering
     from .observation_type import ObservationType
     from .ontology import Ontology
+    from .outcome_mapping_rule import OutcomeMappingRule
+    from .outcome_mapping_rule_rule import OutcomeMappingRuleRule
+    from .pagev4agent_skill_candidate_review_summary import Pagev4AgentSkillCandidateReviewSummary
+    from .pagev4agent_skill_compilation_outcome import Pagev4AgentSkillCompilationOutcome
+    from .pagev4agent_skill_evidence import Pagev4AgentSkillEvidence
+    from .pagev4agent_skill_relationship import Pagev4AgentSkillRelationship
+    from .pagev4agent_skill_search_hit import Pagev4AgentSkillSearchHit
+    from .pagev4agent_skill_version import Pagev4AgentSkillVersion
+    from .pagev4agent_verifier import Pagev4AgentVerifier
     from .process_batch_result import ProcessBatchResult
     from .project import Project
     from .property_filter import PropertyFilter
+    from .property_filter_operator import PropertyFilterOperator
+    from .property_filter_value import PropertyFilterValue
+    from .property_filter_value_three_item import PropertyFilterValueThreeItem
     from .role_type import RoleType
     from .search_filters import SearchFilters
     from .search_list_request import SearchListRequest
     from .search_request import SearchRequest
+    from .search_request_reranker import SearchRequestReranker
+    from .skill_definition import SkillDefinition
+    from .skill_definition_section import SkillDefinitionSection
+    from .skill_failure import SkillFailure
+    from .skill_procedure_step import SkillProcedureStep
+    from .skill_relation import SkillRelation
+    from .skill_resource import SkillResource
+    from .source_span import SourceSpan
+    from .source_trace import SourceTrace
+    from .source_trace_page import SourceTracePage
+    from .source_trace_response import SourceTraceResponse
+    from .source_trace_summary import SourceTraceSummary
     from .subgraph_response import SubgraphResponse
     from .task import Task
+    from .task_family_mapping_rule import TaskFamilyMappingRule
+    from .task_family_mapping_rule_source import TaskFamilyMappingRuleSource
     from .task_page import TaskPage
     from .task_progress import TaskProgress
     from .thread import Thread
@@ -93,6 +260,32 @@ if typing.TYPE_CHECKING:
     from .thread_page import ThreadPage
     from .thread_summary import ThreadSummary
     from .thread_summary_page import ThreadSummaryPage
+    from .trace_connection import TraceConnection
+    from .trace_connection_page import TraceConnectionPage
+    from .trace_connection_settings import TraceConnectionSettings
+    from .trace_filter import TraceFilter
+    from .trace_preview import TracePreview
+    from .trace_provider_project import TraceProviderProject
+    from .trace_provider_project_page import TraceProviderProjectPage
+    from .trace_score_range import TraceScoreRange
+    from .trajectory_content_mapping import TrajectoryContentMapping
+    from .trajectory_import import TrajectoryImport
+    from .trajectory_import_page import TrajectoryImportPage
+    from .trajectory_import_pause_reason import TrajectoryImportPauseReason
+    from .trajectory_import_run import TrajectoryImportRun
+    from .trajectory_import_run_item import TrajectoryImportRunItem
+    from .trajectory_import_run_item_page import TrajectoryImportRunItemPage
+    from .trajectory_import_run_page import TrajectoryImportRunPage
+    from .trajectory_import_run_reference import TrajectoryImportRunReference
+    from .trajectory_import_run_reference_status import TrajectoryImportRunReferenceStatus
+    from .trajectory_import_run_reference_trigger import TrajectoryImportRunReferenceTrigger
+    from .trajectory_import_schedule import TrajectoryImportSchedule
+    from .trajectory_import_selection import TrajectoryImportSelection
+    from .trajectory_mapping import TrajectoryMapping
+    from .trajectory_mapping_include_outcomes_item import TrajectoryMappingIncludeOutcomesItem
+    from .trajectory_mapping_result import TrajectoryMappingResult
+    from .trajectory_mapping_result_outcome import TrajectoryMappingResultOutcome
+    from .trajectory_mapping_result_outcome_rule import TrajectoryMappingResultOutcomeRule
     from .user import User
     from .user_delete_result import UserDeleteResult
     from .user_group import UserGroup
@@ -100,31 +293,128 @@ if typing.TYPE_CHECKING:
     from .user_instruction import UserInstruction
     from .user_page import UserPage
     from .user_summary_instructions import UserSummaryInstructions
-    from .v4batch_item_input_data_type import V4BatchItemInputDataType
-    from .v4batch_item_input_role import V4BatchItemInputRole
-    from .v4batch_item_input_type import V4BatchItemInputType
-    from .v4search_request_reranker import V4SearchRequestReranker
 _dynamic_imports: typing.Dict[str, str] = {
-    "AddEdgeResult": ".add_edge_result",
+    "AddAgentSkillUseOutcomeRequest": ".add_agent_skill_use_outcome_request",
+    "AddAgentSkillUseOutcomeRequestOutcome": ".add_agent_skill_use_outcome_request_outcome",
+    "AddEdgesResult": ".add_edges_result",
     "AddEpisodeResult": ".add_episode_result",
+    "AddHyperedgeEdgeResult": ".add_hyperedge_edge_result",
+    "AddHyperedgeResult": ".add_hyperedge_result",
     "AddMessage": ".add_message",
     "AddMessagesResult": ".add_messages_result",
     "AddNodesResult": ".add_nodes_result",
     "AddedEdge": ".added_edge",
+    "AddedHyperedge": ".added_hyperedge",
+    "AddedHyperedgeEdge": ".added_hyperedge_edge",
     "AddedNode": ".added_node",
+    "Agent": ".agent",
+    "AgentBreakingChange": ".agent_breaking_change",
+    "AgentContext": ".agent_context",
+    "AgentContextEvidenceCounts": ".agent_context_evidence_counts",
+    "AgentContextPartialSource": ".agent_context_partial_source",
+    "AgentContextResource": ".agent_context_resource",
+    "AgentContextSkillSnapshot": ".agent_context_skill_snapshot",
+    "AgentContextSkippedSkill": ".agent_context_skipped_skill",
+    "AgentDeleteResult": ".agent_delete_result",
+    "AgentLearningState": ".agent_learning_state",
+    "AgentLiteralPolicy": ".agent_literal_policy",
+    "AgentLiteralPolicyClasses": ".agent_literal_policy_classes",
+    "AgentLiteralPolicyValues": ".agent_literal_policy_values",
+    "AgentMemoryEvaluationPolicy": ".agent_memory_evaluation_policy",
+    "AgentMemoryEvaluationRequirement": ".agent_memory_evaluation_requirement",
+    "AgentMemorySettings": ".agent_memory_settings",
+    "AgentMemorySettingsApproval": ".agent_memory_settings_approval",
+    "AgentMemorySettingsCompilationMode": ".agent_memory_settings_compilation_mode",
+    "AgentPage": ".agent_page",
+    "AgentSkill": ".agent_skill",
+    "AgentSkillAdmissionDecision": ".agent_skill_admission_decision",
+    "AgentSkillCandidate": ".agent_skill_candidate",
+    "AgentSkillCandidateBaseVersion": ".agent_skill_candidate_base_version",
+    "AgentSkillCandidateEvaluation": ".agent_skill_candidate_evaluation",
+    "AgentSkillCandidateEvidence": ".agent_skill_candidate_evidence",
+    "AgentSkillCandidateReview": ".agent_skill_candidate_review",
+    "AgentSkillCandidateReviewResult": ".agent_skill_candidate_review_result",
+    "AgentSkillCandidateReviewSummary": ".agent_skill_candidate_review_summary",
+    "AgentSkillCompilationOutcome": ".agent_skill_compilation_outcome",
+    "AgentSkillCompilationOutcomeRejectionClass": ".agent_skill_compilation_outcome_rejection_class",
+    "AgentSkillEvaluation": ".agent_skill_evaluation",
+    "AgentSkillEvidence": ".agent_skill_evidence",
+    "AgentSkillPublicationLineage": ".agent_skill_publication_lineage",
+    "AgentSkillRelationship": ".agent_skill_relationship",
+    "AgentSkillSearchHit": ".agent_skill_search_hit",
+    "AgentSkillSearchHitMaturity": ".agent_skill_search_hit_maturity",
+    "AgentSkillSearchResponse": ".agent_skill_search_response",
+    "AgentSkillUse": ".agent_skill_use",
+    "AgentSkillUseOutcome": ".agent_skill_use_outcome",
+    "AgentSkillVersion": ".agent_skill_version",
+    "AgentSkillVersionComparison": ".agent_skill_version_comparison",
+    "AgentSplitPlan": ".agent_split_plan",
+    "AgentSplitPlanDestination": ".agent_split_plan_destination",
+    "AgentSplitPlanDestinationRequest": ".agent_split_plan_destination_request",
+    "AgentSplitPlanSkillReference": ".agent_split_plan_skill_reference",
+    "AgentSplitPlanSkillSelectionRequest": ".agent_split_plan_skill_selection_request",
+    "AgentSplitPlanSource": ".agent_split_plan_source",
+    "AgentStatus": ".agent_status",
+    "AgentTrajectory": ".agent_trajectory",
+    "AgentTrajectoryCloseVerifier": ".agent_trajectory_close_verifier",
+    "AgentTrajectoryEvent": ".agent_trajectory_event",
+    "AgentTrajectoryEventContext": ".agent_trajectory_event_context",
+    "AgentTrajectoryEventPage": ".agent_trajectory_event_page",
+    "AgentTrajectoryEventProcessingState": ".agent_trajectory_event_processing_state",
+    "AgentTrajectoryEventSource": ".agent_trajectory_event_source",
+    "AgentTrajectoryEventSourceCopyMode": ".agent_trajectory_event_source_copy_mode",
+    "AgentTrajectoryEventSourceRetentionMode": ".agent_trajectory_event_source_retention_mode",
+    "AgentTrajectoryEventType": ".agent_trajectory_event_type",
+    "AgentTrajectoryFinalizationResult": ".agent_trajectory_finalization_result",
+    "AgentTrajectoryInternal": ".agent_trajectory_internal",
+    "AgentTrajectoryLifecycle": ".agent_trajectory_lifecycle",
+    "AgentTrajectoryOutcome": ".agent_trajectory_outcome",
+    "AgentTrajectoryPage": ".agent_trajectory_page",
+    "AgentTrajectoryProcessingState": ".agent_trajectory_processing_state",
+    "AgentTrajectoryResourceRef": ".agent_trajectory_resource_ref",
+    "AgentTrajectorySequenceRange": ".agent_trajectory_sequence_range",
+    "AgentTrajectorySource": ".agent_trajectory_source",
+    "AgentTrajectorySourceDeletionResult": ".agent_trajectory_source_deletion_result",
+    "AgentTrajectorySummaryCreationReason": ".agent_trajectory_summary_creation_reason",
+    "AgentTrajectorySummaryOmissionReason": ".agent_trajectory_summary_omission_reason",
+    "AgentTrajectorySummaryOmittedRange": ".agent_trajectory_summary_omitted_range",
+    "AgentTrajectorySummaryPage": ".agent_trajectory_summary_page",
+    "AgentTrajectorySummaryVersion": ".agent_trajectory_summary_version",
+    "AgentTrajectoryVerification": ".agent_trajectory_verification",
+    "AgentVerificationStrength": ".agent_verification_strength",
+    "AgentVerifier": ".agent_verifier",
+    "AgentVerifierAssertionOutcome": ".agent_verifier_assertion_outcome",
+    "AgentVerifierEvidenceInvalidationResult": ".agent_verifier_evidence_invalidation_result",
+    "AgentVerifierPrincipal": ".agent_verifier_principal",
+    "AgentVerifierPrincipalBinding": ".agent_verifier_principal_binding",
+    "AgentVerifierPrincipalBindingInput": ".agent_verifier_principal_binding_input",
+    "AgentVerifierStatus": ".agent_verifier_status",
     "ApiError": ".api_error",
     "ArtifactListRequest": ".artifact_list_request",
     "AsyncResult": ".async_result",
     "Batch": ".batch",
     "BatchItem": ".batch_item",
     "BatchItemInput": ".batch_item_input",
+    "BatchItemInputDataType": ".batch_item_input_data_type",
+    "BatchItemInputRole": ".batch_item_input_role",
+    "BatchItemInputType": ".batch_item_input_type",
     "BatchItemKind": ".batch_item_kind",
     "BatchItemPage": ".batch_item_page",
     "BatchItemStatus": ".batch_item_status",
     "BatchItemsResponse": ".batch_items_response",
     "BatchPage": ".batch_page",
+    "CloneGraphRequest": ".clone_graph_request",
     "CloneGraphResult": ".clone_graph_result",
-    "ComparisonOperator": ".comparison_operator",
+    "ContentPolicy": ".content_policy",
+    "ContentPolicyCategory": ".content_policy_category",
+    "ContentPolicyCategoryRequest": ".content_policy_category_request",
+    "ContentPolicyEvent": ".content_policy_event",
+    "ContentPolicyEventArtifactKind": ".content_policy_event_artifact_kind",
+    "ContentPolicyEventDropReason": ".content_policy_event_drop_reason",
+    "ContentPolicyEventPage": ".content_policy_event_page",
+    "ContentPolicyRevisionPage": ".content_policy_revision_page",
+    "ContentPolicyRule": ".content_policy_rule",
+    "ContentPolicyRuleRequest": ".content_policy_rule_request",
     "ContextEdge": ".context_edge",
     "ContextEpisode": ".context_episode",
     "ContextNode": ".context_node",
@@ -133,12 +423,23 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ContextTemplate": ".context_template",
     "ContextTemplatePage": ".context_template_page",
     "ContextThreadSummary": ".context_thread_summary",
+    "CreateAgentRequest": ".create_agent_request",
     "CreateContextTemplateRequest": ".create_context_template_request",
     "CustomInstruction": ".custom_instruction",
     "DateFilter": ".date_filter",
+    "DateFilterField": ".date_filter_field",
+    "DateFilterGroup": ".date_filter_group",
+    "DateFilterOperator": ".date_filter_operator",
+    "DateFilters": ".date_filters",
+    "DebugLogEntry": ".debug_log_entry",
+    "DebugLogLevel": ".debug_log_level",
+    "DebugLogStatus": ".debug_log_status",
+    "DebugLoggingEnablement": ".debug_logging_enablement",
+    "DeleteAgentTrajectoryRequest": ".delete_agent_trajectory_request",
     "DocumentSummary": ".document_summary",
     "DocumentSummaryPage": ".document_summary_page",
     "Edge": ".edge",
+    "EdgeInput": ".edge_input",
     "EdgeNodeRef": ".edge_node_ref",
     "EdgePage": ".edge_page",
     "EdgeSourceTarget": ".edge_source_target",
@@ -147,15 +448,37 @@ _dynamic_imports: typing.Dict[str, str] = {
     "EntityPropertyType": ".entity_property_type",
     "EntityType": ".entity_type",
     "Episode": ".episode",
-    "EpisodeMetadataFilter": ".episode_metadata_filter",
+    "EpisodeContentPolicy": ".episode_content_policy",
+    "EpisodeContentPolicyStatus": ".episode_content_policy_status",
+    "EpisodeDebugLog": ".episode_debug_log",
     "EpisodePage": ".episode_page",
     "ErrorBody": ".error_body",
     "Graph": ".graph",
+    "GraphContentPolicy": ".graph_content_policy",
+    "GraphContentPolicyRequest": ".graph_content_policy_request",
     "GraphContextResponse": ".graph_context_response",
     "GraphDataType": ".graph_data_type",
     "GraphDeleteResult": ".graph_delete_result",
     "GraphPage": ".graph_page",
-    "GraphitiMetadataFilterGroupType": ".graphiti_metadata_filter_group_type",
+    "Hyperedge": ".hyperedge",
+    "HyperedgeEdge": ".hyperedge_edge",
+    "HyperedgeInput": ".hyperedge_input",
+    "HyperedgePage": ".hyperedge_page",
+    "ImportedTrajectoryReference": ".imported_trajectory_reference",
+    "IngestionTrace": ".ingestion_trace",
+    "IngestionTraceEdge": ".ingestion_trace_edge",
+    "IngestionTraceEdgeInvalidation": ".ingestion_trace_edge_invalidation",
+    "IngestionTraceEdgeReference": ".ingestion_trace_edge_reference",
+    "IngestionTraceEntityType": ".ingestion_trace_entity_type",
+    "IngestionTraceEpisode": ".ingestion_trace_episode",
+    "IngestionTraceInput": ".ingestion_trace_input",
+    "IngestionTraceNode": ".ingestion_trace_node",
+    "IngestionTraceNodeDuplicate": ".ingestion_trace_node_duplicate",
+    "IngestionTraceNodeResolution": ".ingestion_trace_node_resolution",
+    "IngestionTraceOutput": ".ingestion_trace_output",
+    "IngestionTracePage": ".ingestion_trace_page",
+    "IngestionTraceStatus": ".ingestion_trace_status",
+    "IngestionTraceStep": ".ingestion_trace_step",
     "Instructions": ".instructions",
     "LookupBatchResponse": ".lookup_batch_response",
     "LookupItem": ".lookup_item",
@@ -163,27 +486,60 @@ _dynamic_imports: typing.Dict[str, str] = {
     "MembershipMutationResult": ".membership_mutation_result",
     "Message": ".message",
     "MessagePage": ".message_page",
+    "MetadataFilter": ".metadata_filter",
     "MetadataFilterGroup": ".metadata_filter_group",
+    "MetadataFilterGroupType": ".metadata_filter_group_type",
+    "MetadataFilterOperator": ".metadata_filter_operator",
+    "MetadataFilterValue": ".metadata_filter_value",
+    "MetadataFilterValueThreeItem": ".metadata_filter_value_three_item",
     "MutateMembersRequest": ".mutate_members_request",
     "NeighborEntry": ".neighbor_entry",
     "NeighborPage": ".neighbor_page",
     "Node": ".node",
     "NodeInput": ".node_input",
     "NodePage": ".node_page",
+    "ObjectiveMappingRule": ".objective_mapping_rule",
+    "ObjectiveMappingRuleSource": ".objective_mapping_rule_source",
     "Observation": ".observation",
     "ObservationPage": ".observation_page",
     "ObservationSteering": ".observation_steering",
     "ObservationType": ".observation_type",
     "Ontology": ".ontology",
+    "OutcomeMappingRule": ".outcome_mapping_rule",
+    "OutcomeMappingRuleRule": ".outcome_mapping_rule_rule",
+    "Pagev4AgentSkillCandidateReviewSummary": ".pagev4agent_skill_candidate_review_summary",
+    "Pagev4AgentSkillCompilationOutcome": ".pagev4agent_skill_compilation_outcome",
+    "Pagev4AgentSkillEvidence": ".pagev4agent_skill_evidence",
+    "Pagev4AgentSkillRelationship": ".pagev4agent_skill_relationship",
+    "Pagev4AgentSkillSearchHit": ".pagev4agent_skill_search_hit",
+    "Pagev4AgentSkillVersion": ".pagev4agent_skill_version",
+    "Pagev4AgentVerifier": ".pagev4agent_verifier",
     "ProcessBatchResult": ".process_batch_result",
     "Project": ".project",
     "PropertyFilter": ".property_filter",
+    "PropertyFilterOperator": ".property_filter_operator",
+    "PropertyFilterValue": ".property_filter_value",
+    "PropertyFilterValueThreeItem": ".property_filter_value_three_item",
     "RoleType": ".role_type",
     "SearchFilters": ".search_filters",
     "SearchListRequest": ".search_list_request",
     "SearchRequest": ".search_request",
+    "SearchRequestReranker": ".search_request_reranker",
+    "SkillDefinition": ".skill_definition",
+    "SkillDefinitionSection": ".skill_definition_section",
+    "SkillFailure": ".skill_failure",
+    "SkillProcedureStep": ".skill_procedure_step",
+    "SkillRelation": ".skill_relation",
+    "SkillResource": ".skill_resource",
+    "SourceSpan": ".source_span",
+    "SourceTrace": ".source_trace",
+    "SourceTracePage": ".source_trace_page",
+    "SourceTraceResponse": ".source_trace_response",
+    "SourceTraceSummary": ".source_trace_summary",
     "SubgraphResponse": ".subgraph_response",
     "Task": ".task",
+    "TaskFamilyMappingRule": ".task_family_mapping_rule",
+    "TaskFamilyMappingRuleSource": ".task_family_mapping_rule_source",
     "TaskPage": ".task_page",
     "TaskProgress": ".task_progress",
     "Thread": ".thread",
@@ -192,6 +548,32 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ThreadPage": ".thread_page",
     "ThreadSummary": ".thread_summary",
     "ThreadSummaryPage": ".thread_summary_page",
+    "TraceConnection": ".trace_connection",
+    "TraceConnectionPage": ".trace_connection_page",
+    "TraceConnectionSettings": ".trace_connection_settings",
+    "TraceFilter": ".trace_filter",
+    "TracePreview": ".trace_preview",
+    "TraceProviderProject": ".trace_provider_project",
+    "TraceProviderProjectPage": ".trace_provider_project_page",
+    "TraceScoreRange": ".trace_score_range",
+    "TrajectoryContentMapping": ".trajectory_content_mapping",
+    "TrajectoryImport": ".trajectory_import",
+    "TrajectoryImportPage": ".trajectory_import_page",
+    "TrajectoryImportPauseReason": ".trajectory_import_pause_reason",
+    "TrajectoryImportRun": ".trajectory_import_run",
+    "TrajectoryImportRunItem": ".trajectory_import_run_item",
+    "TrajectoryImportRunItemPage": ".trajectory_import_run_item_page",
+    "TrajectoryImportRunPage": ".trajectory_import_run_page",
+    "TrajectoryImportRunReference": ".trajectory_import_run_reference",
+    "TrajectoryImportRunReferenceStatus": ".trajectory_import_run_reference_status",
+    "TrajectoryImportRunReferenceTrigger": ".trajectory_import_run_reference_trigger",
+    "TrajectoryImportSchedule": ".trajectory_import_schedule",
+    "TrajectoryImportSelection": ".trajectory_import_selection",
+    "TrajectoryMapping": ".trajectory_mapping",
+    "TrajectoryMappingIncludeOutcomesItem": ".trajectory_mapping_include_outcomes_item",
+    "TrajectoryMappingResult": ".trajectory_mapping_result",
+    "TrajectoryMappingResultOutcome": ".trajectory_mapping_result_outcome",
+    "TrajectoryMappingResultOutcomeRule": ".trajectory_mapping_result_outcome_rule",
     "User": ".user",
     "UserDeleteResult": ".user_delete_result",
     "UserGroup": ".user_group",
@@ -199,10 +581,6 @@ _dynamic_imports: typing.Dict[str, str] = {
     "UserInstruction": ".user_instruction",
     "UserPage": ".user_page",
     "UserSummaryInstructions": ".user_summary_instructions",
-    "V4BatchItemInputDataType": ".v4batch_item_input_data_type",
-    "V4BatchItemInputRole": ".v4batch_item_input_role",
-    "V4BatchItemInputType": ".v4batch_item_input_type",
-    "V4SearchRequestReranker": ".v4search_request_reranker",
 }
 
 
@@ -228,26 +606,127 @@ def __dir__():
 
 
 __all__ = [
-    "AddEdgeResult",
+    "AddAgentSkillUseOutcomeRequest",
+    "AddAgentSkillUseOutcomeRequestOutcome",
+    "AddEdgesResult",
     "AddEpisodeResult",
+    "AddHyperedgeEdgeResult",
+    "AddHyperedgeResult",
     "AddMessage",
     "AddMessagesResult",
     "AddNodesResult",
     "AddedEdge",
+    "AddedHyperedge",
+    "AddedHyperedgeEdge",
     "AddedNode",
+    "Agent",
+    "AgentBreakingChange",
+    "AgentContext",
+    "AgentContextEvidenceCounts",
+    "AgentContextPartialSource",
+    "AgentContextResource",
+    "AgentContextSkillSnapshot",
+    "AgentContextSkippedSkill",
+    "AgentDeleteResult",
+    "AgentLearningState",
+    "AgentLiteralPolicy",
+    "AgentLiteralPolicyClasses",
+    "AgentLiteralPolicyValues",
+    "AgentMemoryEvaluationPolicy",
+    "AgentMemoryEvaluationRequirement",
+    "AgentMemorySettings",
+    "AgentMemorySettingsApproval",
+    "AgentMemorySettingsCompilationMode",
+    "AgentPage",
+    "AgentSkill",
+    "AgentSkillAdmissionDecision",
+    "AgentSkillCandidate",
+    "AgentSkillCandidateBaseVersion",
+    "AgentSkillCandidateEvaluation",
+    "AgentSkillCandidateEvidence",
+    "AgentSkillCandidateReview",
+    "AgentSkillCandidateReviewResult",
+    "AgentSkillCandidateReviewSummary",
+    "AgentSkillCompilationOutcome",
+    "AgentSkillCompilationOutcomeRejectionClass",
+    "AgentSkillEvaluation",
+    "AgentSkillEvidence",
+    "AgentSkillPublicationLineage",
+    "AgentSkillRelationship",
+    "AgentSkillSearchHit",
+    "AgentSkillSearchHitMaturity",
+    "AgentSkillSearchResponse",
+    "AgentSkillUse",
+    "AgentSkillUseOutcome",
+    "AgentSkillVersion",
+    "AgentSkillVersionComparison",
+    "AgentSplitPlan",
+    "AgentSplitPlanDestination",
+    "AgentSplitPlanDestinationRequest",
+    "AgentSplitPlanSkillReference",
+    "AgentSplitPlanSkillSelectionRequest",
+    "AgentSplitPlanSource",
+    "AgentStatus",
+    "AgentTrajectory",
+    "AgentTrajectoryCloseVerifier",
+    "AgentTrajectoryEvent",
+    "AgentTrajectoryEventContext",
+    "AgentTrajectoryEventPage",
+    "AgentTrajectoryEventProcessingState",
+    "AgentTrajectoryEventSource",
+    "AgentTrajectoryEventSourceCopyMode",
+    "AgentTrajectoryEventSourceRetentionMode",
+    "AgentTrajectoryEventType",
+    "AgentTrajectoryFinalizationResult",
+    "AgentTrajectoryInternal",
+    "AgentTrajectoryLifecycle",
+    "AgentTrajectoryOutcome",
+    "AgentTrajectoryPage",
+    "AgentTrajectoryProcessingState",
+    "AgentTrajectoryResourceRef",
+    "AgentTrajectorySequenceRange",
+    "AgentTrajectorySource",
+    "AgentTrajectorySourceDeletionResult",
+    "AgentTrajectorySummaryCreationReason",
+    "AgentTrajectorySummaryOmissionReason",
+    "AgentTrajectorySummaryOmittedRange",
+    "AgentTrajectorySummaryPage",
+    "AgentTrajectorySummaryVersion",
+    "AgentTrajectoryVerification",
+    "AgentVerificationStrength",
+    "AgentVerifier",
+    "AgentVerifierAssertionOutcome",
+    "AgentVerifierEvidenceInvalidationResult",
+    "AgentVerifierPrincipal",
+    "AgentVerifierPrincipalBinding",
+    "AgentVerifierPrincipalBindingInput",
+    "AgentVerifierStatus",
     "ApiError",
     "ArtifactListRequest",
     "AsyncResult",
     "Batch",
     "BatchItem",
     "BatchItemInput",
+    "BatchItemInputDataType",
+    "BatchItemInputRole",
+    "BatchItemInputType",
     "BatchItemKind",
     "BatchItemPage",
     "BatchItemStatus",
     "BatchItemsResponse",
     "BatchPage",
+    "CloneGraphRequest",
     "CloneGraphResult",
-    "ComparisonOperator",
+    "ContentPolicy",
+    "ContentPolicyCategory",
+    "ContentPolicyCategoryRequest",
+    "ContentPolicyEvent",
+    "ContentPolicyEventArtifactKind",
+    "ContentPolicyEventDropReason",
+    "ContentPolicyEventPage",
+    "ContentPolicyRevisionPage",
+    "ContentPolicyRule",
+    "ContentPolicyRuleRequest",
     "ContextEdge",
     "ContextEpisode",
     "ContextNode",
@@ -256,12 +735,23 @@ __all__ = [
     "ContextTemplate",
     "ContextTemplatePage",
     "ContextThreadSummary",
+    "CreateAgentRequest",
     "CreateContextTemplateRequest",
     "CustomInstruction",
     "DateFilter",
+    "DateFilterField",
+    "DateFilterGroup",
+    "DateFilterOperator",
+    "DateFilters",
+    "DebugLogEntry",
+    "DebugLogLevel",
+    "DebugLogStatus",
+    "DebugLoggingEnablement",
+    "DeleteAgentTrajectoryRequest",
     "DocumentSummary",
     "DocumentSummaryPage",
     "Edge",
+    "EdgeInput",
     "EdgeNodeRef",
     "EdgePage",
     "EdgeSourceTarget",
@@ -270,15 +760,37 @@ __all__ = [
     "EntityPropertyType",
     "EntityType",
     "Episode",
-    "EpisodeMetadataFilter",
+    "EpisodeContentPolicy",
+    "EpisodeContentPolicyStatus",
+    "EpisodeDebugLog",
     "EpisodePage",
     "ErrorBody",
     "Graph",
+    "GraphContentPolicy",
+    "GraphContentPolicyRequest",
     "GraphContextResponse",
     "GraphDataType",
     "GraphDeleteResult",
     "GraphPage",
-    "GraphitiMetadataFilterGroupType",
+    "Hyperedge",
+    "HyperedgeEdge",
+    "HyperedgeInput",
+    "HyperedgePage",
+    "ImportedTrajectoryReference",
+    "IngestionTrace",
+    "IngestionTraceEdge",
+    "IngestionTraceEdgeInvalidation",
+    "IngestionTraceEdgeReference",
+    "IngestionTraceEntityType",
+    "IngestionTraceEpisode",
+    "IngestionTraceInput",
+    "IngestionTraceNode",
+    "IngestionTraceNodeDuplicate",
+    "IngestionTraceNodeResolution",
+    "IngestionTraceOutput",
+    "IngestionTracePage",
+    "IngestionTraceStatus",
+    "IngestionTraceStep",
     "Instructions",
     "LookupBatchResponse",
     "LookupItem",
@@ -286,27 +798,60 @@ __all__ = [
     "MembershipMutationResult",
     "Message",
     "MessagePage",
+    "MetadataFilter",
     "MetadataFilterGroup",
+    "MetadataFilterGroupType",
+    "MetadataFilterOperator",
+    "MetadataFilterValue",
+    "MetadataFilterValueThreeItem",
     "MutateMembersRequest",
     "NeighborEntry",
     "NeighborPage",
     "Node",
     "NodeInput",
     "NodePage",
+    "ObjectiveMappingRule",
+    "ObjectiveMappingRuleSource",
     "Observation",
     "ObservationPage",
     "ObservationSteering",
     "ObservationType",
     "Ontology",
+    "OutcomeMappingRule",
+    "OutcomeMappingRuleRule",
+    "Pagev4AgentSkillCandidateReviewSummary",
+    "Pagev4AgentSkillCompilationOutcome",
+    "Pagev4AgentSkillEvidence",
+    "Pagev4AgentSkillRelationship",
+    "Pagev4AgentSkillSearchHit",
+    "Pagev4AgentSkillVersion",
+    "Pagev4AgentVerifier",
     "ProcessBatchResult",
     "Project",
     "PropertyFilter",
+    "PropertyFilterOperator",
+    "PropertyFilterValue",
+    "PropertyFilterValueThreeItem",
     "RoleType",
     "SearchFilters",
     "SearchListRequest",
     "SearchRequest",
+    "SearchRequestReranker",
+    "SkillDefinition",
+    "SkillDefinitionSection",
+    "SkillFailure",
+    "SkillProcedureStep",
+    "SkillRelation",
+    "SkillResource",
+    "SourceSpan",
+    "SourceTrace",
+    "SourceTracePage",
+    "SourceTraceResponse",
+    "SourceTraceSummary",
     "SubgraphResponse",
     "Task",
+    "TaskFamilyMappingRule",
+    "TaskFamilyMappingRuleSource",
     "TaskPage",
     "TaskProgress",
     "Thread",
@@ -315,6 +860,32 @@ __all__ = [
     "ThreadPage",
     "ThreadSummary",
     "ThreadSummaryPage",
+    "TraceConnection",
+    "TraceConnectionPage",
+    "TraceConnectionSettings",
+    "TraceFilter",
+    "TracePreview",
+    "TraceProviderProject",
+    "TraceProviderProjectPage",
+    "TraceScoreRange",
+    "TrajectoryContentMapping",
+    "TrajectoryImport",
+    "TrajectoryImportPage",
+    "TrajectoryImportPauseReason",
+    "TrajectoryImportRun",
+    "TrajectoryImportRunItem",
+    "TrajectoryImportRunItemPage",
+    "TrajectoryImportRunPage",
+    "TrajectoryImportRunReference",
+    "TrajectoryImportRunReferenceStatus",
+    "TrajectoryImportRunReferenceTrigger",
+    "TrajectoryImportSchedule",
+    "TrajectoryImportSelection",
+    "TrajectoryMapping",
+    "TrajectoryMappingIncludeOutcomesItem",
+    "TrajectoryMappingResult",
+    "TrajectoryMappingResultOutcome",
+    "TrajectoryMappingResultOutcomeRule",
     "User",
     "UserDeleteResult",
     "UserGroup",
@@ -322,8 +893,4 @@ __all__ = [
     "UserInstruction",
     "UserPage",
     "UserSummaryInstructions",
-    "V4BatchItemInputDataType",
-    "V4BatchItemInputRole",
-    "V4BatchItemInputType",
-    "V4SearchRequestReranker",
 ]
