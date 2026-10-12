@@ -17,7 +17,7 @@ class Message(UniversalBaseModel):
 
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The time the message was created.
+    The time Zep received the message.
     """
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
@@ -34,6 +34,12 @@ class Message(UniversalBaseModel):
     processed: typing.Optional[bool] = pydantic.Field(default=None)
     """
     Whether the message has finished being ingested into the user's graph.
+    """
+
+    reference_time: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The message's reference time: the time that the developer supplied on
+    add, or the ingestion time when the developer supplied no time.
     """
 
     role: typing.Optional[RoleType] = pydantic.Field(default=None)

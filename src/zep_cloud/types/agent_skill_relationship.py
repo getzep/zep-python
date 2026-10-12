@@ -18,10 +18,10 @@ class AgentSkillRelationship(UniversalBaseModel):
     related_version_constraint: typing.Optional[str] = None
     resource_name: typing.Optional[str] = None
     resource_version_constraint: typing.Optional[str] = None
-    trajectory_outcome: typing.Optional[str] = None
-    trajectory_task_family: typing.Optional[str] = None
-    trajectory_uuid: typing.Optional[str] = None
-    trajectory_verification: typing.Optional[str] = None
+    trace_outcome: typing.Optional[str] = None
+    trace_task_family: typing.Optional[str] = None
+    trace_uuid: typing.Optional[str] = None
+    trace_verification: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

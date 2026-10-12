@@ -35,7 +35,7 @@ class OutcomeMappingRule(UniversalBaseModel):
 
     values: typing.Optional[typing.Dict[str, str]] = pydantic.Field(default=None)
     """
-    Values maps metadata strings to Trajectory outcomes.
+    Values maps metadata strings to Trace outcomes.
     """
 
     if IS_PYDANTIC_V2:

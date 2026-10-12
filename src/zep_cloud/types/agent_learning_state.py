@@ -19,7 +19,7 @@ class AgentLearningState(UniversalBaseModel):
     waits to start or runs. Skills from that run are not yet available.
     """
 
-    eligible_trajectory_count: typing.Optional[int] = None
+    eligible_trace_count: typing.Optional[int] = None
     minimum_attempt_families: typing.Optional[int] = None
     next_step: typing.Optional[str] = None
     required_evaluations: typing.Optional[typing.List[str]] = None

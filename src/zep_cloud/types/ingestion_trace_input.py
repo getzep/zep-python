@@ -9,6 +9,7 @@ from .ingestion_trace_edge import IngestionTraceEdge
 from .ingestion_trace_entity_type import IngestionTraceEntityType
 from .ingestion_trace_episode import IngestionTraceEpisode
 from .ingestion_trace_node import IngestionTraceNode
+from .ingestion_trace_protected_attribute_conflict import IngestionTraceProtectedAttributeConflict
 
 
 class IngestionTraceInput(UniversalBaseModel):
@@ -71,6 +72,15 @@ class IngestionTraceInput(UniversalBaseModel):
     previous_episodes: typing.Optional[typing.List[IngestionTraceEpisode]] = pydantic.Field(default=None)
     """
     The previous episodes that the step used as context.
+    """
+
+    protected_attribute_conflicts: typing.Optional[typing.List[IngestionTraceProtectedAttributeConflict]] = (
+        pydantic.Field(default=None)
+    )
+    """
+    The identity attributes where the extracted value differed from the
+    stored value. The nodes keep the stored values. Present for resolve_nodes
+    and empty for the other steps.
     """
 
     resolved_nodes: typing.Optional[typing.List[IngestionTraceNode]] = pydantic.Field(default=None)

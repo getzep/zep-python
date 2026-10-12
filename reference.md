@@ -114,6 +114,22 @@ client.agent.list()
 <dl>
 <dd>
 
+**order_by:** `typing.Optional[AgentListRequestOrderBy]` — Sort field
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `typing.Optional[AgentListRequestOrder]` — asc or desc
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **agent_id:** `typing.Optional[str]` — Filters to the exact developer-assigned Agent identifier.
     
 </dd>
@@ -131,6 +147,17 @@ client.agent.list()
 <dd>
 
 **metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Filters to Agents whose metadata contains these key-value pairs.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `typing.Optional[str]` 
+
+Filters to Agents whose name, Agent identifier, deployment identifier,
+or deployment version contains this text. Matching is case-insensitive.
     
 </dd>
 </dl>
@@ -365,7 +392,7 @@ client.agent.update(
 <dl>
 <dd>
 
-**memory_settings:** `typing.Optional[AgentMemorySettings]` — Replacement Agent Memory settings. Set to null to restore defaults.
+**memory_settings:** `typing.Optional[AgentMemorySettings]` — Replacement Agent Skills settings. Set to null to restore defaults.
     
 </dd>
 </dl>
@@ -589,7 +616,7 @@ client.agent.get_context(
 <dl>
 <dd>
 
-**trajectory_uuid:** `typing.Optional[str]` 
+**trace_uuid:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -2635,6 +2662,20 @@ client.graph.set_ontology(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Edge search does not support node_labels or exclude_node_labels. An edge has two nodes, so a node label filter is not defined for edge search. To filter edges by node label, use graph.edge.list, graph.node.list_neighbors, or graph.get_subgraph. To search the edges of nodes that have a label, do these two steps. First, call graph.search_nodes with node_labels. Then, call graph.search_edges with connected_node_uuids set to the UUIDs of the returned nodes.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -2679,7 +2720,7 @@ client.graph.search_edges(
 <dl>
 <dd>
 
-**request:** `SearchRequest` 
+**query:** `str` — The search query.
     
 </dd>
 </dl>
@@ -2696,6 +2737,52 @@ client.graph.search_edges(
 <dd>
 
 **cursor:** `typing.Optional[str]` — Opaque page cursor
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bfs_origin_node_uuids:** `typing.Optional[typing.List[str]]` — Nodes used as BFS origins for graph-distance-aware retrieval.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**center_node_uuid:** `typing.Optional[str]` 
+
+The node to rank results by distance from. Required when reranker is
+node_distance.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[EdgeSearchFilters]` — Filters constraining which items are returned.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mmr_lambda:** `typing.Optional[float]` 
+
+The diversity weighting used for maximal marginal relevance reranking.
+Required when reranker is mmr.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reranker:** `typing.Optional[SearchEdgesRequestReranker]` — The reranking strategy applied to retrieved results. Defaults to rrf.
     
 </dd>
 </dl>
@@ -2803,6 +2890,20 @@ client.graph.search_episodes(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Node search does not support edge_types, exclude_edge_types, edge_uuids, connected_node_uuids, source_node_uuids, or target_node_uuids. These filters select edges. To get the nodes that an edge connects, use graph.search_edges or graph.node.list_neighbors.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -2847,7 +2948,7 @@ client.graph.search_nodes(
 <dl>
 <dd>
 
-**request:** `SearchRequest` 
+**query:** `str` — The search query.
     
 </dd>
 </dl>
@@ -2864,6 +2965,52 @@ client.graph.search_nodes(
 <dd>
 
 **cursor:** `typing.Optional[str]` — Opaque page cursor
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bfs_origin_node_uuids:** `typing.Optional[typing.List[str]]` — Nodes used as BFS origins for graph-distance-aware retrieval.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**center_node_uuid:** `typing.Optional[str]` 
+
+The node to rank results by distance from. Required when reranker is
+node_distance.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**filters:** `typing.Optional[NodeSearchFilters]` — Filters constraining which items are returned.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mmr_lambda:** `typing.Optional[float]` 
+
+The diversity weighting used for maximal marginal relevance reranking.
+Required when reranker is mmr.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reranker:** `typing.Optional[SearchNodesRequestReranker]` — The reranking strategy applied to retrieved results. Defaults to rrf.
     
 </dd>
 </dl>
@@ -3351,6 +3498,20 @@ client.project.get()
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Set `hyperedges_enabled` to `true` to enable extraction. A member needs the `project.edit` permission. Project API keys receive `403 permission_denied`.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -3388,6 +3549,17 @@ client.project.update()
 
 The project's IANA fallback time zone. Set to null to clear the existing
 value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hyperedges_enabled:** `typing.Optional[bool]` 
+
+Set to true to enable hyperedge extraction. This setting cannot be disabled.
+A member needs project.edit. Project API keys receive 403 permission_denied.
     
 </dd>
 </dl>
@@ -5075,7 +5247,7 @@ client.trace_connection.list()
 <dl>
 <dd>
 
-Verify the provider credential before Zep stores it. Example request: `{"name":"Support traces","provider":"braintrust","credential":"secret","requests_per_minute":10}`.
+Verify a provider credential before Zep stores it. Both providers accept 1 to 60 requests per minute and an optional retention window. Example requests: `{"name":"Support traces","provider":"braintrust","credential":"secret","requests_per_minute":60,"retention_days":30}` and `{"name":"Support traces","provider":"langsmith","credential":"secret","requests_per_minute":60,"retention_days":30}`.
 </dd>
 </dl>
 </dd>
@@ -5138,7 +5310,7 @@ client.trace_connection.create()
 <dl>
 <dd>
 
-**provider:** `typing.Optional[str]` — Provider is the provider name.
+**provider:** `typing.Optional[CreateTraceConnectionRequestProvider]` — Provider is the Braintrust or LangSmith provider.
     
 </dd>
 </dl>
@@ -5146,7 +5318,7 @@ client.trace_connection.create()
 <dl>
 <dd>
 
-**requests_per_minute:** `typing.Optional[int]` — RequestsPerMinute is the provider request rate limit.
+**requests_per_minute:** `typing.Optional[int]` — RequestsPerMinute is the request rate limit from 1 to 60 per minute.
     
 </dd>
 </dl>
@@ -5154,7 +5326,7 @@ client.trace_connection.create()
 <dl>
 <dd>
 
-**retention_days:** `typing.Optional[int]` — RetentionDays is an optional provider retention window.
+**retention_days:** `typing.Optional[int]` — RetentionDays is an optional retention window in days.
     
 </dd>
 </dl>
@@ -5259,7 +5431,7 @@ client.trace_connection.get(
 <dl>
 <dd>
 
-Delete a trace connection that no active trajectory import uses.
+Delete a trace connection that no active trace import uses.
 </dd>
 </dl>
 </dd>
@@ -5332,7 +5504,7 @@ client.trace_connection.delete(
 <dl>
 <dd>
 
-Verify changed provider settings before Zep stores them. Example request: `{"credential":"new-secret","requests_per_minute":20}`.
+Verify changed settings before Zep stores them. Both providers accept 1 to 60 requests per minute and an optional retention window. Example request: `{"requests_per_minute":60,"retention_days":30}`.
 </dd>
 </dl>
 </dd>
@@ -5405,7 +5577,7 @@ client.trace_connection.update(
 <dl>
 <dd>
 
-**requests_per_minute:** `typing.Optional[int]` — RequestsPerMinute is the new provider request rate limit, when supplied.
+**requests_per_minute:** `typing.Optional[int]` — RequestsPerMinute is the new request rate limit, when supplied.
     
 </dd>
 </dl>
@@ -5413,7 +5585,7 @@ client.trace_connection.update(
 <dl>
 <dd>
 
-**retention_days:** `typing.Optional[int]` — RetentionDays is the new provider retention window, when supplied.
+**retention_days:** `typing.Optional[int]` — RetentionDays is the new retention window in days, when supplied.
     
 </dd>
 </dl>
@@ -5519,7 +5691,7 @@ client.trace_connection.verify(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -5600,7 +5772,7 @@ client.user_group.create(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -5687,7 +5859,7 @@ client.user_group.list()
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -5760,7 +5932,7 @@ client.user_group.get(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -5833,7 +6005,7 @@ client.user_group.delete(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -5930,7 +6102,7 @@ client.user_group.update(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -6027,7 +6199,7 @@ client.user_group.list_member_candidates(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -6111,7 +6283,7 @@ client.user_group.add_members(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -6208,7 +6380,7 @@ client.user_group.list_members(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -6292,7 +6464,7 @@ client.user_group.remove_members(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -6374,7 +6546,7 @@ client.user_group.remove_member(
 <dl>
 <dd>
 
-Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+Requires attribute-based access control to be enabled for your account.
 </dd>
 </dl>
 </dd>
@@ -8247,8 +8419,8 @@ client.agent.split.plan(
 </dl>
 </details>
 
-## Agent Trajectory
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">create</a>(...) -> AgentTrajectory</code></summary>
+## Agent TaskFamily
+<details><summary><code>client.agent.task_family.<a href="src/zep_cloud/agent/task_family/client.py">list</a>(...) -> AgentTaskFamilyDescriptorPage</code></summary>
 <dl>
 <dd>
 
@@ -8269,116 +8441,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory.create(
-    agent_uuid="agent_uuid",
-    objective="objective",
-    task_family="task_family",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**objective:** `str` — The task-instance objective captured for this attempt.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**task_family:** `str` — The task-family slug.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**learn_from:** `typing.Optional[bool]` — Whether eligible evidence may participate in learning. Defaults to true.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Developer metadata used to organize and filter Trajectories.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**parent_trajectory_uuid:** `typing.Optional[str]` — The parent Trajectory UUID when this attempt retries an earlier attempt.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_id:** `typing.Optional[str]` — The optional customer-assigned identifier, unique within the Agent.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">list</a>(...) -> AgentTrajectoryPage</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.list(
+client.agent.task_family.list(
     agent_uuid="agent_uuid",
 )
 
@@ -8420,70 +8483,6 @@ client.agent.trajectory.list(
 <dl>
 <dd>
 
-**import_uuid:** `typing.Optional[str]` — Filter by owning Trajectory import UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**source_kind:** `typing.Optional[TrajectoryListRequestSourceKind]` — Source kind
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Filters to Trajectories whose metadata contains these key-value pairs.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**outcome:** `typing.Optional[AgentTrajectoryOutcome]` — Filters to one reported outcome.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**parent_trajectory_uuid:** `typing.Optional[str]` — Filters to direct retries of this parent Trajectory.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**status:** `typing.Optional[AgentTrajectoryLifecycle]` — Filters to one lifecycle state.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**task_family:** `typing.Optional[str]` — Filters to an exact task-family slug.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**verification:** `typing.Optional[AgentTrajectoryVerification]` — Filters to one verification strength.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -8496,7 +8495,7 @@ client.agent.trajectory.list(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">get</a>(...) -> AgentTrajectory</code></summary>
+<details><summary><code>client.agent.task_family.<a href="src/zep_cloud/agent/task_family/client.py">rename</a>(...) -> RenameAgentTaskFamilyResponse</code></summary>
 <dl>
 <dd>
 
@@ -8517,9 +8516,10 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory.get(
+client.agent.task_family.rename(
     agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
+    from_slug="from_slug",
+    to_slug="to_slug",
 )
 
 ```
@@ -8544,7 +8544,15 @@ client.agent.trajectory.get(
 <dl>
 <dd>
 
-**trajectory_uuid:** `str` — Trajectory UUID
+**from_slug:** `str` — The current slug of the live descriptor.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to_slug:** `str` — The new slug, or the slug of the live descriptor to merge into.
     
 </dd>
 </dl>
@@ -8564,1045 +8572,8 @@ client.agent.trajectory.get(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">delete</a>(...) -> AgentTrajectorySourceDeletionResult</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.delete(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-    expected_revision=1,
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request:** `DeleteAgentTrajectoryRequest` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">update</a>(...) -> AgentTrajectory</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.update(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-    expected_revision=1,
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**expected_revision:** `int` — The current Trajectory revision used for optimistic concurrency.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**task_family:** `typing.Optional[str]` — Replacement task-family slug. Set to null to clear it.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">abandon</a>(...) -> AgentTrajectoryFinalizationResult</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.abandon(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-    highest_accepted_sequence=1,
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**highest_accepted_sequence:** `int` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**assertion_uuid:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**expected_revision:** `typing.Optional[int]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**missing_sequence_ranges:** `typing.Optional[typing.List[AgentTrajectorySequenceRange]]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**reason:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**verification:** `typing.Optional[AgentTrajectoryVerification]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">close</a>(...) -> AgentTrajectoryFinalizationResult</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.close(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**closing_sequence:** `typing.Optional[int]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**expected_revision:** `typing.Optional[int]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**missing_sequence_ranges:** `typing.Optional[typing.List[AgentTrajectorySequenceRange]]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**outcome:** `typing.Optional[AgentTrajectoryOutcome]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**reason:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**verification:** `typing.Optional[AgentTrajectoryVerification]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**verifier:** `typing.Optional[AgentTrajectoryCloseVerifier]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**verifier_id:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">correct_task_family</a>(...) -> AgentTrajectoryFinalizationResult</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.correct_task_family(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-    expected_revision=1,
-    reason="reason",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**expected_revision:** `int` — The current Trajectory revision used for optimistic concurrency.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**reason:** `str` — Why the terminal Trajectory classification is being corrected.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**task_family:** `typing.Optional[str]` — Replacement task-family slug. Set to null to clear it.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">list_events</a>(...) -> AgentTrajectoryEventPage</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.list_events(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `typing.Optional[int]` — Page size (maximum 100)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cursor:** `typing.Optional[str]` — Opaque page cursor
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">append_event</a>(...) -> AgentTrajectoryEvent</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.append_event(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-    event_type="input_reference",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**event_type:** `AgentTrajectoryEventType` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**content:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**context:** `typing.Optional[AgentTrajectoryEventContext]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**event_id:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**occurred_at:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**sequence:** `typing.Optional[int]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**sources:** `typing.Optional[typing.List[AgentTrajectoryEventSource]]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">delete_event</a>(...) -> AgentTrajectorySourceDeletionResult</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.delete_event(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-    event_uuid="event_uuid",
-    expected_revision=1,
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**event_uuid:** `str` — Event UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request:** `DeleteAgentTrajectoryRequest` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">reopen</a>(...) -> AgentTrajectory</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.reopen(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-    expected_revision=1,
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**expected_revision:** `int` — The current Trajectory revision used for optimistic concurrency.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">get_summary</a>(...) -> AgentTrajectorySummaryVersion</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.get_summary(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.agent.trajectory.<a href="src/zep_cloud/agent/trajectory/client.py">list_summary_versions</a>(...) -> AgentTrajectorySummaryPage</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from zep_cloud import Zep
-from zep_cloud.environment import ZepEnvironment
-
-client = Zep(
-    api_key="<value>",
-    environment=ZepEnvironment.DEFAULT,
-)
-
-client.agent.trajectory.list_summary_versions(
-    agent_uuid="agent_uuid",
-    trajectory_uuid="trajectory_uuid",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**agent_uuid:** `str` — Agent UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**trajectory_uuid:** `str` — Trajectory UUID
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**limit:** `typing.Optional[int]` — Page size (maximum 100)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cursor:** `typing.Optional[str]` — Opaque page cursor
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Agent TrajectoryImport
-<details><summary><code>client.agent.trajectory_import.<a href="src/zep_cloud/agent/trajectory_import/client.py">list</a>(...) -> TrajectoryImportPage</code></summary>
+## Agent TraceImport
+<details><summary><code>client.agent.trace_import.<a href="src/zep_cloud/agent/trace_import/client.py">list</a>(...) -> TraceImportPage</code></summary>
 <dl>
 <dd>
 
@@ -9614,7 +8585,7 @@ client.agent.trajectory.list_summary_versions(
 <dl>
 <dd>
 
-List trajectory imports that belong to this Agent.
+List trace imports that belong to this Agent.
 </dd>
 </dl>
 </dd>
@@ -9637,7 +8608,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.list(
+client.agent.trace_import.list(
     agent_uuid="agent_uuid",
 )
 
@@ -9691,7 +8662,7 @@ client.agent.trajectory_import.list(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory_import.<a href="src/zep_cloud/agent/trajectory_import/client.py">create</a>(...) -> TrajectoryImport</code></summary>
+<details><summary><code>client.agent.trace_import.<a href="src/zep_cloud/agent/trace_import/client.py">create</a>(...) -> TraceImport</code></summary>
 <dl>
 <dd>
 
@@ -9726,7 +8697,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.create(
+client.agent.trace_import.create(
     agent_uuid="agent_uuid",
 )
 
@@ -9768,7 +8739,7 @@ client.agent.trajectory_import.create(
 <dl>
 <dd>
 
-**mapping:** `typing.Optional[TrajectoryMapping]` — Mapping defines how source traces become Trajectories. Example: {"task_family":{"source":"fixed","value":"support"}}.
+**mapping:** `typing.Optional[TraceMapping]` — Mapping defines how source traces become Traces. Example: {"task_family":{"source":"fixed","value":"support"}}.
     
 </dd>
 </dl>
@@ -9808,7 +8779,7 @@ client.agent.trajectory_import.create(
 <dl>
 <dd>
 
-**schedule:** `typing.Optional[TrajectoryImportSchedule]` — Schedule enables recurring imports when supplied. Example: {"interval_hours":4,"start_from":"24h","settle_minutes":5,"max_open_hours":24}.
+**schedule:** `typing.Optional[TraceImportSchedule]` — Schedule enables recurring imports when supplied. Example: {"interval_hours":4,"start_from":"24h","settle_minutes":5,"max_open_hours":24}.
     
 </dd>
 </dl>
@@ -9816,7 +8787,7 @@ client.agent.trajectory_import.create(
 <dl>
 <dd>
 
-**selection:** `typing.Optional[TrajectoryImportSelection]` — Selection defines the traces to import. Example: {"trace_ids":["trace_123"]}.
+**selection:** `typing.Optional[TraceImportSelection]` — Selection defines the traces to import. Example: {"trace_ids":["trace_123"]}.
     
 </dd>
 </dl>
@@ -9836,7 +8807,7 @@ client.agent.trajectory_import.create(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory_import.<a href="src/zep_cloud/agent/trajectory_import/client.py">get</a>(...) -> TrajectoryImport</code></summary>
+<details><summary><code>client.agent.trace_import.<a href="src/zep_cloud/agent/trace_import/client.py">get</a>(...) -> TraceImport</code></summary>
 <dl>
 <dd>
 
@@ -9848,7 +8819,7 @@ client.agent.trajectory_import.create(
 <dl>
 <dd>
 
-Read one trajectory import. The response does not include its source cursor.
+Read one trace import. The response does not include its source cursor.
 </dd>
 </dl>
 </dd>
@@ -9871,7 +8842,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.get(
+client.agent.trace_import.get(
     agent_uuid="agent_uuid",
     import_uuid="import_uuid",
 )
@@ -9898,7 +8869,7 @@ client.agent.trajectory_import.get(
 <dl>
 <dd>
 
-**import_uuid:** `str` — Trajectory import UUID
+**import_uuid:** `str` — Trace import UUID
     
 </dd>
 </dl>
@@ -9918,7 +8889,7 @@ client.agent.trajectory_import.get(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory_import.<a href="src/zep_cloud/agent/trajectory_import/client.py">delete</a>(...) -> typing.Optional[Task]</code></summary>
+<details><summary><code>client.agent.trace_import.<a href="src/zep_cloud/agent/trace_import/client.py">delete</a>(...) -> typing.Optional[Task]</code></summary>
 <dl>
 <dd>
 
@@ -9930,7 +8901,7 @@ client.agent.trajectory_import.get(
 <dl>
 <dd>
 
-Set `trajectories=delete` to queue asynchronous Trajectory deletion. The default keeps Trajectories. Example query: `?trajectories=delete`.
+Set `traces=delete` to queue asynchronous Trace deletion. The default keeps Traces. Example query: `?traces=delete`.
 </dd>
 </dl>
 </dd>
@@ -9953,7 +8924,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.delete(
+client.agent.trace_import.delete(
     agent_uuid="agent_uuid",
     import_uuid="import_uuid",
 )
@@ -9980,7 +8951,7 @@ client.agent.trajectory_import.delete(
 <dl>
 <dd>
 
-**import_uuid:** `str` — Trajectory import UUID
+**import_uuid:** `str` — Trace import UUID
     
 </dd>
 </dl>
@@ -9988,7 +8959,7 @@ client.agent.trajectory_import.delete(
 <dl>
 <dd>
 
-**trajectories:** `typing.Optional[TrajectoryImportDeleteRequestTrajectories]` — Whether to delete imported Trajectories
+**traces:** `typing.Optional[TraceImportDeleteRequestTraces]` — Whether to delete imported Traces
     
 </dd>
 </dl>
@@ -10008,7 +8979,7 @@ client.agent.trajectory_import.delete(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory_import.<a href="src/zep_cloud/agent/trajectory_import/client.py">update</a>(...) -> TrajectoryImport</code></summary>
+<details><summary><code>client.agent.trace_import.<a href="src/zep_cloud/agent/trace_import/client.py">update</a>(...) -> TraceImport</code></summary>
 <dl>
 <dd>
 
@@ -10043,7 +9014,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.update(
+client.agent.trace_import.update(
     agent_uuid="agent_uuid",
     import_uuid="import_uuid",
 )
@@ -10070,7 +9041,7 @@ client.agent.trajectory_import.update(
 <dl>
 <dd>
 
-**import_uuid:** `str` — Trajectory import UUID
+**import_uuid:** `str` — Trace import UUID
     
 </dd>
 </dl>
@@ -10094,7 +9065,7 @@ client.agent.trajectory_import.update(
 <dl>
 <dd>
 
-**mapping:** `typing.Optional[TrajectoryMapping]` — Mapping is the new mapping, when supplied. Example: {"task_family":{"source":"fixed","value":"support"}}.
+**mapping:** `typing.Optional[TraceMapping]` — Mapping is the new mapping, when supplied. Example: {"task_family":{"source":"fixed","value":"support"}}.
     
 </dd>
 </dl>
@@ -10126,7 +9097,7 @@ client.agent.trajectory_import.update(
 <dl>
 <dd>
 
-**schedule:** `typing.Optional[TrajectoryImportSchedule]` — Schedule is the new schedule, when supplied. Example: {"interval_hours":4,"start_from":"24h","settle_minutes":5,"max_open_hours":24}.
+**schedule:** `typing.Optional[TraceImportSchedule]` — Schedule is the new schedule, when supplied. Example: {"interval_hours":4,"start_from":"24h","settle_minutes":5,"max_open_hours":24}.
     
 </dd>
 </dl>
@@ -10134,7 +9105,7 @@ client.agent.trajectory_import.update(
 <dl>
 <dd>
 
-**selection:** `typing.Optional[TrajectoryImportSelection]` — Selection is the new selection, when supplied. Example: {"trace_ids":["trace_123"]}.
+**selection:** `typing.Optional[TraceImportSelection]` — Selection is the new selection, when supplied. Example: {"trace_ids":["trace_123"]}.
     
 </dd>
 </dl>
@@ -10154,7 +9125,7 @@ client.agent.trajectory_import.update(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory_import.<a href="src/zep_cloud/agent/trajectory_import/client.py">pause</a>(...) -> TrajectoryImport</code></summary>
+<details><summary><code>client.agent.trace_import.<a href="src/zep_cloud/agent/trace_import/client.py">pause</a>(...) -> TraceImport</code></summary>
 <dl>
 <dd>
 
@@ -10166,7 +9137,7 @@ client.agent.trajectory_import.update(
 <dl>
 <dd>
 
-Pause a scheduled trajectory import. One-time imports cannot be paused.
+Pause a scheduled trace import. One-time imports cannot be paused.
 </dd>
 </dl>
 </dd>
@@ -10189,7 +9160,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.pause(
+client.agent.trace_import.pause(
     agent_uuid="agent_uuid",
     import_uuid="import_uuid",
 )
@@ -10216,7 +9187,7 @@ client.agent.trajectory_import.pause(
 <dl>
 <dd>
 
-**import_uuid:** `str` — Trajectory import UUID
+**import_uuid:** `str` — Trace import UUID
     
 </dd>
 </dl>
@@ -10236,7 +9207,7 @@ client.agent.trajectory_import.pause(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory_import.<a href="src/zep_cloud/agent/trajectory_import/client.py">resume</a>(...) -> TrajectoryImport</code></summary>
+<details><summary><code>client.agent.trace_import.<a href="src/zep_cloud/agent/trace_import/client.py">resume</a>(...) -> TraceImport</code></summary>
 <dl>
 <dd>
 
@@ -10248,7 +9219,7 @@ client.agent.trajectory_import.pause(
 <dl>
 <dd>
 
-Resume a scheduled trajectory import. Zep verifies credentials first when they caused the pause.
+Resume a scheduled trace import. Zep verifies credentials first when they caused the pause.
 </dd>
 </dl>
 </dd>
@@ -10271,7 +9242,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.resume(
+client.agent.trace_import.resume(
     agent_uuid="agent_uuid",
     import_uuid="import_uuid",
 )
@@ -10298,7 +9269,1379 @@ client.agent.trajectory_import.resume(
 <dl>
 <dd>
 
-**import_uuid:** `str` — Trajectory import UUID
+**import_uuid:** `str` — Trace import UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Agent Trace
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">create</a>(...) -> AgentTrace</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.create(
+    agent_uuid="agent_uuid",
+    objective="objective",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**objective:** `str` — The task-instance objective captured for this attempt.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**learn_from:** `typing.Optional[bool]` — Whether eligible evidence may participate in learning. Defaults to true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Developer metadata used to organize and filter Traces.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**parent_trace_uuid:** `typing.Optional[str]` — The parent Trace UUID when this attempt retries an earlier attempt.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**task_family:** `typing.Optional[str]` 
+
+The task-family slug. Optional when inferred task families are enabled
+for the account: the service assigns one after the Trace closes.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_id:** `typing.Optional[str]` — The optional customer-assigned identifier, unique within the Agent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">list</a>(...) -> AgentTracePage</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.list(
+    agent_uuid="agent_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Page size (maximum 100)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` — Opaque page cursor
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order_by:** `typing.Optional[TraceListRequestOrderBy]` — Sort field
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `typing.Optional[TraceListRequestOrder]` — asc or desc
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**import_uuid:** `typing.Optional[str]` — Filter by owning Trace import UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source_kind:** `typing.Optional[TraceListRequestSourceKind]` — Source kind
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Filters to Traces whose metadata contains these key-value pairs.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**outcome:** `typing.Optional[AgentTraceOutcome]` — Filters to one reported outcome.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**parent_trace_uuid:** `typing.Optional[str]` — Filters to direct retries of this parent Trace.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `typing.Optional[AgentTraceLifecycle]` — Filters to one lifecycle state.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**task_family:** `typing.Optional[str]` — Filters to an exact task-family slug.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verification:** `typing.Optional[AgentTraceVerification]` — Filters to one verification strength.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">get</a>(...) -> AgentTrace</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.get(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">delete</a>(...) -> AgentTraceSourceDeletionResult</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.delete(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+    expected_revision=1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `DeleteAgentTraceRequest` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">update</a>(...) -> AgentTrace</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.update(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+    expected_revision=1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expected_revision:** `int` — The current Trace revision used for optimistic concurrency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**task_family:** `typing.Optional[str]` — Replacement task-family slug. Set to null to clear it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">abandon</a>(...) -> AgentTraceFinalizationResult</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.abandon(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+    highest_accepted_sequence=1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**highest_accepted_sequence:** `int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**assertion_uuid:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expected_revision:** `typing.Optional[int]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**missing_sequence_ranges:** `typing.Optional[typing.List[AgentTraceSequenceRange]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reason:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verification:** `typing.Optional[AgentTraceVerification]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">close</a>(...) -> AgentTraceFinalizationResult</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.close(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**closing_sequence:** `typing.Optional[int]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expected_revision:** `typing.Optional[int]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**missing_sequence_ranges:** `typing.Optional[typing.List[AgentTraceSequenceRange]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**outcome:** `typing.Optional[AgentTraceOutcome]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reason:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verification:** `typing.Optional[AgentTraceVerification]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verifier:** `typing.Optional[AgentTraceCloseVerifier]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verifier_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">correct_task_family</a>(...) -> AgentTraceFinalizationResult</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.correct_task_family(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+    expected_revision=1,
+    reason="reason",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expected_revision:** `int` — The current Trace revision used for optimistic concurrency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reason:** `str` — Why the terminal Trace classification is being corrected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**task_family:** `typing.Optional[str]` — Replacement task-family slug. Set to null to clear it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">list_events</a>(...) -> AgentTraceEventPage</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.list_events(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Page size (maximum 100)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` — Opaque page cursor
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">append_event</a>(...) -> AgentTraceEvent</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.append_event(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+    event_type="input_reference",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_type:** `AgentTraceEventType` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**content:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**context:** `typing.Optional[AgentTraceEventContext]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_id:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**occurred_at:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sequence:** `typing.Optional[int]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sources:** `typing.Optional[typing.List[AgentTraceEventSource]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">delete_event</a>(...) -> AgentTraceSourceDeletionResult</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.delete_event(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+    event_uuid="event_uuid",
+    expected_revision=1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event_uuid:** `str` — Event UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `DeleteAgentTraceRequest` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">reopen</a>(...) -> AgentTrace</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.reopen(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+    expected_revision=1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expected_revision:** `int` — The current Trace revision used for optimistic concurrency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">get_summary</a>(...) -> AgentTraceSummaryVersion</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.get_summary(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.agent.trace.<a href="src/zep_cloud/agent/trace/client.py">list_summary_versions</a>(...) -> AgentTraceSummaryPage</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.agent.trace.list_summary_versions(
+    agent_uuid="agent_uuid",
+    trace_uuid="trace_uuid",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**agent_uuid:** `str` — Agent UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trace_uuid:** `str` — Trace UUID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Page size (maximum 100)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` — Opaque page cursor
     
 </dd>
 </dl>
@@ -11947,7 +12290,7 @@ client.agent.skill.use.create(
     agent_uuid="agent_uuid",
     skill_uuid="skill_uuid",
     search_id="search_id",
-    trajectory_uuid="trajectory_uuid",
+    trace_uuid="trace_uuid",
     usage="selected",
 )
 
@@ -11989,7 +12332,7 @@ client.agent.skill.use.create(
 <dl>
 <dd>
 
-**trajectory_uuid:** `str` 
+**trace_uuid:** `str` 
     
 </dd>
 </dl>
@@ -12283,8 +12626,8 @@ client.agent.skill.export.get(
 </dl>
 </details>
 
-## Agent TrajectoryImport Run
-<details><summary><code>client.agent.trajectory_import.run.<a href="src/zep_cloud/agent/trajectory_import/run/client.py">list</a>(...) -> TrajectoryImportRunPage</code></summary>
+## Agent TraceImport Run
+<details><summary><code>client.agent.trace_import.run.<a href="src/zep_cloud/agent/trace_import/run/client.py">list</a>(...) -> TraceImportRunPage</code></summary>
 <dl>
 <dd>
 
@@ -12296,7 +12639,7 @@ client.agent.skill.export.get(
 <dl>
 <dd>
 
-List runs that belong to this trajectory import.
+List runs that belong to this trace import.
 </dd>
 </dl>
 </dd>
@@ -12319,7 +12662,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.run.list(
+client.agent.trace_import.run.list(
     agent_uuid="agent_uuid",
     import_uuid="import_uuid",
 )
@@ -12346,7 +12689,7 @@ client.agent.trajectory_import.run.list(
 <dl>
 <dd>
 
-**import_uuid:** `str` — Trajectory import UUID
+**import_uuid:** `str` — Trace import UUID
     
 </dd>
 </dl>
@@ -12382,7 +12725,7 @@ client.agent.trajectory_import.run.list(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory_import.run.<a href="src/zep_cloud/agent/trajectory_import/run/client.py">create</a>(...) -> Task</code></summary>
+<details><summary><code>client.agent.trace_import.run.<a href="src/zep_cloud/agent/trace_import/run/client.py">create</a>(...) -> Task</code></summary>
 <dl>
 <dd>
 
@@ -12417,7 +12760,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.run.create(
+client.agent.trace_import.run.create(
     agent_uuid="agent_uuid",
     import_uuid="import_uuid",
 )
@@ -12444,7 +12787,7 @@ client.agent.trajectory_import.run.create(
 <dl>
 <dd>
 
-**import_uuid:** `str` — Trajectory import UUID
+**import_uuid:** `str` — Trace import UUID
     
 </dd>
 </dl>
@@ -12464,7 +12807,7 @@ client.agent.trajectory_import.run.create(
 </dl>
 </details>
 
-<details><summary><code>client.agent.trajectory_import.run.<a href="src/zep_cloud/agent/trajectory_import/run/client.py">get</a>(...) -> TrajectoryImportRun</code></summary>
+<details><summary><code>client.agent.trace_import.run.<a href="src/zep_cloud/agent/trace_import/run/client.py">get</a>(...) -> TraceImportRun</code></summary>
 <dl>
 <dd>
 
@@ -12476,7 +12819,7 @@ client.agent.trajectory_import.run.create(
 <dl>
 <dd>
 
-Read one run that belongs to this trajectory import.
+Read one run that belongs to this trace import.
 </dd>
 </dl>
 </dd>
@@ -12499,7 +12842,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.run.get(
+client.agent.trace_import.run.get(
     agent_uuid="agent_uuid",
     import_uuid="import_uuid",
     run_uuid="run_uuid",
@@ -12527,7 +12870,7 @@ client.agent.trajectory_import.run.get(
 <dl>
 <dd>
 
-**import_uuid:** `str` — Trajectory import UUID
+**import_uuid:** `str` — Trace import UUID
     
 </dd>
 </dl>
@@ -12555,8 +12898,8 @@ client.agent.trajectory_import.run.get(
 </dl>
 </details>
 
-## Agent TrajectoryImport Run Item
-<details><summary><code>client.agent.trajectory_import.run.item.<a href="src/zep_cloud/agent/trajectory_import/run/item/client.py">list</a>(...) -> TrajectoryImportRunItemPage</code></summary>
+## Agent TraceImport Run Item
+<details><summary><code>client.agent.trace_import.run.item.<a href="src/zep_cloud/agent/trace_import/run/item/client.py">list</a>(...) -> TraceImportRunItemPage</code></summary>
 <dl>
 <dd>
 
@@ -12591,7 +12934,7 @@ client = Zep(
     environment=ZepEnvironment.DEFAULT,
 )
 
-client.agent.trajectory_import.run.item.list(
+client.agent.trace_import.run.item.list(
     agent_uuid="agent_uuid",
     import_uuid="import_uuid",
     run_uuid="run_uuid",
@@ -12619,7 +12962,7 @@ client.agent.trajectory_import.run.item.list(
 <dl>
 <dd>
 
-**import_uuid:** `str` — Trajectory import UUID
+**import_uuid:** `str` — Trace import UUID
     
 </dd>
 </dl>
@@ -12888,17 +13231,6 @@ client.graph.episode.add(
 <dl>
 <dd>
 
-**created_at:** `typing.Optional[str]` 
-
-The episode's reference time, used for temporal reasoning rather than
-ingestion time.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **document_id:** `typing.Optional[str]` — Groups this episode as a chunk of a document on the graph.
     
 </dd>
@@ -12908,6 +13240,17 @@ ingestion time.
 <dd>
 
 **metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Metadata to store on the episode. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reference_time:** `typing.Optional[str]` 
+
+The episode's reference time, used for temporal reasoning rather than
+ingestion time. Defaults to the ingestion time.
     
 </dd>
 </dl>
@@ -15690,7 +16033,7 @@ client.trace_connection.trace.get(
 <dl>
 <dd>
 
-**mapping:** `typing.Optional[TrajectoryMapping]` — Mapping is an optional mapping preview configuration. Example: {"task_family":{"source":"fixed","value":"support"}}.
+**mapping:** `typing.Optional[TraceMapping]` — Mapping is an optional mapping preview configuration. Example: {"task_family":{"source":"fixed","value":"support"}}.
     
 </dd>
 </dl>

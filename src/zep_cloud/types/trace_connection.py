@@ -6,6 +6,7 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .trace_connection_provider import TraceConnectionProvider
 from .trace_connection_settings import TraceConnectionSettings
 
 
@@ -40,9 +41,9 @@ class TraceConnection(UniversalBaseModel):
     Name is the display name.
     """
 
-    provider: typing.Optional[str] = pydantic.Field(default=None)
+    provider: typing.Optional[TraceConnectionProvider] = pydantic.Field(default=None)
     """
-    Provider is the observability provider.
+    Provider is the Braintrust or LangSmith provider.
     """
 
     provider_organization_id: typing.Optional[str] = pydantic.Field(default=None)

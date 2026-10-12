@@ -9,14 +9,14 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 class AgentSkillCandidateEvidence(UniversalBaseModel):
     imported_provider: typing.Optional[str] = pydantic.Field(default=None)
     """
-    ImportedProvider is the provider of the source import, when this Trajectory was imported.
+    ImportedProvider is the provider of the source import, when this Trace was imported.
     """
 
     occurred_at: typing.Optional[str] = None
     outcome: typing.Optional[str] = None
     polarity: typing.Optional[str] = None
     source_kind: typing.Optional[str] = None
-    trajectory_uuid: typing.Optional[str] = None
+    trace_uuid: typing.Optional[str] = None
     verification: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:

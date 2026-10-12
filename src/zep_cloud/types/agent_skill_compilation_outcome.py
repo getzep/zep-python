@@ -28,7 +28,7 @@ class AgentSkillCompilationOutcome(UniversalBaseModel):
     rejection_class: typing.Optional[AgentSkillCompilationOutcomeRejectionClass] = None
     stage: typing.Optional[str] = None
     task_family: typing.Optional[str] = None
-    trajectory_count: typing.Optional[int] = None
+    trace_count: typing.Optional[int] = None
     uuid_: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
     ] = None

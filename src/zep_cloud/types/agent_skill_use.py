@@ -16,7 +16,7 @@ class AgentSkillUse(UniversalBaseModel):
     reason_code: typing.Optional[str] = None
     skill_uuid: typing.Optional[str] = None
     skill_version: typing.Optional[int] = None
-    trajectory_uuid: typing.Optional[str] = None
+    trace_uuid: typing.Optional[str] = None
     usage: typing.Optional[str] = None
     uuid_: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
