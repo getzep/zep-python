@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .imported_trajectory_reference import ImportedTrajectoryReference
+from .imported_trace_reference import ImportedTraceReference
 from .source_span import SourceSpan
 
 
@@ -24,9 +24,9 @@ class SourceTrace(UniversalBaseModel):
     HasError reports whether the trace contains an error.
     """
 
-    imported_trajectories: typing.Optional[typing.List[ImportedTrajectoryReference]] = pydantic.Field(default=None)
+    imported_traces: typing.Optional[typing.List[ImportedTraceReference]] = pydantic.Field(default=None)
     """
-    ImportedTrajectories contains visible Zep Trajectories imported from this trace. Example: [{"agent_uuid":"f8b28f94-4f5a-4b3a-b782-87aa8464ac04","trajectory_uuid":"6a906e70-50ca-4e43-a874-5fcae02a71fa","import_uuid":"332c28e1-e6a7-4bca-97b2-ef1ec82c65fa"}].
+    ImportedTraces contains visible Zep Traces imported from this trace. Example: [{"agent_uuid":"f8b28f94-4f5a-4b3a-b782-87aa8464ac04","trace_uuid":"6a906e70-50ca-4e43-a874-5fcae02a71fa","import_uuid":"332c28e1-e6a7-4bca-97b2-ef1ec82c65fa"}].
     """
 
     last_activity_at: typing.Optional[str] = pydantic.Field(default=None)

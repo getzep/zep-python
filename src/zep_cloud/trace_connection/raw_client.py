@@ -21,6 +21,7 @@ from ..errors.unprocessable_entity_error import UnprocessableEntityError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.trace_connection import TraceConnection
 from ..types.trace_connection_page import TraceConnectionPage
+from .types.create_trace_connection_request_provider import CreateTraceConnectionRequestProvider
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -125,14 +126,14 @@ class RawTraceConnectionClient:
         api_url: typing.Optional[str] = OMIT,
         credential: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
-        provider: typing.Optional[str] = OMIT,
+        provider: typing.Optional[CreateTraceConnectionRequestProvider] = OMIT,
         requests_per_minute: typing.Optional[int] = OMIT,
         retention_days: typing.Optional[int] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[TraceConnection]:
         """
-        Verify the provider credential before Zep stores it. Example request: `{"name":"Support traces","provider":"braintrust","credential":"secret","requests_per_minute":10}`.
+        Verify a provider credential before Zep stores it. Both providers accept 1 to 60 requests per minute and an optional retention window. Example requests: `{"name":"Support traces","provider":"braintrust","credential":"secret","requests_per_minute":60,"retention_days":30}` and `{"name":"Support traces","provider":"langsmith","credential":"secret","requests_per_minute":60,"retention_days":30}`.
 
         Parameters
         ----------
@@ -145,14 +146,14 @@ class RawTraceConnectionClient:
         name : typing.Optional[str]
             Name is the connection name.
 
-        provider : typing.Optional[str]
-            Provider is the provider name.
+        provider : typing.Optional[CreateTraceConnectionRequestProvider]
+            Provider is the Braintrust or LangSmith provider.
 
         requests_per_minute : typing.Optional[int]
-            RequestsPerMinute is the provider request rate limit.
+            RequestsPerMinute is the request rate limit from 1 to 60 per minute.
 
         retention_days : typing.Optional[int]
-            RetentionDays is an optional provider retention window.
+            RetentionDays is an optional retention window in days.
 
         idempotency_key : typing.Optional[str]
 
@@ -337,7 +338,7 @@ class RawTraceConnectionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[None]:
         """
-        Delete a trace connection that no active trajectory import uses.
+        Delete a trace connection that no active trace import uses.
 
         Parameters
         ----------
@@ -434,7 +435,7 @@ class RawTraceConnectionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[TraceConnection]:
         """
-        Verify changed provider settings before Zep stores them. Example request: `{"credential":"new-secret","requests_per_minute":20}`.
+        Verify changed settings before Zep stores them. Both providers accept 1 to 60 requests per minute and an optional retention window. Example request: `{"requests_per_minute":60,"retention_days":30}`.
 
         Parameters
         ----------
@@ -451,10 +452,10 @@ class RawTraceConnectionClient:
             Name is the new connection name, when supplied.
 
         requests_per_minute : typing.Optional[int]
-            RequestsPerMinute is the new provider request rate limit, when supplied.
+            RequestsPerMinute is the new request rate limit, when supplied.
 
         retention_days : typing.Optional[int]
-            RetentionDays is the new provider retention window, when supplied.
+            RetentionDays is the new retention window in days, when supplied.
 
         idempotency_key : typing.Optional[str]
 
@@ -785,14 +786,14 @@ class AsyncRawTraceConnectionClient:
         api_url: typing.Optional[str] = OMIT,
         credential: typing.Optional[str] = OMIT,
         name: typing.Optional[str] = OMIT,
-        provider: typing.Optional[str] = OMIT,
+        provider: typing.Optional[CreateTraceConnectionRequestProvider] = OMIT,
         requests_per_minute: typing.Optional[int] = OMIT,
         retention_days: typing.Optional[int] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[TraceConnection]:
         """
-        Verify the provider credential before Zep stores it. Example request: `{"name":"Support traces","provider":"braintrust","credential":"secret","requests_per_minute":10}`.
+        Verify a provider credential before Zep stores it. Both providers accept 1 to 60 requests per minute and an optional retention window. Example requests: `{"name":"Support traces","provider":"braintrust","credential":"secret","requests_per_minute":60,"retention_days":30}` and `{"name":"Support traces","provider":"langsmith","credential":"secret","requests_per_minute":60,"retention_days":30}`.
 
         Parameters
         ----------
@@ -805,14 +806,14 @@ class AsyncRawTraceConnectionClient:
         name : typing.Optional[str]
             Name is the connection name.
 
-        provider : typing.Optional[str]
-            Provider is the provider name.
+        provider : typing.Optional[CreateTraceConnectionRequestProvider]
+            Provider is the Braintrust or LangSmith provider.
 
         requests_per_minute : typing.Optional[int]
-            RequestsPerMinute is the provider request rate limit.
+            RequestsPerMinute is the request rate limit from 1 to 60 per minute.
 
         retention_days : typing.Optional[int]
-            RetentionDays is an optional provider retention window.
+            RetentionDays is an optional retention window in days.
 
         idempotency_key : typing.Optional[str]
 
@@ -997,7 +998,7 @@ class AsyncRawTraceConnectionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[None]:
         """
-        Delete a trace connection that no active trajectory import uses.
+        Delete a trace connection that no active trace import uses.
 
         Parameters
         ----------
@@ -1094,7 +1095,7 @@ class AsyncRawTraceConnectionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[TraceConnection]:
         """
-        Verify changed provider settings before Zep stores them. Example request: `{"credential":"new-secret","requests_per_minute":20}`.
+        Verify changed settings before Zep stores them. Both providers accept 1 to 60 requests per minute and an optional retention window. Example request: `{"requests_per_minute":60,"retention_days":30}`.
 
         Parameters
         ----------
@@ -1111,10 +1112,10 @@ class AsyncRawTraceConnectionClient:
             Name is the new connection name, when supplied.
 
         requests_per_minute : typing.Optional[int]
-            RequestsPerMinute is the new provider request rate limit, when supplied.
+            RequestsPerMinute is the new request rate limit, when supplied.
 
         retention_days : typing.Optional[int]
-            RetentionDays is the new provider retention window, when supplied.
+            RetentionDays is the new retention window in days, when supplied.
 
         idempotency_key : typing.Optional[str]
 

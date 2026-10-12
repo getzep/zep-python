@@ -15,12 +15,6 @@ class BatchItemInput(UniversalBaseModel):
     The message content, for a thread_message item.
     """
 
-    created_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The item's reference time, used for temporal reasoning rather than
-    ingestion time. Applies to both graph_episode and thread_message items.
-    """
-
     data: typing.Optional[str] = pydantic.Field(default=None)
     """
     The episode content, for a graph_episode item.
@@ -49,6 +43,13 @@ class BatchItemInput(UniversalBaseModel):
     name: typing.Optional[str] = pydantic.Field(default=None)
     """
     A customizable name for the sender of the message.
+    """
+
+    reference_time: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The item's reference time, used for temporal reasoning rather than
+    ingestion time. Applies to both graph_episode and thread_message items.
+    Defaults to the ingestion time.
     """
 
     role: typing.Optional[BatchItemInputRole] = pydantic.Field(default=None)

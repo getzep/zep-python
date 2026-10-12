@@ -13,8 +13,8 @@ class AgentSkillEvidence(UniversalBaseModel):
     polarity: typing.Optional[str] = None
     source_kind: typing.Optional[str] = None
     summary_version_uuid: typing.Optional[str] = None
-    trajectory_event_uuid: typing.Optional[str] = None
-    trajectory_uuid: typing.Optional[str] = None
+    trace_event_uuid: typing.Optional[str] = None
+    trace_uuid: typing.Optional[str] = None
     verification: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:

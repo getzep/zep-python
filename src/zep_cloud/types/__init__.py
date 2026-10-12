@@ -67,32 +67,35 @@ if typing.TYPE_CHECKING:
     from .agent_split_plan_skill_selection_request import AgentSplitPlanSkillSelectionRequest
     from .agent_split_plan_source import AgentSplitPlanSource
     from .agent_status import AgentStatus
-    from .agent_trajectory import AgentTrajectory
-    from .agent_trajectory_close_verifier import AgentTrajectoryCloseVerifier
-    from .agent_trajectory_event import AgentTrajectoryEvent
-    from .agent_trajectory_event_context import AgentTrajectoryEventContext
-    from .agent_trajectory_event_page import AgentTrajectoryEventPage
-    from .agent_trajectory_event_processing_state import AgentTrajectoryEventProcessingState
-    from .agent_trajectory_event_source import AgentTrajectoryEventSource
-    from .agent_trajectory_event_source_copy_mode import AgentTrajectoryEventSourceCopyMode
-    from .agent_trajectory_event_source_retention_mode import AgentTrajectoryEventSourceRetentionMode
-    from .agent_trajectory_event_type import AgentTrajectoryEventType
-    from .agent_trajectory_finalization_result import AgentTrajectoryFinalizationResult
-    from .agent_trajectory_internal import AgentTrajectoryInternal
-    from .agent_trajectory_lifecycle import AgentTrajectoryLifecycle
-    from .agent_trajectory_outcome import AgentTrajectoryOutcome
-    from .agent_trajectory_page import AgentTrajectoryPage
-    from .agent_trajectory_processing_state import AgentTrajectoryProcessingState
-    from .agent_trajectory_resource_ref import AgentTrajectoryResourceRef
-    from .agent_trajectory_sequence_range import AgentTrajectorySequenceRange
-    from .agent_trajectory_source import AgentTrajectorySource
-    from .agent_trajectory_source_deletion_result import AgentTrajectorySourceDeletionResult
-    from .agent_trajectory_summary_creation_reason import AgentTrajectorySummaryCreationReason
-    from .agent_trajectory_summary_omission_reason import AgentTrajectorySummaryOmissionReason
-    from .agent_trajectory_summary_omitted_range import AgentTrajectorySummaryOmittedRange
-    from .agent_trajectory_summary_page import AgentTrajectorySummaryPage
-    from .agent_trajectory_summary_version import AgentTrajectorySummaryVersion
-    from .agent_trajectory_verification import AgentTrajectoryVerification
+    from .agent_task_family_descriptor import AgentTaskFamilyDescriptor
+    from .agent_task_family_descriptor_page import AgentTaskFamilyDescriptorPage
+    from .agent_trace import AgentTrace
+    from .agent_trace_close_verifier import AgentTraceCloseVerifier
+    from .agent_trace_event import AgentTraceEvent
+    from .agent_trace_event_context import AgentTraceEventContext
+    from .agent_trace_event_page import AgentTraceEventPage
+    from .agent_trace_event_processing_state import AgentTraceEventProcessingState
+    from .agent_trace_event_source import AgentTraceEventSource
+    from .agent_trace_event_source_copy_mode import AgentTraceEventSourceCopyMode
+    from .agent_trace_event_source_retention_mode import AgentTraceEventSourceRetentionMode
+    from .agent_trace_event_type import AgentTraceEventType
+    from .agent_trace_finalization_result import AgentTraceFinalizationResult
+    from .agent_trace_internal import AgentTraceInternal
+    from .agent_trace_lifecycle import AgentTraceLifecycle
+    from .agent_trace_outcome import AgentTraceOutcome
+    from .agent_trace_page import AgentTracePage
+    from .agent_trace_processing_state import AgentTraceProcessingState
+    from .agent_trace_resource_ref import AgentTraceResourceRef
+    from .agent_trace_sequence_range import AgentTraceSequenceRange
+    from .agent_trace_source import AgentTraceSource
+    from .agent_trace_source_deletion_result import AgentTraceSourceDeletionResult
+    from .agent_trace_summary_creation_reason import AgentTraceSummaryCreationReason
+    from .agent_trace_summary_omission_reason import AgentTraceSummaryOmissionReason
+    from .agent_trace_summary_omitted_range import AgentTraceSummaryOmittedRange
+    from .agent_trace_summary_page import AgentTraceSummaryPage
+    from .agent_trace_summary_version import AgentTraceSummaryVersion
+    from .agent_trace_task_family_inference import AgentTraceTaskFamilyInference
+    from .agent_trace_verification import AgentTraceVerification
     from .agent_verification_strength import AgentVerificationStrength
     from .agent_verifier import AgentVerifier
     from .agent_verifier_assertion_outcome import AgentVerifierAssertionOutcome
@@ -147,13 +150,14 @@ if typing.TYPE_CHECKING:
     from .debug_log_level import DebugLogLevel
     from .debug_log_status import DebugLogStatus
     from .debug_logging_enablement import DebugLoggingEnablement
-    from .delete_agent_trajectory_request import DeleteAgentTrajectoryRequest
+    from .delete_agent_trace_request import DeleteAgentTraceRequest
     from .document_summary import DocumentSummary
     from .document_summary_page import DocumentSummaryPage
     from .edge import Edge
     from .edge_input import EdgeInput
     from .edge_node_ref import EdgeNodeRef
     from .edge_page import EdgePage
+    from .edge_search_filters import EdgeSearchFilters
     from .edge_source_target import EdgeSourceTarget
     from .edge_type import EdgeType
     from .entity_property import EntityProperty
@@ -176,7 +180,7 @@ if typing.TYPE_CHECKING:
     from .hyperedge_edge import HyperedgeEdge
     from .hyperedge_input import HyperedgeInput
     from .hyperedge_page import HyperedgePage
-    from .imported_trajectory_reference import ImportedTrajectoryReference
+    from .imported_trace_reference import ImportedTraceReference
     from .ingestion_trace import IngestionTrace
     from .ingestion_trace_edge import IngestionTraceEdge
     from .ingestion_trace_edge_invalidation import IngestionTraceEdgeInvalidation
@@ -189,6 +193,7 @@ if typing.TYPE_CHECKING:
     from .ingestion_trace_node_resolution import IngestionTraceNodeResolution
     from .ingestion_trace_output import IngestionTraceOutput
     from .ingestion_trace_page import IngestionTracePage
+    from .ingestion_trace_protected_attribute_conflict import IngestionTraceProtectedAttributeConflict
     from .ingestion_trace_status import IngestionTraceStatus
     from .ingestion_trace_step import IngestionTraceStep
     from .instructions import Instructions
@@ -210,6 +215,7 @@ if typing.TYPE_CHECKING:
     from .node import Node
     from .node_input import NodeInput
     from .node_page import NodePage
+    from .node_search_filters import NodeSearchFilters
     from .objective_mapping_rule import ObjectiveMappingRule
     from .objective_mapping_rule_source import ObjectiveMappingRuleSource
     from .observation import Observation
@@ -232,6 +238,7 @@ if typing.TYPE_CHECKING:
     from .property_filter_operator import PropertyFilterOperator
     from .property_filter_value import PropertyFilterValue
     from .property_filter_value_three_item import PropertyFilterValueThreeItem
+    from .rename_agent_task_family_response import RenameAgentTaskFamilyResponse
     from .role_type import RoleType
     from .search_filters import SearchFilters
     from .search_list_request import SearchListRequest
@@ -262,30 +269,32 @@ if typing.TYPE_CHECKING:
     from .thread_summary_page import ThreadSummaryPage
     from .trace_connection import TraceConnection
     from .trace_connection_page import TraceConnectionPage
+    from .trace_connection_provider import TraceConnectionProvider
     from .trace_connection_settings import TraceConnectionSettings
+    from .trace_content_mapping import TraceContentMapping
     from .trace_filter import TraceFilter
+    from .trace_import import TraceImport
+    from .trace_import_page import TraceImportPage
+    from .trace_import_pause_reason import TraceImportPauseReason
+    from .trace_import_provider import TraceImportProvider
+    from .trace_import_run import TraceImportRun
+    from .trace_import_run_item import TraceImportRunItem
+    from .trace_import_run_item_page import TraceImportRunItemPage
+    from .trace_import_run_page import TraceImportRunPage
+    from .trace_import_run_reference import TraceImportRunReference
+    from .trace_import_run_reference_status import TraceImportRunReferenceStatus
+    from .trace_import_run_reference_trigger import TraceImportRunReferenceTrigger
+    from .trace_import_schedule import TraceImportSchedule
+    from .trace_import_selection import TraceImportSelection
+    from .trace_mapping import TraceMapping
+    from .trace_mapping_include_outcomes_item import TraceMappingIncludeOutcomesItem
+    from .trace_mapping_result import TraceMappingResult
+    from .trace_mapping_result_outcome import TraceMappingResultOutcome
+    from .trace_mapping_result_outcome_rule import TraceMappingResultOutcomeRule
     from .trace_preview import TracePreview
     from .trace_provider_project import TraceProviderProject
     from .trace_provider_project_page import TraceProviderProjectPage
     from .trace_score_range import TraceScoreRange
-    from .trajectory_content_mapping import TrajectoryContentMapping
-    from .trajectory_import import TrajectoryImport
-    from .trajectory_import_page import TrajectoryImportPage
-    from .trajectory_import_pause_reason import TrajectoryImportPauseReason
-    from .trajectory_import_run import TrajectoryImportRun
-    from .trajectory_import_run_item import TrajectoryImportRunItem
-    from .trajectory_import_run_item_page import TrajectoryImportRunItemPage
-    from .trajectory_import_run_page import TrajectoryImportRunPage
-    from .trajectory_import_run_reference import TrajectoryImportRunReference
-    from .trajectory_import_run_reference_status import TrajectoryImportRunReferenceStatus
-    from .trajectory_import_run_reference_trigger import TrajectoryImportRunReferenceTrigger
-    from .trajectory_import_schedule import TrajectoryImportSchedule
-    from .trajectory_import_selection import TrajectoryImportSelection
-    from .trajectory_mapping import TrajectoryMapping
-    from .trajectory_mapping_include_outcomes_item import TrajectoryMappingIncludeOutcomesItem
-    from .trajectory_mapping_result import TrajectoryMappingResult
-    from .trajectory_mapping_result_outcome import TrajectoryMappingResultOutcome
-    from .trajectory_mapping_result_outcome_rule import TrajectoryMappingResultOutcomeRule
     from .user import User
     from .user_delete_result import UserDeleteResult
     from .user_group import UserGroup
@@ -355,32 +364,35 @@ _dynamic_imports: typing.Dict[str, str] = {
     "AgentSplitPlanSkillSelectionRequest": ".agent_split_plan_skill_selection_request",
     "AgentSplitPlanSource": ".agent_split_plan_source",
     "AgentStatus": ".agent_status",
-    "AgentTrajectory": ".agent_trajectory",
-    "AgentTrajectoryCloseVerifier": ".agent_trajectory_close_verifier",
-    "AgentTrajectoryEvent": ".agent_trajectory_event",
-    "AgentTrajectoryEventContext": ".agent_trajectory_event_context",
-    "AgentTrajectoryEventPage": ".agent_trajectory_event_page",
-    "AgentTrajectoryEventProcessingState": ".agent_trajectory_event_processing_state",
-    "AgentTrajectoryEventSource": ".agent_trajectory_event_source",
-    "AgentTrajectoryEventSourceCopyMode": ".agent_trajectory_event_source_copy_mode",
-    "AgentTrajectoryEventSourceRetentionMode": ".agent_trajectory_event_source_retention_mode",
-    "AgentTrajectoryEventType": ".agent_trajectory_event_type",
-    "AgentTrajectoryFinalizationResult": ".agent_trajectory_finalization_result",
-    "AgentTrajectoryInternal": ".agent_trajectory_internal",
-    "AgentTrajectoryLifecycle": ".agent_trajectory_lifecycle",
-    "AgentTrajectoryOutcome": ".agent_trajectory_outcome",
-    "AgentTrajectoryPage": ".agent_trajectory_page",
-    "AgentTrajectoryProcessingState": ".agent_trajectory_processing_state",
-    "AgentTrajectoryResourceRef": ".agent_trajectory_resource_ref",
-    "AgentTrajectorySequenceRange": ".agent_trajectory_sequence_range",
-    "AgentTrajectorySource": ".agent_trajectory_source",
-    "AgentTrajectorySourceDeletionResult": ".agent_trajectory_source_deletion_result",
-    "AgentTrajectorySummaryCreationReason": ".agent_trajectory_summary_creation_reason",
-    "AgentTrajectorySummaryOmissionReason": ".agent_trajectory_summary_omission_reason",
-    "AgentTrajectorySummaryOmittedRange": ".agent_trajectory_summary_omitted_range",
-    "AgentTrajectorySummaryPage": ".agent_trajectory_summary_page",
-    "AgentTrajectorySummaryVersion": ".agent_trajectory_summary_version",
-    "AgentTrajectoryVerification": ".agent_trajectory_verification",
+    "AgentTaskFamilyDescriptor": ".agent_task_family_descriptor",
+    "AgentTaskFamilyDescriptorPage": ".agent_task_family_descriptor_page",
+    "AgentTrace": ".agent_trace",
+    "AgentTraceCloseVerifier": ".agent_trace_close_verifier",
+    "AgentTraceEvent": ".agent_trace_event",
+    "AgentTraceEventContext": ".agent_trace_event_context",
+    "AgentTraceEventPage": ".agent_trace_event_page",
+    "AgentTraceEventProcessingState": ".agent_trace_event_processing_state",
+    "AgentTraceEventSource": ".agent_trace_event_source",
+    "AgentTraceEventSourceCopyMode": ".agent_trace_event_source_copy_mode",
+    "AgentTraceEventSourceRetentionMode": ".agent_trace_event_source_retention_mode",
+    "AgentTraceEventType": ".agent_trace_event_type",
+    "AgentTraceFinalizationResult": ".agent_trace_finalization_result",
+    "AgentTraceInternal": ".agent_trace_internal",
+    "AgentTraceLifecycle": ".agent_trace_lifecycle",
+    "AgentTraceOutcome": ".agent_trace_outcome",
+    "AgentTracePage": ".agent_trace_page",
+    "AgentTraceProcessingState": ".agent_trace_processing_state",
+    "AgentTraceResourceRef": ".agent_trace_resource_ref",
+    "AgentTraceSequenceRange": ".agent_trace_sequence_range",
+    "AgentTraceSource": ".agent_trace_source",
+    "AgentTraceSourceDeletionResult": ".agent_trace_source_deletion_result",
+    "AgentTraceSummaryCreationReason": ".agent_trace_summary_creation_reason",
+    "AgentTraceSummaryOmissionReason": ".agent_trace_summary_omission_reason",
+    "AgentTraceSummaryOmittedRange": ".agent_trace_summary_omitted_range",
+    "AgentTraceSummaryPage": ".agent_trace_summary_page",
+    "AgentTraceSummaryVersion": ".agent_trace_summary_version",
+    "AgentTraceTaskFamilyInference": ".agent_trace_task_family_inference",
+    "AgentTraceVerification": ".agent_trace_verification",
     "AgentVerificationStrength": ".agent_verification_strength",
     "AgentVerifier": ".agent_verifier",
     "AgentVerifierAssertionOutcome": ".agent_verifier_assertion_outcome",
@@ -435,13 +447,14 @@ _dynamic_imports: typing.Dict[str, str] = {
     "DebugLogLevel": ".debug_log_level",
     "DebugLogStatus": ".debug_log_status",
     "DebugLoggingEnablement": ".debug_logging_enablement",
-    "DeleteAgentTrajectoryRequest": ".delete_agent_trajectory_request",
+    "DeleteAgentTraceRequest": ".delete_agent_trace_request",
     "DocumentSummary": ".document_summary",
     "DocumentSummaryPage": ".document_summary_page",
     "Edge": ".edge",
     "EdgeInput": ".edge_input",
     "EdgeNodeRef": ".edge_node_ref",
     "EdgePage": ".edge_page",
+    "EdgeSearchFilters": ".edge_search_filters",
     "EdgeSourceTarget": ".edge_source_target",
     "EdgeType": ".edge_type",
     "EntityProperty": ".entity_property",
@@ -464,7 +477,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "HyperedgeEdge": ".hyperedge_edge",
     "HyperedgeInput": ".hyperedge_input",
     "HyperedgePage": ".hyperedge_page",
-    "ImportedTrajectoryReference": ".imported_trajectory_reference",
+    "ImportedTraceReference": ".imported_trace_reference",
     "IngestionTrace": ".ingestion_trace",
     "IngestionTraceEdge": ".ingestion_trace_edge",
     "IngestionTraceEdgeInvalidation": ".ingestion_trace_edge_invalidation",
@@ -477,6 +490,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "IngestionTraceNodeResolution": ".ingestion_trace_node_resolution",
     "IngestionTraceOutput": ".ingestion_trace_output",
     "IngestionTracePage": ".ingestion_trace_page",
+    "IngestionTraceProtectedAttributeConflict": ".ingestion_trace_protected_attribute_conflict",
     "IngestionTraceStatus": ".ingestion_trace_status",
     "IngestionTraceStep": ".ingestion_trace_step",
     "Instructions": ".instructions",
@@ -498,6 +512,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "Node": ".node",
     "NodeInput": ".node_input",
     "NodePage": ".node_page",
+    "NodeSearchFilters": ".node_search_filters",
     "ObjectiveMappingRule": ".objective_mapping_rule",
     "ObjectiveMappingRuleSource": ".objective_mapping_rule_source",
     "Observation": ".observation",
@@ -520,6 +535,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "PropertyFilterOperator": ".property_filter_operator",
     "PropertyFilterValue": ".property_filter_value",
     "PropertyFilterValueThreeItem": ".property_filter_value_three_item",
+    "RenameAgentTaskFamilyResponse": ".rename_agent_task_family_response",
     "RoleType": ".role_type",
     "SearchFilters": ".search_filters",
     "SearchListRequest": ".search_list_request",
@@ -550,30 +566,32 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ThreadSummaryPage": ".thread_summary_page",
     "TraceConnection": ".trace_connection",
     "TraceConnectionPage": ".trace_connection_page",
+    "TraceConnectionProvider": ".trace_connection_provider",
     "TraceConnectionSettings": ".trace_connection_settings",
+    "TraceContentMapping": ".trace_content_mapping",
     "TraceFilter": ".trace_filter",
+    "TraceImport": ".trace_import",
+    "TraceImportPage": ".trace_import_page",
+    "TraceImportPauseReason": ".trace_import_pause_reason",
+    "TraceImportProvider": ".trace_import_provider",
+    "TraceImportRun": ".trace_import_run",
+    "TraceImportRunItem": ".trace_import_run_item",
+    "TraceImportRunItemPage": ".trace_import_run_item_page",
+    "TraceImportRunPage": ".trace_import_run_page",
+    "TraceImportRunReference": ".trace_import_run_reference",
+    "TraceImportRunReferenceStatus": ".trace_import_run_reference_status",
+    "TraceImportRunReferenceTrigger": ".trace_import_run_reference_trigger",
+    "TraceImportSchedule": ".trace_import_schedule",
+    "TraceImportSelection": ".trace_import_selection",
+    "TraceMapping": ".trace_mapping",
+    "TraceMappingIncludeOutcomesItem": ".trace_mapping_include_outcomes_item",
+    "TraceMappingResult": ".trace_mapping_result",
+    "TraceMappingResultOutcome": ".trace_mapping_result_outcome",
+    "TraceMappingResultOutcomeRule": ".trace_mapping_result_outcome_rule",
     "TracePreview": ".trace_preview",
     "TraceProviderProject": ".trace_provider_project",
     "TraceProviderProjectPage": ".trace_provider_project_page",
     "TraceScoreRange": ".trace_score_range",
-    "TrajectoryContentMapping": ".trajectory_content_mapping",
-    "TrajectoryImport": ".trajectory_import",
-    "TrajectoryImportPage": ".trajectory_import_page",
-    "TrajectoryImportPauseReason": ".trajectory_import_pause_reason",
-    "TrajectoryImportRun": ".trajectory_import_run",
-    "TrajectoryImportRunItem": ".trajectory_import_run_item",
-    "TrajectoryImportRunItemPage": ".trajectory_import_run_item_page",
-    "TrajectoryImportRunPage": ".trajectory_import_run_page",
-    "TrajectoryImportRunReference": ".trajectory_import_run_reference",
-    "TrajectoryImportRunReferenceStatus": ".trajectory_import_run_reference_status",
-    "TrajectoryImportRunReferenceTrigger": ".trajectory_import_run_reference_trigger",
-    "TrajectoryImportSchedule": ".trajectory_import_schedule",
-    "TrajectoryImportSelection": ".trajectory_import_selection",
-    "TrajectoryMapping": ".trajectory_mapping",
-    "TrajectoryMappingIncludeOutcomesItem": ".trajectory_mapping_include_outcomes_item",
-    "TrajectoryMappingResult": ".trajectory_mapping_result",
-    "TrajectoryMappingResultOutcome": ".trajectory_mapping_result_outcome",
-    "TrajectoryMappingResultOutcomeRule": ".trajectory_mapping_result_outcome_rule",
     "User": ".user",
     "UserDeleteResult": ".user_delete_result",
     "UserGroup": ".user_group",
@@ -667,32 +685,35 @@ __all__ = [
     "AgentSplitPlanSkillSelectionRequest",
     "AgentSplitPlanSource",
     "AgentStatus",
-    "AgentTrajectory",
-    "AgentTrajectoryCloseVerifier",
-    "AgentTrajectoryEvent",
-    "AgentTrajectoryEventContext",
-    "AgentTrajectoryEventPage",
-    "AgentTrajectoryEventProcessingState",
-    "AgentTrajectoryEventSource",
-    "AgentTrajectoryEventSourceCopyMode",
-    "AgentTrajectoryEventSourceRetentionMode",
-    "AgentTrajectoryEventType",
-    "AgentTrajectoryFinalizationResult",
-    "AgentTrajectoryInternal",
-    "AgentTrajectoryLifecycle",
-    "AgentTrajectoryOutcome",
-    "AgentTrajectoryPage",
-    "AgentTrajectoryProcessingState",
-    "AgentTrajectoryResourceRef",
-    "AgentTrajectorySequenceRange",
-    "AgentTrajectorySource",
-    "AgentTrajectorySourceDeletionResult",
-    "AgentTrajectorySummaryCreationReason",
-    "AgentTrajectorySummaryOmissionReason",
-    "AgentTrajectorySummaryOmittedRange",
-    "AgentTrajectorySummaryPage",
-    "AgentTrajectorySummaryVersion",
-    "AgentTrajectoryVerification",
+    "AgentTaskFamilyDescriptor",
+    "AgentTaskFamilyDescriptorPage",
+    "AgentTrace",
+    "AgentTraceCloseVerifier",
+    "AgentTraceEvent",
+    "AgentTraceEventContext",
+    "AgentTraceEventPage",
+    "AgentTraceEventProcessingState",
+    "AgentTraceEventSource",
+    "AgentTraceEventSourceCopyMode",
+    "AgentTraceEventSourceRetentionMode",
+    "AgentTraceEventType",
+    "AgentTraceFinalizationResult",
+    "AgentTraceInternal",
+    "AgentTraceLifecycle",
+    "AgentTraceOutcome",
+    "AgentTracePage",
+    "AgentTraceProcessingState",
+    "AgentTraceResourceRef",
+    "AgentTraceSequenceRange",
+    "AgentTraceSource",
+    "AgentTraceSourceDeletionResult",
+    "AgentTraceSummaryCreationReason",
+    "AgentTraceSummaryOmissionReason",
+    "AgentTraceSummaryOmittedRange",
+    "AgentTraceSummaryPage",
+    "AgentTraceSummaryVersion",
+    "AgentTraceTaskFamilyInference",
+    "AgentTraceVerification",
     "AgentVerificationStrength",
     "AgentVerifier",
     "AgentVerifierAssertionOutcome",
@@ -747,13 +768,14 @@ __all__ = [
     "DebugLogLevel",
     "DebugLogStatus",
     "DebugLoggingEnablement",
-    "DeleteAgentTrajectoryRequest",
+    "DeleteAgentTraceRequest",
     "DocumentSummary",
     "DocumentSummaryPage",
     "Edge",
     "EdgeInput",
     "EdgeNodeRef",
     "EdgePage",
+    "EdgeSearchFilters",
     "EdgeSourceTarget",
     "EdgeType",
     "EntityProperty",
@@ -776,7 +798,7 @@ __all__ = [
     "HyperedgeEdge",
     "HyperedgeInput",
     "HyperedgePage",
-    "ImportedTrajectoryReference",
+    "ImportedTraceReference",
     "IngestionTrace",
     "IngestionTraceEdge",
     "IngestionTraceEdgeInvalidation",
@@ -789,6 +811,7 @@ __all__ = [
     "IngestionTraceNodeResolution",
     "IngestionTraceOutput",
     "IngestionTracePage",
+    "IngestionTraceProtectedAttributeConflict",
     "IngestionTraceStatus",
     "IngestionTraceStep",
     "Instructions",
@@ -810,6 +833,7 @@ __all__ = [
     "Node",
     "NodeInput",
     "NodePage",
+    "NodeSearchFilters",
     "ObjectiveMappingRule",
     "ObjectiveMappingRuleSource",
     "Observation",
@@ -832,6 +856,7 @@ __all__ = [
     "PropertyFilterOperator",
     "PropertyFilterValue",
     "PropertyFilterValueThreeItem",
+    "RenameAgentTaskFamilyResponse",
     "RoleType",
     "SearchFilters",
     "SearchListRequest",
@@ -862,30 +887,32 @@ __all__ = [
     "ThreadSummaryPage",
     "TraceConnection",
     "TraceConnectionPage",
+    "TraceConnectionProvider",
     "TraceConnectionSettings",
+    "TraceContentMapping",
     "TraceFilter",
+    "TraceImport",
+    "TraceImportPage",
+    "TraceImportPauseReason",
+    "TraceImportProvider",
+    "TraceImportRun",
+    "TraceImportRunItem",
+    "TraceImportRunItemPage",
+    "TraceImportRunPage",
+    "TraceImportRunReference",
+    "TraceImportRunReferenceStatus",
+    "TraceImportRunReferenceTrigger",
+    "TraceImportSchedule",
+    "TraceImportSelection",
+    "TraceMapping",
+    "TraceMappingIncludeOutcomesItem",
+    "TraceMappingResult",
+    "TraceMappingResultOutcome",
+    "TraceMappingResultOutcomeRule",
     "TracePreview",
     "TraceProviderProject",
     "TraceProviderProjectPage",
     "TraceScoreRange",
-    "TrajectoryContentMapping",
-    "TrajectoryImport",
-    "TrajectoryImportPage",
-    "TrajectoryImportPauseReason",
-    "TrajectoryImportRun",
-    "TrajectoryImportRunItem",
-    "TrajectoryImportRunItemPage",
-    "TrajectoryImportRunPage",
-    "TrajectoryImportRunReference",
-    "TrajectoryImportRunReferenceStatus",
-    "TrajectoryImportRunReferenceTrigger",
-    "TrajectoryImportSchedule",
-    "TrajectoryImportSelection",
-    "TrajectoryMapping",
-    "TrajectoryMappingIncludeOutcomesItem",
-    "TrajectoryMappingResult",
-    "TrajectoryMappingResultOutcome",
-    "TrajectoryMappingResultOutcomeRule",
     "User",
     "UserDeleteResult",
     "UserGroup",

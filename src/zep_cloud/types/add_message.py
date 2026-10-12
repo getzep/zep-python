@@ -15,12 +15,6 @@ class AddMessage(UniversalBaseModel):
     The content of the message.
     """
 
-    created_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The message's reference time, used for temporal reasoning rather than
-    ingestion time. Defaults to the ingestion time.
-    """
-
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
     """
     Custom metadata to store with the message. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
@@ -30,6 +24,12 @@ class AddMessage(UniversalBaseModel):
     """
     A customizable name for the sender of the message, for example "john" or
     "sales_agent".
+    """
+
+    reference_time: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The message's reference time, used for temporal reasoning rather than
+    ingestion time. Defaults to the ingestion time.
     """
 
     role: typing.Optional[RoleType] = pydantic.Field(default=None)
