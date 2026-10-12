@@ -10,6 +10,8 @@ if typing.TYPE_CHECKING:
         GraphContextRequestRecencyBias,
         GraphListRequestOrder,
         GraphListRequestOrderBy,
+        SearchEdgesRequestReranker,
+        SearchNodesRequestReranker,
         SubgraphRequestDirection,
     )
     from . import document_summary, edge, episode, hyperedge, node, observation, thread_summary
@@ -36,6 +38,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "NodeListNeighborsRequestOrderBy": ".node",
     "NodeListRequestOrder": ".node",
     "NodeListRequestOrderBy": ".node",
+    "SearchEdgesRequestReranker": ".types",
+    "SearchNodesRequestReranker": ".types",
     "SubgraphRequestDirection": ".types",
     "document_summary": ".document_summary",
     "edge": ".edge",
@@ -82,6 +86,8 @@ __all__ = [
     "NodeListNeighborsRequestOrderBy",
     "NodeListRequestOrder",
     "NodeListRequestOrderBy",
+    "SearchEdgesRequestReranker",
+    "SearchNodesRequestReranker",
     "SubgraphRequestDirection",
     "document_summary",
     "edge",

@@ -12,10 +12,10 @@
     },
     "pyproject_python_version": "^3.10"
   },
-  "originGitCommit": "26e9820bad75494d5ac535a7f939856d42587c22",
+  "originGitCommit": "607df517968c291238a3e34f4e9e9dffd9dcd208",
   "originGitCommitIsDirty": true,
   "invokedBy": "ci",
-  "requestedVersion": "4.0.0b1",
+  "requestedVersion": "4.0.0rc1",
   "ciProvider": "github",
-  "sdkVersion": "4.0.0b1"
+  "sdkVersion": "4.0.0rc1"
 }

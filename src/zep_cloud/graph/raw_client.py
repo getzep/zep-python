@@ -27,6 +27,7 @@ from ..types.content_policy_event_page import ContentPolicyEventPage
 from ..types.custom_instruction import CustomInstruction
 from ..types.edge import Edge
 from ..types.edge_page import EdgePage
+from ..types.edge_search_filters import EdgeSearchFilters
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.episode import Episode
@@ -40,6 +41,7 @@ from ..types.graph_page import GraphPage
 from ..types.instructions import Instructions
 from ..types.node import Node
 from ..types.node_page import NodePage
+from ..types.node_search_filters import NodeSearchFilters
 from ..types.observation import Observation
 from ..types.observation_page import ObservationPage
 from ..types.observation_steering import ObservationSteering
@@ -53,6 +55,8 @@ from ..types.thread_summary_page import ThreadSummaryPage
 from .types.graph_context_request_recency_bias import GraphContextRequestRecencyBias
 from .types.graph_list_request_order import GraphListRequestOrder
 from .types.graph_list_request_order_by import GraphListRequestOrderBy
+from .types.search_edges_request_reranker import SearchEdgesRequestReranker
+from .types.search_nodes_request_reranker import SearchNodesRequestReranker
 from .types.subgraph_request_direction import SubgraphRequestDirection
 from pydantic import ValidationError
 
@@ -1809,12 +1813,14 @@ class RawGraphClient:
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[EdgeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchEdgesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Edge, EdgePage]:
         """
+        Edge search does not support node_labels or exclude_node_labels. An edge has two nodes, so a node label filter is not defined for edge search. To filter edges by node label, use graph.edge.list, graph.node.list_neighbors, or graph.get_subgraph. To search the edges of nodes that have a label, do these two steps. First, call graph.search_nodes with node_labels. Then, call graph.search_edges with connected_node_uuids set to the UUIDs of the returned nodes.
+
         Parameters
         ----------
         graph_uuid : str
@@ -1836,14 +1842,14 @@ class RawGraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[EdgeSearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchEdgesRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -1865,7 +1871,7 @@ class RawGraphClient:
                 "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
                 "filters": convert_and_respect_annotation_metadata(
-                    object_=filters, annotation=SearchFilters, direction="write"
+                    object_=filters, annotation=EdgeSearchFilters, direction="write"
                 ),
                 "mmr_lambda": mmr_lambda,
                 "query": query,
@@ -2129,12 +2135,14 @@ class RawGraphClient:
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[NodeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchNodesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Node, NodePage]:
         """
+        Node search does not support edge_types, exclude_edge_types, edge_uuids, connected_node_uuids, source_node_uuids, or target_node_uuids. These filters select edges. To get the nodes that an edge connects, use graph.search_edges or graph.node.list_neighbors.
+
         Parameters
         ----------
         graph_uuid : str
@@ -2156,14 +2164,14 @@ class RawGraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[NodeSearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchNodesRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -2185,7 +2193,7 @@ class RawGraphClient:
                 "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
                 "filters": convert_and_respect_annotation_metadata(
-                    object_=filters, annotation=SearchFilters, direction="write"
+                    object_=filters, annotation=NodeSearchFilters, direction="write"
                 ),
                 "mmr_lambda": mmr_lambda,
                 "query": query,
@@ -4599,12 +4607,14 @@ class AsyncRawGraphClient:
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[EdgeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchEdgesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Edge, EdgePage]:
         """
+        Edge search does not support node_labels or exclude_node_labels. An edge has two nodes, so a node label filter is not defined for edge search. To filter edges by node label, use graph.edge.list, graph.node.list_neighbors, or graph.get_subgraph. To search the edges of nodes that have a label, do these two steps. First, call graph.search_nodes with node_labels. Then, call graph.search_edges with connected_node_uuids set to the UUIDs of the returned nodes.
+
         Parameters
         ----------
         graph_uuid : str
@@ -4626,14 +4636,14 @@ class AsyncRawGraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[EdgeSearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchEdgesRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -4655,7 +4665,7 @@ class AsyncRawGraphClient:
                 "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
                 "filters": convert_and_respect_annotation_metadata(
-                    object_=filters, annotation=SearchFilters, direction="write"
+                    object_=filters, annotation=EdgeSearchFilters, direction="write"
                 ),
                 "mmr_lambda": mmr_lambda,
                 "query": query,
@@ -4925,12 +4935,14 @@ class AsyncRawGraphClient:
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[NodeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchNodesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Node, NodePage]:
         """
+        Node search does not support edge_types, exclude_edge_types, edge_uuids, connected_node_uuids, source_node_uuids, or target_node_uuids. These filters select edges. To get the nodes that an edge connects, use graph.search_edges or graph.node.list_neighbors.
+
         Parameters
         ----------
         graph_uuid : str
@@ -4952,14 +4964,14 @@ class AsyncRawGraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[NodeSearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchNodesRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -4981,7 +4993,7 @@ class AsyncRawGraphClient:
                 "bfs_origin_node_uuids": bfs_origin_node_uuids,
                 "center_node_uuid": center_node_uuid,
                 "filters": convert_and_respect_annotation_metadata(
-                    object_=filters, annotation=SearchFilters, direction="write"
+                    object_=filters, annotation=NodeSearchFilters, direction="write"
                 ),
                 "mmr_lambda": mmr_lambda,
                 "query": query,

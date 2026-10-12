@@ -18,6 +18,13 @@ class EntityProperty(UniversalBaseModel):
     The name of the property.
     """
 
+    protected: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether ingestion keeps the stored value of this property when it merges
+    new information into an existing node. Supported on entity type
+    properties only.
+    """
+
     type: typing.Optional[EntityPropertyType] = pydantic.Field(default=None)
     """
     The value type of the property: text, int, float, or boolean.

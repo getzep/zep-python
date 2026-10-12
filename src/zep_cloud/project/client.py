@@ -68,16 +68,23 @@ class ProjectClient:
         self,
         *,
         default_time_zone: typing.Optional[str] = OMIT,
+        hyperedges_enabled: typing.Optional[bool] = OMIT,
         include_policy_violating_episodes: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Project:
         """
+        Set `hyperedges_enabled` to `true` to enable extraction. A member needs the `project.edit` permission. Project API keys receive `403 permission_denied`.
+
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
             The project's IANA fallback time zone. Set to null to clear the existing
             value.
+
+        hyperedges_enabled : typing.Optional[bool]
+            Set to true to enable hyperedge extraction. This setting cannot be disabled.
+            A member needs project.edit. Project API keys receive 403 permission_denied.
 
         include_policy_violating_episodes : typing.Optional[bool]
             When true, episode reads on graphs with a content policy include the
@@ -104,6 +111,7 @@ class ProjectClient:
         """
         _response = self._raw_client.update(
             default_time_zone=default_time_zone,
+            hyperedges_enabled=hyperedges_enabled,
             include_policy_violating_episodes=include_policy_violating_episodes,
             idempotency_key=idempotency_key,
             request_options=request_options,
@@ -608,16 +616,23 @@ class AsyncProjectClient:
         self,
         *,
         default_time_zone: typing.Optional[str] = OMIT,
+        hyperedges_enabled: typing.Optional[bool] = OMIT,
         include_policy_violating_episodes: typing.Optional[bool] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Project:
         """
+        Set `hyperedges_enabled` to `true` to enable extraction. A member needs the `project.edit` permission. Project API keys receive `403 permission_denied`.
+
         Parameters
         ----------
         default_time_zone : typing.Optional[str]
             The project's IANA fallback time zone. Set to null to clear the existing
             value.
+
+        hyperedges_enabled : typing.Optional[bool]
+            Set to true to enable hyperedge extraction. This setting cannot be disabled.
+            A member needs project.edit. Project API keys receive 403 permission_denied.
 
         include_policy_violating_episodes : typing.Optional[bool]
             When true, episode reads on graphs with a content policy include the
@@ -652,6 +667,7 @@ class AsyncProjectClient:
         """
         _response = await self._raw_client.update(
             default_time_zone=default_time_zone,
+            hyperedges_enabled=hyperedges_enabled,
             include_policy_violating_episodes=include_policy_violating_episodes,
             idempotency_key=idempotency_key,
             request_options=request_options,

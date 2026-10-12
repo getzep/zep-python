@@ -172,9 +172,9 @@ class RawEpisodeClient:
         graph_uuid: str,
         *,
         data: str,
-        created_at: typing.Optional[str] = OMIT,
         document_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        reference_time: typing.Optional[str] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         type: typing.Optional[AddEpisodeRequestType] = OMIT,
@@ -190,15 +190,15 @@ class RawEpisodeClient:
         data : str
             The episode content to add to the graph.
 
-        created_at : typing.Optional[str]
-            The episode's reference time, used for temporal reasoning rather than
-            ingestion time.
-
         document_id : typing.Optional[str]
             Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Metadata to store on the episode. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
+
+        reference_time : typing.Optional[str]
+            The episode's reference time, used for temporal reasoning rather than
+            ingestion time. Defaults to the ingestion time.
 
         source_description : typing.Optional[str]
             A description of the source of this episode.
@@ -224,10 +224,10 @@ class RawEpisodeClient:
             f"graphs/{encode_path_param(graph_uuid)}/episodes",
             method="POST",
             json={
-                "created_at": created_at,
                 "data": data,
                 "document_id": document_id,
                 "metadata": metadata,
+                "reference_time": reference_time,
                 "source_description": source_description,
                 "strict_ontology": strict_ontology,
                 "type": type,
@@ -1145,9 +1145,9 @@ class AsyncRawEpisodeClient:
         graph_uuid: str,
         *,
         data: str,
-        created_at: typing.Optional[str] = OMIT,
         document_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        reference_time: typing.Optional[str] = OMIT,
         source_description: typing.Optional[str] = OMIT,
         strict_ontology: typing.Optional[bool] = OMIT,
         type: typing.Optional[AddEpisodeRequestType] = OMIT,
@@ -1163,15 +1163,15 @@ class AsyncRawEpisodeClient:
         data : str
             The episode content to add to the graph.
 
-        created_at : typing.Optional[str]
-            The episode's reference time, used for temporal reasoning rather than
-            ingestion time.
-
         document_id : typing.Optional[str]
             Groups this episode as a chunk of a document on the graph.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Metadata to store on the episode. Max 10 keys. Values must be strings, numbers, booleans, or arrays of scalars.
+
+        reference_time : typing.Optional[str]
+            The episode's reference time, used for temporal reasoning rather than
+            ingestion time. Defaults to the ingestion time.
 
         source_description : typing.Optional[str]
             A description of the source of this episode.
@@ -1197,10 +1197,10 @@ class AsyncRawEpisodeClient:
             f"graphs/{encode_path_param(graph_uuid)}/episodes",
             method="POST",
             json={
-                "created_at": created_at,
                 "data": data,
                 "document_id": document_id,
                 "metadata": metadata,
+                "reference_time": reference_time,
                 "source_description": source_description,
                 "strict_ontology": strict_ontology,
                 "type": type,

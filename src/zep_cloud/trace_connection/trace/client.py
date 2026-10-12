@@ -9,7 +9,7 @@ from ...types.source_trace_page import SourceTracePage
 from ...types.source_trace_response import SourceTraceResponse
 from ...types.source_trace_summary import SourceTraceSummary
 from ...types.trace_filter import TraceFilter
-from ...types.trajectory_mapping import TrajectoryMapping
+from ...types.trace_mapping import TraceMapping
 from .raw_client import AsyncRawTraceClient, RawTraceClient
 
 # this is used as the default value for optional parameters
@@ -37,7 +37,7 @@ class TraceClient:
         *,
         provider_project_id: str,
         trace_id: str,
-        mapping: typing.Optional[TrajectoryMapping] = OMIT,
+        mapping: typing.Optional[TraceMapping] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SourceTraceResponse:
         """
@@ -54,7 +54,7 @@ class TraceClient:
         trace_id : str
             TraceID is the provider trace identifier.
 
-        mapping : typing.Optional[TrajectoryMapping]
+        mapping : typing.Optional[TraceMapping]
             Mapping is an optional mapping preview configuration. Example: {"task_family":{"source":"fixed","value":"support"}}.
 
         request_options : typing.Optional[RequestOptions]
@@ -173,7 +173,7 @@ class AsyncTraceClient:
         *,
         provider_project_id: str,
         trace_id: str,
-        mapping: typing.Optional[TrajectoryMapping] = OMIT,
+        mapping: typing.Optional[TraceMapping] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SourceTraceResponse:
         """
@@ -190,7 +190,7 @@ class AsyncTraceClient:
         trace_id : str
             TraceID is the provider trace identifier.
 
-        mapping : typing.Optional[TrajectoryMapping]
+        mapping : typing.Optional[TraceMapping]
             Mapping is an optional mapping preview configuration. Example: {"task_family":{"source":"fixed","value":"support"}}.
 
         request_options : typing.Optional[RequestOptions]

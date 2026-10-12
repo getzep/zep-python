@@ -4,7 +4,7 @@ import typing
 
 AgentSkillCompilationOutcomeRejectionClass = typing.Union[
     typing.Literal[
-        "no_eligible_trajectories",
+        "no_eligible_traces",
         "reflector_invalid_output",
         "applicability_ungrounded",
         "corroboration_insufficient",

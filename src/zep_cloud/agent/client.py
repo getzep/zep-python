@@ -16,14 +16,17 @@ from ..types.agent_memory_settings import AgentMemorySettings
 from ..types.agent_page import AgentPage
 from ..types.agent_status import AgentStatus
 from .raw_client import AsyncRawAgentClient, RawAgentClient
+from .types.agent_list_request_order import AgentListRequestOrder
+from .types.agent_list_request_order_by import AgentListRequestOrderBy
 
 if typing.TYPE_CHECKING:
     from .learning.client import AsyncLearningClient, LearningClient
     from .literal_policy.client import AsyncLiteralPolicyClient, LiteralPolicyClient
     from .skill.client import AsyncSkillClient, SkillClient
     from .split.client import AsyncSplitClient, SplitClient
-    from .trajectory.client import AsyncTrajectoryClient, TrajectoryClient
-    from .trajectory_import.client import AsyncTrajectoryImportClient, TrajectoryImportClient
+    from .task_family.client import AsyncTaskFamilyClient, TaskFamilyClient
+    from .trace.client import AsyncTraceClient, TraceClient
+    from .trace_import.client import AsyncTraceImportClient, TraceImportClient
     from .verifier.client import AsyncVerifierClient, VerifierClient
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -37,8 +40,9 @@ class AgentClient:
         self._literal_policy: typing.Optional[LiteralPolicyClient] = None
         self._skill: typing.Optional[SkillClient] = None
         self._split: typing.Optional[SplitClient] = None
-        self._trajectory: typing.Optional[TrajectoryClient] = None
-        self._trajectory_import: typing.Optional[TrajectoryImportClient] = None
+        self._task_family: typing.Optional[TaskFamilyClient] = None
+        self._trace_import: typing.Optional[TraceImportClient] = None
+        self._trace: typing.Optional[TraceClient] = None
         self._verifier: typing.Optional[VerifierClient] = None
 
     @property
@@ -85,7 +89,7 @@ class AgentClient:
             A human-readable description of the Agent.
 
         memory_settings : typing.Optional[AgentMemorySettings]
-            Agent Memory capture, compilation, and promotion settings.
+            Agent Skills capture, compilation, and promotion settings.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Developer metadata used to organize and filter Agents.
@@ -135,9 +139,12 @@ class AgentClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[AgentListRequestOrderBy] = None,
+        order: typing.Optional[AgentListRequestOrder] = None,
         agent_id: typing.Optional[str] = OMIT,
         deployment_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search: typing.Optional[str] = OMIT,
         status: typing.Optional[AgentStatus] = OMIT,
         version: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -151,6 +158,12 @@ class AgentClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[AgentListRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[AgentListRequestOrder]
+            asc or desc
+
         agent_id : typing.Optional[str]
             Filters to the exact developer-assigned Agent identifier.
 
@@ -159,6 +172,10 @@ class AgentClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Filters to Agents whose metadata contains these key-value pairs.
+
+        search : typing.Optional[str]
+            Filters to Agents whose name, Agent identifier, deployment identifier,
+            or deployment version contains this text. Matching is case-insensitive.
 
         status : typing.Optional[AgentStatus]
             Filters to lifecycle status. Omit to include every status.
@@ -191,9 +208,12 @@ class AgentClient:
         return self._raw_client.list(
             limit=limit,
             cursor=cursor,
+            order_by=order_by,
+            order=order,
             agent_id=agent_id,
             deployment_id=deployment_id,
             metadata=metadata,
+            search=search,
             status=status,
             version=version,
             request_options=request_options,
@@ -305,7 +325,7 @@ class AgentClient:
             A human-readable description of the Agent. Set to null to clear it.
 
         memory_settings : typing.Optional[AgentMemorySettings]
-            Replacement Agent Memory settings. Set to null to restore defaults.
+            Replacement Agent Skills settings. Set to null to restore defaults.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Replacement developer metadata. Set to null to clear it.
@@ -414,7 +434,7 @@ class AgentClient:
         objective: typing.Optional[str] = OMIT,
         task_family: typing.Optional[str] = OMIT,
         tools: typing.Optional[typing.Sequence[AgentContextResource]] = OMIT,
-        trajectory_uuid: typing.Optional[str] = OMIT,
+        trace_uuid: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentContext:
         """
@@ -437,7 +457,7 @@ class AgentClient:
 
         tools : typing.Optional[typing.Sequence[AgentContextResource]]
 
-        trajectory_uuid : typing.Optional[str]
+        trace_uuid : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -467,7 +487,7 @@ class AgentClient:
             objective=objective,
             task_family=task_family,
             tools=tools,
-            trajectory_uuid=trajectory_uuid,
+            trace_uuid=trace_uuid,
             request_options=request_options,
         )
         return _response.data
@@ -505,20 +525,28 @@ class AgentClient:
         return self._split
 
     @property
-    def trajectory(self):
-        if self._trajectory is None:
-            from .trajectory.client import TrajectoryClient  # noqa: E402
+    def task_family(self):
+        if self._task_family is None:
+            from .task_family.client import TaskFamilyClient  # noqa: E402
 
-            self._trajectory = TrajectoryClient(client_wrapper=self._client_wrapper)
-        return self._trajectory
+            self._task_family = TaskFamilyClient(client_wrapper=self._client_wrapper)
+        return self._task_family
 
     @property
-    def trajectory_import(self):
-        if self._trajectory_import is None:
-            from .trajectory_import.client import TrajectoryImportClient  # noqa: E402
+    def trace_import(self):
+        if self._trace_import is None:
+            from .trace_import.client import TraceImportClient  # noqa: E402
 
-            self._trajectory_import = TrajectoryImportClient(client_wrapper=self._client_wrapper)
-        return self._trajectory_import
+            self._trace_import = TraceImportClient(client_wrapper=self._client_wrapper)
+        return self._trace_import
+
+    @property
+    def trace(self):
+        if self._trace is None:
+            from .trace.client import TraceClient  # noqa: E402
+
+            self._trace = TraceClient(client_wrapper=self._client_wrapper)
+        return self._trace
 
     @property
     def verifier(self):
@@ -537,8 +565,9 @@ class AsyncAgentClient:
         self._literal_policy: typing.Optional[AsyncLiteralPolicyClient] = None
         self._skill: typing.Optional[AsyncSkillClient] = None
         self._split: typing.Optional[AsyncSplitClient] = None
-        self._trajectory: typing.Optional[AsyncTrajectoryClient] = None
-        self._trajectory_import: typing.Optional[AsyncTrajectoryImportClient] = None
+        self._task_family: typing.Optional[AsyncTaskFamilyClient] = None
+        self._trace_import: typing.Optional[AsyncTraceImportClient] = None
+        self._trace: typing.Optional[AsyncTraceClient] = None
         self._verifier: typing.Optional[AsyncVerifierClient] = None
 
     @property
@@ -585,7 +614,7 @@ class AsyncAgentClient:
             A human-readable description of the Agent.
 
         memory_settings : typing.Optional[AgentMemorySettings]
-            Agent Memory capture, compilation, and promotion settings.
+            Agent Skills capture, compilation, and promotion settings.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Developer metadata used to organize and filter Agents.
@@ -643,9 +672,12 @@ class AsyncAgentClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[AgentListRequestOrderBy] = None,
+        order: typing.Optional[AgentListRequestOrder] = None,
         agent_id: typing.Optional[str] = OMIT,
         deployment_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search: typing.Optional[str] = OMIT,
         status: typing.Optional[AgentStatus] = OMIT,
         version: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -659,6 +691,12 @@ class AsyncAgentClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[AgentListRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[AgentListRequestOrder]
+            asc or desc
+
         agent_id : typing.Optional[str]
             Filters to the exact developer-assigned Agent identifier.
 
@@ -667,6 +705,10 @@ class AsyncAgentClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Filters to Agents whose metadata contains these key-value pairs.
+
+        search : typing.Optional[str]
+            Filters to Agents whose name, Agent identifier, deployment identifier,
+            or deployment version contains this text. Matching is case-insensitive.
 
         status : typing.Optional[AgentStatus]
             Filters to lifecycle status. Omit to include every status.
@@ -708,9 +750,12 @@ class AsyncAgentClient:
         return await self._raw_client.list(
             limit=limit,
             cursor=cursor,
+            order_by=order_by,
+            order=order,
             agent_id=agent_id,
             deployment_id=deployment_id,
             metadata=metadata,
+            search=search,
             status=status,
             version=version,
             request_options=request_options,
@@ -838,7 +883,7 @@ class AsyncAgentClient:
             A human-readable description of the Agent. Set to null to clear it.
 
         memory_settings : typing.Optional[AgentMemorySettings]
-            Replacement Agent Memory settings. Set to null to restore defaults.
+            Replacement Agent Skills settings. Set to null to restore defaults.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Replacement developer metadata. Set to null to clear it.
@@ -963,7 +1008,7 @@ class AsyncAgentClient:
         objective: typing.Optional[str] = OMIT,
         task_family: typing.Optional[str] = OMIT,
         tools: typing.Optional[typing.Sequence[AgentContextResource]] = OMIT,
-        trajectory_uuid: typing.Optional[str] = OMIT,
+        trace_uuid: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentContext:
         """
@@ -986,7 +1031,7 @@ class AsyncAgentClient:
 
         tools : typing.Optional[typing.Sequence[AgentContextResource]]
 
-        trajectory_uuid : typing.Optional[str]
+        trace_uuid : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1024,7 +1069,7 @@ class AsyncAgentClient:
             objective=objective,
             task_family=task_family,
             tools=tools,
-            trajectory_uuid=trajectory_uuid,
+            trace_uuid=trace_uuid,
             request_options=request_options,
         )
         return _response.data
@@ -1062,20 +1107,28 @@ class AsyncAgentClient:
         return self._split
 
     @property
-    def trajectory(self):
-        if self._trajectory is None:
-            from .trajectory.client import AsyncTrajectoryClient  # noqa: E402
+    def task_family(self):
+        if self._task_family is None:
+            from .task_family.client import AsyncTaskFamilyClient  # noqa: E402
 
-            self._trajectory = AsyncTrajectoryClient(client_wrapper=self._client_wrapper)
-        return self._trajectory
+            self._task_family = AsyncTaskFamilyClient(client_wrapper=self._client_wrapper)
+        return self._task_family
 
     @property
-    def trajectory_import(self):
-        if self._trajectory_import is None:
-            from .trajectory_import.client import AsyncTrajectoryImportClient  # noqa: E402
+    def trace_import(self):
+        if self._trace_import is None:
+            from .trace_import.client import AsyncTraceImportClient  # noqa: E402
 
-            self._trajectory_import = AsyncTrajectoryImportClient(client_wrapper=self._client_wrapper)
-        return self._trajectory_import
+            self._trace_import = AsyncTraceImportClient(client_wrapper=self._client_wrapper)
+        return self._trace_import
+
+    @property
+    def trace(self):
+        if self._trace is None:
+            from .trace.client import AsyncTraceClient  # noqa: E402
+
+            self._trace = AsyncTraceClient(client_wrapper=self._client_wrapper)
+        return self._trace
 
     @property
     def verifier(self):

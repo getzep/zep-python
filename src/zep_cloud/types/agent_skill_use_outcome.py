@@ -12,7 +12,7 @@ class AgentSkillUseOutcome(UniversalBaseModel):
     assertion_uuid: typing.Optional[str] = None
     created_at: typing.Optional[str] = None
     outcome: typing.Optional[str] = None
-    trajectory_uuid: typing.Optional[str] = None
+    trace_uuid: typing.Optional[str] = None
     use_uuid: typing.Optional[str] = None
     uuid_: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")

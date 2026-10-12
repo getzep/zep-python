@@ -33,7 +33,7 @@ class Agent(UniversalBaseModel):
 
     memory_settings: typing.Optional[AgentMemorySettings] = pydantic.Field(default=None)
     """
-    Agent Memory capture, compilation, and promotion settings.
+    Agent Skills capture, compilation, and promotion settings.
     """
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
