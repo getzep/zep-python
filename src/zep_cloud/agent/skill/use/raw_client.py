@@ -39,7 +39,7 @@ class RawUseClient:
         skill_uuid: str,
         *,
         search_id: str,
-        trajectory_uuid: str,
+        trace_uuid: str,
         usage: CreateAgentSkillUseRequestUsage,
         outcome: typing.Optional[AddAgentSkillUseOutcomeRequest] = OMIT,
         reason_code: typing.Optional[str] = OMIT,
@@ -57,7 +57,7 @@ class RawUseClient:
 
         search_id : str
 
-        trajectory_uuid : str
+        trace_uuid : str
 
         usage : CreateAgentSkillUseRequestUsage
 
@@ -84,7 +84,7 @@ class RawUseClient:
                 ),
                 "reason_code": reason_code,
                 "search_id": search_id,
-                "trajectory_uuid": trajectory_uuid,
+                "trace_uuid": trace_uuid,
                 "usage": usage,
             },
             headers={
@@ -264,7 +264,7 @@ class AsyncRawUseClient:
         skill_uuid: str,
         *,
         search_id: str,
-        trajectory_uuid: str,
+        trace_uuid: str,
         usage: CreateAgentSkillUseRequestUsage,
         outcome: typing.Optional[AddAgentSkillUseOutcomeRequest] = OMIT,
         reason_code: typing.Optional[str] = OMIT,
@@ -282,7 +282,7 @@ class AsyncRawUseClient:
 
         search_id : str
 
-        trajectory_uuid : str
+        trace_uuid : str
 
         usage : CreateAgentSkillUseRequestUsage
 
@@ -309,7 +309,7 @@ class AsyncRawUseClient:
                 ),
                 "reason_code": reason_code,
                 "search_id": search_id,
-                "trajectory_uuid": trajectory_uuid,
+                "trace_uuid": trace_uuid,
                 "usage": usage,
             },
             headers={

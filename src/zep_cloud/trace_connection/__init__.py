@@ -6,8 +6,13 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
+    from .types import CreateTraceConnectionRequestProvider
     from . import project, trace
-_dynamic_imports: typing.Dict[str, str] = {"project": ".project", "trace": ".trace"}
+_dynamic_imports: typing.Dict[str, str] = {
+    "CreateTraceConnectionRequestProvider": ".types",
+    "project": ".project",
+    "trace": ".trace",
+}
 
 
 def __getattr__(attr_name: str) -> typing.Any:
@@ -31,4 +36,4 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["project", "trace"]
+__all__ = ["CreateTraceConnectionRequestProvider", "project", "trace"]

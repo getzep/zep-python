@@ -17,7 +17,7 @@ class AgentContext(UniversalBaseModel):
     skipped: typing.Optional[typing.List[AgentContextSkippedSkill]] = None
     snapshot: typing.Optional[typing.List[AgentContextSkillSnapshot]] = None
     task_family: typing.Optional[str] = None
-    trajectory_uuid: typing.Optional[str] = None
+    trace_uuid: typing.Optional[str] = None
     truncated: typing.Optional[bool] = None
 
     if IS_PYDANTIC_V2:

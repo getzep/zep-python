@@ -36,7 +36,7 @@ class UseClient:
         skill_uuid: str,
         *,
         search_id: str,
-        trajectory_uuid: str,
+        trace_uuid: str,
         usage: CreateAgentSkillUseRequestUsage,
         outcome: typing.Optional[AddAgentSkillUseOutcomeRequest] = OMIT,
         reason_code: typing.Optional[str] = OMIT,
@@ -54,7 +54,7 @@ class UseClient:
 
         search_id : str
 
-        trajectory_uuid : str
+        trace_uuid : str
 
         usage : CreateAgentSkillUseRequestUsage
 
@@ -83,7 +83,7 @@ class UseClient:
             agent_uuid="agent_uuid",
             skill_uuid="skill_uuid",
             search_id="search_id",
-            trajectory_uuid="trajectory_uuid",
+            trace_uuid="trace_uuid",
             usage="selected",
         )
         """
@@ -91,7 +91,7 @@ class UseClient:
             agent_uuid,
             skill_uuid,
             search_id=search_id,
-            trajectory_uuid=trajectory_uuid,
+            trace_uuid=trace_uuid,
             usage=usage,
             outcome=outcome,
             reason_code=reason_code,
@@ -180,7 +180,7 @@ class AsyncUseClient:
         skill_uuid: str,
         *,
         search_id: str,
-        trajectory_uuid: str,
+        trace_uuid: str,
         usage: CreateAgentSkillUseRequestUsage,
         outcome: typing.Optional[AddAgentSkillUseOutcomeRequest] = OMIT,
         reason_code: typing.Optional[str] = OMIT,
@@ -198,7 +198,7 @@ class AsyncUseClient:
 
         search_id : str
 
-        trajectory_uuid : str
+        trace_uuid : str
 
         usage : CreateAgentSkillUseRequestUsage
 
@@ -232,7 +232,7 @@ class AsyncUseClient:
                 agent_uuid="agent_uuid",
                 skill_uuid="skill_uuid",
                 search_id="search_id",
-                trajectory_uuid="trajectory_uuid",
+                trace_uuid="trace_uuid",
                 usage="selected",
             )
 
@@ -243,7 +243,7 @@ class AsyncUseClient:
             agent_uuid,
             skill_uuid,
             search_id=search_id,
-            trajectory_uuid=trajectory_uuid,
+            trace_uuid=trace_uuid,
             usage=usage,
             outcome=outcome,
             reason_code=reason_code,

@@ -25,6 +25,11 @@ class Project(UniversalBaseModel):
     A human-readable description of the project.
     """
 
+    hyperedges_enabled: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    True when hyperedge extraction is enabled for this project. This setting is one-way.
+    """
+
     include_policy_violating_episodes: typing.Optional[bool] = pydantic.Field(default=None)
     """
     When true, episode reads on graphs with a content policy include the

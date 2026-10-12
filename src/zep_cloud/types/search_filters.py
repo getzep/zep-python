@@ -13,7 +13,7 @@ from .property_filter import PropertyFilter
 class SearchFilters(UniversalBaseModel):
     connected_node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Include edges connected to any of these node UUIDs.
+    Include edges connected to any of these node UUIDs. Node search does not support this filter.
     """
 
     content_policy_violated: typing.Optional[bool] = pydantic.Field(default=None)
@@ -28,12 +28,12 @@ class SearchFilters(UniversalBaseModel):
 
     edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Include results with any of these edge types.
+    Include results with any of these edge types. Node search does not support this filter.
     """
 
     edge_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Include results with any of these edge UUIDs.
+    Include results with any of these edge UUIDs. Node search does not support this filter.
     """
 
     episode_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
@@ -43,12 +43,12 @@ class SearchFilters(UniversalBaseModel):
 
     exclude_edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Exclude results with any of these edge types.
+    Exclude results with any of these edge types. Node search does not support this filter.
     """
 
     exclude_node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Exclude results with any of these node labels.
+    Exclude results with any of these node labels. Edge search does not support this filter.
     """
 
     metadata_filters: typing.Optional["MetadataFilterGroup"] = pydantic.Field(default=None)
@@ -58,7 +58,7 @@ class SearchFilters(UniversalBaseModel):
 
     node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Include results with any of these node labels.
+    Include results with any of these node labels. Edge search does not support this filter.
     """
 
     property_filters: typing.Optional[typing.List[PropertyFilter]] = pydantic.Field(default=None)
@@ -68,12 +68,12 @@ class SearchFilters(UniversalBaseModel):
 
     source_node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Include edges that start at any of these node UUIDs.
+    Include edges that start at any of these node UUIDs. Node search does not support this filter.
     """
 
     target_node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Include edges that end at any of these node UUIDs.
+    Include edges that end at any of these node UUIDs. Node search does not support this filter.
     """
 
     if IS_PYDANTIC_V2:

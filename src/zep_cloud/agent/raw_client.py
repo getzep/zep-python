@@ -28,6 +28,8 @@ from ..types.agent_memory_settings import AgentMemorySettings
 from ..types.agent_page import AgentPage
 from ..types.agent_status import AgentStatus
 from ..types.api_error import ApiError as types_api_error_ApiError
+from .types.agent_list_request_order import AgentListRequestOrder
+from .types.agent_list_request_order_by import AgentListRequestOrderBy
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -71,7 +73,7 @@ class RawAgentClient:
             A human-readable description of the Agent.
 
         memory_settings : typing.Optional[AgentMemorySettings]
-            Agent Memory capture, compilation, and promotion settings.
+            Agent Skills capture, compilation, and promotion settings.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Developer metadata used to organize and filter Agents.
@@ -194,9 +196,12 @@ class RawAgentClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[AgentListRequestOrderBy] = None,
+        order: typing.Optional[AgentListRequestOrder] = None,
         agent_id: typing.Optional[str] = OMIT,
         deployment_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search: typing.Optional[str] = OMIT,
         status: typing.Optional[AgentStatus] = OMIT,
         version: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -210,6 +215,12 @@ class RawAgentClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[AgentListRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[AgentListRequestOrder]
+            asc or desc
+
         agent_id : typing.Optional[str]
             Filters to the exact developer-assigned Agent identifier.
 
@@ -218,6 +229,10 @@ class RawAgentClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Filters to Agents whose metadata contains these key-value pairs.
+
+        search : typing.Optional[str]
+            Filters to Agents whose name, Agent identifier, deployment identifier,
+            or deployment version contains this text. Matching is case-insensitive.
 
         status : typing.Optional[AgentStatus]
             Filters to lifecycle status. Omit to include every status.
@@ -239,11 +254,14 @@ class RawAgentClient:
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
                 "agent_id": agent_id,
                 "deployment_id": deployment_id,
                 "metadata": metadata,
+                "search": search,
                 "status": status,
                 "version": version,
             },
@@ -269,9 +287,12 @@ class RawAgentClient:
                 _get_next = lambda: self.list(
                     limit=limit,
                     cursor=_parsed_next,
+                    order_by=order_by,
+                    order=order,
                     agent_id=agent_id,
                     deployment_id=deployment_id,
                     metadata=metadata,
+                    search=search,
                     status=status,
                     version=version,
                     request_options=request_options,
@@ -569,7 +590,7 @@ class RawAgentClient:
             A human-readable description of the Agent. Set to null to clear it.
 
         memory_settings : typing.Optional[AgentMemorySettings]
-            Replacement Agent Memory settings. Set to null to restore defaults.
+            Replacement Agent Skills settings. Set to null to restore defaults.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Replacement developer metadata. Set to null to clear it.
@@ -821,7 +842,7 @@ class RawAgentClient:
         objective: typing.Optional[str] = OMIT,
         task_family: typing.Optional[str] = OMIT,
         tools: typing.Optional[typing.Sequence[AgentContextResource]] = OMIT,
-        trajectory_uuid: typing.Optional[str] = OMIT,
+        trace_uuid: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentContext]:
         """
@@ -844,7 +865,7 @@ class RawAgentClient:
 
         tools : typing.Optional[typing.Sequence[AgentContextResource]]
 
-        trajectory_uuid : typing.Optional[str]
+        trace_uuid : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -871,7 +892,7 @@ class RawAgentClient:
                 "tools": convert_and_respect_annotation_metadata(
                     object_=tools, annotation=typing.Sequence[AgentContextResource], direction="write"
                 ),
-                "trajectory_uuid": trajectory_uuid,
+                "trace_uuid": trace_uuid,
             },
             headers={
                 "content-type": "application/json",
@@ -996,7 +1017,7 @@ class AsyncRawAgentClient:
             A human-readable description of the Agent.
 
         memory_settings : typing.Optional[AgentMemorySettings]
-            Agent Memory capture, compilation, and promotion settings.
+            Agent Skills capture, compilation, and promotion settings.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Developer metadata used to organize and filter Agents.
@@ -1119,9 +1140,12 @@ class AsyncRawAgentClient:
         *,
         limit: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        order_by: typing.Optional[AgentListRequestOrderBy] = None,
+        order: typing.Optional[AgentListRequestOrder] = None,
         agent_id: typing.Optional[str] = OMIT,
         deployment_id: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        search: typing.Optional[str] = OMIT,
         status: typing.Optional[AgentStatus] = OMIT,
         version: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1135,6 +1159,12 @@ class AsyncRawAgentClient:
         cursor : typing.Optional[str]
             Opaque page cursor
 
+        order_by : typing.Optional[AgentListRequestOrderBy]
+            Sort field
+
+        order : typing.Optional[AgentListRequestOrder]
+            asc or desc
+
         agent_id : typing.Optional[str]
             Filters to the exact developer-assigned Agent identifier.
 
@@ -1143,6 +1173,10 @@ class AsyncRawAgentClient:
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Filters to Agents whose metadata contains these key-value pairs.
+
+        search : typing.Optional[str]
+            Filters to Agents whose name, Agent identifier, deployment identifier,
+            or deployment version contains this text. Matching is case-insensitive.
 
         status : typing.Optional[AgentStatus]
             Filters to lifecycle status. Omit to include every status.
@@ -1164,11 +1198,14 @@ class AsyncRawAgentClient:
             params={
                 "limit": limit,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
                 "agent_id": agent_id,
                 "deployment_id": deployment_id,
                 "metadata": metadata,
+                "search": search,
                 "status": status,
                 "version": version,
             },
@@ -1196,9 +1233,12 @@ class AsyncRawAgentClient:
                     return await self.list(
                         limit=limit,
                         cursor=_parsed_next,
+                        order_by=order_by,
+                        order=order,
                         agent_id=agent_id,
                         deployment_id=deployment_id,
                         metadata=metadata,
+                        search=search,
                         status=status,
                         version=version,
                         request_options=request_options,
@@ -1499,7 +1539,7 @@ class AsyncRawAgentClient:
             A human-readable description of the Agent. Set to null to clear it.
 
         memory_settings : typing.Optional[AgentMemorySettings]
-            Replacement Agent Memory settings. Set to null to restore defaults.
+            Replacement Agent Skills settings. Set to null to restore defaults.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Replacement developer metadata. Set to null to clear it.
@@ -1751,7 +1791,7 @@ class AsyncRawAgentClient:
         objective: typing.Optional[str] = OMIT,
         task_family: typing.Optional[str] = OMIT,
         tools: typing.Optional[typing.Sequence[AgentContextResource]] = OMIT,
-        trajectory_uuid: typing.Optional[str] = OMIT,
+        trace_uuid: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentContext]:
         """
@@ -1774,7 +1814,7 @@ class AsyncRawAgentClient:
 
         tools : typing.Optional[typing.Sequence[AgentContextResource]]
 
-        trajectory_uuid : typing.Optional[str]
+        trace_uuid : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1801,7 +1841,7 @@ class AsyncRawAgentClient:
                 "tools": convert_and_respect_annotation_metadata(
                     object_=tools, annotation=typing.Sequence[AgentContextResource], direction="write"
                 ),
-                "trajectory_uuid": trajectory_uuid,
+                "trace_uuid": trace_uuid,
             },
             headers={
                 "content-type": "application/json",

@@ -42,7 +42,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[UserGroup]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -163,7 +163,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[UserGroup, UserGroupPage]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -281,7 +281,7 @@ class RawUserGroupClient:
         self, group_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[UserGroup]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -376,7 +376,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[None]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -482,7 +482,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[UserGroup]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -611,7 +611,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[User, UserPage]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -749,7 +749,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[MembershipMutationResult]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -870,7 +870,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[User, UserPage]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -997,7 +997,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[MembershipMutationResult]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -1117,7 +1117,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[None]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -1224,7 +1224,7 @@ class RawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[UserGroup, UserGroupPage]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -1355,7 +1355,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[UserGroup]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -1476,7 +1476,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[UserGroup, UserGroupPage]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -1597,7 +1597,7 @@ class AsyncRawUserGroupClient:
         self, group_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[UserGroup]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -1692,7 +1692,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[None]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -1798,7 +1798,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[UserGroup]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -1927,7 +1927,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[User, UserPage]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -2068,7 +2068,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[MembershipMutationResult]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -2189,7 +2189,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[User, UserPage]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -2319,7 +2319,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[MembershipMutationResult]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -2439,7 +2439,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[None]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------
@@ -2546,7 +2546,7 @@ class AsyncRawUserGroupClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[UserGroup, UserGroupPage]:
         """
-        Requires a project API key, or an account-admin bearer token with the X-Zep-Project header. The account must be entitled to attribute-based access control.
+        Requires attribute-based access control to be enabled for your account.
 
         Parameters
         ----------

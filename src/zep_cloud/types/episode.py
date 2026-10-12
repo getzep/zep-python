@@ -25,7 +25,7 @@ class Episode(UniversalBaseModel):
 
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The time the episode was created.
+    The time Zep received the episode.
     """
 
     document_id: typing.Optional[str] = pydantic.Field(default=None)
@@ -47,6 +47,13 @@ class Episode(UniversalBaseModel):
     processed: typing.Optional[bool] = pydantic.Field(default=None)
     """
     Whether the episode has finished graph extraction and indexing.
+    """
+
+    reference_time: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The episode's reference time, used for temporal reasoning: the time that
+    the developer supplied on add, or the ingestion time when the developer
+    supplied no time.
     """
 
     relevance: typing.Optional[float] = pydantic.Field(default=None)
@@ -97,12 +104,6 @@ class Episode(UniversalBaseModel):
     ] = None
     """
     The unique identifier of the episode.
-    """
-
-    valid_at: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    The time the episode's content became true or was observed, used for
-    temporal reasoning.
     """
 
     if IS_PYDANTIC_V2:

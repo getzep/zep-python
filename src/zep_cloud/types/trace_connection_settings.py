@@ -14,12 +14,12 @@ class TraceConnectionSettings(UniversalBaseModel):
 
     requests_per_minute: typing.Optional[int] = pydantic.Field(default=None)
     """
-    RequestsPerMinute is the maximum provider request rate.
+    RequestsPerMinute is the request rate limit from 1 to 60 per minute.
     """
 
     retention_days: typing.Optional[int] = pydantic.Field(default=None)
     """
-    RetentionDays is the provider retention window, when known.
+    RetentionDays is the optional retention window in days.
     """
 
     if IS_PYDANTIC_V2:

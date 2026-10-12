@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .trajectory_mapping_result import TrajectoryMappingResult
+from .trace_mapping_result import TraceMappingResult
 
 
 class TracePreview(UniversalBaseModel):
@@ -13,9 +13,9 @@ class TracePreview(UniversalBaseModel):
     EventCount is the number of mapped events.
     """
 
-    mapping_result: typing.Optional[TrajectoryMappingResult] = pydantic.Field(default=None)
+    mapping_result: typing.Optional[TraceMappingResult] = pydantic.Field(default=None)
     """
-    MappingResult contains the resolved Trajectory fields. Example: {"task_family":"support","objective":"Help the customer"}.
+    MappingResult contains the resolved Trace fields. Example: {"task_family":"support","objective":"Help the customer"}.
     """
 
     skip_reason: typing.Optional[str] = pydantic.Field(default=None)

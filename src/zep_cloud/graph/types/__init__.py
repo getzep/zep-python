@@ -9,11 +9,15 @@ if typing.TYPE_CHECKING:
     from .graph_context_request_recency_bias import GraphContextRequestRecencyBias
     from .graph_list_request_order import GraphListRequestOrder
     from .graph_list_request_order_by import GraphListRequestOrderBy
+    from .search_edges_request_reranker import SearchEdgesRequestReranker
+    from .search_nodes_request_reranker import SearchNodesRequestReranker
     from .subgraph_request_direction import SubgraphRequestDirection
 _dynamic_imports: typing.Dict[str, str] = {
     "GraphContextRequestRecencyBias": ".graph_context_request_recency_bias",
     "GraphListRequestOrder": ".graph_list_request_order",
     "GraphListRequestOrderBy": ".graph_list_request_order_by",
+    "SearchEdgesRequestReranker": ".search_edges_request_reranker",
+    "SearchNodesRequestReranker": ".search_nodes_request_reranker",
     "SubgraphRequestDirection": ".subgraph_request_direction",
 }
 
@@ -43,5 +47,7 @@ __all__ = [
     "GraphContextRequestRecencyBias",
     "GraphListRequestOrder",
     "GraphListRequestOrderBy",
+    "SearchEdgesRequestReranker",
+    "SearchNodesRequestReranker",
     "SubgraphRequestDirection",
 ]

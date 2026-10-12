@@ -6,22 +6,28 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from . import learning, literal_policy, skill, split, trajectory, trajectory_import, verifier
+    from .types import AgentListRequestOrder, AgentListRequestOrderBy
+    from . import learning, literal_policy, skill, split, task_family, trace, trace_import, verifier
     from .literal_policy import UpdateAgentLiteralPolicyRequestDefault
     from .skill import AgentSkillSearchRequestMarkdownFormat
-    from .trajectory import TrajectoryListRequestSourceKind
-    from .trajectory_import import TrajectoryImportDeleteRequestTrajectories
+    from .trace import TraceListRequestOrder, TraceListRequestOrderBy, TraceListRequestSourceKind
+    from .trace_import import TraceImportDeleteRequestTraces
 _dynamic_imports: typing.Dict[str, str] = {
+    "AgentListRequestOrder": ".types",
+    "AgentListRequestOrderBy": ".types",
     "AgentSkillSearchRequestMarkdownFormat": ".skill",
-    "TrajectoryImportDeleteRequestTrajectories": ".trajectory_import",
-    "TrajectoryListRequestSourceKind": ".trajectory",
+    "TraceImportDeleteRequestTraces": ".trace_import",
+    "TraceListRequestOrder": ".trace",
+    "TraceListRequestOrderBy": ".trace",
+    "TraceListRequestSourceKind": ".trace",
     "UpdateAgentLiteralPolicyRequestDefault": ".literal_policy",
     "learning": ".learning",
     "literal_policy": ".literal_policy",
     "skill": ".skill",
     "split": ".split",
-    "trajectory": ".trajectory",
-    "trajectory_import": ".trajectory_import",
+    "task_family": ".task_family",
+    "trace": ".trace",
+    "trace_import": ".trace_import",
     "verifier": ".verifier",
 }
 
@@ -48,15 +54,20 @@ def __dir__():
 
 
 __all__ = [
+    "AgentListRequestOrder",
+    "AgentListRequestOrderBy",
     "AgentSkillSearchRequestMarkdownFormat",
-    "TrajectoryImportDeleteRequestTrajectories",
-    "TrajectoryListRequestSourceKind",
+    "TraceImportDeleteRequestTraces",
+    "TraceListRequestOrder",
+    "TraceListRequestOrderBy",
+    "TraceListRequestSourceKind",
     "UpdateAgentLiteralPolicyRequestDefault",
     "learning",
     "literal_policy",
     "skill",
     "split",
-    "trajectory",
-    "trajectory_import",
+    "task_family",
+    "trace",
+    "trace_import",
     "verifier",
 ]
