@@ -48,14 +48,20 @@ generations:
     cli_version: unknown
     generator_versions:
       fernapi/fern-python-sdk: 5.39.2
-current_generation: 697f67b435cf139bb8886becd95f777cbcee853c
+  - commit_sha: 28ebe33b9302f169ff5a9569ee8f0d606c8fd251
+    tree_hash: c3db1da60ce9480fced18cf0266fffc4cf5c8257
+    timestamp: 2026-10-13T21:49:37.679Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-python-sdk: 5.39.2
+current_generation: 28ebe33b9302f169ff5a9569ee8f0d606c8fd251
 patches:
   - id: patch-082f322d
     content_hash: sha256:80c233468a0236864659e748ffa647c6c6a89435d3fca6dec28965e48b901c46
     original_commit: 082f322d1bd077cff00e3630500ac6187251a000
     original_message: Let an ontology field opt out, and fix the README (#348)
     original_author: Pavlo Paliychuk <paul@getzep.com>
-    base_generation: 697f67b435cf139bb8886becd95f777cbcee853c
+    base_generation: 28ebe33b9302f169ff5a9569ee8f0d606c8fd251
     files:
       - README.md
     patch_content: |
