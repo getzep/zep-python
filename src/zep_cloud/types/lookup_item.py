@@ -6,6 +6,7 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .lookup_item_resource_type import LookupItemResourceType
 
 
 class LookupItem(UniversalBaseModel):
@@ -19,7 +20,7 @@ class LookupItem(UniversalBaseModel):
     The developer-assigned identifier that was looked up.
     """
 
-    resource_type: typing.Optional[str] = pydantic.Field(default=None)
+    resource_type: typing.Optional[LookupItemResourceType] = pydantic.Field(default=None)
     """
     The type of resource this entry resolves: user, thread, or graph.
     """

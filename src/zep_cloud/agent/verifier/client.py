@@ -36,7 +36,7 @@ class VerifierClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         class_: typing.Optional[str] = OMIT,
         principal_id: typing.Optional[str] = OMIT,
@@ -51,8 +51,8 @@ class VerifierClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Page cursor
@@ -98,7 +98,7 @@ class VerifierClient:
         """
         return self._raw_client.list(
             agent_uuid,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             class_=class_,
             principal_id=principal_id,
@@ -348,7 +348,7 @@ class AsyncVerifierClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         class_: typing.Optional[str] = OMIT,
         principal_id: typing.Optional[str] = OMIT,
@@ -363,8 +363,8 @@ class AsyncVerifierClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Page cursor
@@ -419,7 +419,7 @@ class AsyncVerifierClient:
         """
         return await self._raw_client.list(
             agent_uuid,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             class_=class_,
             principal_id=principal_id,

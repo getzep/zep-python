@@ -175,7 +175,7 @@ class RawVersionClient:
         agent_uuid: str,
         skill_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         markdown_format: typing.Optional[VersionListRequestMarkdownFormat] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -189,8 +189,8 @@ class RawVersionClient:
         skill_uuid : str
             Skill UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -210,7 +210,7 @@ class RawVersionClient:
             f"agents/{encode_path_param(agent_uuid)}/skills/{encode_path_param(skill_uuid)}/versions",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "markdown_format": markdown_format,
             },
@@ -231,7 +231,7 @@ class RawVersionClient:
                 _get_next = lambda: self.list(
                     agent_uuid,
                     skill_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     markdown_format=markdown_format,
                     request_options=request_options,
@@ -691,7 +691,7 @@ class AsyncRawVersionClient:
         agent_uuid: str,
         skill_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         markdown_format: typing.Optional[VersionListRequestMarkdownFormat] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -705,8 +705,8 @@ class AsyncRawVersionClient:
         skill_uuid : str
             Skill UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -726,7 +726,7 @@ class AsyncRawVersionClient:
             f"agents/{encode_path_param(agent_uuid)}/skills/{encode_path_param(skill_uuid)}/versions",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "markdown_format": markdown_format,
             },
@@ -749,7 +749,7 @@ class AsyncRawVersionClient:
                     return await self.list(
                         agent_uuid,
                         skill_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         markdown_format=markdown_format,
                         request_options=request_options,

@@ -6,6 +6,8 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .batch_progress import BatchProgress
+from .batch_status import BatchStatus
 
 
 class Batch(UniversalBaseModel):
@@ -19,13 +21,13 @@ class Batch(UniversalBaseModel):
     Custom metadata associated with the batch, supplied when it was created.
     """
 
-    progress: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    progress: typing.Optional[BatchProgress] = pydantic.Field(default=None)
     """
     The batch's processing progress, including its current stage and item
     counts. Present only once processing has started.
     """
 
-    status: typing.Optional[str] = pydantic.Field(default=None)
+    status: typing.Optional[BatchStatus] = pydantic.Field(default=None)
     """
     The processing status of the batch: draft, invalid, queued, processing,
     succeeded, partial, failed, or canceled.

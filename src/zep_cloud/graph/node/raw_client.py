@@ -25,6 +25,7 @@ from ...types.neighbor_entry import NeighborEntry
 from ...types.neighbor_page import NeighborPage
 from ...types.node import Node
 from ...types.node_input import NodeInput
+from ...types.node_list_filters import NodeListFilters
 from ...types.node_page import NodePage
 from ...types.search_filters import SearchFilters
 from .types.neighbors_request_direction import NeighborsRequestDirection
@@ -54,7 +55,7 @@ class RawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         nodes : typing.Sequence[NodeInput]
             The nodes to add to the graph.
@@ -166,33 +167,39 @@ class RawNodeClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[NodeListRequestOrderBy] = None,
         order: typing.Optional[NodeListRequestOrder] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[NodeListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Node, NodePage]:
         """
+        Lists the nodes of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
+        You can sort by `uuid`, `created_at`, or `degree`. The default sort is `uuid` in descending order.
+        You cannot use these `filters` fields: `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
+
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
         order_by : typing.Optional[NodeListRequestOrderBy]
-            Sort key: uuid (default) or degree
+            Sort key: uuid (default), created_at, or degree
 
         order : typing.Optional[NodeListRequestOrder]
             Sort direction: asc or desc (default desc)
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        filters : typing.Optional[NodeListFilters]
+            Filters that limit the items in the list. The operation description
+            names the filter fields that the operation does not support.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -206,13 +213,15 @@ class RawNodeClient:
             f"graphs/{encode_path_param(graph_uuid)}/nodes/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "order_by": order_by,
                 "order": order,
             },
             json={
-                "filters": filters,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=NodeListFilters, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -235,7 +244,7 @@ class RawNodeClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list(
                     graph_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     order_by=order_by,
                     order=order,
@@ -318,7 +327,7 @@ class RawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         node_uuid : str
             Node UUID
@@ -426,7 +435,7 @@ class RawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         node_uuid : str
             Node UUID
@@ -542,7 +551,7 @@ class RawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         node_uuid : str
             Node UUID
@@ -665,7 +674,7 @@ class RawNodeClient:
         graph_uuid: str,
         node_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[NodeListNeighborsRequestOrderBy] = None,
         order: typing.Optional[NodeListNeighborsRequestOrder] = None,
@@ -677,13 +686,13 @@ class RawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         node_uuid : str
             Node UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -712,7 +721,7 @@ class RawNodeClient:
             f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}/neighbors",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "order_by": order_by,
                 "order": order,
@@ -745,7 +754,7 @@ class RawNodeClient:
                 _get_next = lambda: self.list_neighbors(
                     graph_uuid,
                     node_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     order_by=order_by,
                     order=order,
@@ -839,7 +848,7 @@ class AsyncRawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         nodes : typing.Sequence[NodeInput]
             The nodes to add to the graph.
@@ -951,33 +960,39 @@ class AsyncRawNodeClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[NodeListRequestOrderBy] = None,
         order: typing.Optional[NodeListRequestOrder] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[NodeListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Node, NodePage]:
         """
+        Lists the nodes of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
+        You can sort by `uuid`, `created_at`, or `degree`. The default sort is `uuid` in descending order.
+        You cannot use these `filters` fields: `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
+
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
         order_by : typing.Optional[NodeListRequestOrderBy]
-            Sort key: uuid (default) or degree
+            Sort key: uuid (default), created_at, or degree
 
         order : typing.Optional[NodeListRequestOrder]
             Sort direction: asc or desc (default desc)
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        filters : typing.Optional[NodeListFilters]
+            Filters that limit the items in the list. The operation description
+            names the filter fields that the operation does not support.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -991,13 +1006,15 @@ class AsyncRawNodeClient:
             f"graphs/{encode_path_param(graph_uuid)}/nodes/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "order_by": order_by,
                 "order": order,
             },
             json={
-                "filters": filters,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=NodeListFilters, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -1022,7 +1039,7 @@ class AsyncRawNodeClient:
                 async def _get_next():
                     return await self.list(
                         graph_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         order_by=order_by,
                         order=order,
@@ -1106,7 +1123,7 @@ class AsyncRawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         node_uuid : str
             Node UUID
@@ -1214,7 +1231,7 @@ class AsyncRawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         node_uuid : str
             Node UUID
@@ -1330,7 +1347,7 @@ class AsyncRawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         node_uuid : str
             Node UUID
@@ -1453,7 +1470,7 @@ class AsyncRawNodeClient:
         graph_uuid: str,
         node_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[NodeListNeighborsRequestOrderBy] = None,
         order: typing.Optional[NodeListNeighborsRequestOrder] = None,
@@ -1465,13 +1482,13 @@ class AsyncRawNodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         node_uuid : str
             Node UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1500,7 +1517,7 @@ class AsyncRawNodeClient:
             f"graphs/{encode_path_param(graph_uuid)}/nodes/{encode_path_param(node_uuid)}/neighbors",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "order_by": order_by,
                 "order": order,
@@ -1535,7 +1552,7 @@ class AsyncRawNodeClient:
                     return await self.list_neighbors(
                         graph_uuid,
                         node_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         order_by=order_by,
                         order=order,

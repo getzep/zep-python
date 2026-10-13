@@ -9,6 +9,7 @@ from ...types.add_episode_result import AddEpisodeResult
 from ...types.async_result import AsyncResult
 from ...types.episode import Episode
 from ...types.episode_debug_log import EpisodeDebugLog
+from ...types.episode_list_filters import EpisodeListFilters
 from ...types.episode_page import EpisodePage
 from ...types.ingestion_trace import IngestionTrace
 from ...types.ingestion_trace_page import IngestionTracePage
@@ -41,7 +42,7 @@ class EpisodeClient:
         graph_uuid: str,
         document_id: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
@@ -49,13 +50,13 @@ class EpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         document_id : str
             Document ID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -86,7 +87,7 @@ class EpisodeClient:
             yield page
         """
         return self._raw_client.list_for_document(
-            graph_uuid, document_id, limit=limit, cursor=cursor, request_options=request_options
+            graph_uuid, document_id, page_size=page_size, cursor=cursor, request_options=request_options
         )
 
     def add(
@@ -107,7 +108,7 @@ class EpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         data : str
             The episode content to add to the graph.
@@ -172,11 +173,11 @@ class EpisodeClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[EpisodeListRequestOrderBy] = None,
         order: typing.Optional[EpisodeListRequestOrder] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[EpisodeListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
         """
@@ -190,10 +191,10 @@ class EpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -204,8 +205,8 @@ class EpisodeClient:
         order : typing.Optional[EpisodeListRequestOrder]
             Sort direction: asc or desc
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        filters : typing.Optional[EpisodeListFilters]
+            Filters that limit the episodes in the list.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -233,7 +234,7 @@ class EpisodeClient:
         """
         return self._raw_client.list(
             graph_uuid,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             order_by=order_by,
             order=order,
@@ -248,7 +249,7 @@ class EpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
@@ -288,7 +289,7 @@ class EpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
@@ -333,7 +334,7 @@ class EpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
@@ -381,7 +382,7 @@ class EpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
@@ -414,7 +415,7 @@ class EpisodeClient:
         graph_uuid: str,
         episode_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[IngestionTrace, IngestionTracePage]:
@@ -424,13 +425,13 @@ class EpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -461,7 +462,7 @@ class EpisodeClient:
             yield page
         """
         return self._raw_client.list_ingestion_traces(
-            graph_uuid, episode_uuid, limit=limit, cursor=cursor, request_options=request_options
+            graph_uuid, episode_uuid, page_size=page_size, cursor=cursor, request_options=request_options
         )
 
 
@@ -485,7 +486,7 @@ class AsyncEpisodeClient:
         graph_uuid: str,
         document_id: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
@@ -493,13 +494,13 @@ class AsyncEpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         document_id : str
             Document ID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -539,7 +540,7 @@ class AsyncEpisodeClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_for_document(
-            graph_uuid, document_id, limit=limit, cursor=cursor, request_options=request_options
+            graph_uuid, document_id, page_size=page_size, cursor=cursor, request_options=request_options
         )
 
     async def add(
@@ -560,7 +561,7 @@ class AsyncEpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         data : str
             The episode content to add to the graph.
@@ -633,11 +634,11 @@ class AsyncEpisodeClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[EpisodeListRequestOrderBy] = None,
         order: typing.Optional[EpisodeListRequestOrder] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[EpisodeListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
         """
@@ -651,10 +652,10 @@ class AsyncEpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -665,8 +666,8 @@ class AsyncEpisodeClient:
         order : typing.Optional[EpisodeListRequestOrder]
             Sort direction: asc or desc
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        filters : typing.Optional[EpisodeListFilters]
+            Filters that limit the episodes in the list.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -703,7 +704,7 @@ class AsyncEpisodeClient:
         """
         return await self._raw_client.list(
             graph_uuid,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             order_by=order_by,
             order=order,
@@ -718,7 +719,7 @@ class AsyncEpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
@@ -766,7 +767,7 @@ class AsyncEpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
@@ -819,7 +820,7 @@ class AsyncEpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
@@ -875,7 +876,7 @@ class AsyncEpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
@@ -916,7 +917,7 @@ class AsyncEpisodeClient:
         graph_uuid: str,
         episode_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[IngestionTrace, IngestionTracePage]:
@@ -926,13 +927,13 @@ class AsyncEpisodeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         episode_uuid : str
             Episode UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -972,5 +973,5 @@ class AsyncEpisodeClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_ingestion_traces(
-            graph_uuid, episode_uuid, limit=limit, cursor=cursor, request_options=request_options
+            graph_uuid, episode_uuid, page_size=page_size, cursor=cursor, request_options=request_options
         )

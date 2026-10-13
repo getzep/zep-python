@@ -142,7 +142,7 @@ class SkillClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         environments: typing.Optional[typing.Sequence[str]] = OMIT,
         kind: typing.Optional[str] = OMIT,
@@ -156,8 +156,8 @@ class SkillClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 20)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -196,7 +196,7 @@ class SkillClient:
         """
         return self._raw_client.list(
             agent_uuid,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             environments=environments,
             kind=kind,
@@ -210,7 +210,7 @@ class SkillClient:
         agent_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         environments: typing.Optional[typing.Sequence[str]] = OMIT,
         include_markdown: typing.Optional[bool] = OMIT,
@@ -228,8 +228,8 @@ class SkillClient:
 
         query : str
 
-        limit : typing.Optional[int]
-            Page size (maximum 20)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -278,7 +278,7 @@ class SkillClient:
         return self._raw_client.search(
             agent_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             environments=environments,
             include_markdown=include_markdown,
@@ -669,7 +669,7 @@ class AsyncSkillClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         environments: typing.Optional[typing.Sequence[str]] = OMIT,
         kind: typing.Optional[str] = OMIT,
@@ -683,8 +683,8 @@ class AsyncSkillClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 20)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -732,7 +732,7 @@ class AsyncSkillClient:
         """
         return await self._raw_client.list(
             agent_uuid,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             environments=environments,
             kind=kind,
@@ -746,7 +746,7 @@ class AsyncSkillClient:
         agent_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         environments: typing.Optional[typing.Sequence[str]] = OMIT,
         include_markdown: typing.Optional[bool] = OMIT,
@@ -764,8 +764,8 @@ class AsyncSkillClient:
 
         query : str
 
-        limit : typing.Optional[int]
-            Page size (maximum 20)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -823,7 +823,7 @@ class AsyncSkillClient:
         return await self._raw_client.search(
             agent_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             environments=environments,
             include_markdown=include_markdown,

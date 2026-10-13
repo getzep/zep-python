@@ -7,24 +7,26 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class TraceImportSchedule(UniversalBaseModel):
-    interval_hours: typing.Optional[int] = pydantic.Field(default=None)
+    interval_hours: int = pydantic.Field()
     """
     IntervalHours is the scheduled run interval.
     """
 
     max_open_hours: typing.Optional[int] = pydantic.Field(default=None)
     """
-    MaxOpenHours is the maximum wait for an open trace.
+    MaxOpenHours is the maximum wait for an open trace. The value must be 1 to 168 hours. The default is 24 hours.
     """
 
     settle_minutes: typing.Optional[int] = pydantic.Field(default=None)
     """
-    SettleMinutes is the wait time for trace updates.
+    SettleMinutes is the wait time for trace updates. The value must be 0 to 1,440 minutes. The default is 60 minutes.
     """
 
-    start_from: typing.Optional[str] = pydantic.Field(default=None)
+    start_from: str = pydantic.Field()
     """
-    StartFrom selects the initial history window.
+    StartFrom is the earliest trace start time that scheduled runs import.
+    The value is "now", which is the time when the import was created, or an
+    RFC 3339 timestamp.
     """
 
     if IS_PYDANTIC_V2:

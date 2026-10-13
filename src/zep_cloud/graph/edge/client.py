@@ -9,8 +9,11 @@ from ...types.add_edges_result import AddEdgesResult
 from ...types.async_result import AsyncResult
 from ...types.edge import Edge
 from ...types.edge_input import EdgeInput
+from ...types.edge_list_filters import EdgeListFilters
 from ...types.edge_page import EdgePage
 from .raw_client import AsyncRawEdgeClient, RawEdgeClient
+from .types.edge_list_request_order import EdgeListRequestOrder
+from .types.edge_list_request_order_by import EdgeListRequestOrderBy
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -47,7 +50,7 @@ class EdgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edges : typing.Sequence[EdgeInput]
             The edges to add to the graph. The request accepts 1 to 100 edges.
@@ -99,25 +102,39 @@ class EdgeClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        order_by: typing.Optional[EdgeListRequestOrderBy] = None,
+        order: typing.Optional[EdgeListRequestOrder] = None,
+        filters: typing.Optional[EdgeListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Edge, EdgePage]:
         """
+        Lists the edges of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
+        You can sort by `uuid`, `created_at`, or `valid_at`. The default sort is `uuid` in descending order. An edge with no `valid_at` sorts as if its `valid_at` is 1970-01-01T00:00:00Z. Thus it comes before an edge with a later `valid_at` in ascending order, and after an edge with an earlier `valid_at`.
+        You can use all `filters` fields except `content_policy_violated`.
+        If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
+
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        order_by : typing.Optional[EdgeListRequestOrderBy]
+            Sort key: uuid (default), created_at, or valid_at
+
+        order : typing.Optional[EdgeListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
+        filters : typing.Optional[EdgeListFilters]
+            Filters that limit the items in the list. The operation description
+            names the filter fields that the operation does not support.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -144,7 +161,13 @@ class EdgeClient:
             yield page
         """
         return self._raw_client.list(
-            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
+            graph_uuid,
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            filters=filters,
+            request_options=request_options,
         )
 
     def get(self, graph_uuid: str, edge_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> Edge:
@@ -152,7 +175,7 @@ class EdgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edge_uuid : str
             Edge UUID
@@ -192,7 +215,7 @@ class EdgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edge_uuid : str
             Edge UUID
@@ -243,7 +266,7 @@ class EdgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edge_uuid : str
             Edge UUID
@@ -320,7 +343,7 @@ class AsyncEdgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edges : typing.Sequence[EdgeInput]
             The edges to add to the graph. The request accepts 1 to 100 edges.
@@ -380,25 +403,39 @@ class AsyncEdgeClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        order_by: typing.Optional[EdgeListRequestOrderBy] = None,
+        order: typing.Optional[EdgeListRequestOrder] = None,
+        filters: typing.Optional[EdgeListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Edge, EdgePage]:
         """
+        Lists the edges of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
+        You can sort by `uuid`, `created_at`, or `valid_at`. The default sort is `uuid` in descending order. An edge with no `valid_at` sorts as if its `valid_at` is 1970-01-01T00:00:00Z. Thus it comes before an edge with a later `valid_at` in ascending order, and after an edge with an earlier `valid_at`.
+        You can use all `filters` fields except `content_policy_violated`.
+        If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
+
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        order_by : typing.Optional[EdgeListRequestOrderBy]
+            Sort key: uuid (default), created_at, or valid_at
+
+        order : typing.Optional[EdgeListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
+        filters : typing.Optional[EdgeListFilters]
+            Filters that limit the items in the list. The operation description
+            names the filter fields that the operation does not support.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -434,7 +471,13 @@ class AsyncEdgeClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
+            graph_uuid,
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            filters=filters,
+            request_options=request_options,
         )
 
     async def get(
@@ -444,7 +487,7 @@ class AsyncEdgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edge_uuid : str
             Edge UUID
@@ -492,7 +535,7 @@ class AsyncEdgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edge_uuid : str
             Edge UUID
@@ -551,7 +594,7 @@ class AsyncEdgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edge_uuid : str
             Edge UUID

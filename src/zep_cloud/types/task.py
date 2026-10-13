@@ -8,6 +8,8 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .error_body import ErrorBody
 from .task_progress import TaskProgress
+from .task_result import TaskResult
+from .task_status import TaskStatus
 
 
 class Task(UniversalBaseModel):
@@ -35,7 +37,7 @@ class Task(UniversalBaseModel):
     final stage.
     """
 
-    result: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    result: typing.Optional[TaskResult] = pydantic.Field(default=None)
     """
     Operation-specific output populated once the task reaches succeeded or
     partial, such as identifiers the operation could not return synchronously.
@@ -46,7 +48,7 @@ class Task(UniversalBaseModel):
     The time a worker began processing the task; absent until then.
     """
 
-    status: typing.Optional[str] = pydantic.Field(default=None)
+    status: typing.Optional[TaskStatus] = pydantic.Field(default=None)
     """
     The task's current state: pending, processing, succeeded, partial, or
     failed.

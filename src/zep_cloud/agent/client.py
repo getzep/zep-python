@@ -137,7 +137,7 @@ class AgentClient:
     def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[AgentListRequestOrderBy] = None,
         order: typing.Optional[AgentListRequestOrder] = None,
@@ -152,8 +152,8 @@ class AgentClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -206,7 +206,7 @@ class AgentClient:
             yield page
         """
         return self._raw_client.list(
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             order_by=order_by,
             order=order,
@@ -670,7 +670,7 @@ class AsyncAgentClient:
     async def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[AgentListRequestOrderBy] = None,
         order: typing.Optional[AgentListRequestOrder] = None,
@@ -685,8 +685,8 @@ class AsyncAgentClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -748,7 +748,7 @@ class AsyncAgentClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             order_by=order_by,
             order=order,

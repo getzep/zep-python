@@ -26,6 +26,7 @@ from ...types.async_result import AsyncResult
 from ...types.edge_node_ref import EdgeNodeRef
 from ...types.hyperedge import Hyperedge
 from ...types.hyperedge_input import HyperedgeInput
+from ...types.hyperedge_list_filters import HyperedgeListFilters
 from ...types.hyperedge_page import HyperedgePage
 from .types.hyperedge_list_request_order import HyperedgeListRequestOrder
 from .types.hyperedge_list_request_order_by import HyperedgeListRequestOrderBy
@@ -64,7 +65,7 @@ class RawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edges : typing.Sequence[HyperedgeInput]
             The member edges to create. Each pair becomes one edge carrying the
@@ -190,11 +191,11 @@ class RawHyperedgeClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[HyperedgeListRequestOrderBy] = None,
         order: typing.Optional[HyperedgeListRequestOrder] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[HyperedgeListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Hyperedge, HyperedgePage]:
         """
@@ -206,10 +207,10 @@ class RawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -220,8 +221,8 @@ class RawHyperedgeClient:
         order : typing.Optional[HyperedgeListRequestOrder]
             Sort direction: asc or desc
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        filters : typing.Optional[HyperedgeListFilters]
+            Filters that limit the hyperedges in the list.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -235,13 +236,15 @@ class RawHyperedgeClient:
             f"graphs/{encode_path_param(graph_uuid)}/hyperedges/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "order_by": order_by,
                 "order": order,
             },
             json={
-                "filters": filters,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=HyperedgeListFilters, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -264,7 +267,7 @@ class RawHyperedgeClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list(
                     graph_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     order_by=order_by,
                     order=order,
@@ -351,7 +354,7 @@ class RawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID
@@ -451,7 +454,7 @@ class RawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID
@@ -561,7 +564,7 @@ class RawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID
@@ -689,7 +692,7 @@ class RawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID
@@ -815,7 +818,7 @@ class RawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID
@@ -938,7 +941,7 @@ class AsyncRawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edges : typing.Sequence[HyperedgeInput]
             The member edges to create. Each pair becomes one edge carrying the
@@ -1064,11 +1067,11 @@ class AsyncRawHyperedgeClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[HyperedgeListRequestOrderBy] = None,
         order: typing.Optional[HyperedgeListRequestOrder] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[HyperedgeListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Hyperedge, HyperedgePage]:
         """
@@ -1080,10 +1083,10 @@ class AsyncRawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1094,8 +1097,8 @@ class AsyncRawHyperedgeClient:
         order : typing.Optional[HyperedgeListRequestOrder]
             Sort direction: asc or desc
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        filters : typing.Optional[HyperedgeListFilters]
+            Filters that limit the hyperedges in the list.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1109,13 +1112,15 @@ class AsyncRawHyperedgeClient:
             f"graphs/{encode_path_param(graph_uuid)}/hyperedges/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "order_by": order_by,
                 "order": order,
             },
             json={
-                "filters": filters,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=HyperedgeListFilters, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -1140,7 +1145,7 @@ class AsyncRawHyperedgeClient:
                 async def _get_next():
                     return await self.list(
                         graph_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         order_by=order_by,
                         order=order,
@@ -1228,7 +1233,7 @@ class AsyncRawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID
@@ -1328,7 +1333,7 @@ class AsyncRawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID
@@ -1438,7 +1443,7 @@ class AsyncRawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID
@@ -1566,7 +1571,7 @@ class AsyncRawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID
@@ -1692,7 +1697,7 @@ class AsyncRawHyperedgeClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         hyperedge_uuid : str
             Hyperedge UUID

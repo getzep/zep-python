@@ -6,11 +6,9 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class ArtifactListRequest(UniversalBaseModel):
-    filters: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
-    """
-    Filters constraining which items are returned.
-    """
+class AgentSkillContractDependency(UniversalBaseModel):
+    package_name: typing.Optional[str] = None
+    version_constraint: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

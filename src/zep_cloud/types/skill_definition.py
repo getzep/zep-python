@@ -6,6 +6,7 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .skill_definition_section import SkillDefinitionSection
 from .skill_failure import SkillFailure
+from .skill_kind import SkillKind
 from .skill_procedure_step import SkillProcedureStep
 from .skill_relation import SkillRelation
 from .skill_resource import SkillResource
@@ -19,7 +20,7 @@ class SkillDefinition(UniversalBaseModel):
     done_when: typing.Optional[typing.List[str]] = None
     environments: typing.Optional[typing.List[SkillResource]] = None
     failures: typing.Optional[typing.List[SkillFailure]] = None
-    kind: typing.Optional[str] = None
+    kind: typing.Optional[SkillKind] = None
     name: typing.Optional[str] = None
     outputs: typing.Optional[typing.List[str]] = None
     package_name: typing.Optional[str] = None

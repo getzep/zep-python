@@ -37,7 +37,7 @@ class RawVerifierClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         class_: typing.Optional[str] = OMIT,
         principal_id: typing.Optional[str] = OMIT,
@@ -52,8 +52,8 @@ class RawVerifierClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Page cursor
@@ -85,7 +85,7 @@ class RawVerifierClient:
             f"agents/{encode_path_param(agent_uuid)}/verifiers/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -116,7 +116,7 @@ class RawVerifierClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list(
                     agent_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     class_=class_,
                     principal_id=principal_id,
@@ -569,7 +569,7 @@ class AsyncRawVerifierClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         class_: typing.Optional[str] = OMIT,
         principal_id: typing.Optional[str] = OMIT,
@@ -584,8 +584,8 @@ class AsyncRawVerifierClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Page cursor
@@ -617,7 +617,7 @@ class AsyncRawVerifierClient:
             f"agents/{encode_path_param(agent_uuid)}/verifiers/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -650,7 +650,7 @@ class AsyncRawVerifierClient:
                 async def _get_next():
                     return await self.list(
                         agent_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         class_=class_,
                         principal_id=principal_id,

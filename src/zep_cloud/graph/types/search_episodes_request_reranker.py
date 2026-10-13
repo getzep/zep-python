@@ -2,6 +2,6 @@
 
 import typing
 
-SearchRequestReranker = typing.Union[
+SearchEpisodesRequestReranker = typing.Union[
     typing.Literal["rrf", "mmr", "node_distance", "episode_mentions", "cross_encoder"], typing.Any
 ]

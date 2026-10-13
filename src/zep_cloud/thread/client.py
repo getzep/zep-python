@@ -49,7 +49,7 @@ class ThreadClient:
     def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[ThreadListRequestOrderBy] = None,
         order: typing.Optional[ThreadListRequestOrder] = None,
@@ -59,8 +59,8 @@ class ThreadClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -97,7 +97,7 @@ class ThreadClient:
             yield page
         """
         return self._raw_client.list(
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             order_by=order_by,
             order=order,
@@ -301,7 +301,7 @@ class ThreadClient:
         self,
         thread_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
@@ -311,8 +311,8 @@ class ThreadClient:
         thread_uuid : str
             Thread UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -341,13 +341,15 @@ class ThreadClient:
         for page in response.iter_pages():
             yield page
         """
-        return self._raw_client.list_episodes(thread_uuid, limit=limit, cursor=cursor, request_options=request_options)
+        return self._raw_client.list_episodes(
+            thread_uuid, page_size=page_size, cursor=cursor, request_options=request_options
+        )
 
     def list_messages(
         self,
         thread_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[typing.Literal["created_at"]] = None,
         order: typing.Optional[ThreadListMessagesRequestOrder] = None,
@@ -359,8 +361,8 @@ class ThreadClient:
         thread_uuid : str
             Thread UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -396,7 +398,12 @@ class ThreadClient:
             yield page
         """
         return self._raw_client.list_messages(
-            thread_uuid, limit=limit, cursor=cursor, order_by=order_by, order=order, request_options=request_options
+            thread_uuid,
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            request_options=request_options,
         )
 
     def add_messages(
@@ -524,7 +531,7 @@ class AsyncThreadClient:
     async def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[ThreadListRequestOrderBy] = None,
         order: typing.Optional[ThreadListRequestOrder] = None,
@@ -534,8 +541,8 @@ class AsyncThreadClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -581,7 +588,7 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             order_by=order_by,
             order=order,
@@ -825,7 +832,7 @@ class AsyncThreadClient:
         self,
         thread_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
@@ -835,8 +842,8 @@ class AsyncThreadClient:
         thread_uuid : str
             Thread UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -875,14 +882,14 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_episodes(
-            thread_uuid, limit=limit, cursor=cursor, request_options=request_options
+            thread_uuid, page_size=page_size, cursor=cursor, request_options=request_options
         )
 
     async def list_messages(
         self,
         thread_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[typing.Literal["created_at"]] = None,
         order: typing.Optional[ThreadListMessagesRequestOrder] = None,
@@ -894,8 +901,8 @@ class AsyncThreadClient:
         thread_uuid : str
             Thread UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -940,7 +947,12 @@ class AsyncThreadClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_messages(
-            thread_uuid, limit=limit, cursor=cursor, order_by=order_by, order=order, request_options=request_options
+            thread_uuid,
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            request_options=request_options,
         )
 
     async def add_messages(

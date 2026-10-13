@@ -29,7 +29,7 @@ class RawItemClient:
         import_uuid: str,
         run_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[TraceImportRunItem, TraceImportRunItemPage]:
@@ -47,8 +47,8 @@ class RawItemClient:
         run_uuid : str
             Run UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -65,7 +65,7 @@ class RawItemClient:
             f"agents/{encode_path_param(agent_uuid)}/trace-imports/{encode_path_param(import_uuid)}/runs/{encode_path_param(run_uuid)}/items",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -86,7 +86,7 @@ class RawItemClient:
                     agent_uuid,
                     import_uuid,
                     run_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     request_options=request_options,
                 )
@@ -148,7 +148,7 @@ class AsyncRawItemClient:
         import_uuid: str,
         run_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[TraceImportRunItem, TraceImportRunItemPage]:
@@ -166,8 +166,8 @@ class AsyncRawItemClient:
         run_uuid : str
             Run UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -184,7 +184,7 @@ class AsyncRawItemClient:
             f"agents/{encode_path_param(agent_uuid)}/trace-imports/{encode_path_param(import_uuid)}/runs/{encode_path_param(run_uuid)}/items",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -207,7 +207,7 @@ class AsyncRawItemClient:
                         agent_uuid,
                         import_uuid,
                         run_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         request_options=request_options,
                     )

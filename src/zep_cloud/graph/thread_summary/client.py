@@ -6,8 +6,11 @@ from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.pagination import AsyncPager, SyncPager
 from ...core.request_options import RequestOptions
 from ...types.thread_summary import ThreadSummary
+from ...types.thread_summary_list_filters import ThreadSummaryListFilters
 from ...types.thread_summary_page import ThreadSummaryPage
 from .raw_client import AsyncRawThreadSummaryClient, RawThreadSummaryClient
+from .types.thread_summary_list_request_order import ThreadSummaryListRequestOrder
+from .types.thread_summary_list_request_order_by import ThreadSummaryListRequestOrderBy
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -32,25 +35,39 @@ class ThreadSummaryClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        order_by: typing.Optional[ThreadSummaryListRequestOrderBy] = None,
+        order: typing.Optional[ThreadSummaryListRequestOrder] = None,
+        filters: typing.Optional[ThreadSummaryListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ThreadSummary, ThreadSummaryPage]:
         """
+        Lists the thread summaries of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
+        You can sort by `uuid` or `created_at`. The default sort is `uuid` in descending order.
+        You cannot use these `filters` fields: `episode_uuids`, `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
+
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        order_by : typing.Optional[ThreadSummaryListRequestOrderBy]
+            Sort key: uuid (default) or created_at
+
+        order : typing.Optional[ThreadSummaryListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
+        filters : typing.Optional[ThreadSummaryListFilters]
+            Filters that limit the items in the list. The operation description
+            names the filter fields that the operation does not support.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -77,7 +94,13 @@ class ThreadSummaryClient:
             yield page
         """
         return self._raw_client.list(
-            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
+            graph_uuid,
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            filters=filters,
+            request_options=request_options,
         )
 
 
@@ -100,25 +123,39 @@ class AsyncThreadSummaryClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        order_by: typing.Optional[ThreadSummaryListRequestOrderBy] = None,
+        order: typing.Optional[ThreadSummaryListRequestOrder] = None,
+        filters: typing.Optional[ThreadSummaryListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ThreadSummary, ThreadSummaryPage]:
         """
+        Lists the thread summaries of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
+        You can sort by `uuid` or `created_at`. The default sort is `uuid` in descending order.
+        You cannot use these `filters` fields: `episode_uuids`, `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
+
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        order_by : typing.Optional[ThreadSummaryListRequestOrderBy]
+            Sort key: uuid (default) or created_at
+
+        order : typing.Optional[ThreadSummaryListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
+        filters : typing.Optional[ThreadSummaryListFilters]
+            Filters that limit the items in the list. The operation description
+            names the filter fields that the operation does not support.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -154,5 +191,11 @@ class AsyncThreadSummaryClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
+            graph_uuid,
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            filters=filters,
+            request_options=request_options,
         )

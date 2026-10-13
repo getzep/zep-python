@@ -122,7 +122,7 @@ class TraceClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[TraceListRequestOrderBy] = None,
         order: typing.Optional[TraceListRequestOrder] = None,
@@ -142,8 +142,8 @@ class TraceClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -204,7 +204,7 @@ class TraceClient:
         """
         return self._raw_client.list(
             agent_uuid,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             order_by=order_by,
             order=order,
@@ -584,7 +584,7 @@ class TraceClient:
         agent_uuid: str,
         trace_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentTraceEvent, AgentTraceEventPage]:
@@ -597,8 +597,8 @@ class TraceClient:
         trace_uuid : str
             Trace UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -629,7 +629,7 @@ class TraceClient:
             yield page
         """
         return self._raw_client.list_events(
-            agent_uuid, trace_uuid, limit=limit, cursor=cursor, request_options=request_options
+            agent_uuid, trace_uuid, page_size=page_size, cursor=cursor, request_options=request_options
         )
 
     def append_event(
@@ -863,7 +863,7 @@ class TraceClient:
         agent_uuid: str,
         trace_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentTraceSummaryVersion, AgentTraceSummaryPage]:
@@ -876,8 +876,8 @@ class TraceClient:
         trace_uuid : str
             Trace UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -908,7 +908,7 @@ class TraceClient:
             yield page
         """
         return self._raw_client.list_summary_versions(
-            agent_uuid, trace_uuid, limit=limit, cursor=cursor, request_options=request_options
+            agent_uuid, trace_uuid, page_size=page_size, cursor=cursor, request_options=request_options
         )
 
 
@@ -1012,7 +1012,7 @@ class AsyncTraceClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[TraceListRequestOrderBy] = None,
         order: typing.Optional[TraceListRequestOrder] = None,
@@ -1032,8 +1032,8 @@ class AsyncTraceClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1103,7 +1103,7 @@ class AsyncTraceClient:
         """
         return await self._raw_client.list(
             agent_uuid,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             order_by=order_by,
             order=order,
@@ -1531,7 +1531,7 @@ class AsyncTraceClient:
         agent_uuid: str,
         trace_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentTraceEvent, AgentTraceEventPage]:
@@ -1544,8 +1544,8 @@ class AsyncTraceClient:
         trace_uuid : str
             Trace UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1585,7 +1585,7 @@ class AsyncTraceClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_events(
-            agent_uuid, trace_uuid, limit=limit, cursor=cursor, request_options=request_options
+            agent_uuid, trace_uuid, page_size=page_size, cursor=cursor, request_options=request_options
         )
 
     async def append_event(
@@ -1851,7 +1851,7 @@ class AsyncTraceClient:
         agent_uuid: str,
         trace_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentTraceSummaryVersion, AgentTraceSummaryPage]:
@@ -1864,8 +1864,8 @@ class AsyncTraceClient:
         trace_uuid : str
             Trace UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1905,5 +1905,5 @@ class AsyncTraceClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_summary_versions(
-            agent_uuid, trace_uuid, limit=limit, cursor=cursor, request_options=request_options
+            agent_uuid, trace_uuid, page_size=page_size, cursor=cursor, request_options=request_options
         )

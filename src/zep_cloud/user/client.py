@@ -45,6 +45,7 @@ class UserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
@@ -74,6 +75,13 @@ class UserClient:
         time_zone : typing.Optional[str]
             The user's IANA time zone.
 
+        user_id : typing.Optional[str]
+            An optional external identity identifier, such as an identity-provider
+            subject claim. Zep uses it to match an identity-provider sign-in to this
+            user. It is not an address; use uuid to address the user in v4. It is
+            unique within the project, can contain at most 500 characters, and
+            cannot be changed after creation.
+
         idempotency_key : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
@@ -101,6 +109,7 @@ class UserClient:
             last_name=last_name,
             metadata=metadata,
             time_zone=time_zone,
+            user_id=user_id,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
@@ -109,7 +118,7 @@ class UserClient:
     def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[UserListRequestOrderBy] = None,
         order: typing.Optional[UserListRequestOrder] = None,
@@ -119,8 +128,8 @@ class UserClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -157,7 +166,12 @@ class UserClient:
             yield page
         """
         return self._raw_client.list(
-            limit=limit, cursor=cursor, order_by=order_by, order=order, search=search, request_options=request_options
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            search=search,
+            request_options=request_options,
         )
 
     def lookup(
@@ -481,6 +495,7 @@ class AsyncUserClient:
         last_name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         time_zone: typing.Optional[str] = OMIT,
+        user_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> User:
@@ -509,6 +524,13 @@ class AsyncUserClient:
 
         time_zone : typing.Optional[str]
             The user's IANA time zone.
+
+        user_id : typing.Optional[str]
+            An optional external identity identifier, such as an identity-provider
+            subject claim. Zep uses it to match an identity-provider sign-in to this
+            user. It is not an address; use uuid to address the user in v4. It is
+            unique within the project, can contain at most 500 characters, and
+            cannot be changed after creation.
 
         idempotency_key : typing.Optional[str]
 
@@ -545,6 +567,7 @@ class AsyncUserClient:
             last_name=last_name,
             metadata=metadata,
             time_zone=time_zone,
+            user_id=user_id,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
@@ -553,7 +576,7 @@ class AsyncUserClient:
     async def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[UserListRequestOrderBy] = None,
         order: typing.Optional[UserListRequestOrder] = None,
@@ -563,8 +586,8 @@ class AsyncUserClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -610,7 +633,12 @@ class AsyncUserClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            limit=limit, cursor=cursor, order_by=order_by, order=order, search=search, request_options=request_options
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            search=search,
+            request_options=request_options,
         )
 
     async def lookup(

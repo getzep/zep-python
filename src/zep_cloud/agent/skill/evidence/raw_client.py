@@ -30,7 +30,7 @@ class RawEvidenceClient:
         agent_uuid: str,
         skill_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillEvidence, Pagev4AgentSkillEvidence]:
@@ -43,8 +43,8 @@ class RawEvidenceClient:
         skill_uuid : str
             Skill UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -61,7 +61,7 @@ class RawEvidenceClient:
             f"agents/{encode_path_param(agent_uuid)}/skills/{encode_path_param(skill_uuid)}/evidence",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -81,7 +81,7 @@ class RawEvidenceClient:
                 _get_next = lambda: self.list(
                     agent_uuid,
                     skill_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     request_options=request_options,
                 )
@@ -164,7 +164,7 @@ class AsyncRawEvidenceClient:
         agent_uuid: str,
         skill_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillEvidence, Pagev4AgentSkillEvidence]:
@@ -177,8 +177,8 @@ class AsyncRawEvidenceClient:
         skill_uuid : str
             Skill UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -195,7 +195,7 @@ class AsyncRawEvidenceClient:
             f"agents/{encode_path_param(agent_uuid)}/skills/{encode_path_param(skill_uuid)}/evidence",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -217,7 +217,7 @@ class AsyncRawEvidenceClient:
                     return await self.list(
                         agent_uuid,
                         skill_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         request_options=request_options,
                     )

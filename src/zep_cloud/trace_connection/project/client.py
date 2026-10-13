@@ -29,20 +29,20 @@ class ProjectClient:
         self,
         connection_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[TraceProviderProject, TraceProviderProjectPage]:
         """
-        List provider projects with the `limit` and `cursor` query parameters.
+        List provider projects with the `page_size` and `cursor` query parameters.
 
         Parameters
         ----------
         connection_uuid : str
             Trace connection UUID
 
-        limit : typing.Optional[int]
-            Page size from 1 to 100; default 50
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Provider page cursor
@@ -71,7 +71,9 @@ class ProjectClient:
         for page in response.iter_pages():
             yield page
         """
-        return self._raw_client.list(connection_uuid, limit=limit, cursor=cursor, request_options=request_options)
+        return self._raw_client.list(
+            connection_uuid, page_size=page_size, cursor=cursor, request_options=request_options
+        )
 
 
 class AsyncProjectClient:
@@ -93,20 +95,20 @@ class AsyncProjectClient:
         self,
         connection_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[TraceProviderProject, TraceProviderProjectPage]:
         """
-        List provider projects with the `limit` and `cursor` query parameters.
+        List provider projects with the `page_size` and `cursor` query parameters.
 
         Parameters
         ----------
         connection_uuid : str
             Trace connection UUID
 
-        limit : typing.Optional[int]
-            Page size from 1 to 100; default 50
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Provider page cursor
@@ -144,4 +146,6 @@ class AsyncProjectClient:
 
         asyncio.run(main())
         """
-        return await self._raw_client.list(connection_uuid, limit=limit, cursor=cursor, request_options=request_options)
+        return await self._raw_client.list(
+            connection_uuid, page_size=page_size, cursor=cursor, request_options=request_options
+        )

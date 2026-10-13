@@ -72,7 +72,7 @@ class ContextClient:
     def list_templates(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -80,8 +80,8 @@ class ContextClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -111,7 +111,9 @@ class ContextClient:
         for page in response.iter_pages():
             yield page
         """
-        return self._raw_client.list_templates(limit=limit, cursor=cursor, name=name, request_options=request_options)
+        return self._raw_client.list_templates(
+            page_size=page_size, cursor=cursor, name=name, request_options=request_options
+        )
 
     def get_template(
         self, template_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -301,7 +303,7 @@ class AsyncContextClient:
     async def list_templates(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         name: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -309,8 +311,8 @@ class AsyncContextClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -350,7 +352,7 @@ class AsyncContextClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_templates(
-            limit=limit, cursor=cursor, name=name, request_options=request_options
+            page_size=page_size, cursor=cursor, name=name, request_options=request_options
         )
 
     async def get_template(

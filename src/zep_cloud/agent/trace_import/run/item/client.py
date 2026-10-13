@@ -31,7 +31,7 @@ class ItemClient:
         import_uuid: str,
         run_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[TraceImportRunItem, TraceImportRunItemPage]:
@@ -49,8 +49,8 @@ class ItemClient:
         run_uuid : str
             Run UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -82,7 +82,7 @@ class ItemClient:
             yield page
         """
         return self._raw_client.list(
-            agent_uuid, import_uuid, run_uuid, limit=limit, cursor=cursor, request_options=request_options
+            agent_uuid, import_uuid, run_uuid, page_size=page_size, cursor=cursor, request_options=request_options
         )
 
 
@@ -107,7 +107,7 @@ class AsyncItemClient:
         import_uuid: str,
         run_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[TraceImportRunItem, TraceImportRunItemPage]:
@@ -125,8 +125,8 @@ class AsyncItemClient:
         run_uuid : str
             Run UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -167,5 +167,5 @@ class AsyncItemClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            agent_uuid, import_uuid, run_uuid, limit=limit, cursor=cursor, request_options=request_options
+            agent_uuid, import_uuid, run_uuid, page_size=page_size, cursor=cursor, request_options=request_options
         )

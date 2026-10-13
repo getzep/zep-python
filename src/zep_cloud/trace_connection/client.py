@@ -40,7 +40,7 @@ class TraceConnectionClient:
     def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[TraceConnection, TraceConnectionPage]:
@@ -49,8 +49,8 @@ class TraceConnectionClient:
 
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -77,7 +77,7 @@ class TraceConnectionClient:
         for page in response.iter_pages():
             yield page
         """
-        return self._raw_client.list(limit=limit, cursor=cursor, request_options=request_options)
+        return self._raw_client.list(page_size=page_size, cursor=cursor, request_options=request_options)
 
     def create(
         self,
@@ -363,7 +363,7 @@ class AsyncTraceConnectionClient:
     async def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[TraceConnection, TraceConnectionPage]:
@@ -372,8 +372,8 @@ class AsyncTraceConnectionClient:
 
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -409,7 +409,7 @@ class AsyncTraceConnectionClient:
 
         asyncio.run(main())
         """
-        return await self._raw_client.list(limit=limit, cursor=cursor, request_options=request_options)
+        return await self._raw_client.list(page_size=page_size, cursor=cursor, request_options=request_options)
 
     async def create(
         self,
