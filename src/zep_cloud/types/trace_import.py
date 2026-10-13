@@ -6,6 +6,7 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .trace_import_on_source_change import TraceImportOnSourceChange
 from .trace_import_pause_reason import TraceImportPauseReason
 from .trace_import_provider import TraceImportProvider
 from .trace_import_run_reference import TraceImportRunReference
@@ -60,7 +61,7 @@ class TraceImport(UniversalBaseModel):
     NextRunAt is the next scheduled run time.
     """
 
-    on_source_change: typing.Optional[str] = pydantic.Field(default=None)
+    on_source_change: typing.Optional[TraceImportOnSourceChange] = pydantic.Field(default=None)
     """
     OnSourceChange defines how changed source traces are handled.
     """
@@ -97,7 +98,7 @@ class TraceImport(UniversalBaseModel):
 
     schedule: typing.Optional[TraceImportSchedule] = pydantic.Field(default=None)
     """
-    Schedule contains recurring import settings, when enabled. Example: {"interval_hours":4,"start_from":"24h","settle_minutes":5,"max_open_hours":24}.
+    Schedule contains recurring import settings, when enabled. Example: {"interval_hours":4,"start_from":"now","settle_minutes":5,"max_open_hours":24}.
     """
 
     selection: typing.Optional[TraceImportSelection] = pydantic.Field(default=None)

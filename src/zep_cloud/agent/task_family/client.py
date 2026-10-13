@@ -33,7 +33,7 @@ class TaskFamilyClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentTaskFamilyDescriptor, AgentTaskFamilyDescriptorPage]:
@@ -43,8 +43,8 @@ class TaskFamilyClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -73,7 +73,7 @@ class TaskFamilyClient:
         for page in response.iter_pages():
             yield page
         """
-        return self._raw_client.list(agent_uuid, limit=limit, cursor=cursor, request_options=request_options)
+        return self._raw_client.list(agent_uuid, page_size=page_size, cursor=cursor, request_options=request_options)
 
     def rename(
         self,
@@ -148,7 +148,7 @@ class AsyncTaskFamilyClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentTaskFamilyDescriptor, AgentTaskFamilyDescriptorPage]:
@@ -158,8 +158,8 @@ class AsyncTaskFamilyClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -197,7 +197,9 @@ class AsyncTaskFamilyClient:
 
         asyncio.run(main())
         """
-        return await self._raw_client.list(agent_uuid, limit=limit, cursor=cursor, request_options=request_options)
+        return await self._raw_client.list(
+            agent_uuid, page_size=page_size, cursor=cursor, request_options=request_options
+        )
 
     async def rename(
         self,

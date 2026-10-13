@@ -11,6 +11,7 @@ from ..types.async_result import AsyncResult
 from ..types.clone_graph_request import CloneGraphRequest
 from ..types.clone_graph_result import CloneGraphResult
 from ..types.content_policy_event import ContentPolicyEvent
+from ..types.content_policy_event_list_filters import ContentPolicyEventListFilters
 from ..types.content_policy_event_page import ContentPolicyEventPage
 from ..types.custom_instruction import CustomInstruction
 from ..types.edge import Edge
@@ -36,7 +37,6 @@ from ..types.observation_steering import ObservationSteering
 from ..types.observation_type import ObservationType
 from ..types.ontology import Ontology
 from ..types.search_filters import SearchFilters
-from ..types.search_request_reranker import SearchRequestReranker
 from ..types.subgraph_response import SubgraphResponse
 from ..types.thread_summary import ThreadSummary
 from ..types.thread_summary_page import ThreadSummaryPage
@@ -45,7 +45,10 @@ from .types.graph_context_request_recency_bias import GraphContextRequestRecency
 from .types.graph_list_request_order import GraphListRequestOrder
 from .types.graph_list_request_order_by import GraphListRequestOrderBy
 from .types.search_edges_request_reranker import SearchEdgesRequestReranker
+from .types.search_episodes_request_reranker import SearchEpisodesRequestReranker
 from .types.search_nodes_request_reranker import SearchNodesRequestReranker
+from .types.search_observations_request_reranker import SearchObservationsRequestReranker
+from .types.search_thread_summaries_request_reranker import SearchThreadSummariesRequestReranker
 from .types.subgraph_request_direction import SubgraphRequestDirection
 
 if typing.TYPE_CHECKING:
@@ -142,7 +145,7 @@ class GraphClient:
     def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[GraphListRequestOrderBy] = None,
         order: typing.Optional[GraphListRequestOrder] = None,
@@ -152,8 +155,8 @@ class GraphClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -191,7 +194,12 @@ class GraphClient:
             yield page
         """
         return self._raw_client.list(
-            limit=limit, cursor=cursor, order_by=order_by, order=order, search=search, request_options=request_options
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            search=search,
+            request_options=request_options,
         )
 
     def lookup(
@@ -244,7 +252,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -279,7 +287,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         idempotency_key : typing.Optional[str]
 
@@ -321,7 +329,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         description : typing.Optional[str]
             A description of the graph.
@@ -375,7 +383,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request : CloneGraphRequest
 
@@ -415,7 +423,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -443,9 +451,9 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[ContentPolicyEventListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ContentPolicyEvent, ContentPolicyEventPage]:
         """
@@ -454,16 +462,16 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Exact-match filters. Supported keys: episode_uuid and drop_reason.
+        filters : typing.Optional[ContentPolicyEventListFilters]
+            Exact-match filters that limit the events in the list.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -490,7 +498,7 @@ class GraphClient:
             yield page
         """
         return self._raw_client.list_content_policy_events(
-            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
+            graph_uuid, page_size=page_size, cursor=cursor, filters=filters, request_options=request_options
         )
 
     def get_context(
@@ -509,7 +517,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query used to assemble the context block.
@@ -569,7 +577,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -606,7 +614,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         inherited : typing.Optional[bool]
             Whether this is the project's default value rather than an override set on
@@ -653,7 +661,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -691,7 +699,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         inherited : typing.Optional[bool]
             Whether this is the project's default value rather than an override set on
@@ -741,7 +749,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -780,7 +788,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
@@ -832,10 +840,11 @@ class GraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[EdgeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchEdgesRequestReranker] = OMIT,
@@ -847,13 +856,13 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -864,6 +873,17 @@ class GraphClient:
         center_node_uuid : typing.Optional[str]
             The node to rank results by distance from. Required when reranker is
             node_distance.
+
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
 
         filters : typing.Optional[EdgeSearchFilters]
             Filters constraining which items are returned.
@@ -903,10 +923,11 @@ class GraphClient:
         return self._raw_client.search_edges(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -918,26 +939,27 @@ class GraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchEpisodesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
         """
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -949,6 +971,17 @@ class GraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
+
         filters : typing.Optional[SearchFilters]
             Filters constraining which items are returned.
 
@@ -956,7 +989,7 @@ class GraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchEpisodesRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -987,10 +1020,11 @@ class GraphClient:
         return self._raw_client.search_episodes(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -1002,10 +1036,11 @@ class GraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[NodeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchNodesRequestReranker] = OMIT,
@@ -1017,13 +1052,13 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1034,6 +1069,17 @@ class GraphClient:
         center_node_uuid : typing.Optional[str]
             The node to rank results by distance from. Required when reranker is
             node_distance.
+
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
 
         filters : typing.Optional[NodeSearchFilters]
             Filters constraining which items are returned.
@@ -1073,10 +1119,11 @@ class GraphClient:
         return self._raw_client.search_nodes(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -1088,26 +1135,27 @@ class GraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchObservationsRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Observation, ObservationPage]:
         """
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1119,6 +1167,17 @@ class GraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
+
         filters : typing.Optional[SearchFilters]
             Filters constraining which items are returned.
 
@@ -1126,7 +1185,7 @@ class GraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchObservationsRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -1157,10 +1216,11 @@ class GraphClient:
         return self._raw_client.search_observations(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -1172,26 +1232,27 @@ class GraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchThreadSummariesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ThreadSummary, ThreadSummaryPage]:
         """
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1203,6 +1264,17 @@ class GraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
+
         filters : typing.Optional[SearchFilters]
             Filters constraining which items are returned.
 
@@ -1210,7 +1282,7 @@ class GraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchThreadSummariesRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -1241,10 +1313,11 @@ class GraphClient:
         return self._raw_client.search_thread_summaries(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -1267,7 +1340,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         seed_node_uuids : typing.Sequence[str]
             The node UUIDs to expand from, in traversal-priority order.
@@ -1331,7 +1404,7 @@ class GraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         idempotency_key : typing.Optional[str]
 
@@ -1504,7 +1577,7 @@ class AsyncGraphClient:
     async def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         order_by: typing.Optional[GraphListRequestOrderBy] = None,
         order: typing.Optional[GraphListRequestOrder] = None,
@@ -1514,8 +1587,8 @@ class AsyncGraphClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1562,7 +1635,12 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            limit=limit, cursor=cursor, order_by=order_by, order=order, search=search, request_options=request_options
+            page_size=page_size,
+            cursor=cursor,
+            order_by=order_by,
+            order=order,
+            search=search,
+            request_options=request_options,
         )
 
     async def lookup(
@@ -1623,7 +1701,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1666,7 +1744,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         idempotency_key : typing.Optional[str]
 
@@ -1716,7 +1794,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         description : typing.Optional[str]
             A description of the graph.
@@ -1778,7 +1856,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request : CloneGraphRequest
 
@@ -1826,7 +1904,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1862,9 +1940,9 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        filters: typing.Optional[ContentPolicyEventListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ContentPolicyEvent, ContentPolicyEventPage]:
         """
@@ -1873,16 +1951,16 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Exact-match filters. Supported keys: episode_uuid and drop_reason.
+        filters : typing.Optional[ContentPolicyEventListFilters]
+            Exact-match filters that limit the events in the list.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1918,7 +1996,7 @@ class AsyncGraphClient:
         asyncio.run(main())
         """
         return await self._raw_client.list_content_policy_events(
-            graph_uuid, limit=limit, cursor=cursor, filters=filters, request_options=request_options
+            graph_uuid, page_size=page_size, cursor=cursor, filters=filters, request_options=request_options
         )
 
     async def get_context(
@@ -1937,7 +2015,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query used to assemble the context block.
@@ -2005,7 +2083,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2050,7 +2128,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         inherited : typing.Optional[bool]
             Whether this is the project's default value rather than an override set on
@@ -2105,7 +2183,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2151,7 +2229,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         inherited : typing.Optional[bool]
             Whether this is the project's default value rather than an override set on
@@ -2211,7 +2289,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2258,7 +2336,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
@@ -2318,10 +2396,11 @@ class AsyncGraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[EdgeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchEdgesRequestReranker] = OMIT,
@@ -2333,13 +2412,13 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -2350,6 +2429,17 @@ class AsyncGraphClient:
         center_node_uuid : typing.Optional[str]
             The node to rank results by distance from. Required when reranker is
             node_distance.
+
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
 
         filters : typing.Optional[EdgeSearchFilters]
             Filters constraining which items are returned.
@@ -2398,10 +2488,11 @@ class AsyncGraphClient:
         return await self._raw_client.search_edges(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -2413,26 +2504,27 @@ class AsyncGraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchEpisodesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
         """
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -2444,6 +2536,17 @@ class AsyncGraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
+
         filters : typing.Optional[SearchFilters]
             Filters constraining which items are returned.
 
@@ -2451,7 +2554,7 @@ class AsyncGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchEpisodesRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -2491,10 +2594,11 @@ class AsyncGraphClient:
         return await self._raw_client.search_episodes(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -2506,10 +2610,11 @@ class AsyncGraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[NodeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchNodesRequestReranker] = OMIT,
@@ -2521,13 +2626,13 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -2538,6 +2643,17 @@ class AsyncGraphClient:
         center_node_uuid : typing.Optional[str]
             The node to rank results by distance from. Required when reranker is
             node_distance.
+
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
 
         filters : typing.Optional[NodeSearchFilters]
             Filters constraining which items are returned.
@@ -2586,10 +2702,11 @@ class AsyncGraphClient:
         return await self._raw_client.search_nodes(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -2601,26 +2718,27 @@ class AsyncGraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchObservationsRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Observation, ObservationPage]:
         """
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -2632,6 +2750,17 @@ class AsyncGraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
+
         filters : typing.Optional[SearchFilters]
             Filters constraining which items are returned.
 
@@ -2639,7 +2768,7 @@ class AsyncGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchObservationsRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -2679,10 +2808,11 @@ class AsyncGraphClient:
         return await self._raw_client.search_observations(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -2694,26 +2824,27 @@ class AsyncGraphClient:
         graph_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
+        filter_low_quality_results: typing.Optional[bool] = OMIT,
         filters: typing.Optional[SearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
-        reranker: typing.Optional[SearchRequestReranker] = OMIT,
+        reranker: typing.Optional[SearchThreadSummariesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ThreadSummary, ThreadSummaryPage]:
         """
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         query : str
             The search query.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages. Search ranks a limited set of results, so iteration ends after that set. To get the top N results, set `page_size` to N and read the first page.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -2725,6 +2856,17 @@ class AsyncGraphClient:
             The node to rank results by distance from. Required when reranker is
             node_distance.
 
+        filter_low_quality_results : typing.Optional[bool]
+            The default is false. When true, Zep removes low-quality results at the knee of the
+            cross-encoder score curve. The filter never removes a result with a score
+            of 0.9 or more. It keeps at least 5 results, or all results when fewer
+            than 5 are available. The filter only removes results, so a page still
+            returns up to page_size results. Use this field only with reranker
+            cross_encoder. It is not supported for episode search. Invalid
+            combinations return a 400 error. The cutoff is approximate, not guaranteed.
+            When the cross-encoder does not score the results, for example after a
+            timeout, Zep returns the results without the filter.
+
         filters : typing.Optional[SearchFilters]
             Filters constraining which items are returned.
 
@@ -2732,7 +2874,7 @@ class AsyncGraphClient:
             The diversity weighting used for maximal marginal relevance reranking.
             Required when reranker is mmr.
 
-        reranker : typing.Optional[SearchRequestReranker]
+        reranker : typing.Optional[SearchThreadSummariesRequestReranker]
             The reranking strategy applied to retrieved results. Defaults to rrf.
 
         request_options : typing.Optional[RequestOptions]
@@ -2772,10 +2914,11 @@ class AsyncGraphClient:
         return await self._raw_client.search_thread_summaries(
             graph_uuid,
             query=query,
-            limit=limit,
+            page_size=page_size,
             cursor=cursor,
             bfs_origin_node_uuids=bfs_origin_node_uuids,
             center_node_uuid=center_node_uuid,
+            filter_low_quality_results=filter_low_quality_results,
             filters=filters,
             mmr_lambda=mmr_lambda,
             reranker=reranker,
@@ -2798,7 +2941,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         seed_node_uuids : typing.Sequence[str]
             The node UUIDs to expand from, in traversal-priority order.
@@ -2870,7 +3013,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         idempotency_key : typing.Optional[str]
 

@@ -2,4 +2,4 @@
 
 import typing
 
-NodeListRequestOrderBy = typing.Union[typing.Literal["uuid", "degree"], typing.Any]
+NodeListRequestOrderBy = typing.Union[typing.Literal["uuid", "created_at", "degree"], typing.Any]

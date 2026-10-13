@@ -7,6 +7,7 @@ import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .agent_trace_outcome import AgentTraceOutcome
+from .agent_trace_structured_summary import AgentTraceStructuredSummary
 from .agent_trace_summary_creation_reason import AgentTraceSummaryCreationReason
 from .agent_trace_summary_omitted_range import AgentTraceSummaryOmittedRange
 from .agent_trace_verification import AgentTraceVerification
@@ -24,7 +25,7 @@ class AgentTraceSummaryVersion(UniversalBaseModel):
     omitted_sequence_ranges: typing.Optional[typing.List[AgentTraceSummaryOmittedRange]] = None
     outcome: typing.Optional[AgentTraceOutcome] = None
     parent_version_uuid: typing.Optional[str] = None
-    structured_summary: typing.Optional[typing.Dict[str, typing.Any]] = None
+    structured_summary: typing.Optional[AgentTraceStructuredSummary] = None
     text: typing.Optional[str] = None
     trace_uuid: typing.Optional[str] = None
     uuid_: typing_extensions.Annotated[

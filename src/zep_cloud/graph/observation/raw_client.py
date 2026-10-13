@@ -12,6 +12,7 @@ from ...core.pagination import AsyncPager, SyncPager
 from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
+from ...core.serialization import convert_and_respect_annotation_metadata
 from ...errors.bad_request_error import BadRequestError
 from ...errors.conflict_error import ConflictError
 from ...errors.forbidden_error import ForbiddenError
@@ -19,7 +20,10 @@ from ...errors.not_found_error import NotFoundError
 from ...errors.unauthorized_error import UnauthorizedError
 from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.observation import Observation
+from ...types.observation_list_filters import ObservationListFilters
 from ...types.observation_page import ObservationPage
+from .types.observation_list_request_order import ObservationListRequestOrder
+from .types.observation_list_request_order_by import ObservationListRequestOrderBy
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -34,25 +38,39 @@ class RawObservationClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        order_by: typing.Optional[ObservationListRequestOrderBy] = None,
+        order: typing.Optional[ObservationListRequestOrder] = None,
+        filters: typing.Optional[ObservationListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Observation, ObservationPage]:
         """
+        Lists the observations of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
+        You can sort by `uuid` or `created_at`. The default sort is `uuid` in descending order.
+        You cannot use these `filters` fields: `episode_uuids`, `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
+
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        order_by : typing.Optional[ObservationListRequestOrderBy]
+            Sort key: uuid (default) or created_at
+
+        order : typing.Optional[ObservationListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
+        filters : typing.Optional[ObservationListFilters]
+            Filters that limit the items in the list. The operation description
+            names the filter fields that the operation does not support.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -66,11 +84,15 @@ class RawObservationClient:
             f"graphs/{encode_path_param(graph_uuid)}/observations/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
-                "filters": filters,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=ObservationListFilters, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -93,8 +115,10 @@ class RawObservationClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list(
                     graph_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
+                    order_by=order_by,
+                    order=order,
                     filters=filters,
                     request_options=request_options,
                 )
@@ -174,7 +198,7 @@ class RawObservationClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         observation_uuid : str
             Observation UUID
@@ -279,25 +303,39 @@ class AsyncRawObservationClient:
         self,
         graph_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
-        filters: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        order_by: typing.Optional[ObservationListRequestOrderBy] = None,
+        order: typing.Optional[ObservationListRequestOrder] = None,
+        filters: typing.Optional[ObservationListFilters] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Observation, ObservationPage]:
         """
+        Lists the observations of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
+        You can sort by `uuid` or `created_at`. The default sort is `uuid` in descending order.
+        You cannot use these `filters` fields: `episode_uuids`, `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
+
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
 
-        filters : typing.Optional[typing.Dict[str, typing.Any]]
-            Filters constraining which items are returned.
+        order_by : typing.Optional[ObservationListRequestOrderBy]
+            Sort key: uuid (default) or created_at
+
+        order : typing.Optional[ObservationListRequestOrder]
+            Sort direction: asc or desc (default desc)
+
+        filters : typing.Optional[ObservationListFilters]
+            Filters that limit the items in the list. The operation description
+            names the filter fields that the operation does not support.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -311,11 +349,15 @@ class AsyncRawObservationClient:
             f"graphs/{encode_path_param(graph_uuid)}/observations/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
+                "order_by": order_by,
+                "order": order,
             },
             json={
-                "filters": filters,
+                "filters": convert_and_respect_annotation_metadata(
+                    object_=filters, annotation=ObservationListFilters, direction="write"
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -340,8 +382,10 @@ class AsyncRawObservationClient:
                 async def _get_next():
                     return await self.list(
                         graph_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
+                        order_by=order_by,
+                        order=order,
                         filters=filters,
                         request_options=request_options,
                     )
@@ -422,7 +466,7 @@ class AsyncRawObservationClient:
         Parameters
         ----------
         graph_uuid : str
-            Graph UUID
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
         observation_uuid : str
             Observation UUID

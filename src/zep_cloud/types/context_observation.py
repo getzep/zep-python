@@ -63,6 +63,12 @@ class ContextObservation(UniversalBaseModel):
     A generated summary of the observation.
     """
 
+    user_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the user that owns the graph. Present only when
+    the graph is a user graph.
+    """
+
     uuid_: typing_extensions.Annotated[
         typing.Optional[str],
         FieldMetadata(alias="uuid"),

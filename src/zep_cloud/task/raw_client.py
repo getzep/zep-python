@@ -27,15 +27,15 @@ class RawTaskClient:
     def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Task, TaskPage]:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -52,7 +52,7 @@ class RawTaskClient:
             "tasks",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -70,7 +70,7 @@ class RawTaskClient:
                 _parsed_next = _parsed_response.next_cursor
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list(
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     request_options=request_options,
                 )
@@ -205,15 +205,15 @@ class AsyncRawTaskClient:
     async def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Task, TaskPage]:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -230,7 +230,7 @@ class AsyncRawTaskClient:
             "tasks",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -250,7 +250,7 @@ class AsyncRawTaskClient:
 
                 async def _get_next():
                     return await self.list(
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         request_options=request_options,
                     )

@@ -22,11 +22,14 @@ from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.api_error import ApiError as types_api_error_ApiError
 from ...types.task import Task
 from ...types.trace_import import TraceImport
+from ...types.trace_import_create_result import TraceImportCreateResult
+from ...types.trace_import_on_source_change import TraceImportOnSourceChange
 from ...types.trace_import_page import TraceImportPage
 from ...types.trace_import_schedule import TraceImportSchedule
 from ...types.trace_import_selection import TraceImportSelection
 from ...types.trace_mapping import TraceMapping
 from .types.trace_import_delete_request_traces import TraceImportDeleteRequestTraces
+from .types.update_trace_import_request_on_source_change import UpdateTraceImportRequestOnSourceChange
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -41,7 +44,7 @@ class RawTraceImportClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[TraceImport, TraceImportPage]:
@@ -53,8 +56,8 @@ class RawTraceImportClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -71,7 +74,7 @@ class RawTraceImportClient:
             f"agents/{encode_path_param(agent_uuid)}/trace-imports",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -90,7 +93,7 @@ class RawTraceImportClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list(
                     agent_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     request_options=request_options,
                 )
@@ -149,16 +152,16 @@ class RawTraceImportClient:
         learn_from: typing.Optional[bool] = OMIT,
         mapping: typing.Optional[TraceMapping] = OMIT,
         name: typing.Optional[str] = OMIT,
-        on_source_change: typing.Optional[str] = OMIT,
+        on_source_change: typing.Optional[TraceImportOnSourceChange] = OMIT,
         provider_project_id: typing.Optional[str] = OMIT,
         require_review: typing.Optional[bool] = OMIT,
         schedule: typing.Optional[TraceImportSchedule] = OMIT,
         selection: typing.Optional[TraceImportSelection] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[TraceImport]:
+    ) -> HttpResponse[TraceImportCreateResult]:
         """
-        Create a scheduled import or queue a one-time import. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`.
+        Create a scheduled import or queue a one-time import. A scheduled import returns HTTP 201 with `import`. A one-time import returns HTTP 202 with `import`, `run`, and `task`. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`.
 
         Parameters
         ----------
@@ -177,7 +180,7 @@ class RawTraceImportClient:
         name : typing.Optional[str]
             Name is the import display name.
 
-        on_source_change : typing.Optional[str]
+        on_source_change : typing.Optional[TraceImportOnSourceChange]
             OnSourceChange defines how changed source traces are handled.
 
         provider_project_id : typing.Optional[str]
@@ -187,7 +190,7 @@ class RawTraceImportClient:
             RequireReview requires review for candidates backed by this import.
 
         schedule : typing.Optional[TraceImportSchedule]
-            Schedule enables recurring imports when supplied. Example: {"interval_hours":4,"start_from":"24h","settle_minutes":5,"max_open_hours":24}.
+            Schedule enables recurring imports when supplied. Example: {"interval_hours":4,"start_from":"now","settle_minutes":5,"max_open_hours":24}.
 
         selection : typing.Optional[TraceImportSelection]
             Selection defines the traces to import. Example: {"trace_ids":["trace_123"]}.
@@ -199,7 +202,7 @@ class RawTraceImportClient:
 
         Returns
         -------
-        HttpResponse[TraceImport]
+        HttpResponse[TraceImportCreateResult]
             Created
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -232,9 +235,9 @@ class RawTraceImportClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    TraceImport,
+                    TraceImportCreateResult,
                     parse_obj_as(
-                        type_=TraceImport,  # type: ignore
+                        type_=TraceImportCreateResult,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -512,7 +515,7 @@ class RawTraceImportClient:
         learn_from: typing.Optional[bool] = OMIT,
         mapping: typing.Optional[TraceMapping] = OMIT,
         name: typing.Optional[str] = OMIT,
-        on_source_change: typing.Optional[str] = OMIT,
+        on_source_change: typing.Optional[UpdateTraceImportRequestOnSourceChange] = OMIT,
         require_review: typing.Optional[bool] = OMIT,
         schedule: typing.Optional[TraceImportSchedule] = OMIT,
         selection: typing.Optional[TraceImportSelection] = OMIT,
@@ -542,14 +545,14 @@ class RawTraceImportClient:
         name : typing.Optional[str]
             Name is the new import name, when supplied.
 
-        on_source_change : typing.Optional[str]
+        on_source_change : typing.Optional[UpdateTraceImportRequestOnSourceChange]
             OnSourceChange is the new change policy, when supplied.
 
         require_review : typing.Optional[bool]
             RequireReview is the new review setting, when supplied.
 
         schedule : typing.Optional[TraceImportSchedule]
-            Schedule is the new schedule, when supplied. Example: {"interval_hours":4,"start_from":"24h","settle_minutes":5,"max_open_hours":24}.
+            Schedule is the new schedule, when supplied. Example: {"interval_hours":4,"start_from":"now","settle_minutes":5,"max_open_hours":24}.
 
         selection : typing.Optional[TraceImportSelection]
             Selection is the new selection, when supplied. Example: {"trace_ids":["trace_123"]}.
@@ -885,7 +888,7 @@ class AsyncRawTraceImportClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[TraceImport, TraceImportPage]:
@@ -897,8 +900,8 @@ class AsyncRawTraceImportClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -915,7 +918,7 @@ class AsyncRawTraceImportClient:
             f"agents/{encode_path_param(agent_uuid)}/trace-imports",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -936,7 +939,7 @@ class AsyncRawTraceImportClient:
                 async def _get_next():
                     return await self.list(
                         agent_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         request_options=request_options,
                     )
@@ -996,16 +999,16 @@ class AsyncRawTraceImportClient:
         learn_from: typing.Optional[bool] = OMIT,
         mapping: typing.Optional[TraceMapping] = OMIT,
         name: typing.Optional[str] = OMIT,
-        on_source_change: typing.Optional[str] = OMIT,
+        on_source_change: typing.Optional[TraceImportOnSourceChange] = OMIT,
         provider_project_id: typing.Optional[str] = OMIT,
         require_review: typing.Optional[bool] = OMIT,
         schedule: typing.Optional[TraceImportSchedule] = OMIT,
         selection: typing.Optional[TraceImportSelection] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[TraceImport]:
+    ) -> AsyncHttpResponse[TraceImportCreateResult]:
         """
-        Create a scheduled import or queue a one-time import. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`.
+        Create a scheduled import or queue a one-time import. A scheduled import returns HTTP 201 with `import`. A one-time import returns HTTP 202 with `import`, `run`, and `task`. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`.
 
         Parameters
         ----------
@@ -1024,7 +1027,7 @@ class AsyncRawTraceImportClient:
         name : typing.Optional[str]
             Name is the import display name.
 
-        on_source_change : typing.Optional[str]
+        on_source_change : typing.Optional[TraceImportOnSourceChange]
             OnSourceChange defines how changed source traces are handled.
 
         provider_project_id : typing.Optional[str]
@@ -1034,7 +1037,7 @@ class AsyncRawTraceImportClient:
             RequireReview requires review for candidates backed by this import.
 
         schedule : typing.Optional[TraceImportSchedule]
-            Schedule enables recurring imports when supplied. Example: {"interval_hours":4,"start_from":"24h","settle_minutes":5,"max_open_hours":24}.
+            Schedule enables recurring imports when supplied. Example: {"interval_hours":4,"start_from":"now","settle_minutes":5,"max_open_hours":24}.
 
         selection : typing.Optional[TraceImportSelection]
             Selection defines the traces to import. Example: {"trace_ids":["trace_123"]}.
@@ -1046,7 +1049,7 @@ class AsyncRawTraceImportClient:
 
         Returns
         -------
-        AsyncHttpResponse[TraceImport]
+        AsyncHttpResponse[TraceImportCreateResult]
             Created
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -1079,9 +1082,9 @@ class AsyncRawTraceImportClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    TraceImport,
+                    TraceImportCreateResult,
                     parse_obj_as(
-                        type_=TraceImport,  # type: ignore
+                        type_=TraceImportCreateResult,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1359,7 +1362,7 @@ class AsyncRawTraceImportClient:
         learn_from: typing.Optional[bool] = OMIT,
         mapping: typing.Optional[TraceMapping] = OMIT,
         name: typing.Optional[str] = OMIT,
-        on_source_change: typing.Optional[str] = OMIT,
+        on_source_change: typing.Optional[UpdateTraceImportRequestOnSourceChange] = OMIT,
         require_review: typing.Optional[bool] = OMIT,
         schedule: typing.Optional[TraceImportSchedule] = OMIT,
         selection: typing.Optional[TraceImportSelection] = OMIT,
@@ -1389,14 +1392,14 @@ class AsyncRawTraceImportClient:
         name : typing.Optional[str]
             Name is the new import name, when supplied.
 
-        on_source_change : typing.Optional[str]
+        on_source_change : typing.Optional[UpdateTraceImportRequestOnSourceChange]
             OnSourceChange is the new change policy, when supplied.
 
         require_review : typing.Optional[bool]
             RequireReview is the new review setting, when supplied.
 
         schedule : typing.Optional[TraceImportSchedule]
-            Schedule is the new schedule, when supplied. Example: {"interval_hours":4,"start_from":"24h","settle_minutes":5,"max_open_hours":24}.
+            Schedule is the new schedule, when supplied. Example: {"interval_hours":4,"start_from":"now","settle_minutes":5,"max_open_hours":24}.
 
         selection : typing.Optional[TraceImportSelection]
             Selection is the new selection, when supplied. Example: {"trace_ids":["trace_123"]}.

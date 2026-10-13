@@ -5,6 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .agent_trace_resource_ref import AgentTraceResourceRef
+from .agent_trace_verification import AgentTraceVerification
 
 
 class AgentTraceEventContext(UniversalBaseModel):
@@ -12,7 +13,7 @@ class AgentTraceEventContext(UniversalBaseModel):
     environments: typing.Optional[typing.List[AgentTraceResourceRef]] = None
     model: typing.Optional[AgentTraceResourceRef] = None
     tools: typing.Optional[typing.List[AgentTraceResourceRef]] = None
-    verification: typing.Optional[str] = None
+    verification: typing.Optional[AgentTraceVerification] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

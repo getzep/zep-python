@@ -34,7 +34,7 @@ class RawRelationClient:
         kind: typing.Optional[
             typing.Union[RelationListRequestKindItem, typing.Sequence[RelationListRequestKindItem]]
         ] = None,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillRelationship, Pagev4AgentSkillRelationship]:
@@ -50,8 +50,8 @@ class RawRelationClient:
         kind : typing.Optional[typing.Union[RelationListRequestKindItem, typing.Sequence[RelationListRequestKindItem]]]
             Relationship kinds
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -69,7 +69,7 @@ class RawRelationClient:
             method="GET",
             params={
                 "kind": ",".join(map(str, kind)) if isinstance(kind, (list, tuple, set)) else kind,
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -90,7 +90,7 @@ class RawRelationClient:
                     agent_uuid,
                     skill_uuid,
                     kind=kind,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     request_options=request_options,
                 )
@@ -176,7 +176,7 @@ class AsyncRawRelationClient:
         kind: typing.Optional[
             typing.Union[RelationListRequestKindItem, typing.Sequence[RelationListRequestKindItem]]
         ] = None,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillRelationship, Pagev4AgentSkillRelationship]:
@@ -192,8 +192,8 @@ class AsyncRawRelationClient:
         kind : typing.Optional[typing.Union[RelationListRequestKindItem, typing.Sequence[RelationListRequestKindItem]]]
             Relationship kinds
 
-        limit : typing.Optional[int]
-            Page size (maximum 100)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -211,7 +211,7 @@ class AsyncRawRelationClient:
             method="GET",
             params={
                 "kind": ",".join(map(str, kind)) if isinstance(kind, (list, tuple, set)) else kind,
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -234,7 +234,7 @@ class AsyncRawRelationClient:
                         agent_uuid,
                         skill_uuid,
                         kind=kind,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         request_options=request_options,
                     )

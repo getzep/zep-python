@@ -14,7 +14,7 @@ class AgentTraceSource(UniversalBaseModel):
     provider: typing.Optional[str] = None
     provider_project_id: typing.Optional[str] = None
     run_uuid: typing.Optional[str] = None
-    scores: typing.Optional[typing.Dict[str, typing.Any]] = None
+    scores: typing.Optional[typing.Dict[str, float]] = None
     source_changed: typing.Optional[bool] = pydantic.Field(default=None)
     """
     SourceChanged reports whether the provider trace changed after import.

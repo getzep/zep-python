@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
     from .literal_policy import UpdateAgentLiteralPolicyRequestDefault
     from .skill import AgentSkillSearchRequestMarkdownFormat
     from .trace import TraceListRequestOrder, TraceListRequestOrderBy, TraceListRequestSourceKind
-    from .trace_import import TraceImportDeleteRequestTraces
+    from .trace_import import TraceImportDeleteRequestTraces, UpdateTraceImportRequestOnSourceChange
 _dynamic_imports: typing.Dict[str, str] = {
     "AgentListRequestOrder": ".types",
     "AgentListRequestOrderBy": ".types",
@@ -21,6 +21,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "TraceListRequestOrderBy": ".trace",
     "TraceListRequestSourceKind": ".trace",
     "UpdateAgentLiteralPolicyRequestDefault": ".literal_policy",
+    "UpdateTraceImportRequestOnSourceChange": ".trace_import",
     "learning": ".learning",
     "literal_policy": ".literal_policy",
     "skill": ".skill",
@@ -62,6 +63,7 @@ __all__ = [
     "TraceListRequestOrderBy",
     "TraceListRequestSourceKind",
     "UpdateAgentLiteralPolicyRequestDefault",
+    "UpdateTraceImportRequestOnSourceChange",
     "learning",
     "literal_policy",
     "skill",

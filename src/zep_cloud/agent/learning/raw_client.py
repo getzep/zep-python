@@ -126,7 +126,7 @@ class RawLearningClient:
         agent_uuid: str,
         *,
         task_family: typing.Optional[str] = None,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillCompilationOutcome, Pagev4AgentSkillCompilationOutcome]:
@@ -139,8 +139,8 @@ class RawLearningClient:
         task_family : typing.Optional[str]
             Task family
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -158,7 +158,7 @@ class RawLearningClient:
             method="GET",
             params={
                 "task_family": task_family,
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -178,7 +178,7 @@ class RawLearningClient:
                 _get_next = lambda: self.list_runs(
                     agent_uuid,
                     task_family=task_family,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     request_options=request_options,
                 )
@@ -323,7 +323,7 @@ class AsyncRawLearningClient:
         agent_uuid: str,
         *,
         task_family: typing.Optional[str] = None,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillCompilationOutcome, Pagev4AgentSkillCompilationOutcome]:
@@ -336,8 +336,8 @@ class AsyncRawLearningClient:
         task_family : typing.Optional[str]
             Task family
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -355,7 +355,7 @@ class AsyncRawLearningClient:
             method="GET",
             params={
                 "task_family": task_family,
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -377,7 +377,7 @@ class AsyncRawLearningClient:
                     return await self.list_runs(
                         agent_uuid,
                         task_family=task_family,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         request_options=request_options,
                     )

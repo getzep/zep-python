@@ -306,7 +306,7 @@ class RawSkillClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         environments: typing.Optional[typing.Sequence[str]] = OMIT,
         kind: typing.Optional[str] = OMIT,
@@ -320,8 +320,8 @@ class RawSkillClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 20)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -346,7 +346,7 @@ class RawSkillClient:
             f"agents/{encode_path_param(agent_uuid)}/skills/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -376,7 +376,7 @@ class RawSkillClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list(
                     agent_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     environments=environments,
                     kind=kind,
@@ -458,7 +458,7 @@ class RawSkillClient:
         agent_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         environments: typing.Optional[typing.Sequence[str]] = OMIT,
         include_markdown: typing.Optional[bool] = OMIT,
@@ -476,8 +476,8 @@ class RawSkillClient:
 
         query : str
 
-        limit : typing.Optional[int]
-            Page size (maximum 20)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -510,7 +510,7 @@ class RawSkillClient:
             f"agents/{encode_path_param(agent_uuid)}/skills/search",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -544,7 +544,7 @@ class RawSkillClient:
                 _get_next = lambda: self.search(
                     agent_uuid,
                     query=query,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     environments=environments,
                     include_markdown=include_markdown,
@@ -1388,7 +1388,7 @@ class AsyncRawSkillClient:
         self,
         agent_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         environments: typing.Optional[typing.Sequence[str]] = OMIT,
         kind: typing.Optional[str] = OMIT,
@@ -1402,8 +1402,8 @@ class AsyncRawSkillClient:
         agent_uuid : str
             Agent UUID
 
-        limit : typing.Optional[int]
-            Page size (maximum 20)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1428,7 +1428,7 @@ class AsyncRawSkillClient:
             f"agents/{encode_path_param(agent_uuid)}/skills/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -1460,7 +1460,7 @@ class AsyncRawSkillClient:
                 async def _get_next():
                     return await self.list(
                         agent_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         environments=environments,
                         kind=kind,
@@ -1543,7 +1543,7 @@ class AsyncRawSkillClient:
         agent_uuid: str,
         *,
         query: str,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         environments: typing.Optional[typing.Sequence[str]] = OMIT,
         include_markdown: typing.Optional[bool] = OMIT,
@@ -1561,8 +1561,8 @@ class AsyncRawSkillClient:
 
         query : str
 
-        limit : typing.Optional[int]
-            Page size (maximum 20)
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1595,7 +1595,7 @@ class AsyncRawSkillClient:
             f"agents/{encode_path_param(agent_uuid)}/skills/search",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -1631,7 +1631,7 @@ class AsyncRawSkillClient:
                     return await self.search(
                         agent_uuid,
                         query=query,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         environments=environments,
                         include_markdown=include_markdown,

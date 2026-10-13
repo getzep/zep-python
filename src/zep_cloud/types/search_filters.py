@@ -48,7 +48,9 @@ class SearchFilters(UniversalBaseModel):
 
     exclude_node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Exclude results with any of these node labels. Edge search does not support this filter.
+    Exclude nodes that have any of these labels. On an edge list, the API
+    excludes an edge when its source node or its target node has one of
+    these labels. Edge search does not support this filter.
     """
 
     metadata_filters: typing.Optional["MetadataFilterGroup"] = pydantic.Field(default=None)
@@ -58,7 +60,9 @@ class SearchFilters(UniversalBaseModel):
 
     node_labels: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    Include results with any of these node labels. Edge search does not support this filter.
+    Include only nodes that have at least one of these labels. On an edge
+    list, the source node and the target node of each edge must each have
+    at least one of these labels. Edge search does not support this filter.
     """
 
     property_filters: typing.Optional[typing.List[PropertyFilter]] = pydantic.Field(default=None)

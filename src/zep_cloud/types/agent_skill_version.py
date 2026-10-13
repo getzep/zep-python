@@ -4,11 +4,12 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .agent_skill_contract import AgentSkillContract
 from .skill_definition import SkillDefinition
 
 
 class AgentSkillVersion(UniversalBaseModel):
-    contract: typing.Optional[typing.Dict[str, typing.Any]] = None
+    contract: typing.Optional[AgentSkillContract] = None
     created_at: typing.Optional[str] = None
     definition: typing.Optional[SkillDefinition] = None
     markdown: typing.Optional[str] = pydantic.Field(default=None)

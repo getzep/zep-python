@@ -39,7 +39,7 @@ class RawBatchClient:
     def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         status: typing.Optional[BatchListRequestStatus] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -47,8 +47,8 @@ class RawBatchClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -68,7 +68,7 @@ class RawBatchClient:
             "batches",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "status": status,
             },
@@ -87,7 +87,7 @@ class RawBatchClient:
                 _parsed_next = _parsed_response.next_cursor
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list(
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     status=status,
                     request_options=request_options,
@@ -424,7 +424,7 @@ class RawBatchClient:
         self,
         batch_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[BatchItem, BatchItemPage]:
@@ -434,8 +434,8 @@ class RawBatchClient:
         batch_uuid : str
             Batch UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -452,7 +452,7 @@ class RawBatchClient:
             f"batches/{encode_path_param(batch_uuid)}/items",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -471,7 +471,7 @@ class RawBatchClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list_items(
                     batch_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     request_options=request_options,
                 )
@@ -737,7 +737,7 @@ class AsyncRawBatchClient:
     async def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         status: typing.Optional[BatchListRequestStatus] = None,
         request_options: typing.Optional[RequestOptions] = None,
@@ -745,8 +745,8 @@ class AsyncRawBatchClient:
         """
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -766,7 +766,7 @@ class AsyncRawBatchClient:
             "batches",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
                 "status": status,
             },
@@ -787,7 +787,7 @@ class AsyncRawBatchClient:
 
                 async def _get_next():
                     return await self.list(
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         status=status,
                         request_options=request_options,
@@ -1127,7 +1127,7 @@ class AsyncRawBatchClient:
         self,
         batch_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[BatchItem, BatchItemPage]:
@@ -1137,8 +1137,8 @@ class AsyncRawBatchClient:
         batch_uuid : str
             Batch UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1155,7 +1155,7 @@ class AsyncRawBatchClient:
             f"batches/{encode_path_param(batch_uuid)}/items",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -1176,7 +1176,7 @@ class AsyncRawBatchClient:
                 async def _get_next():
                     return await self.list_items(
                         batch_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         request_options=request_options,
                     )

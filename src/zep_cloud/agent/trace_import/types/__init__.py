@@ -7,7 +7,11 @@ from importlib import import_module
 
 if typing.TYPE_CHECKING:
     from .trace_import_delete_request_traces import TraceImportDeleteRequestTraces
-_dynamic_imports: typing.Dict[str, str] = {"TraceImportDeleteRequestTraces": ".trace_import_delete_request_traces"}
+    from .update_trace_import_request_on_source_change import UpdateTraceImportRequestOnSourceChange
+_dynamic_imports: typing.Dict[str, str] = {
+    "TraceImportDeleteRequestTraces": ".trace_import_delete_request_traces",
+    "UpdateTraceImportRequestOnSourceChange": ".update_trace_import_request_on_source_change",
+}
 
 
 def __getattr__(attr_name: str) -> typing.Any:
@@ -31,4 +35,4 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["TraceImportDeleteRequestTraces"]
+__all__ = ["TraceImportDeleteRequestTraces", "UpdateTraceImportRequestOnSourceChange"]

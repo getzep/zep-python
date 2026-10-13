@@ -157,7 +157,7 @@ class RawUserGroupClient:
     def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -167,8 +167,8 @@ class RawUserGroupClient:
 
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -188,7 +188,7 @@ class RawUserGroupClient:
             "user-groups/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -214,7 +214,7 @@ class RawUserGroupClient:
                 _parsed_next = _parsed_response.next_cursor
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list(
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     search=search,
                     request_options=request_options,
@@ -605,7 +605,7 @@ class RawUserGroupClient:
         self,
         group_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -618,8 +618,8 @@ class RawUserGroupClient:
         group_uuid : str
             User group UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -639,7 +639,7 @@ class RawUserGroupClient:
             f"user-groups/{encode_path_param(group_uuid)}/member-candidates/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -666,7 +666,7 @@ class RawUserGroupClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list_member_candidates(
                     group_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     search=search,
                     request_options=request_options,
@@ -864,7 +864,7 @@ class RawUserGroupClient:
         self,
         group_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -877,8 +877,8 @@ class RawUserGroupClient:
         group_uuid : str
             User group UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -898,7 +898,7 @@ class RawUserGroupClient:
             f"user-groups/{encode_path_param(group_uuid)}/members/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -925,7 +925,7 @@ class RawUserGroupClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list_members(
                     group_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     search=search,
                     request_options=request_options,
@@ -1219,7 +1219,7 @@ class RawUserGroupClient:
         self,
         user_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[UserGroup, UserGroupPage]:
@@ -1231,8 +1231,8 @@ class RawUserGroupClient:
         user_uuid : str
             User UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1249,7 +1249,7 @@ class RawUserGroupClient:
             f"users/{encode_path_param(user_uuid)}/user-groups",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -1268,7 +1268,7 @@ class RawUserGroupClient:
                 _has_next = _parsed_next is not None and _parsed_next != ""
                 _get_next = lambda: self.list_for_user(
                     user_uuid,
-                    limit=limit,
+                    page_size=page_size,
                     cursor=_parsed_next,
                     request_options=request_options,
                 )
@@ -1470,7 +1470,7 @@ class AsyncRawUserGroupClient:
     async def list(
         self,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1480,8 +1480,8 @@ class AsyncRawUserGroupClient:
 
         Parameters
         ----------
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1501,7 +1501,7 @@ class AsyncRawUserGroupClient:
             "user-groups/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -1529,7 +1529,7 @@ class AsyncRawUserGroupClient:
 
                 async def _get_next():
                     return await self.list(
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         search=search,
                         request_options=request_options,
@@ -1921,7 +1921,7 @@ class AsyncRawUserGroupClient:
         self,
         group_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -1934,8 +1934,8 @@ class AsyncRawUserGroupClient:
         group_uuid : str
             User group UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -1955,7 +1955,7 @@ class AsyncRawUserGroupClient:
             f"user-groups/{encode_path_param(group_uuid)}/member-candidates/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -1984,7 +1984,7 @@ class AsyncRawUserGroupClient:
                 async def _get_next():
                     return await self.list_member_candidates(
                         group_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         search=search,
                         request_options=request_options,
@@ -2183,7 +2183,7 @@ class AsyncRawUserGroupClient:
         self,
         group_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         search: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -2196,8 +2196,8 @@ class AsyncRawUserGroupClient:
         group_uuid : str
             User group UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -2217,7 +2217,7 @@ class AsyncRawUserGroupClient:
             f"user-groups/{encode_path_param(group_uuid)}/members/list",
             method="POST",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             json={
@@ -2246,7 +2246,7 @@ class AsyncRawUserGroupClient:
                 async def _get_next():
                     return await self.list_members(
                         group_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         search=search,
                         request_options=request_options,
@@ -2541,7 +2541,7 @@ class AsyncRawUserGroupClient:
         self,
         user_uuid: str,
         *,
-        limit: typing.Optional[int] = None,
+        page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[UserGroup, UserGroupPage]:
@@ -2553,8 +2553,8 @@ class AsyncRawUserGroupClient:
         user_uuid : str
             User UUID
 
-        limit : typing.Optional[int]
-            Page size
+        page_size : typing.Optional[int]
+            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
 
         cursor : typing.Optional[str]
             Opaque page cursor
@@ -2571,7 +2571,7 @@ class AsyncRawUserGroupClient:
             f"users/{encode_path_param(user_uuid)}/user-groups",
             method="GET",
             params={
-                "limit": limit,
+                "page_size": page_size,
                 "cursor": cursor,
             },
             request_options=request_options,
@@ -2592,7 +2592,7 @@ class AsyncRawUserGroupClient:
                 async def _get_next():
                     return await self.list_for_user(
                         user_uuid,
-                        limit=limit,
+                        page_size=page_size,
                         cursor=_parsed_next,
                         request_options=request_options,
                     )

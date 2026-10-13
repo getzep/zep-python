@@ -49,6 +49,22 @@ if typing.TYPE_CHECKING:
     from .agent_skill_candidate_review_summary import AgentSkillCandidateReviewSummary
     from .agent_skill_compilation_outcome import AgentSkillCompilationOutcome
     from .agent_skill_compilation_outcome_rejection_class import AgentSkillCompilationOutcomeRejectionClass
+    from .agent_skill_contract import AgentSkillContract
+    from .agent_skill_contract_applicability import AgentSkillContractApplicability
+    from .agent_skill_contract_dependency import AgentSkillContractDependency
+    from .agent_skill_contract_evidence import AgentSkillContractEvidence
+    from .agent_skill_contract_evidence_polarity import AgentSkillContractEvidencePolarity
+    from .agent_skill_contract_evidence_source_kind import AgentSkillContractEvidenceSourceKind
+    from .agent_skill_contract_failure import AgentSkillContractFailure
+    from .agent_skill_contract_invocation import AgentSkillContractInvocation
+    from .agent_skill_contract_origin import AgentSkillContractOrigin
+    from .agent_skill_contract_relation import AgentSkillContractRelation
+    from .agent_skill_contract_relation_kind import AgentSkillContractRelationKind
+    from .agent_skill_contract_resource import AgentSkillContractResource
+    from .agent_skill_contract_section import AgentSkillContractSection
+    from .agent_skill_contract_step import AgentSkillContractStep
+    from .agent_skill_contract_text import AgentSkillContractText
+    from .agent_skill_contract_version_constraint import AgentSkillContractVersionConstraint
     from .agent_skill_evaluation import AgentSkillEvaluation
     from .agent_skill_evidence import AgentSkillEvidence
     from .agent_skill_publication_lineage import AgentSkillPublicationLineage
@@ -89,10 +105,19 @@ if typing.TYPE_CHECKING:
     from .agent_trace_sequence_range import AgentTraceSequenceRange
     from .agent_trace_source import AgentTraceSource
     from .agent_trace_source_deletion_result import AgentTraceSourceDeletionResult
+    from .agent_trace_structured_summary import AgentTraceStructuredSummary
+    from .agent_trace_summary_byte_range import AgentTraceSummaryByteRange
+    from .agent_trace_summary_citation import AgentTraceSummaryCitation
+    from .agent_trace_summary_coverage import AgentTraceSummaryCoverage
     from .agent_trace_summary_creation_reason import AgentTraceSummaryCreationReason
+    from .agent_trace_summary_excerpted_event import AgentTraceSummaryExcerptedEvent
     from .agent_trace_summary_omission_reason import AgentTraceSummaryOmissionReason
     from .agent_trace_summary_omitted_range import AgentTraceSummaryOmittedRange
     from .agent_trace_summary_page import AgentTraceSummaryPage
+    from .agent_trace_summary_resource import AgentTraceSummaryResource
+    from .agent_trace_summary_statement import AgentTraceSummaryStatement
+    from .agent_trace_summary_verification import AgentTraceSummaryVerification
+    from .agent_trace_summary_verification_status import AgentTraceSummaryVerificationStatus
     from .agent_trace_summary_version import AgentTraceSummaryVersion
     from .agent_trace_task_family_inference import AgentTraceTaskFamilyInference
     from .agent_trace_verification import AgentTraceVerification
@@ -105,7 +130,6 @@ if typing.TYPE_CHECKING:
     from .agent_verifier_principal_binding_input import AgentVerifierPrincipalBindingInput
     from .agent_verifier_status import AgentVerifierStatus
     from .api_error import ApiError
-    from .artifact_list_request import ArtifactListRequest
     from .async_result import AsyncResult
     from .batch import Batch
     from .batch_item import BatchItem
@@ -118,6 +142,8 @@ if typing.TYPE_CHECKING:
     from .batch_item_status import BatchItemStatus
     from .batch_items_response import BatchItemsResponse
     from .batch_page import BatchPage
+    from .batch_progress import BatchProgress
+    from .batch_status import BatchStatus
     from .clone_graph_request import CloneGraphRequest
     from .clone_graph_result import CloneGraphResult
     from .content_policy import ContentPolicy
@@ -126,6 +152,8 @@ if typing.TYPE_CHECKING:
     from .content_policy_event import ContentPolicyEvent
     from .content_policy_event_artifact_kind import ContentPolicyEventArtifactKind
     from .content_policy_event_drop_reason import ContentPolicyEventDropReason
+    from .content_policy_event_list_filters import ContentPolicyEventListFilters
+    from .content_policy_event_list_filters_drop_reason import ContentPolicyEventListFiltersDropReason
     from .content_policy_event_page import ContentPolicyEventPage
     from .content_policy_revision_page import ContentPolicyRevisionPage
     from .content_policy_rule import ContentPolicyRule
@@ -152,9 +180,11 @@ if typing.TYPE_CHECKING:
     from .debug_logging_enablement import DebugLoggingEnablement
     from .delete_agent_trace_request import DeleteAgentTraceRequest
     from .document_summary import DocumentSummary
+    from .document_summary_list_filters import DocumentSummaryListFilters
     from .document_summary_page import DocumentSummaryPage
     from .edge import Edge
     from .edge_input import EdgeInput
+    from .edge_list_filters import EdgeListFilters
     from .edge_node_ref import EdgeNodeRef
     from .edge_page import EdgePage
     from .edge_search_filters import EdgeSearchFilters
@@ -167,6 +197,7 @@ if typing.TYPE_CHECKING:
     from .episode_content_policy import EpisodeContentPolicy
     from .episode_content_policy_status import EpisodeContentPolicyStatus
     from .episode_debug_log import EpisodeDebugLog
+    from .episode_list_filters import EpisodeListFilters
     from .episode_page import EpisodePage
     from .error_body import ErrorBody
     from .graph import Graph
@@ -179,6 +210,7 @@ if typing.TYPE_CHECKING:
     from .hyperedge import Hyperedge
     from .hyperedge_edge import HyperedgeEdge
     from .hyperedge_input import HyperedgeInput
+    from .hyperedge_list_filters import HyperedgeListFilters
     from .hyperedge_page import HyperedgePage
     from .imported_trace_reference import ImportedTraceReference
     from .ingestion_trace import IngestionTrace
@@ -199,6 +231,7 @@ if typing.TYPE_CHECKING:
     from .instructions import Instructions
     from .lookup_batch_response import LookupBatchResponse
     from .lookup_item import LookupItem
+    from .lookup_item_resource_type import LookupItemResourceType
     from .lookup_request import LookupRequest
     from .membership_mutation_result import MembershipMutationResult
     from .message import Message
@@ -214,11 +247,13 @@ if typing.TYPE_CHECKING:
     from .neighbor_page import NeighborPage
     from .node import Node
     from .node_input import NodeInput
+    from .node_list_filters import NodeListFilters
     from .node_page import NodePage
     from .node_search_filters import NodeSearchFilters
     from .objective_mapping_rule import ObjectiveMappingRule
     from .objective_mapping_rule_source import ObjectiveMappingRuleSource
     from .observation import Observation
+    from .observation_list_filters import ObservationListFilters
     from .observation_page import ObservationPage
     from .observation_steering import ObservationSteering
     from .observation_type import ObservationType
@@ -242,11 +277,10 @@ if typing.TYPE_CHECKING:
     from .role_type import RoleType
     from .search_filters import SearchFilters
     from .search_list_request import SearchListRequest
-    from .search_request import SearchRequest
-    from .search_request_reranker import SearchRequestReranker
     from .skill_definition import SkillDefinition
     from .skill_definition_section import SkillDefinitionSection
     from .skill_failure import SkillFailure
+    from .skill_kind import SkillKind
     from .skill_procedure_step import SkillProcedureStep
     from .skill_relation import SkillRelation
     from .skill_resource import SkillResource
@@ -261,11 +295,18 @@ if typing.TYPE_CHECKING:
     from .task_family_mapping_rule_source import TaskFamilyMappingRuleSource
     from .task_page import TaskPage
     from .task_progress import TaskProgress
+    from .task_result import TaskResult
+    from .task_result_content_policy import TaskResultContentPolicy
+    from .task_result_content_policy_status import TaskResultContentPolicyStatus
+    from .task_result_edge import TaskResultEdge
+    from .task_result_episode import TaskResultEpisode
+    from .task_status import TaskStatus
     from .thread import Thread
     from .thread_context_response import ThreadContextResponse
     from .thread_delete_result import ThreadDeleteResult
     from .thread_page import ThreadPage
     from .thread_summary import ThreadSummary
+    from .thread_summary_list_filters import ThreadSummaryListFilters
     from .thread_summary_page import ThreadSummaryPage
     from .trace_connection import TraceConnection
     from .trace_connection_page import TraceConnectionPage
@@ -274,6 +315,8 @@ if typing.TYPE_CHECKING:
     from .trace_content_mapping import TraceContentMapping
     from .trace_filter import TraceFilter
     from .trace_import import TraceImport
+    from .trace_import_create_result import TraceImportCreateResult
+    from .trace_import_on_source_change import TraceImportOnSourceChange
     from .trace_import_page import TraceImportPage
     from .trace_import_pause_reason import TraceImportPauseReason
     from .trace_import_provider import TraceImportProvider
@@ -346,6 +389,22 @@ _dynamic_imports: typing.Dict[str, str] = {
     "AgentSkillCandidateReviewSummary": ".agent_skill_candidate_review_summary",
     "AgentSkillCompilationOutcome": ".agent_skill_compilation_outcome",
     "AgentSkillCompilationOutcomeRejectionClass": ".agent_skill_compilation_outcome_rejection_class",
+    "AgentSkillContract": ".agent_skill_contract",
+    "AgentSkillContractApplicability": ".agent_skill_contract_applicability",
+    "AgentSkillContractDependency": ".agent_skill_contract_dependency",
+    "AgentSkillContractEvidence": ".agent_skill_contract_evidence",
+    "AgentSkillContractEvidencePolarity": ".agent_skill_contract_evidence_polarity",
+    "AgentSkillContractEvidenceSourceKind": ".agent_skill_contract_evidence_source_kind",
+    "AgentSkillContractFailure": ".agent_skill_contract_failure",
+    "AgentSkillContractInvocation": ".agent_skill_contract_invocation",
+    "AgentSkillContractOrigin": ".agent_skill_contract_origin",
+    "AgentSkillContractRelation": ".agent_skill_contract_relation",
+    "AgentSkillContractRelationKind": ".agent_skill_contract_relation_kind",
+    "AgentSkillContractResource": ".agent_skill_contract_resource",
+    "AgentSkillContractSection": ".agent_skill_contract_section",
+    "AgentSkillContractStep": ".agent_skill_contract_step",
+    "AgentSkillContractText": ".agent_skill_contract_text",
+    "AgentSkillContractVersionConstraint": ".agent_skill_contract_version_constraint",
     "AgentSkillEvaluation": ".agent_skill_evaluation",
     "AgentSkillEvidence": ".agent_skill_evidence",
     "AgentSkillPublicationLineage": ".agent_skill_publication_lineage",
@@ -386,10 +445,19 @@ _dynamic_imports: typing.Dict[str, str] = {
     "AgentTraceSequenceRange": ".agent_trace_sequence_range",
     "AgentTraceSource": ".agent_trace_source",
     "AgentTraceSourceDeletionResult": ".agent_trace_source_deletion_result",
+    "AgentTraceStructuredSummary": ".agent_trace_structured_summary",
+    "AgentTraceSummaryByteRange": ".agent_trace_summary_byte_range",
+    "AgentTraceSummaryCitation": ".agent_trace_summary_citation",
+    "AgentTraceSummaryCoverage": ".agent_trace_summary_coverage",
     "AgentTraceSummaryCreationReason": ".agent_trace_summary_creation_reason",
+    "AgentTraceSummaryExcerptedEvent": ".agent_trace_summary_excerpted_event",
     "AgentTraceSummaryOmissionReason": ".agent_trace_summary_omission_reason",
     "AgentTraceSummaryOmittedRange": ".agent_trace_summary_omitted_range",
     "AgentTraceSummaryPage": ".agent_trace_summary_page",
+    "AgentTraceSummaryResource": ".agent_trace_summary_resource",
+    "AgentTraceSummaryStatement": ".agent_trace_summary_statement",
+    "AgentTraceSummaryVerification": ".agent_trace_summary_verification",
+    "AgentTraceSummaryVerificationStatus": ".agent_trace_summary_verification_status",
     "AgentTraceSummaryVersion": ".agent_trace_summary_version",
     "AgentTraceTaskFamilyInference": ".agent_trace_task_family_inference",
     "AgentTraceVerification": ".agent_trace_verification",
@@ -402,7 +470,6 @@ _dynamic_imports: typing.Dict[str, str] = {
     "AgentVerifierPrincipalBindingInput": ".agent_verifier_principal_binding_input",
     "AgentVerifierStatus": ".agent_verifier_status",
     "ApiError": ".api_error",
-    "ArtifactListRequest": ".artifact_list_request",
     "AsyncResult": ".async_result",
     "Batch": ".batch",
     "BatchItem": ".batch_item",
@@ -415,6 +482,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "BatchItemStatus": ".batch_item_status",
     "BatchItemsResponse": ".batch_items_response",
     "BatchPage": ".batch_page",
+    "BatchProgress": ".batch_progress",
+    "BatchStatus": ".batch_status",
     "CloneGraphRequest": ".clone_graph_request",
     "CloneGraphResult": ".clone_graph_result",
     "ContentPolicy": ".content_policy",
@@ -423,6 +492,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ContentPolicyEvent": ".content_policy_event",
     "ContentPolicyEventArtifactKind": ".content_policy_event_artifact_kind",
     "ContentPolicyEventDropReason": ".content_policy_event_drop_reason",
+    "ContentPolicyEventListFilters": ".content_policy_event_list_filters",
+    "ContentPolicyEventListFiltersDropReason": ".content_policy_event_list_filters_drop_reason",
     "ContentPolicyEventPage": ".content_policy_event_page",
     "ContentPolicyRevisionPage": ".content_policy_revision_page",
     "ContentPolicyRule": ".content_policy_rule",
@@ -449,9 +520,11 @@ _dynamic_imports: typing.Dict[str, str] = {
     "DebugLoggingEnablement": ".debug_logging_enablement",
     "DeleteAgentTraceRequest": ".delete_agent_trace_request",
     "DocumentSummary": ".document_summary",
+    "DocumentSummaryListFilters": ".document_summary_list_filters",
     "DocumentSummaryPage": ".document_summary_page",
     "Edge": ".edge",
     "EdgeInput": ".edge_input",
+    "EdgeListFilters": ".edge_list_filters",
     "EdgeNodeRef": ".edge_node_ref",
     "EdgePage": ".edge_page",
     "EdgeSearchFilters": ".edge_search_filters",
@@ -464,6 +537,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "EpisodeContentPolicy": ".episode_content_policy",
     "EpisodeContentPolicyStatus": ".episode_content_policy_status",
     "EpisodeDebugLog": ".episode_debug_log",
+    "EpisodeListFilters": ".episode_list_filters",
     "EpisodePage": ".episode_page",
     "ErrorBody": ".error_body",
     "Graph": ".graph",
@@ -476,6 +550,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "Hyperedge": ".hyperedge",
     "HyperedgeEdge": ".hyperedge_edge",
     "HyperedgeInput": ".hyperedge_input",
+    "HyperedgeListFilters": ".hyperedge_list_filters",
     "HyperedgePage": ".hyperedge_page",
     "ImportedTraceReference": ".imported_trace_reference",
     "IngestionTrace": ".ingestion_trace",
@@ -496,6 +571,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "Instructions": ".instructions",
     "LookupBatchResponse": ".lookup_batch_response",
     "LookupItem": ".lookup_item",
+    "LookupItemResourceType": ".lookup_item_resource_type",
     "LookupRequest": ".lookup_request",
     "MembershipMutationResult": ".membership_mutation_result",
     "Message": ".message",
@@ -511,11 +587,13 @@ _dynamic_imports: typing.Dict[str, str] = {
     "NeighborPage": ".neighbor_page",
     "Node": ".node",
     "NodeInput": ".node_input",
+    "NodeListFilters": ".node_list_filters",
     "NodePage": ".node_page",
     "NodeSearchFilters": ".node_search_filters",
     "ObjectiveMappingRule": ".objective_mapping_rule",
     "ObjectiveMappingRuleSource": ".objective_mapping_rule_source",
     "Observation": ".observation",
+    "ObservationListFilters": ".observation_list_filters",
     "ObservationPage": ".observation_page",
     "ObservationSteering": ".observation_steering",
     "ObservationType": ".observation_type",
@@ -539,11 +617,10 @@ _dynamic_imports: typing.Dict[str, str] = {
     "RoleType": ".role_type",
     "SearchFilters": ".search_filters",
     "SearchListRequest": ".search_list_request",
-    "SearchRequest": ".search_request",
-    "SearchRequestReranker": ".search_request_reranker",
     "SkillDefinition": ".skill_definition",
     "SkillDefinitionSection": ".skill_definition_section",
     "SkillFailure": ".skill_failure",
+    "SkillKind": ".skill_kind",
     "SkillProcedureStep": ".skill_procedure_step",
     "SkillRelation": ".skill_relation",
     "SkillResource": ".skill_resource",
@@ -558,11 +635,18 @@ _dynamic_imports: typing.Dict[str, str] = {
     "TaskFamilyMappingRuleSource": ".task_family_mapping_rule_source",
     "TaskPage": ".task_page",
     "TaskProgress": ".task_progress",
+    "TaskResult": ".task_result",
+    "TaskResultContentPolicy": ".task_result_content_policy",
+    "TaskResultContentPolicyStatus": ".task_result_content_policy_status",
+    "TaskResultEdge": ".task_result_edge",
+    "TaskResultEpisode": ".task_result_episode",
+    "TaskStatus": ".task_status",
     "Thread": ".thread",
     "ThreadContextResponse": ".thread_context_response",
     "ThreadDeleteResult": ".thread_delete_result",
     "ThreadPage": ".thread_page",
     "ThreadSummary": ".thread_summary",
+    "ThreadSummaryListFilters": ".thread_summary_list_filters",
     "ThreadSummaryPage": ".thread_summary_page",
     "TraceConnection": ".trace_connection",
     "TraceConnectionPage": ".trace_connection_page",
@@ -571,6 +655,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "TraceContentMapping": ".trace_content_mapping",
     "TraceFilter": ".trace_filter",
     "TraceImport": ".trace_import",
+    "TraceImportCreateResult": ".trace_import_create_result",
+    "TraceImportOnSourceChange": ".trace_import_on_source_change",
     "TraceImportPage": ".trace_import_page",
     "TraceImportPauseReason": ".trace_import_pause_reason",
     "TraceImportProvider": ".trace_import_provider",
@@ -667,6 +753,22 @@ __all__ = [
     "AgentSkillCandidateReviewSummary",
     "AgentSkillCompilationOutcome",
     "AgentSkillCompilationOutcomeRejectionClass",
+    "AgentSkillContract",
+    "AgentSkillContractApplicability",
+    "AgentSkillContractDependency",
+    "AgentSkillContractEvidence",
+    "AgentSkillContractEvidencePolarity",
+    "AgentSkillContractEvidenceSourceKind",
+    "AgentSkillContractFailure",
+    "AgentSkillContractInvocation",
+    "AgentSkillContractOrigin",
+    "AgentSkillContractRelation",
+    "AgentSkillContractRelationKind",
+    "AgentSkillContractResource",
+    "AgentSkillContractSection",
+    "AgentSkillContractStep",
+    "AgentSkillContractText",
+    "AgentSkillContractVersionConstraint",
     "AgentSkillEvaluation",
     "AgentSkillEvidence",
     "AgentSkillPublicationLineage",
@@ -707,10 +809,19 @@ __all__ = [
     "AgentTraceSequenceRange",
     "AgentTraceSource",
     "AgentTraceSourceDeletionResult",
+    "AgentTraceStructuredSummary",
+    "AgentTraceSummaryByteRange",
+    "AgentTraceSummaryCitation",
+    "AgentTraceSummaryCoverage",
     "AgentTraceSummaryCreationReason",
+    "AgentTraceSummaryExcerptedEvent",
     "AgentTraceSummaryOmissionReason",
     "AgentTraceSummaryOmittedRange",
     "AgentTraceSummaryPage",
+    "AgentTraceSummaryResource",
+    "AgentTraceSummaryStatement",
+    "AgentTraceSummaryVerification",
+    "AgentTraceSummaryVerificationStatus",
     "AgentTraceSummaryVersion",
     "AgentTraceTaskFamilyInference",
     "AgentTraceVerification",
@@ -723,7 +834,6 @@ __all__ = [
     "AgentVerifierPrincipalBindingInput",
     "AgentVerifierStatus",
     "ApiError",
-    "ArtifactListRequest",
     "AsyncResult",
     "Batch",
     "BatchItem",
@@ -736,6 +846,8 @@ __all__ = [
     "BatchItemStatus",
     "BatchItemsResponse",
     "BatchPage",
+    "BatchProgress",
+    "BatchStatus",
     "CloneGraphRequest",
     "CloneGraphResult",
     "ContentPolicy",
@@ -744,6 +856,8 @@ __all__ = [
     "ContentPolicyEvent",
     "ContentPolicyEventArtifactKind",
     "ContentPolicyEventDropReason",
+    "ContentPolicyEventListFilters",
+    "ContentPolicyEventListFiltersDropReason",
     "ContentPolicyEventPage",
     "ContentPolicyRevisionPage",
     "ContentPolicyRule",
@@ -770,9 +884,11 @@ __all__ = [
     "DebugLoggingEnablement",
     "DeleteAgentTraceRequest",
     "DocumentSummary",
+    "DocumentSummaryListFilters",
     "DocumentSummaryPage",
     "Edge",
     "EdgeInput",
+    "EdgeListFilters",
     "EdgeNodeRef",
     "EdgePage",
     "EdgeSearchFilters",
@@ -785,6 +901,7 @@ __all__ = [
     "EpisodeContentPolicy",
     "EpisodeContentPolicyStatus",
     "EpisodeDebugLog",
+    "EpisodeListFilters",
     "EpisodePage",
     "ErrorBody",
     "Graph",
@@ -797,6 +914,7 @@ __all__ = [
     "Hyperedge",
     "HyperedgeEdge",
     "HyperedgeInput",
+    "HyperedgeListFilters",
     "HyperedgePage",
     "ImportedTraceReference",
     "IngestionTrace",
@@ -817,6 +935,7 @@ __all__ = [
     "Instructions",
     "LookupBatchResponse",
     "LookupItem",
+    "LookupItemResourceType",
     "LookupRequest",
     "MembershipMutationResult",
     "Message",
@@ -832,11 +951,13 @@ __all__ = [
     "NeighborPage",
     "Node",
     "NodeInput",
+    "NodeListFilters",
     "NodePage",
     "NodeSearchFilters",
     "ObjectiveMappingRule",
     "ObjectiveMappingRuleSource",
     "Observation",
+    "ObservationListFilters",
     "ObservationPage",
     "ObservationSteering",
     "ObservationType",
@@ -860,11 +981,10 @@ __all__ = [
     "RoleType",
     "SearchFilters",
     "SearchListRequest",
-    "SearchRequest",
-    "SearchRequestReranker",
     "SkillDefinition",
     "SkillDefinitionSection",
     "SkillFailure",
+    "SkillKind",
     "SkillProcedureStep",
     "SkillRelation",
     "SkillResource",
@@ -879,11 +999,18 @@ __all__ = [
     "TaskFamilyMappingRuleSource",
     "TaskPage",
     "TaskProgress",
+    "TaskResult",
+    "TaskResultContentPolicy",
+    "TaskResultContentPolicyStatus",
+    "TaskResultEdge",
+    "TaskResultEpisode",
+    "TaskStatus",
     "Thread",
     "ThreadContextResponse",
     "ThreadDeleteResult",
     "ThreadPage",
     "ThreadSummary",
+    "ThreadSummaryListFilters",
     "ThreadSummaryPage",
     "TraceConnection",
     "TraceConnectionPage",
@@ -892,6 +1019,8 @@ __all__ = [
     "TraceContentMapping",
     "TraceFilter",
     "TraceImport",
+    "TraceImportCreateResult",
+    "TraceImportOnSourceChange",
     "TraceImportPage",
     "TraceImportPauseReason",
     "TraceImportProvider",
