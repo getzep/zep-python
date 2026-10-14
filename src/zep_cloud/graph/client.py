@@ -21,6 +21,7 @@ from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
 from ..types.episode import Episode
 from ..types.episode_page import EpisodePage
+from ..types.episode_search_filters import EpisodeSearchFilters
 from ..types.graph import Graph
 from ..types.graph_content_policy import GraphContentPolicy
 from ..types.graph_content_policy_request import GraphContentPolicyRequest
@@ -33,6 +34,7 @@ from ..types.node_page import NodePage
 from ..types.node_search_filters import NodeSearchFilters
 from ..types.observation import Observation
 from ..types.observation_page import ObservationPage
+from ..types.observation_search_filters import ObservationSearchFilters
 from ..types.observation_steering import ObservationSteering
 from ..types.observation_type import ObservationType
 from ..types.ontology import Ontology
@@ -40,6 +42,7 @@ from ..types.search_filters import SearchFilters
 from ..types.subgraph_response import SubgraphResponse
 from ..types.thread_summary import ThreadSummary
 from ..types.thread_summary_page import ThreadSummaryPage
+from ..types.thread_summary_search_filters import ThreadSummarySearchFilters
 from .raw_client import AsyncRawGraphClient, RawGraphClient
 from .types.graph_context_request_recency_bias import GraphContextRequestRecencyBias
 from .types.graph_list_request_order import GraphListRequestOrder
@@ -851,7 +854,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Edge, EdgePage]:
         """
-        Edge search does not support node_labels or exclude_node_labels. An edge has two nodes, so a node label filter is not defined for edge search. To filter edges by node label, use graph.edge.list, graph.node.list_neighbors, or graph.get_subgraph. To search the edges of nodes that have a label, do these two steps. First, call graph.search_nodes with node_labels. Then, call graph.search_edges with connected_node_uuids set to the UUIDs of the returned nodes.
+        Edge search does not support node_labels, exclude_node_labels, or content_policy_violated. content_policy_violated is supported on episode search only. An edge has two nodes, so a node label filter is not defined for edge search. To filter edges by node label, use graph.edge.list, graph.node.list_neighbors, or graph.get_subgraph. To search the edges of nodes that have a label, do these two steps. First, call graph.search_nodes with node_labels. Then, call graph.search_edges with connected_node_uuids set to the UUIDs of the returned nodes.
 
         Parameters
         ----------
@@ -944,12 +947,14 @@ class GraphClient:
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         filter_low_quality_results: typing.Optional[bool] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[EpisodeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchEpisodesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Episode, EpisodePage]:
         """
+        Episode search supports only the metadata_filters and content_policy_violated filters. Every other filter returns unsupported_filter.
+
         Parameters
         ----------
         graph_uuid : str
@@ -982,7 +987,7 @@ class GraphClient:
             When the cross-encoder does not score the results, for example after a
             timeout, Zep returns the results without the filter.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[EpisodeSearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
@@ -1047,7 +1052,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Node, NodePage]:
         """
-        Node search does not support edge_types, exclude_edge_types, edge_uuids, connected_node_uuids, source_node_uuids, or target_node_uuids. These filters select edges. To get the nodes that an edge connects, use graph.search_edges or graph.node.list_neighbors.
+        Node search does not support edge_types, exclude_edge_types, edge_uuids, connected_node_uuids, source_node_uuids, target_node_uuids, date_filters, or content_policy_violated. content_policy_violated is supported on episode search only. The edge filters select edges. To get the nodes that an edge connects, use graph.search_edges or graph.node.list_neighbors. To filter nodes by created_at, use graph.node.list.
 
         Parameters
         ----------
@@ -1140,12 +1145,14 @@ class GraphClient:
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         filter_low_quality_results: typing.Optional[bool] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[ObservationSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchObservationsRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Observation, ObservationPage]:
         """
+        Observation search supports no filters. Every filter returns unsupported_filter.
+
         Parameters
         ----------
         graph_uuid : str
@@ -1178,7 +1185,7 @@ class GraphClient:
             When the cross-encoder does not score the results, for example after a
             timeout, Zep returns the results without the filter.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[ObservationSearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
@@ -1237,12 +1244,14 @@ class GraphClient:
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         filter_low_quality_results: typing.Optional[bool] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[ThreadSummarySearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchThreadSummariesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ThreadSummary, ThreadSummaryPage]:
         """
+        Thread-summary search supports only the metadata_filters filter, which matches the metadata of the thread episodes. Every other filter returns unsupported_filter.
+
         Parameters
         ----------
         graph_uuid : str
@@ -1275,7 +1284,7 @@ class GraphClient:
             When the cross-encoder does not score the results, for example after a
             timeout, Zep returns the results without the filter.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[ThreadSummarySearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
@@ -2407,7 +2416,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Edge, EdgePage]:
         """
-        Edge search does not support node_labels or exclude_node_labels. An edge has two nodes, so a node label filter is not defined for edge search. To filter edges by node label, use graph.edge.list, graph.node.list_neighbors, or graph.get_subgraph. To search the edges of nodes that have a label, do these two steps. First, call graph.search_nodes with node_labels. Then, call graph.search_edges with connected_node_uuids set to the UUIDs of the returned nodes.
+        Edge search does not support node_labels, exclude_node_labels, or content_policy_violated. content_policy_violated is supported on episode search only. An edge has two nodes, so a node label filter is not defined for edge search. To filter edges by node label, use graph.edge.list, graph.node.list_neighbors, or graph.get_subgraph. To search the edges of nodes that have a label, do these two steps. First, call graph.search_nodes with node_labels. Then, call graph.search_edges with connected_node_uuids set to the UUIDs of the returned nodes.
 
         Parameters
         ----------
@@ -2509,12 +2518,14 @@ class AsyncGraphClient:
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         filter_low_quality_results: typing.Optional[bool] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[EpisodeSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchEpisodesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Episode, EpisodePage]:
         """
+        Episode search supports only the metadata_filters and content_policy_violated filters. Every other filter returns unsupported_filter.
+
         Parameters
         ----------
         graph_uuid : str
@@ -2547,7 +2558,7 @@ class AsyncGraphClient:
             When the cross-encoder does not score the results, for example after a
             timeout, Zep returns the results without the filter.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[EpisodeSearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
@@ -2621,7 +2632,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Node, NodePage]:
         """
-        Node search does not support edge_types, exclude_edge_types, edge_uuids, connected_node_uuids, source_node_uuids, or target_node_uuids. These filters select edges. To get the nodes that an edge connects, use graph.search_edges or graph.node.list_neighbors.
+        Node search does not support edge_types, exclude_edge_types, edge_uuids, connected_node_uuids, source_node_uuids, target_node_uuids, date_filters, or content_policy_violated. content_policy_violated is supported on episode search only. The edge filters select edges. To get the nodes that an edge connects, use graph.search_edges or graph.node.list_neighbors. To filter nodes by created_at, use graph.node.list.
 
         Parameters
         ----------
@@ -2723,12 +2734,14 @@ class AsyncGraphClient:
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         filter_low_quality_results: typing.Optional[bool] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[ObservationSearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchObservationsRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Observation, ObservationPage]:
         """
+        Observation search supports no filters. Every filter returns unsupported_filter.
+
         Parameters
         ----------
         graph_uuid : str
@@ -2761,7 +2774,7 @@ class AsyncGraphClient:
             When the cross-encoder does not score the results, for example after a
             timeout, Zep returns the results without the filter.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[ObservationSearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]
@@ -2829,12 +2842,14 @@ class AsyncGraphClient:
         bfs_origin_node_uuids: typing.Optional[typing.Sequence[str]] = OMIT,
         center_node_uuid: typing.Optional[str] = OMIT,
         filter_low_quality_results: typing.Optional[bool] = OMIT,
-        filters: typing.Optional[SearchFilters] = OMIT,
+        filters: typing.Optional[ThreadSummarySearchFilters] = OMIT,
         mmr_lambda: typing.Optional[float] = OMIT,
         reranker: typing.Optional[SearchThreadSummariesRequestReranker] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ThreadSummary, ThreadSummaryPage]:
         """
+        Thread-summary search supports only the metadata_filters filter, which matches the metadata of the thread episodes. Every other filter returns unsupported_filter.
+
         Parameters
         ----------
         graph_uuid : str
@@ -2867,7 +2882,7 @@ class AsyncGraphClient:
             When the cross-encoder does not score the results, for example after a
             timeout, Zep returns the results without the filter.
 
-        filters : typing.Optional[SearchFilters]
+        filters : typing.Optional[ThreadSummarySearchFilters]
             Filters constraining which items are returned.
 
         mmr_lambda : typing.Optional[float]

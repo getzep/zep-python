@@ -199,6 +199,7 @@ if typing.TYPE_CHECKING:
     from .episode_debug_log import EpisodeDebugLog
     from .episode_list_filters import EpisodeListFilters
     from .episode_page import EpisodePage
+    from .episode_search_filters import EpisodeSearchFilters
     from .error_body import ErrorBody
     from .graph import Graph
     from .graph_content_policy import GraphContentPolicy
@@ -255,6 +256,7 @@ if typing.TYPE_CHECKING:
     from .observation import Observation
     from .observation_list_filters import ObservationListFilters
     from .observation_page import ObservationPage
+    from .observation_search_filters import ObservationSearchFilters
     from .observation_steering import ObservationSteering
     from .observation_type import ObservationType
     from .ontology import Ontology
@@ -273,6 +275,7 @@ if typing.TYPE_CHECKING:
     from .property_filter_operator import PropertyFilterOperator
     from .property_filter_value import PropertyFilterValue
     from .property_filter_value_three_item import PropertyFilterValueThreeItem
+    from .rejected_batch_item import RejectedBatchItem
     from .rename_agent_task_family_response import RenameAgentTaskFamilyResponse
     from .role_type import RoleType
     from .search_filters import SearchFilters
@@ -308,6 +311,7 @@ if typing.TYPE_CHECKING:
     from .thread_summary import ThreadSummary
     from .thread_summary_list_filters import ThreadSummaryListFilters
     from .thread_summary_page import ThreadSummaryPage
+    from .thread_summary_search_filters import ThreadSummarySearchFilters
     from .trace_connection import TraceConnection
     from .trace_connection_page import TraceConnectionPage
     from .trace_connection_provider import TraceConnectionProvider
@@ -539,6 +543,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "EpisodeDebugLog": ".episode_debug_log",
     "EpisodeListFilters": ".episode_list_filters",
     "EpisodePage": ".episode_page",
+    "EpisodeSearchFilters": ".episode_search_filters",
     "ErrorBody": ".error_body",
     "Graph": ".graph",
     "GraphContentPolicy": ".graph_content_policy",
@@ -595,6 +600,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "Observation": ".observation",
     "ObservationListFilters": ".observation_list_filters",
     "ObservationPage": ".observation_page",
+    "ObservationSearchFilters": ".observation_search_filters",
     "ObservationSteering": ".observation_steering",
     "ObservationType": ".observation_type",
     "Ontology": ".ontology",
@@ -613,6 +619,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "PropertyFilterOperator": ".property_filter_operator",
     "PropertyFilterValue": ".property_filter_value",
     "PropertyFilterValueThreeItem": ".property_filter_value_three_item",
+    "RejectedBatchItem": ".rejected_batch_item",
     "RenameAgentTaskFamilyResponse": ".rename_agent_task_family_response",
     "RoleType": ".role_type",
     "SearchFilters": ".search_filters",
@@ -648,6 +655,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ThreadSummary": ".thread_summary",
     "ThreadSummaryListFilters": ".thread_summary_list_filters",
     "ThreadSummaryPage": ".thread_summary_page",
+    "ThreadSummarySearchFilters": ".thread_summary_search_filters",
     "TraceConnection": ".trace_connection",
     "TraceConnectionPage": ".trace_connection_page",
     "TraceConnectionProvider": ".trace_connection_provider",
@@ -903,6 +911,7 @@ __all__ = [
     "EpisodeDebugLog",
     "EpisodeListFilters",
     "EpisodePage",
+    "EpisodeSearchFilters",
     "ErrorBody",
     "Graph",
     "GraphContentPolicy",
@@ -959,6 +968,7 @@ __all__ = [
     "Observation",
     "ObservationListFilters",
     "ObservationPage",
+    "ObservationSearchFilters",
     "ObservationSteering",
     "ObservationType",
     "Ontology",
@@ -977,6 +987,7 @@ __all__ = [
     "PropertyFilterOperator",
     "PropertyFilterValue",
     "PropertyFilterValueThreeItem",
+    "RejectedBatchItem",
     "RenameAgentTaskFamilyResponse",
     "RoleType",
     "SearchFilters",
@@ -1012,6 +1023,7 @@ __all__ = [
     "ThreadSummary",
     "ThreadSummaryListFilters",
     "ThreadSummaryPage",
+    "ThreadSummarySearchFilters",
     "TraceConnection",
     "TraceConnectionPage",
     "TraceConnectionProvider",

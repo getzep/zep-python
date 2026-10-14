@@ -6,21 +6,10 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update_forward_refs
-from .date_filters import DateFilters
 from .property_filter import PropertyFilter
 
 
 class NodeSearchFilters(UniversalBaseModel):
-    content_policy_violated: typing.Optional[bool] = pydantic.Field(default=None)
-    """
-    Match episodes by their content-policy result. Supported only on episode search when the project setting include_policy_violating_episodes is true.
-    """
-
-    date_filters: typing.Optional[DateFilters] = pydantic.Field(default=None)
-    """
-    Filter results by temporal values.
-    """
-
     episode_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     Include results derived from any of these episode UUIDs.
