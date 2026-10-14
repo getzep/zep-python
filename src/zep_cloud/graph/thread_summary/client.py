@@ -45,7 +45,8 @@ class ThreadSummaryClient:
         """
         Lists the thread summaries of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
         You can sort by `uuid` or `created_at`. The default sort is `uuid` in descending order.
-        You cannot use these `filters` fields: `episode_uuids`, `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        You cannot use these `filters` fields: `node_labels`, `exclude_node_labels`, `edge_types`, `exclude_edge_types`, `edge_uuids`, `episode_uuids`, `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        `date_filters` supports only the `created_at` field.
         If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
 
         Parameters
@@ -133,7 +134,8 @@ class AsyncThreadSummaryClient:
         """
         Lists the thread summaries of a graph and returns one page of results. The default `page_size` is 50, and the maximum `page_size` is 100.
         You can sort by `uuid` or `created_at`. The default sort is `uuid` in descending order.
-        You cannot use these `filters` fields: `episode_uuids`, `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        You cannot use these `filters` fields: `node_labels`, `exclude_node_labels`, `edge_types`, `exclude_edge_types`, `edge_uuids`, `episode_uuids`, `connected_node_uuids`, `source_node_uuids`, `target_node_uuids`, and `content_policy_violated`.
+        `date_filters` supports only the `created_at` field.
         If the request has an unsupported or unknown filter field, the API returns an `unsupported_filter` error.
 
         Parameters

@@ -5,12 +5,18 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .batch_item import BatchItem
+from .rejected_batch_item import RejectedBatchItem
 
 
 class BatchItemsResponse(UniversalBaseModel):
     items: typing.Optional[typing.List[BatchItem]] = pydantic.Field(default=None)
     """
     The batch items that were added, in the order they were appended.
+    """
+
+    rejected_items: typing.Optional[typing.List[RejectedBatchItem]] = pydantic.Field(default=None)
+    """
+    The request items that were rejected because their graph was not found.
     """
 
     if IS_PYDANTIC_V2:
