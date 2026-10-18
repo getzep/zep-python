@@ -3191,7 +3191,7 @@ authenticated project. Optional `search` matches `graph_id`, `name`, and
 Default `pageSize` is 50 (range 1–100). To list users, use
 `user.list_ordered` instead. See the
 [graph directory guide](/graph-directory) for pagination, relevance
-ordering, and Memory MCP exposure.
+ordering, and Context MCP exposure.
 </dd>
 </dl>
 </dd>
@@ -3504,7 +3504,7 @@ Valid values: none, 7_days, 30_days, 90_days. Default: none
 **search_filters:** `typing.Optional[SearchFilters]` 
 
 Filters which edges/nodes participate in pattern detection.
-Reuses the same filter format as /graph/search.
+Reuses the same filter format as the `graph.search` SDK method.
     
 </dd>
 </dl>
@@ -7548,7 +7548,7 @@ client.graph.episode.update(
 <dl>
 <dd>
 
-Deprecated. Use edge and node listing with `filters.episode_uuids` instead. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
+Deprecated. Use the edge list SDK methods `graph.edge.get_by_graph_id` or `graph.edge.get_by_user_id`, or the node list SDK methods `graph.node.get_by_graph_id` or `graph.node.get_by_user_id`, with the `filters.episode_uuids` filter. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 </dd>
 </dl>
 </dd>
@@ -7879,7 +7879,7 @@ Deprecated: prefer Cursor, the opaque cursor returned via the Zep-Next-Cursor re
 <dl>
 <dd>
 
-Deprecated. Use edge listing with `filters.connected_node_uuids`, or the neighbors endpoint (`POST /graph/node/{node_uuid}/neighbors`), instead. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
+Deprecated. Use the edge list SDK methods `graph.edge.get_by_graph_id` or `graph.edge.get_by_user_id` with the `filters.connected_node_uuids` filter, or use the `graph.node.get_neighbors` SDK method. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 </dd>
 </dl>
 </dd>

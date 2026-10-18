@@ -18,6 +18,14 @@ class SearchFilters(UniversalBaseModel):
     requests whose result type contains no edges. Max 256 entries.
     """
 
+    content_policy_violated: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Exact match on the complete content policy violation state of an
+    episode. Supported on the episodes scope while the project includes
+    flagged episodes. Zep applies it at hydration; it never reaches the
+    graph service.
+    """
+
     created_at: typing.Optional[typing.List[typing.List[DateFilter]]] = pydantic.Field(default=None)
     """
     2D array of date filters for the created_at field.
@@ -86,7 +94,11 @@ class SearchFilters(UniversalBaseModel):
 
     property_filters: typing.Optional[typing.List[PropertyFilter]] = pydantic.Field(default=None)
     """
-    List of property filters to apply to nodes and edges
+    List of property filters. Each filter compares one attribute value.
+    On a node search and on a node list, the filters match node attributes.
+    On an edge search and on an edge list, the filters match edge attributes
+    only. To get the edges of nodes that match a node attribute, first get
+    the matching nodes, then send their UUIDs in connected_node_uuids.
     """
 
     source_node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)

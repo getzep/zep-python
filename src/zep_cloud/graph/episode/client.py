@@ -369,7 +369,7 @@ class EpisodeClient:
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EpisodeMentions:
         """
-        Deprecated. Use edge and node listing with `filters.episode_uuids` instead. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
+        Deprecated. Use the edge list SDK methods `graph.edge.get_by_graph_id` or `graph.edge.get_by_user_id`, or the node list SDK methods `graph.node.get_by_graph_id` or `graph.node.get_by_user_id`, with the `filters.episode_uuids` filter. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -809,7 +809,7 @@ class AsyncEpisodeClient:
         self, uuid_: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> EpisodeMentions:
         """
-        Deprecated. Use edge and node listing with `filters.episode_uuids` instead. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
+        Deprecated. Use the edge list SDK methods `graph.edge.get_by_graph_id` or `graph.edge.get_by_user_id`, or the node list SDK methods `graph.node.get_by_graph_id` or `graph.node.get_by_user_id`, with the `filters.episode_uuids` filter. Returns nodes and edges mentioned in an episode, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------

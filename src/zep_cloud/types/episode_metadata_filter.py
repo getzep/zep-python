@@ -10,7 +10,10 @@ from .comparison_operator import ComparisonOperator
 class EpisodeMetadataFilter(UniversalBaseModel):
     comparison_operator: ComparisonOperator = pydantic.Field()
     """
-    Comparison operator: =, <>, >, <, >=, <=, IS NULL, IS NOT NULL, IN, CONTAINS
+    Comparison operator: =, <>, >, <, >=, <=, IS NULL, IS NOT NULL, CONTAINS, IN.
+    CONTAINS is a case-sensitive substring match on the stored value.
+    IN takes an array of up to 100 values and matches when the stored value equals one of them exactly.
+    v3 API: CONTAINS takes one comma-separated string and matches one of its items; IN is not accepted.
     """
 
     property_name: str = pydantic.Field()

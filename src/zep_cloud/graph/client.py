@@ -739,7 +739,7 @@ class GraphClient:
         Default `pageSize` is 50 (range 1–100). To list users, use
         `user.list_ordered` instead. See the
         [graph directory guide](/graph-directory) for pagination, relevance
-        ordering, and Memory MCP exposure.
+        ordering, and Context MCP exposure.
 
         Parameters
         ----------
@@ -894,7 +894,7 @@ class GraphClient:
 
         search_filters : typing.Optional[SearchFilters]
             Filters which edges/nodes participate in pattern detection.
-            Reuses the same filter format as /graph/search.
+            Reuses the same filter format as the `graph.search` SDK method.
 
         seeds : typing.Optional[PatternSeeds]
             Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.
@@ -2046,7 +2046,7 @@ class AsyncGraphClient:
         Default `pageSize` is 50 (range 1–100). To list users, use
         `user.list_ordered` instead. See the
         [graph directory guide](/graph-directory) for pagination, relevance
-        ordering, and Memory MCP exposure.
+        ordering, and Context MCP exposure.
 
         Parameters
         ----------
@@ -2217,7 +2217,7 @@ class AsyncGraphClient:
 
         search_filters : typing.Optional[SearchFilters]
             Filters which edges/nodes participate in pattern detection.
-            Reuses the same filter format as /graph/search.
+            Reuses the same filter format as the `graph.search` SDK method.
 
         seeds : typing.Optional[PatternSeeds]
             Seed selection. If omitted, analyzes the entire graph. Mutually exclusive with query.

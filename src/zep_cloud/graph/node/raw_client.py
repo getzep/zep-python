@@ -251,7 +251,7 @@ class RawNodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[typing.List[EntityEdge]]:
         """
-        Deprecated. Use edge listing with `filters.connected_node_uuids`, or the neighbors endpoint (`POST /graph/node/{node_uuid}/neighbors`), instead. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
+        Deprecated. Use the edge list SDK methods `graph.edge.get_by_graph_id` or `graph.edge.get_by_user_id` with the `filters.connected_node_uuids` filter, or use the `graph.node.get_neighbors` SDK method. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
@@ -986,7 +986,7 @@ class AsyncRawNodeClient:
         self, node_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[typing.List[EntityEdge]]:
         """
-        Deprecated. Use edge listing with `filters.connected_node_uuids`, or the neighbors endpoint (`POST /graph/node/{node_uuid}/neighbors`), instead. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
+        Deprecated. Use the edge list SDK methods `graph.edge.get_by_graph_id` or `graph.edge.get_by_user_id` with the `filters.connected_node_uuids` filter, or use the `graph.node.get_neighbors` SDK method. Returns all edges for a node, subject to an internal cap; responses reduced by that cap set the Zep-Truncated header.
 
         Parameters
         ----------
