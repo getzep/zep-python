@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSkillContractText(UniversalBaseModel):
-    citations: typing.Optional[typing.List[str]] = None
-    text: typing.Optional[str] = None
+    citations: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns evidence identifiers that support this text.
+    """
+
+    text: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns text that a person can read.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

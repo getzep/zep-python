@@ -8,10 +8,26 @@ from .agent_skill_contract_relation_kind import AgentSkillContractRelationKind
 
 
 class AgentSkillContractRelation(UniversalBaseModel):
-    citations: typing.Optional[typing.List[str]] = None
-    kind: typing.Optional[AgentSkillContractRelationKind] = None
-    target_package_name: typing.Optional[str] = None
-    version_constraint: typing.Optional[str] = None
+    citations: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns evidence identifiers that support this relation.
+    """
+
+    kind: typing.Optional[AgentSkillContractRelationKind] = pydantic.Field(default=None)
+    """
+    The service returns the relation type. Valid values are composes, requires,
+    conflicts_with, supersedes, and related.
+    """
+
+    target_package_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the package name of the related Skill.
+    """
+
+    version_constraint: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the allowed versions for the related Skill.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

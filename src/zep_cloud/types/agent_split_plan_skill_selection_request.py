@@ -7,9 +7,20 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSplitPlanSkillSelectionRequest(UniversalBaseModel):
-    skill_uuid: str
-    skill_version_uuid: str
-    version: int
+    skill_uuid: str = pydantic.Field()
+    """
+    The developer supplies the Skill identifier.
+    """
+
+    skill_version_uuid: str = pydantic.Field()
+    """
+    The developer selects the immutable Skill version to include.
+    """
+
+    version: int = pydantic.Field()
+    """
+    The developer supplies the Skill version number. It must be at least 1.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -65,23 +65,32 @@ class TraceClient:
             Agent UUID
 
         objective : str
-            The task-instance objective captured for this attempt.
+            The developer describes the task instance. The create request requires a non-empty value but
+            does not check its size. An AppendAgentTraceEventRequest returns 400 if the Trace objective
+            exceeds 8 KiB (8,192 bytes).
 
         learn_from : typing.Optional[bool]
-            Whether eligible evidence may participate in learning. Defaults to true.
+            The developer supplies whether eligible evidence may participate in learning. Defaults to
+            true.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Developer metadata used to organize and filter Traces.
 
         parent_trace_uuid : typing.Optional[str]
-            The parent Trace UUID when this attempt retries an earlier attempt.
+            The developer supplies the parent Trace UUID when this attempt retries an earlier attempt.
 
         task_family : typing.Optional[str]
-            The task-family slug. Optional when inferred task families are enabled
-            for the account: the service assigns one after the Trace closes.
+            The developer may set a task-family slug. If the developer omits it, Agent Skills assigns the
+            Trace to a task family automatically. If Agent Skills cannot assign a task family, the
+            `task_family_inference` field of the Trace is `unassigned`. A BYOM configuration requires `task_family`. A
+            strict-residency deployment requires `task_family`. Without task_family in either case, the
+            API returns 400 `invalid_request` with the message `task_family is required`. The slug must
+            contain 1 to 128 lowercase letters, digits, `.`, `_`, `/`, or `-`. It must start with a
+            lowercase letter or digit.
 
         trace_id : typing.Optional[str]
-            The optional customer-assigned identifier, unique within the Agent.
+            The developer may set an identifier that is unique within the Agent. A retry with the same
+            create parameters returns 200 and the existing Trace. Different parameters return 409.
 
         idempotency_key : typing.Optional[str]
 
@@ -102,7 +111,7 @@ class TraceClient:
         )
         client.agent.trace.create(
             agent_uuid="agent_uuid",
-            objective="objective",
+            objective="Refund a duplicate charge.",
         )
         """
         _response = self._raw_client.create(
@@ -164,7 +173,8 @@ class TraceClient:
             Filters to Traces whose metadata contains these key-value pairs.
 
         outcome : typing.Optional[AgentTraceOutcome]
-            Filters to one reported outcome.
+            The developer supplies filters to one reported outcome. Valid values are succeeded, failed,
+            partial, abandoned, unknown.
 
         parent_trace_uuid : typing.Optional[str]
             Filters to direct retries of this parent Trace.
@@ -273,6 +283,7 @@ class TraceClient:
             Trace UUID
 
         expected_revision : int
+            The developer supplies the current revision for optimistic concurrency.
 
         idempotency_key : typing.Optional[str]
 
@@ -352,6 +363,7 @@ class TraceClient:
             agent_uuid="agent_uuid",
             trace_uuid="trace_uuid",
             expected_revision=1,
+            task_family="support/refund",
         )
         """
         _response = self._raw_client.update(
@@ -565,7 +577,8 @@ class TraceClient:
             agent_uuid="agent_uuid",
             trace_uuid="trace_uuid",
             expected_revision=1,
-            reason="reason",
+            reason="acknowledged_gap",
+            task_family="support/refund",
         )
         """
         _response = self._raw_client.correct_task_family(
@@ -645,10 +658,13 @@ class TraceClient:
         occurred_at: typing.Optional[str] = OMIT,
         sequence: typing.Optional[int] = OMIT,
         sources: typing.Optional[typing.Sequence[AgentTraceEventSource]] = OMIT,
+        tool_call_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentTraceEvent:
         """
+        A tool call and its result can share a tool_call_id. For example, append {"event_type":"tool_call","tool_call_id":"call_8f2b","content":"Search orders","context":{"tools":[{"name":"search_orders"}]}} and {"event_type":"tool_result","tool_call_id":"call_8f2b","content":"Order results","context":{"tools":[{"name":"search_orders"}]}}.
+
         Parameters
         ----------
         agent_uuid : str
@@ -662,16 +678,25 @@ class TraceClient:
         content : typing.Optional[str]
 
         context : typing.Optional[AgentTraceEventContext]
+            Context gives the model, the tools, and the environments of the event. context.tools is the tool
+            that the event calls or returns, and Skills learning reads it. A tool event can omit the tool name.
 
         event_id : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata is developer data. Skills learning does not read it.
 
         occurred_at : typing.Optional[str]
 
         sequence : typing.Optional[int]
 
         sources : typing.Optional[typing.Sequence[AgentTraceEventSource]]
+
+        tool_call_id : typing.Optional[str]
+            ToolCallID is the ID that the agent framework gives a tool call. Use the same ID on
+            the tool_call and tool_result events. It is valid only on these event types. A result
+            without a matching call is valid. OpenAI uses tool_calls[].id, Anthropic uses the
+            tool_use block id, and LangChain uses ToolMessage.tool_call_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -707,6 +732,7 @@ class TraceClient:
             occurred_at=occurred_at,
             sequence=sequence,
             sources=sources,
+            tool_call_id=tool_call_id,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
@@ -735,6 +761,7 @@ class TraceClient:
             Event UUID
 
         expected_revision : int
+            The developer supplies the current revision for optimistic concurrency.
 
         idempotency_key : typing.Optional[str]
 
@@ -947,23 +974,32 @@ class AsyncTraceClient:
             Agent UUID
 
         objective : str
-            The task-instance objective captured for this attempt.
+            The developer describes the task instance. The create request requires a non-empty value but
+            does not check its size. An AppendAgentTraceEventRequest returns 400 if the Trace objective
+            exceeds 8 KiB (8,192 bytes).
 
         learn_from : typing.Optional[bool]
-            Whether eligible evidence may participate in learning. Defaults to true.
+            The developer supplies whether eligible evidence may participate in learning. Defaults to
+            true.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Developer metadata used to organize and filter Traces.
 
         parent_trace_uuid : typing.Optional[str]
-            The parent Trace UUID when this attempt retries an earlier attempt.
+            The developer supplies the parent Trace UUID when this attempt retries an earlier attempt.
 
         task_family : typing.Optional[str]
-            The task-family slug. Optional when inferred task families are enabled
-            for the account: the service assigns one after the Trace closes.
+            The developer may set a task-family slug. If the developer omits it, Agent Skills assigns the
+            Trace to a task family automatically. If Agent Skills cannot assign a task family, the
+            `task_family_inference` field of the Trace is `unassigned`. A BYOM configuration requires `task_family`. A
+            strict-residency deployment requires `task_family`. Without task_family in either case, the
+            API returns 400 `invalid_request` with the message `task_family is required`. The slug must
+            contain 1 to 128 lowercase letters, digits, `.`, `_`, `/`, or `-`. It must start with a
+            lowercase letter or digit.
 
         trace_id : typing.Optional[str]
-            The optional customer-assigned identifier, unique within the Agent.
+            The developer may set an identifier that is unique within the Agent. A retry with the same
+            create parameters returns 200 and the existing Trace. Different parameters return 409.
 
         idempotency_key : typing.Optional[str]
 
@@ -989,7 +1025,7 @@ class AsyncTraceClient:
         async def main() -> None:
             await client.agent.trace.create(
                 agent_uuid="agent_uuid",
-                objective="objective",
+                objective="Refund a duplicate charge.",
             )
 
 
@@ -1054,7 +1090,8 @@ class AsyncTraceClient:
             Filters to Traces whose metadata contains these key-value pairs.
 
         outcome : typing.Optional[AgentTraceOutcome]
-            Filters to one reported outcome.
+            The developer supplies filters to one reported outcome. Valid values are succeeded, failed,
+            partial, abandoned, unknown.
 
         parent_trace_uuid : typing.Optional[str]
             Filters to direct retries of this parent Trace.
@@ -1180,6 +1217,7 @@ class AsyncTraceClient:
             Trace UUID
 
         expected_revision : int
+            The developer supplies the current revision for optimistic concurrency.
 
         idempotency_key : typing.Optional[str]
 
@@ -1272,6 +1310,7 @@ class AsyncTraceClient:
                 agent_uuid="agent_uuid",
                 trace_uuid="trace_uuid",
                 expected_revision=1,
+                task_family="support/refund",
             )
 
 
@@ -1509,7 +1548,8 @@ class AsyncTraceClient:
                 agent_uuid="agent_uuid",
                 trace_uuid="trace_uuid",
                 expected_revision=1,
-                reason="reason",
+                reason="acknowledged_gap",
+                task_family="support/refund",
             )
 
 
@@ -1601,10 +1641,13 @@ class AsyncTraceClient:
         occurred_at: typing.Optional[str] = OMIT,
         sequence: typing.Optional[int] = OMIT,
         sources: typing.Optional[typing.Sequence[AgentTraceEventSource]] = OMIT,
+        tool_call_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentTraceEvent:
         """
+        A tool call and its result can share a tool_call_id. For example, append {"event_type":"tool_call","tool_call_id":"call_8f2b","content":"Search orders","context":{"tools":[{"name":"search_orders"}]}} and {"event_type":"tool_result","tool_call_id":"call_8f2b","content":"Order results","context":{"tools":[{"name":"search_orders"}]}}.
+
         Parameters
         ----------
         agent_uuid : str
@@ -1618,16 +1661,25 @@ class AsyncTraceClient:
         content : typing.Optional[str]
 
         context : typing.Optional[AgentTraceEventContext]
+            Context gives the model, the tools, and the environments of the event. context.tools is the tool
+            that the event calls or returns, and Skills learning reads it. A tool event can omit the tool name.
 
         event_id : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata is developer data. Skills learning does not read it.
 
         occurred_at : typing.Optional[str]
 
         sequence : typing.Optional[int]
 
         sources : typing.Optional[typing.Sequence[AgentTraceEventSource]]
+
+        tool_call_id : typing.Optional[str]
+            ToolCallID is the ID that the agent framework gives a tool call. Use the same ID on
+            the tool_call and tool_result events. It is valid only on these event types. A result
+            without a matching call is valid. OpenAI uses tool_calls[].id, Anthropic uses the
+            tool_use block id, and LangChain uses ToolMessage.tool_call_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -1671,6 +1723,7 @@ class AsyncTraceClient:
             occurred_at=occurred_at,
             sequence=sequence,
             sources=sources,
+            tool_call_id=tool_call_id,
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
@@ -1699,6 +1752,7 @@ class AsyncTraceClient:
             Event UUID
 
         expected_revision : int
+            The developer supplies the current revision for optimistic concurrency.
 
         idempotency_key : typing.Optional[str]
 

@@ -8,9 +8,20 @@ from .agent_trace_summary_citation import AgentTraceSummaryCitation
 
 
 class AgentTraceSummaryResource(UniversalBaseModel):
-    citations: typing.Optional[typing.List[AgentTraceSummaryCitation]] = None
-    name: typing.Optional[str] = None
-    version: typing.Optional[str] = None
+    citations: typing.Optional[typing.List[AgentTraceSummaryCitation]] = pydantic.Field(default=None)
+    """
+    The service returns the events that support this resource summary.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the resource name recorded in the source event.
+    """
+
+    version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the resource version recorded in the source event.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

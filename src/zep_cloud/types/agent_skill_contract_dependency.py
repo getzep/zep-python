@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSkillContractDependency(UniversalBaseModel):
-    package_name: typing.Optional[str] = None
-    version_constraint: typing.Optional[str] = None
+    package_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the stable package name of the Skill.
+    """
+
+    version_constraint: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the allowed versions for this Skill.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

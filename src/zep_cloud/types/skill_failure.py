@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class SkillFailure(UniversalBaseModel):
-    recover: typing.Optional[typing.List[str]] = None
-    when: typing.Optional[str] = None
+    recover: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies steps to recover from this failure.
+    """
+
+    when: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies a condition that causes this failure.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

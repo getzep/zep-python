@@ -28,6 +28,8 @@ from ..types.graph_content_policy_request import GraphContentPolicyRequest
 from ..types.graph_context_response import GraphContextResponse
 from ..types.graph_delete_result import GraphDeleteResult
 from ..types.graph_page import GraphPage
+from ..types.graph_query_response import GraphQueryResponse
+from ..types.graph_query_stream_event import GraphQueryStreamEvent
 from ..types.instructions import Instructions
 from ..types.node import Node
 from ..types.node_page import NodePage
@@ -47,6 +49,7 @@ from .raw_client import AsyncRawGraphClient, RawGraphClient
 from .types.graph_context_request_recency_bias import GraphContextRequestRecencyBias
 from .types.graph_list_request_order import GraphListRequestOrder
 from .types.graph_list_request_order_by import GraphListRequestOrderBy
+from .types.graph_query_request_mode import GraphQueryRequestMode
 from .types.search_edges_request_reranker import SearchEdgesRequestReranker
 from .types.search_episodes_request_reranker import SearchEpisodesRequestReranker
 from .types.search_nodes_request_reranker import SearchNodesRequestReranker
@@ -247,6 +250,130 @@ class GraphClient:
         """
         _response = self._raw_client.lookup(
             graph_id=graph_id, thread_id=thread_id, user_id=user_id, request_options=request_options
+        )
+        return _response.data
+
+    def query_stream(
+        self,
+        *,
+        graph_uuids: typing.Sequence[str],
+        query: str,
+        generate_answer: typing.Optional[bool] = OMIT,
+        guidance: typing.Optional[str] = OMIT,
+        mode: typing.Optional[GraphQueryRequestMode] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.Iterator[GraphQueryStreamEvent]:
+        """
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+
+        Parameters
+        ----------
+        graph_uuids : typing.Sequence[str]
+            The graph UUIDs to query. The current release accepts one UUID.
+
+        query : str
+            The natural-language question about the graph.
+
+        generate_answer : typing.Optional[bool]
+            When true, a model also writes an answer from the retrieved records.
+            The default is false: the response has the records and no answer.
+
+        guidance : typing.Optional[str]
+            Optional caller guidance for the answer. The agent treats it as untrusted text.
+
+        mode : typing.Optional[GraphQueryRequestMode]
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Yields
+        ------
+        typing.Iterator[GraphQueryStreamEvent]
+
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.graph.query_stream(
+            graph_uuids=["graph_uuids"],
+            query="query",
+        )
+        for chunk in response:
+            yield chunk
+        """
+        with self._raw_client.query_stream(
+            graph_uuids=graph_uuids,
+            query=query,
+            generate_answer=generate_answer,
+            guidance=guidance,
+            mode=mode,
+            request_options=request_options,
+        ) as r:
+            yield from r.data
+
+    def query(
+        self,
+        *,
+        graph_uuids: typing.Sequence[str],
+        query: str,
+        generate_answer: typing.Optional[bool] = OMIT,
+        guidance: typing.Optional[str] = OMIT,
+        mode: typing.Optional[GraphQueryRequestMode] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GraphQueryResponse:
+        """
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+
+        Parameters
+        ----------
+        graph_uuids : typing.Sequence[str]
+            The graph UUIDs to query. The current release accepts one UUID.
+
+        query : str
+            The natural-language question about the graph.
+
+        generate_answer : typing.Optional[bool]
+            When true, a model also writes an answer from the retrieved records.
+            The default is false: the response has the records and no answer.
+
+        guidance : typing.Optional[str]
+            Optional caller guidance for the answer. The agent treats it as untrusted text.
+
+        mode : typing.Optional[GraphQueryRequestMode]
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphQueryResponse
+
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.query(
+            graph_uuids=["graph_uuids"],
+            query="query",
+        )
+        """
+        _response = self._raw_client.query(
+            graph_uuids=graph_uuids,
+            query=query,
+            generate_answer=generate_answer,
+            guidance=guidance,
+            mode=mode,
+            request_options=request_options,
         )
         return _response.data
 
@@ -1702,6 +1829,147 @@ class AsyncGraphClient:
         """
         _response = await self._raw_client.lookup(
             graph_id=graph_id, thread_id=thread_id, user_id=user_id, request_options=request_options
+        )
+        return _response.data
+
+    async def query_stream(
+        self,
+        *,
+        graph_uuids: typing.Sequence[str],
+        query: str,
+        generate_answer: typing.Optional[bool] = OMIT,
+        guidance: typing.Optional[str] = OMIT,
+        mode: typing.Optional[GraphQueryRequestMode] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.AsyncIterator[GraphQueryStreamEvent]:
+        """
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+
+        Parameters
+        ----------
+        graph_uuids : typing.Sequence[str]
+            The graph UUIDs to query. The current release accepts one UUID.
+
+        query : str
+            The natural-language question about the graph.
+
+        generate_answer : typing.Optional[bool]
+            When true, a model also writes an answer from the retrieved records.
+            The default is false: the response has the records and no answer.
+
+        guidance : typing.Optional[str]
+            Optional caller guidance for the answer. The agent treats it as untrusted text.
+
+        mode : typing.Optional[GraphQueryRequestMode]
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Yields
+        ------
+        typing.AsyncIterator[GraphQueryStreamEvent]
+
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            response = client.graph.query_stream(
+                graph_uuids=["graph_uuids"],
+                query="query",
+            )
+            async for chunk in response:
+                yield chunk
+
+
+        asyncio.run(main())
+        """
+        async with self._raw_client.query_stream(
+            graph_uuids=graph_uuids,
+            query=query,
+            generate_answer=generate_answer,
+            guidance=guidance,
+            mode=mode,
+            request_options=request_options,
+        ) as r:
+            async for _chunk in r.data:
+                yield _chunk
+
+    async def query(
+        self,
+        *,
+        graph_uuids: typing.Sequence[str],
+        query: str,
+        generate_answer: typing.Optional[bool] = OMIT,
+        guidance: typing.Optional[str] = OMIT,
+        mode: typing.Optional[GraphQueryRequestMode] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> GraphQueryResponse:
+        """
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+
+        Parameters
+        ----------
+        graph_uuids : typing.Sequence[str]
+            The graph UUIDs to query. The current release accepts one UUID.
+
+        query : str
+            The natural-language question about the graph.
+
+        generate_answer : typing.Optional[bool]
+            When true, a model also writes an answer from the retrieved records.
+            The default is false: the response has the records and no answer.
+
+        guidance : typing.Optional[str]
+            Optional caller guidance for the answer. The agent treats it as untrusted text.
+
+        mode : typing.Optional[GraphQueryRequestMode]
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        GraphQueryResponse
+
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.query(
+                graph_uuids=["graph_uuids"],
+                query="query",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.query(
+            graph_uuids=graph_uuids,
+            query=query,
+            generate_answer=generate_answer,
+            guidance=guidance,
+            mode=mode,
+            request_options=request_options,
         )
         return _response.data
 

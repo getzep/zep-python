@@ -20,7 +20,7 @@ class AgentTaskFamilyDescriptorPage(UniversalBaseModel):
 
     total_size: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The total number of discovered task families within the owning Agent.
+    The service returns the total number of discovered task families within the owning Agent.
     """
 
     if IS_PYDANTIC_V2:

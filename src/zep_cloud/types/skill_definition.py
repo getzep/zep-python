@@ -13,25 +13,101 @@ from .skill_resource import SkillResource
 
 
 class SkillDefinition(UniversalBaseModel):
-    agent_versions: typing.Optional[typing.List[str]] = None
-    aliases: typing.Optional[typing.List[str]] = None
-    description: typing.Optional[str] = None
-    do_not_use_when: typing.Optional[typing.List[str]] = None
-    done_when: typing.Optional[typing.List[str]] = None
-    environments: typing.Optional[typing.List[SkillResource]] = None
-    failures: typing.Optional[typing.List[SkillFailure]] = None
-    kind: typing.Optional[SkillKind] = None
-    name: typing.Optional[str] = None
-    outputs: typing.Optional[typing.List[str]] = None
-    package_name: typing.Optional[str] = None
-    preconditions: typing.Optional[typing.List[str]] = None
-    procedure: typing.Optional[typing.List[SkillProcedureStep]] = None
-    related_skills: typing.Optional[typing.List[SkillRelation]] = None
-    sections: typing.Optional[typing.List[SkillDefinitionSection]] = None
-    stop_when: typing.Optional[typing.List[str]] = None
-    task_family: typing.Optional[str] = None
-    tools: typing.Optional[typing.List[SkillResource]] = None
-    use_when: typing.Optional[typing.List[str]] = None
+    agent_versions: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer lists Agent versions that can use the Skill.
+    """
+
+    aliases: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies alternate names for the resource.
+    """
+
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies the resource description.
+    """
+
+    do_not_use_when: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies situations in which the Skill must not be used.
+    """
+
+    done_when: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies conditions that show when the Skill work is complete.
+    """
+
+    environments: typing.Optional[typing.List[SkillResource]] = pydantic.Field(default=None)
+    """
+    The developer supplies environment names used by the Skill.
+    """
+
+    failures: typing.Optional[typing.List[SkillFailure]] = pydantic.Field(default=None)
+    """
+    The developer supplies failure conditions and recovery steps.
+    """
+
+    kind: typing.Optional[SkillKind] = pydantic.Field(default=None)
+    """
+    The developer supplies a Skill kind. Valid values are principle, procedure, workflow,
+    failure_mode, recovery, constraint.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies a display name.
+    """
+
+    outputs: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies results that the Skill produces.
+    """
+
+    package_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies the stable package name for the Skill.
+    """
+
+    preconditions: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies conditions that must be true before use.
+    """
+
+    procedure: typing.Optional[typing.List[SkillProcedureStep]] = pydantic.Field(default=None)
+    """
+    The developer supplies ordered procedure steps.
+    """
+
+    related_skills: typing.Optional[typing.List[SkillRelation]] = pydantic.Field(default=None)
+    """
+    The developer lists Skills that relate to this Skill.
+    """
+
+    sections: typing.Optional[typing.List[SkillDefinitionSection]] = pydantic.Field(default=None)
+    """
+    The developer supplies structured sections of the Skill.
+    """
+
+    stop_when: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies conditions that require the workflow to stop.
+    """
+
+    task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies the task-family slug.
+    """
+
+    tools: typing.Optional[typing.List[SkillResource]] = pydantic.Field(default=None)
+    """
+    The developer supplies tool names used by the Skill.
+    """
+
+    use_when: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies conditions that must hold before the Skill is used.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

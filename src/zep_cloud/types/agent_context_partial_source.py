@@ -7,9 +7,20 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentContextPartialSource(UniversalBaseModel):
-    reason: typing.Optional[str] = None
-    source: typing.Optional[str] = None
-    task_uuid: typing.Optional[str] = None
+    reason: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service explains why this source is partial.
+    """
+
+    source: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the source used to build this context.
+    """
+
+    task_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the Task linked to this partial source.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

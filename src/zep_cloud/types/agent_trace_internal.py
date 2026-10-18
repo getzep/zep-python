@@ -8,12 +8,36 @@ from .agent_trace_processing_state import AgentTraceProcessingState
 
 
 class AgentTraceInternal(UniversalBaseModel):
-    assertion_uuid: typing.Optional[str] = None
-    closing_sequence: typing.Optional[int] = None
-    current_summary_version: typing.Optional[int] = None
-    last_task_uuid: typing.Optional[str] = None
-    next_sequence: typing.Optional[int] = None
-    processing_state: typing.Optional[AgentTraceProcessingState] = None
+    assertion_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the assertion linked to this Trace.
+    """
+
+    closing_sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the final sequence number expected when the Trace closes.
+    """
+
+    current_summary_version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the current summary version number.
+    """
+
+    last_task_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the last Task linked to this Trace.
+    """
+
+    next_sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the next sequence number that the Trace can accept.
+    """
+
+    processing_state: typing.Optional[AgentTraceProcessingState] = pydantic.Field(default=None)
+    """
+    The service returns the current processing state. Valid values are idle, pending, processing,
+    failed.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

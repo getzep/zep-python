@@ -8,9 +8,20 @@ from .agent_trace_summary_version import AgentTraceSummaryVersion
 
 
 class AgentTraceSummaryPage(UniversalBaseModel):
-    items: typing.Optional[typing.List[AgentTraceSummaryVersion]] = None
-    next_cursor: typing.Optional[str] = None
-    total_size: typing.Optional[int] = None
+    items: typing.Optional[typing.List[AgentTraceSummaryVersion]] = pydantic.Field(default=None)
+    """
+    The service returns the summary versions in this page.
+    """
+
+    next_cursor: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the cursor for the next page, when one exists.
+    """
+
+    total_size: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the total number of matching items.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

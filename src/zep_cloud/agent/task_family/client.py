@@ -115,8 +115,8 @@ class TaskFamilyClient:
         )
         client.agent.task_family.rename(
             agent_uuid="agent_uuid",
-            from_slug="from_slug",
-            to_slug="to_slug",
+            from_slug="support/refund",
+            to_slug="support/refund",
         )
         """
         _response = self._raw_client.rename(
@@ -246,8 +246,8 @@ class AsyncTaskFamilyClient:
         async def main() -> None:
             await client.agent.task_family.rename(
                 agent_uuid="agent_uuid",
-                from_slug="from_slug",
-                to_slug="to_slug",
+                from_slug="support/refund",
+                to_slug="support/refund",
             )
 
 

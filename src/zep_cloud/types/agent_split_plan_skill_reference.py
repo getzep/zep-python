@@ -7,12 +7,35 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSplitPlanSkillReference(UniversalBaseModel):
-    package_name: typing.Optional[str] = None
-    skill_id: typing.Optional[str] = None
-    skill_uuid: typing.Optional[str] = None
-    skill_version_uuid: typing.Optional[str] = None
-    status: typing.Optional[str] = None
-    version: typing.Optional[int] = None
+    package_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the stable package name of the Skill.
+    """
+
+    skill_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the stable developer-facing ID of the Skill, when set.
+    """
+
+    skill_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the Skill.
+    """
+
+    skill_version_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the selected immutable Skill version.
+    """
+
+    status: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Skill's lifecycle status.
+    """
+
+    version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the selected Skill version number.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

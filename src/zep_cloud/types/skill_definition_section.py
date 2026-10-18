@@ -7,9 +7,20 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class SkillDefinitionSection(UniversalBaseModel):
-    heading: typing.Optional[str] = None
-    id: typing.Optional[str] = None
-    markdown: typing.Optional[str] = None
+    heading: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies section heading.
+    """
+
+    id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer assigns a stable ID to this section.
+    """
+
+    markdown: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies skill content in Markdown.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

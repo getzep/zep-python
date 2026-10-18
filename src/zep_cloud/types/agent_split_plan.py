@@ -9,17 +9,40 @@ from .agent_split_plan_source import AgentSplitPlanSource
 
 
 class AgentSplitPlan(UniversalBaseModel):
-    authorizes_agent_creation: typing.Optional[bool] = None
-    authorizes_publication: typing.Optional[bool] = None
+    authorizes_agent_creation: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The service reports whether the plan authorizes Agent creation.
+    """
+
+    authorizes_publication: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The service reports whether the plan authorizes Skill publication.
+    """
+
     creates_resources: typing.Optional[bool] = pydantic.Field(default=None)
     """
     A split plan is not human approval and grants no authority for later commands.
     """
 
-    destinations: typing.Optional[typing.List[AgentSplitPlanDestination]] = None
-    rationale: typing.Optional[str] = None
-    review_acknowledged: typing.Optional[bool] = None
-    source: typing.Optional[AgentSplitPlanSource] = None
+    destinations: typing.Optional[typing.List[AgentSplitPlanDestination]] = pydantic.Field(default=None)
+    """
+    The service returns UUIDs of the destination Agents.
+    """
+
+    rationale: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the reason for the requested split.
+    """
+
+    review_acknowledged: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The service reports whether the developer confirmed the review.
+    """
+
+    source: typing.Optional[AgentSplitPlanSource] = pydantic.Field(default=None)
+    """
+    The service returns the source Agent and the revision used for this plan.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

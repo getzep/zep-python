@@ -2,4 +2,4 @@
 
 import typing
 
-AgentSkillContractEvidenceSourceKind = typing.Union[typing.Literal["trajectory", "event", "summary"], typing.Any]
+AgentSkillContractEvidenceSourceKind = typing.Union[typing.Literal["trace", "event", "summary"], typing.Any]

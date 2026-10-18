@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSplitPlanSource(UniversalBaseModel):
-    agent_uuid: typing.Optional[str] = None
-    revision: typing.Optional[int] = None
+    agent_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the owning Agent.
+    """
+
+    revision: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the current revision number.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

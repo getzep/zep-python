@@ -10,10 +10,26 @@ from .agent_trace_summary_verification_status import AgentTraceSummaryVerificati
 
 
 class AgentTraceSummaryVerification(UniversalBaseModel):
-    citations: typing.Optional[typing.List[AgentTraceSummaryCitation]] = None
-    details: typing.Optional[typing.List[AgentTraceSummaryStatement]] = None
-    status: typing.Optional[AgentTraceSummaryVerificationStatus] = None
-    verifier_ids: typing.Optional[typing.List[str]] = None
+    citations: typing.Optional[typing.List[AgentTraceSummaryCitation]] = pydantic.Field(default=None)
+    """
+    The service returns the events that support this verification result.
+    """
+
+    details: typing.Optional[typing.List[AgentTraceSummaryStatement]] = pydantic.Field(default=None)
+    """
+    The service returns the detailed verification statements.
+    """
+
+    status: typing.Optional[AgentTraceSummaryVerificationStatus] = pydantic.Field(default=None)
+    """
+    The service returns the lifecycle status. Valid values are
+    unverified,agent_verified,tool_verified,customer_verified,externally_verified.
+    """
+
+    verifier_ids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns IDs of Verifiers that checked this summary.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -35,6 +35,8 @@ class EvidenceClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillEvidence, Pagev4AgentSkillEvidence]:
         """
+        List Agent Skill Evidence. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -104,6 +106,8 @@ class AsyncEvidenceClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillEvidence, Pagev4AgentSkillEvidence]:
         """
+        List Agent Skill Evidence. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str

@@ -9,17 +9,36 @@ from .skill_definition import SkillDefinition
 
 
 class AgentSkillVersion(UniversalBaseModel):
-    contract: typing.Optional[AgentSkillContract] = None
-    created_at: typing.Optional[str] = None
-    definition: typing.Optional[SkillDefinition] = None
+    contract: typing.Optional[AgentSkillContract] = pydantic.Field(default=None)
+    """
+    The service returns skill contract.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    definition: typing.Optional[SkillDefinition] = pydantic.Field(default=None)
+    """
+    The service returns the customer-authored Skill definition.
+    """
+
     markdown: typing.Optional[str] = pydantic.Field(default=None)
     """
     Markdown is the agent view of the Skill unless the request selects
     `markdown_format=full`.
     """
 
-    self_contained: typing.Optional[bool] = None
-    version: typing.Optional[int] = None
+    self_contained: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The service reports whether the Skill can run without external context.
+    """
+
+    version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the Skill version number.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

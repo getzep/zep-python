@@ -7,12 +7,35 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSkillAdmissionDecision(UniversalBaseModel):
-    created_at: typing.Optional[str] = None
-    decision: typing.Optional[str] = None
-    mode: typing.Optional[str] = None
-    reason_code: typing.Optional[str] = None
-    skill_version: typing.Optional[int] = None
-    supporting_attempt_families: typing.Optional[int] = None
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    decision: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the decision for this operation.
+    """
+
+    mode: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns publication policy mode.
+    """
+
+    reason_code: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the code that explains this result.
+    """
+
+    skill_version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the version number of the Skill.
+    """
+
+    supporting_attempt_families: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the count of distinct attempt families that support admission.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

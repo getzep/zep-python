@@ -45,6 +45,8 @@ class RawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillVersion]:
         """
+        Restore Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -54,8 +56,10 @@ class RawVersionClient:
             Skill UUID
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         version : int
+            The developer supplies the Skill version to restore.
 
         idempotency_key : typing.Optional[str]
 
@@ -181,6 +185,8 @@ class RawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillVersion, Pagev4AgentSkillVersion]:
         """
+        List Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -315,6 +321,8 @@ class RawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillVersionComparison]:
         """
+        Compare Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -324,8 +332,10 @@ class RawVersionClient:
             Skill UUID
 
         from_version : int
+            The developer supplies the source version to compare. It must be at least 1.
 
         to_version : int
+            The developer supplies the destination version to compare. It must be at least 1.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -437,6 +447,8 @@ class RawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillVersion]:
         """
+        Get Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -561,6 +573,8 @@ class AsyncRawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillVersion]:
         """
+        Restore Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -570,8 +584,10 @@ class AsyncRawVersionClient:
             Skill UUID
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         version : int
+            The developer supplies the Skill version to restore.
 
         idempotency_key : typing.Optional[str]
 
@@ -697,6 +713,8 @@ class AsyncRawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillVersion, Pagev4AgentSkillVersion]:
         """
+        List Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -834,6 +852,8 @@ class AsyncRawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillVersionComparison]:
         """
+        Compare Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -843,8 +863,10 @@ class AsyncRawVersionClient:
             Skill UUID
 
         from_version : int
+            The developer supplies the source version to compare. It must be at least 1.
 
         to_version : int
+            The developer supplies the destination version to compare. It must be at least 1.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -956,6 +978,8 @@ class AsyncRawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillVersion]:
         """
+        Get Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str

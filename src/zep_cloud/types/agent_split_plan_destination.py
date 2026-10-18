@@ -9,8 +9,15 @@ from .create_agent_request import CreateAgentRequest
 
 
 class AgentSplitPlanDestination(UniversalBaseModel):
-    agent: typing.Optional[CreateAgentRequest] = None
-    skills: typing.Optional[typing.List[AgentSplitPlanSkillReference]] = None
+    agent: typing.Optional[CreateAgentRequest] = pydantic.Field(default=None)
+    """
+    The service returns the Agent settings for this destination.
+    """
+
+    skills: typing.Optional[typing.List[AgentSplitPlanSkillReference]] = pydantic.Field(default=None)
+    """
+    The service returns the Skills included in this plan.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -23,7 +23,7 @@ class TraceImport(UniversalBaseModel):
 
     connection_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    ConnectionUUID is the trace connection identifier.
+    The service returns the configured provider connection used by this import.
     """
 
     created_at: typing.Optional[str] = pydantic.Field(default=None)
@@ -83,7 +83,7 @@ class TraceImport(UniversalBaseModel):
 
     provider_project_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    ProviderProjectID is the source project identifier.
+    The service returns the provider project selected for this import.
     """
 
     require_review: typing.Optional[bool] = pydantic.Field(default=None)

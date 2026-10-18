@@ -36,6 +36,8 @@ class RawExportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Task]:
         """
+        Export an Agent Skill version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -154,6 +156,8 @@ class RawExportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[HttpResponse[typing.Iterator[bytes]]]:
         """
+        Download an Agent Skill export. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -278,6 +282,8 @@ class AsyncRawExportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Task]:
         """
+        Export an Agent Skill version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -396,6 +402,8 @@ class AsyncRawExportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[AsyncHttpResponse[typing.AsyncIterator[bytes]]]:
         """
+        Download an Agent Skill export. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str

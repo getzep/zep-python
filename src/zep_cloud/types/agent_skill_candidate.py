@@ -11,21 +11,75 @@ from .agent_skill_candidate_evidence import AgentSkillCandidateEvidence
 
 
 class AgentSkillCandidate(UniversalBaseModel):
-    agent_versions: typing.Optional[typing.List[str]] = None
-    base_versions: typing.Optional[typing.List[AgentSkillCandidateBaseVersion]] = None
-    confidence: typing.Optional[float] = None
-    decision: typing.Optional[str] = None
-    description: typing.Optional[str] = None
-    do_not_use_when: typing.Optional[typing.List[str]] = None
-    evidence: typing.Optional[typing.List[AgentSkillCandidateEvidence]] = None
-    kind: typing.Optional[str] = None
-    markdown: typing.Optional[str] = None
-    name: typing.Optional[str] = None
-    package_name: typing.Optional[str] = None
-    task_family: typing.Optional[str] = None
+    agent_versions: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns Agent versions that can use the Skill.
+    """
+
+    base_versions: typing.Optional[typing.List[AgentSkillCandidateBaseVersion]] = pydantic.Field(default=None)
+    """
+    The service returns Skill versions used as the split-plan base.
+    """
+
+    confidence: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The service returns classifier confidence score.
+    """
+
+    decision: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the candidate operation. Valid values are add, patch,
+    and retire.
+    """
+
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the resource description.
+    """
+
+    do_not_use_when: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns situations in which the Skill must not be used.
+    """
+
+    evidence: typing.Optional[typing.List[AgentSkillCandidateEvidence]] = pydantic.Field(default=None)
+    """
+    The service returns evidence linked to this result.
+    """
+
+    kind: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Skill kind.
+    """
+
+    markdown: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Skill content in Markdown.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the display name.
+    """
+
+    package_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the stable package name of the Skill.
+    """
+
+    task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task-family slug.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this resource."),
     ] = None
+    """
+    The service returns the UUID that identifies this resource.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

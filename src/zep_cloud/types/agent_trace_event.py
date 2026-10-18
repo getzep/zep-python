@@ -15,17 +15,34 @@ from .agent_trace_event_type import AgentTraceEventType
 class AgentTraceEvent(UniversalBaseModel):
     agent_uuid: typing.Optional[str] = None
     content: typing.Optional[str] = None
-    context: typing.Optional[AgentTraceEventContext] = None
+    context: typing.Optional[AgentTraceEventContext] = pydantic.Field(default=None)
+    """
+    Context gives the model, the tools, and the environments of the event. context.tools is the tool
+    that the event calls or returns, and Skills learning reads it. A tool event can omit the tool name.
+    """
+
     created_at: typing.Optional[str] = None
     event_id: typing.Optional[str] = None
     event_type: typing.Optional[AgentTraceEventType] = None
     failed_at: typing.Optional[str] = None
-    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    Metadata is developer data. Skills learning does not read it.
+    """
+
     occurred_at: typing.Optional[str] = None
     processed_at: typing.Optional[str] = None
     processing_state: typing.Optional[AgentTraceEventProcessingState] = None
     sequence: typing.Optional[int] = None
     sources: typing.Optional[typing.List[AgentTraceEventSource]] = None
+    tool_call_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    ToolCallID is the ID that the agent framework gives a tool call. Use the same ID on
+    the tool_call and tool_result events. It is valid only on these event types. A result
+    without a matching call is valid. OpenAI uses tool_calls[].id, Anthropic uses the
+    tool_use block id, and LangChain uses ToolMessage.tool_call_id.
+    """
+
     trace_uuid: typing.Optional[str] = None
     updated_at: typing.Optional[str] = None
     uuid_: typing_extensions.Annotated[

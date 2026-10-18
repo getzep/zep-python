@@ -15,17 +15,18 @@ class AgentVerifierPrincipalBinding(UniversalBaseModel):
 
     effective_strength: typing.Optional[AgentVerificationStrength] = pydantic.Field(default=None)
     """
-    The verification strength assigned to this principal binding.
+    The service returns the verification strength assigned to this principal binding. Valid values
+    are tool_verified, customer_verified, externally_verified.
     """
 
     principal_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The exact principal identifier bound to this verifier.
+    The service returns the exact principal identifier bound to this verifier.
     """
 
     principal_type: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The authenticated principal type bound to this verifier.
+    The service returns the authenticated principal type bound to this verifier.
     """
 
     if IS_PYDANTIC_V2:

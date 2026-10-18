@@ -9,16 +9,49 @@ from ..core.serialization import FieldMetadata
 
 
 class AgentSkillCandidateReviewSummary(UniversalBaseModel):
-    candidate_count: typing.Optional[int] = None
-    created_at: typing.Optional[str] = None
-    reason_code: typing.Optional[str] = None
-    reviewed_at: typing.Optional[str] = None
-    revision: typing.Optional[int] = None
-    status: typing.Optional[str] = None
-    task_family: typing.Optional[str] = None
+    candidate_count: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the number of related resources.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    reason_code: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the code that explains this result.
+    """
+
+    reviewed_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when the review occurred.
+    """
+
+    revision: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the current revision number.
+    """
+
+    status: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the lifecycle status.
+    """
+
+    task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task-family slug.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this resource."),
     ] = None
+    """
+    The service returns the UUID that identifies this resource.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

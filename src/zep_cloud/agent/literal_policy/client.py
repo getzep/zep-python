@@ -31,6 +31,8 @@ class LiteralPolicyClient:
 
     def get(self, agent_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> AgentLiteralPolicy:
         """
+        Get Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -70,6 +72,8 @@ class LiteralPolicyClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentLiteralPolicy:
         """
+        Update Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -107,12 +111,12 @@ class LiteralPolicyClient:
         client.agent.literal_policy.update(
             agent_uuid="agent_uuid",
             allowlisted_classes=AgentLiteralPolicyClasses(
-                environments=["environments"],
-                tools=["tools"],
+                environments=["environment_name"],
+                tools=["command_name"],
             ),
             allowlisted_values=AgentLiteralPolicyValues(
-                environments=["environments"],
-                tools=["tools"],
+                environments=["production"],
+                tools=["refund_payment"],
             ),
             default="parameterize",
         )
@@ -148,6 +152,8 @@ class AsyncLiteralPolicyClient:
         self, agent_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AgentLiteralPolicy:
         """
+        Get Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -195,6 +201,8 @@ class AsyncLiteralPolicyClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentLiteralPolicy:
         """
+        Update Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -241,12 +249,12 @@ class AsyncLiteralPolicyClient:
             await client.agent.literal_policy.update(
                 agent_uuid="agent_uuid",
                 allowlisted_classes=AgentLiteralPolicyClasses(
-                    environments=["environments"],
-                    tools=["tools"],
+                    environments=["environment_name"],
+                    tools=["command_name"],
                 ),
                 allowlisted_values=AgentLiteralPolicyValues(
-                    environments=["environments"],
-                    tools=["tools"],
+                    environments=["production"],
+                    tools=["refund_payment"],
                 ),
                 default="parameterize",
             )

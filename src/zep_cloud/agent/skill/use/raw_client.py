@@ -47,6 +47,8 @@ class RawUseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillUse]:
         """
+        Create Agent Skill Use. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -56,14 +58,21 @@ class RawUseClient:
             Skill UUID
 
         search_id : str
+            The developer supplies the signed search token returned by Skill search.
 
         trace_uuid : str
+            The developer supplies the UUID of the source Trace.
 
         usage : CreateAgentSkillUseRequestUsage
+            The developer supplies how the Skill was used. Valid values are selected, used,
+            partially_used, ignored, inapplicable.
 
         outcome : typing.Optional[AddAgentSkillUseOutcomeRequest]
+            The developer records the outcome of the attempt. Valid values are
+            succeeded, failed, partial, abandoned, and unknown.
 
         reason_code : typing.Optional[str]
+            The developer supplies a reason code for this outcome. It can contain up to 255 characters.
 
         idempotency_key : typing.Optional[str]
 
@@ -139,6 +148,8 @@ class RawUseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillUseOutcome]:
         """
+        Record Agent Skill Feedback. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -151,6 +162,8 @@ class RawUseClient:
             Skill use UUID
 
         outcome : AddAgentSkillUseOutcomeRequestOutcome
+            The developer records the attempt outcome. Valid values are succeeded,
+            failed, partial, abandoned, and unknown.
 
         idempotency_key : typing.Optional[str]
 
@@ -272,6 +285,8 @@ class AsyncRawUseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillUse]:
         """
+        Create Agent Skill Use. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -281,14 +296,21 @@ class AsyncRawUseClient:
             Skill UUID
 
         search_id : str
+            The developer supplies the signed search token returned by Skill search.
 
         trace_uuid : str
+            The developer supplies the UUID of the source Trace.
 
         usage : CreateAgentSkillUseRequestUsage
+            The developer supplies how the Skill was used. Valid values are selected, used,
+            partially_used, ignored, inapplicable.
 
         outcome : typing.Optional[AddAgentSkillUseOutcomeRequest]
+            The developer records the outcome of the attempt. Valid values are
+            succeeded, failed, partial, abandoned, and unknown.
 
         reason_code : typing.Optional[str]
+            The developer supplies a reason code for this outcome. It can contain up to 255 characters.
 
         idempotency_key : typing.Optional[str]
 
@@ -364,6 +386,8 @@ class AsyncRawUseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillUseOutcome]:
         """
+        Record Agent Skill Feedback. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -376,6 +400,8 @@ class AsyncRawUseClient:
             Skill use UUID
 
         outcome : AddAgentSkillUseOutcomeRequestOutcome
+            The developer records the attempt outcome. Valid values are succeeded,
+            failed, partial, abandoned, and unknown.
 
         idempotency_key : typing.Optional[str]
 

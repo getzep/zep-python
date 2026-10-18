@@ -10,7 +10,7 @@ from .agent import Agent
 class AgentPage(UniversalBaseModel):
     items: typing.Optional[typing.List[Agent]] = pydantic.Field(default=None)
     """
-    The Agents on this page.
+    The service returns the Agents on this page.
     """
 
     next_cursor: typing.Optional[str] = pydantic.Field(default=None)

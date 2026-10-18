@@ -8,8 +8,15 @@ from .agent_skill_contract_text import AgentSkillContractText
 
 
 class AgentSkillContractInvocation(UniversalBaseModel):
-    conditions: typing.Optional[typing.List[AgentSkillContractText]] = None
-    summary: typing.Optional[AgentSkillContractText] = None
+    conditions: typing.Optional[typing.List[AgentSkillContractText]] = pydantic.Field(default=None)
+    """
+    The service returns conditions that must hold before the Skill is used.
+    """
+
+    summary: typing.Optional[AgentSkillContractText] = pydantic.Field(default=None)
+    """
+    The service returns a summary of when to use the Skill.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

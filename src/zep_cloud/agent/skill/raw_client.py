@@ -50,14 +50,19 @@ class RawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkill]:
         """
+        Create Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         definition : SkillDefinition
+            The developer supplies the structured content of the Skill.
 
         skill_id : typing.Optional[str]
+            The developer can set a stable ID for the Skill. If omitted, the service
+            assigns one.
 
         idempotency_key : typing.Optional[str]
 
@@ -183,7 +188,7 @@ class RawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Task]:
         """
-        Submit a portable Skill archive. The completed Task returns `{"result":{"skill_uuid":"<uuid>"}}`. Approve that Skill before retrieval.
+        Submit a portable Skill archive. The completed Task returns `{"result":{"skill_uuid":"<uuid>"}}`. Approve that Skill before retrieval. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -315,6 +320,8 @@ class RawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillSearchHit, Pagev4AgentSkillSearchHit]:
         """
+        List Agent Skills. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -327,12 +334,16 @@ class RawSkillClient:
             Opaque page cursor
 
         environments : typing.Optional[typing.Sequence[str]]
+            The developer filters results by environment names.
 
         kind : typing.Optional[str]
+            The developer supplies a Skill kind.
 
         task_family : typing.Optional[str]
+            The developer supplies the task-family slug.
 
         tools : typing.Optional[typing.Sequence[str]]
+            The developer supplies tool names used by the Skill.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -469,12 +480,15 @@ class RawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillSearchHit, AgentSkillSearchResponse]:
         """
+        Search Agent Skills. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         query : str
+            The developer supplies a search query for Skills.
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
@@ -483,10 +497,13 @@ class RawSkillClient:
             Opaque page cursor
 
         environments : typing.Optional[typing.Sequence[str]]
+            The developer supplies environment names used by the Skill.
 
         include_markdown : typing.Optional[bool]
+            The developer sets this to true to include the Skill instructions in Markdown.
 
         kind : typing.Optional[str]
+            The developer supplies a Skill kind.
 
         markdown_format : typing.Optional[AgentSkillSearchRequestMarkdownFormat]
             MarkdownFormat selects the form of inline `markdown`. `agent` (the
@@ -495,8 +512,10 @@ class RawSkillClient:
             sections. `full` returns the stored SKILL.md with its evidence markers.
 
         task_family : typing.Optional[str]
+            The developer supplies the task-family slug.
 
         tools : typing.Optional[typing.Sequence[str]]
+            The developer supplies tool names used by the Skill.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -627,6 +646,8 @@ class RawSkillClient:
         self, agent_uuid: str, skill_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[AgentSkill]:
         """
+        Get Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -736,6 +757,8 @@ class RawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillAdmissionDecision]:
         """
+        Approve Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -745,6 +768,7 @@ class RawSkillClient:
             Skill UUID
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         idempotency_key : typing.Optional[str]
 
@@ -857,6 +881,8 @@ class RawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkill]:
         """
+        Retire Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -866,6 +892,7 @@ class RawSkillClient:
             Skill UUID
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         idempotency_key : typing.Optional[str]
 
@@ -990,6 +1017,8 @@ class RawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillVersion]:
         """
+        Create Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -999,8 +1028,10 @@ class RawSkillClient:
             Skill UUID
 
         definition : SkillDefinition
+            The developer supplies the structured content for the new Skill version.
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         idempotency_key : typing.Optional[str]
 
@@ -1132,14 +1163,19 @@ class AsyncRawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkill]:
         """
+        Create Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         definition : SkillDefinition
+            The developer supplies the structured content of the Skill.
 
         skill_id : typing.Optional[str]
+            The developer can set a stable ID for the Skill. If omitted, the service
+            assigns one.
 
         idempotency_key : typing.Optional[str]
 
@@ -1265,7 +1301,7 @@ class AsyncRawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Task]:
         """
-        Submit a portable Skill archive. The completed Task returns `{"result":{"skill_uuid":"<uuid>"}}`. Approve that Skill before retrieval.
+        Submit a portable Skill archive. The completed Task returns `{"result":{"skill_uuid":"<uuid>"}}`. Approve that Skill before retrieval. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -1397,6 +1433,8 @@ class AsyncRawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillSearchHit, Pagev4AgentSkillSearchHit]:
         """
+        List Agent Skills. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -1409,12 +1447,16 @@ class AsyncRawSkillClient:
             Opaque page cursor
 
         environments : typing.Optional[typing.Sequence[str]]
+            The developer filters results by environment names.
 
         kind : typing.Optional[str]
+            The developer supplies a Skill kind.
 
         task_family : typing.Optional[str]
+            The developer supplies the task-family slug.
 
         tools : typing.Optional[typing.Sequence[str]]
+            The developer supplies tool names used by the Skill.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1554,12 +1596,15 @@ class AsyncRawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillSearchHit, AgentSkillSearchResponse]:
         """
+        Search Agent Skills. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         query : str
+            The developer supplies a search query for Skills.
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
@@ -1568,10 +1613,13 @@ class AsyncRawSkillClient:
             Opaque page cursor
 
         environments : typing.Optional[typing.Sequence[str]]
+            The developer supplies environment names used by the Skill.
 
         include_markdown : typing.Optional[bool]
+            The developer sets this to true to include the Skill instructions in Markdown.
 
         kind : typing.Optional[str]
+            The developer supplies a Skill kind.
 
         markdown_format : typing.Optional[AgentSkillSearchRequestMarkdownFormat]
             MarkdownFormat selects the form of inline `markdown`. `agent` (the
@@ -1580,8 +1628,10 @@ class AsyncRawSkillClient:
             sections. `full` returns the stored SKILL.md with its evidence markers.
 
         task_family : typing.Optional[str]
+            The developer supplies the task-family slug.
 
         tools : typing.Optional[typing.Sequence[str]]
+            The developer supplies tool names used by the Skill.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1715,6 +1765,8 @@ class AsyncRawSkillClient:
         self, agent_uuid: str, skill_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[AgentSkill]:
         """
+        Get Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -1824,6 +1876,8 @@ class AsyncRawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillAdmissionDecision]:
         """
+        Approve Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -1833,6 +1887,7 @@ class AsyncRawSkillClient:
             Skill UUID
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         idempotency_key : typing.Optional[str]
 
@@ -1945,6 +2000,8 @@ class AsyncRawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkill]:
         """
+        Retire Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -1954,6 +2011,7 @@ class AsyncRawSkillClient:
             Skill UUID
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         idempotency_key : typing.Optional[str]
 
@@ -2078,6 +2136,8 @@ class AsyncRawSkillClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillVersion]:
         """
+        Create Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -2087,8 +2147,10 @@ class AsyncRawSkillClient:
             Skill UUID
 
         definition : SkillDefinition
+            The developer supplies the structured content for the new Skill version.
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         idempotency_key : typing.Optional[str]
 

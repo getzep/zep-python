@@ -52,7 +52,7 @@ class RawTraceClient:
             Trace connection UUID
 
         provider_project_id : str
-            ProviderProjectID is the provider project identifier.
+            The developer supplies the project ID from the selected provider.
 
         trace_id : str
             TraceID is the provider trace identifier.
@@ -182,7 +182,7 @@ class RawTraceClient:
             Trace connection UUID
 
         provider_project_id : str
-            ProviderProjectID is the provider project identifier.
+            The developer supplies the project ID from the selected provider.
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
@@ -333,7 +333,7 @@ class AsyncRawTraceClient:
             Trace connection UUID
 
         provider_project_id : str
-            ProviderProjectID is the provider project identifier.
+            The developer supplies the project ID from the selected provider.
 
         trace_id : str
             TraceID is the provider trace identifier.
@@ -463,7 +463,7 @@ class AsyncRawTraceClient:
             Trace connection UUID
 
         provider_project_id : str
-            ProviderProjectID is the provider project identifier.
+            The developer supplies the project ID from the selected provider.
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.

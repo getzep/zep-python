@@ -22,9 +22,9 @@ client = Zep(
 )
 
 client.agent.create(
-    agent_id="agent_id",
-    name="name",
-    security_domain="security_domain",
+    agent_id="payments-agent",
+    name="Refund a duplicate charge",
+    security_domain="customer:support",
 )
 
 ```
@@ -138,7 +138,7 @@ client.agent.list()
 <dl>
 <dd>
 
-**deployment_id:** `typing.Optional[str]` — Filters to the exact deployment identifier.
+**deployment_id:** `typing.Optional[str]` — The developer supplies filters to the exact deployment identifier.
     
 </dd>
 </dl>
@@ -156,7 +156,7 @@ client.agent.list()
 
 **search:** `typing.Optional[str]` 
 
-Filters to Agents whose name, Agent identifier, deployment identifier,
+The developer supplies filters to Agents whose name, Agent identifier, deployment identifier,
 or deployment version contains this text. Matching is case-insensitive.
     
 </dd>
@@ -440,6 +440,20 @@ client.agent.update(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Declare a breaking Agent deployment change. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -460,7 +474,7 @@ client = Zep(
 client.agent.declare_breaking_change(
     agent_uuid="agent_uuid",
     expected_revision=1,
-    version="version",
+    version="2026.09.01",
 )
 
 ```
@@ -486,6 +500,9 @@ client.agent.declare_breaking_change(
 <dd>
 
 **expected_revision:** `int` 
+
+The developer supplies the current Agent revision for optimistic concurrency.
+It must be at least 1.
     
 </dd>
 </dl>
@@ -493,7 +510,7 @@ client.agent.declare_breaking_change(
 <dl>
 <dd>
 
-**version:** `str` 
+**version:** `str` — The developer supplies the new deployment version. It must differ from the current version.
     
 </dd>
 </dl>
@@ -516,6 +533,20 @@ client.agent.declare_breaking_change(
 <details><summary><code>client.agent.<a href="src/zep_cloud/agent/client.py">get_context</a>(...) -> AgentContext</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get Agent context. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -560,7 +591,7 @@ client.agent.get_context(
 <dl>
 <dd>
 
-**environments:** `typing.Optional[typing.List[AgentContextResource]]` 
+**environments:** `typing.Optional[typing.List[AgentContextResource]]` — The developer supplies environment names used by the Skill. At most 32.
     
 </dd>
 </dl>
@@ -568,7 +599,7 @@ client.agent.get_context(
 <dl>
 <dd>
 
-**kind:** `typing.Optional[str]` 
+**kind:** `typing.Optional[str]` — The developer supplies a Skill kind. At most 64.
     
 </dd>
 </dl>
@@ -576,7 +607,7 @@ client.agent.get_context(
 <dl>
 <dd>
 
-**max_characters:** `typing.Optional[int]` 
+**max_characters:** `typing.Optional[int]` — The developer sets the maximum number of characters in the context response.
     
 </dd>
 </dl>
@@ -584,7 +615,7 @@ client.agent.get_context(
 <dl>
 <dd>
 
-**models:** `typing.Optional[typing.List[AgentContextResource]]` 
+**models:** `typing.Optional[typing.List[AgentContextResource]]` — The developer supplies models used for this evaluation. At most 32.
     
 </dd>
 </dl>
@@ -592,7 +623,7 @@ client.agent.get_context(
 <dl>
 <dd>
 
-**objective:** `typing.Optional[str]` 
+**objective:** `typing.Optional[str]` — The developer supplies the task-instance objective. At most 512.
     
 </dd>
 </dl>
@@ -600,7 +631,7 @@ client.agent.get_context(
 <dl>
 <dd>
 
-**task_family:** `typing.Optional[str]` 
+**task_family:** `typing.Optional[str]` — The developer supplies the task-family slug. At most 128.
     
 </dd>
 </dl>
@@ -608,7 +639,7 @@ client.agent.get_context(
 <dl>
 <dd>
 
-**tools:** `typing.Optional[typing.List[AgentContextResource]]` 
+**tools:** `typing.Optional[typing.List[AgentContextResource]]` — The developer supplies tool names used by the Skill. At most 32.
     
 </dd>
 </dl>
@@ -616,7 +647,7 @@ client.agent.get_context(
 <dl>
 <dd>
 
-**trace_uuid:** `typing.Optional[str]` 
+**trace_uuid:** `typing.Optional[str]` — The developer supplies the UUID of the source Trace.
     
 </dd>
 </dl>
@@ -1709,6 +1740,244 @@ client.graph.lookup()
 <dd>
 
 **request:** `LookupRequest` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">query_stream</a>(...) -> typing.Iterator[bytes]</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.graph.query_stream(
+    graph_uuids=[
+        "graph_uuids"
+    ],
+    query="query",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_uuids:** `typing.List[str]` — The graph UUIDs to query. The current release accepts one UUID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `str` — The natural-language question about the graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**stream:** `typing.Literal` — When true, return the retrieval calls as server-sent events.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**generate_answer:** `typing.Optional[bool]` 
+
+When true, a model also writes an answer from the retrieved records.
+The default is false: the response has the records and no answer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**guidance:** `typing.Optional[str]` — Optional caller guidance for the answer. The agent treats it as untrusted text.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mode:** `typing.Optional[GraphQueryRequestMode]` — The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.graph.<a href="src/zep_cloud/graph/client.py">query</a>(...) -> GraphQueryResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from zep_cloud import Zep
+from zep_cloud.environment import ZepEnvironment
+
+client = Zep(
+    api_key="<value>",
+    environment=ZepEnvironment.DEFAULT,
+)
+
+client.graph.query_stream(
+    graph_uuids=[
+        "graph_uuids"
+    ],
+    query="query",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**graph_uuids:** `typing.List[str]` — The graph UUIDs to query. The current release accepts one UUID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `str` — The natural-language question about the graph.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**stream:** `typing.Literal` — When true, return the retrieval calls as server-sent events.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**generate_answer:** `typing.Optional[bool]` 
+
+When true, a model also writes an answer from the retrieved records.
+The default is false: the response has the records and no answer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**guidance:** `typing.Optional[str]` — Optional caller guidance for the answer. The agent treats it as untrusted text.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mode:** `typing.Optional[GraphQueryRequestMode]` — The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
     
 </dd>
 </dl>
@@ -7578,6 +7847,20 @@ client.user.set_summary_instructions(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get Agent Learning State. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -7645,6 +7928,20 @@ client.agent.learning.get(
 <details><summary><code>client.agent.learning.<a href="src/zep_cloud/agent/learning/client.py">list_runs</a>(...) -> Pagev4AgentSkillCompilationOutcome</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List durable learning-run outcomes for an Agent. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -7730,6 +8027,20 @@ client.agent.learning.list_runs(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -7789,6 +8100,20 @@ client.agent.literal_policy.get(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -7810,18 +8135,18 @@ client.agent.literal_policy.update(
     agent_uuid="agent_uuid",
     allowlisted_classes=AgentLiteralPolicyClasses(
         environments=[
-            "environments"
+            "environment_name"
         ],
         tools=[
-            "tools"
+            "command_name"
         ],
     ),
     allowlisted_values=AgentLiteralPolicyValues(
         environments=[
-            "environments"
+            "production"
         ],
         tools=[
-            "tools"
+            "refund_payment"
         ],
     ),
     default="parameterize",
@@ -7898,6 +8223,20 @@ client.agent.literal_policy.update(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -7942,7 +8281,7 @@ client.agent.skill.create(
 <dl>
 <dd>
 
-**definition:** `SkillDefinition` 
+**definition:** `SkillDefinition` — The developer supplies the structured content of the Skill.
     
 </dd>
 </dl>
@@ -7951,6 +8290,9 @@ client.agent.skill.create(
 <dd>
 
 **skill_id:** `typing.Optional[str]` 
+
+The developer can set a stable ID for the Skill. If omitted, the service
+assigns one.
     
 </dd>
 </dl>
@@ -7982,7 +8324,7 @@ client.agent.skill.create(
 <dl>
 <dd>
 
-Submit a portable Skill archive. The completed Task returns `{"result":{"skill_uuid":"<uuid>"}}`. Approve that Skill before retrieval.
+Submit a portable Skill archive. The completed Task returns `{"result":{"skill_uuid":"<uuid>"}}`. Approve that Skill before retrieval. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -8044,6 +8386,20 @@ client.agent.skill.import_package(...)
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List Agent Skills. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -8103,7 +8459,7 @@ client.agent.skill.list(
 <dl>
 <dd>
 
-**environments:** `typing.Optional[typing.List[str]]` 
+**environments:** `typing.Optional[typing.List[str]]` — The developer filters results by environment names.
     
 </dd>
 </dl>
@@ -8111,7 +8467,7 @@ client.agent.skill.list(
 <dl>
 <dd>
 
-**kind:** `typing.Optional[str]` 
+**kind:** `typing.Optional[str]` — The developer supplies a Skill kind.
     
 </dd>
 </dl>
@@ -8119,7 +8475,7 @@ client.agent.skill.list(
 <dl>
 <dd>
 
-**task_family:** `typing.Optional[str]` 
+**task_family:** `typing.Optional[str]` — The developer supplies the task-family slug.
     
 </dd>
 </dl>
@@ -8127,7 +8483,7 @@ client.agent.skill.list(
 <dl>
 <dd>
 
-**tools:** `typing.Optional[typing.List[str]]` 
+**tools:** `typing.Optional[typing.List[str]]` — The developer supplies tool names used by the Skill.
     
 </dd>
 </dl>
@@ -8151,6 +8507,20 @@ client.agent.skill.list(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Search Agent Skills. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -8170,7 +8540,7 @@ client = Zep(
 
 client.agent.skill.search(
     agent_uuid="agent_uuid",
-    query="query",
+    query="How do I refund a duplicate charge?",
 )
 
 ```
@@ -8195,7 +8565,7 @@ client.agent.skill.search(
 <dl>
 <dd>
 
-**query:** `str` 
+**query:** `str` — The developer supplies a search query for Skills.
     
 </dd>
 </dl>
@@ -8219,7 +8589,7 @@ client.agent.skill.search(
 <dl>
 <dd>
 
-**environments:** `typing.Optional[typing.List[str]]` 
+**environments:** `typing.Optional[typing.List[str]]` — The developer supplies environment names used by the Skill.
     
 </dd>
 </dl>
@@ -8227,7 +8597,7 @@ client.agent.skill.search(
 <dl>
 <dd>
 
-**include_markdown:** `typing.Optional[bool]` 
+**include_markdown:** `typing.Optional[bool]` — The developer sets this to true to include the Skill instructions in Markdown.
     
 </dd>
 </dl>
@@ -8235,7 +8605,7 @@ client.agent.skill.search(
 <dl>
 <dd>
 
-**kind:** `typing.Optional[str]` 
+**kind:** `typing.Optional[str]` — The developer supplies a Skill kind.
     
 </dd>
 </dl>
@@ -8256,7 +8626,7 @@ sections. `full` returns the stored SKILL.md with its evidence markers.
 <dl>
 <dd>
 
-**task_family:** `typing.Optional[str]` 
+**task_family:** `typing.Optional[str]` — The developer supplies the task-family slug.
     
 </dd>
 </dl>
@@ -8264,7 +8634,7 @@ sections. `full` returns the stored SKILL.md with its evidence markers.
 <dl>
 <dd>
 
-**tools:** `typing.Optional[typing.List[str]]` 
+**tools:** `typing.Optional[typing.List[str]]` — The developer supplies tool names used by the Skill.
     
 </dd>
 </dl>
@@ -8287,6 +8657,20 @@ sections. `full` returns the stored SKILL.md with its evidence markers.
 <details><summary><code>client.agent.skill.<a href="src/zep_cloud/agent/skill/client.py">get</a>(...) -> AgentSkill</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -8356,6 +8740,20 @@ client.agent.skill.get(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Approve Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -8409,7 +8807,7 @@ client.agent.skill.approve(
 <dl>
 <dd>
 
-**expected_version:** `int` 
+**expected_version:** `int` — The developer supplies the current Skill version to protect against concurrent edits.
     
 </dd>
 </dl>
@@ -8432,6 +8830,20 @@ client.agent.skill.approve(
 <details><summary><code>client.agent.skill.<a href="src/zep_cloud/agent/skill/client.py">retire</a>(...) -> AgentSkill</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retire Agent Skill. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -8486,7 +8898,7 @@ client.agent.skill.retire(
 <dl>
 <dd>
 
-**expected_version:** `int` 
+**expected_version:** `int` — The developer supplies the current Skill version to protect against concurrent edits.
     
 </dd>
 </dl>
@@ -8509,6 +8921,20 @@ client.agent.skill.retire(
 <details><summary><code>client.agent.skill.<a href="src/zep_cloud/agent/skill/client.py">create_version</a>(...) -> AgentSkillVersion</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -8564,7 +8990,7 @@ client.agent.skill.create_version(
 <dl>
 <dd>
 
-**definition:** `SkillDefinition` 
+**definition:** `SkillDefinition` — The developer supplies the structured content for the new Skill version.
     
 </dd>
 </dl>
@@ -8572,7 +8998,7 @@ client.agent.skill.create_version(
 <dl>
 <dd>
 
-**expected_version:** `int` 
+**expected_version:** `int` — The developer supplies the current Skill version to protect against concurrent edits.
     
 </dd>
 </dl>
@@ -8597,6 +9023,20 @@ client.agent.skill.create_version(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Plan an Agent split. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -8619,21 +9059,21 @@ client.agent.split.plan(
     destinations=[
         AgentSplitPlanDestinationRequest(
             agent=CreateAgentRequest(
-                agent_id="agent_id",
-                name="name",
-                security_domain="security_domain",
+                agent_id="payments-agent",
+                name="Refund a duplicate charge",
+                security_domain="customer:support",
             ),
             skills=[
                 AgentSplitPlanSkillSelectionRequest(
-                    skill_uuid="skill_uuid",
-                    skill_version_uuid="skill_version_uuid",
+                    skill_uuid="6a906e70-50ca-4e43-a874-5fcae02a71fa",
+                    skill_version_uuid="6a906e70-50ca-4e43-a874-5fcae02a71fa",
                     version=1,
                 )
             ],
         )
     ],
     expected_revision=1,
-    rationale="rationale",
+    rationale="Keep payment refunds separate from charge disputes.",
     review_acknowledged=True,
 )
 
@@ -8659,7 +9099,7 @@ client.agent.split.plan(
 <dl>
 <dd>
 
-**destinations:** `typing.List[AgentSplitPlanDestinationRequest]` 
+**destinations:** `typing.List[AgentSplitPlanDestinationRequest]` — The developer lists 1 to 100 destination Agents.
     
 </dd>
 </dl>
@@ -8667,7 +9107,7 @@ client.agent.split.plan(
 <dl>
 <dd>
 
-**expected_revision:** `int` 
+**expected_revision:** `int` — The developer supplies the current revision used for optimistic concurrency. At least 1.
     
 </dd>
 </dl>
@@ -8676,6 +9116,9 @@ client.agent.split.plan(
 <dd>
 
 **rationale:** `str` 
+
+The developer explains the requested change. The limit is 2,000
+characters.
     
 </dd>
 </dl>
@@ -8683,7 +9126,7 @@ client.agent.split.plan(
 <dl>
 <dd>
 
-**review_acknowledged:** `bool` 
+**review_acknowledged:** `bool` — The developer sets this to true to confirm that the review is complete.
     
 </dd>
 </dl>
@@ -8802,8 +9245,8 @@ client = Zep(
 
 client.agent.task_family.rename(
     agent_uuid="agent_uuid",
-    from_slug="from_slug",
-    to_slug="to_slug",
+    from_slug="support/refund",
+    to_slug="support/refund",
 )
 
 ```
@@ -8869,7 +9312,7 @@ client.agent.task_family.rename(
 <dl>
 <dd>
 
-List trace imports that belong to this Agent.
+List trace imports that belong to this Agent. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -8958,7 +9401,7 @@ client.agent.trace_import.list(
 <dl>
 <dd>
 
-Create a scheduled import or queue a one-time import. A scheduled import returns HTTP 201 with `import`. A one-time import returns HTTP 202 with `import`, `run`, and `task`. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`.
+Create a scheduled import or queue a one-time import. A scheduled import returns HTTP 201 with `import`. A one-time import returns HTTP 202 with `import`, `run`, and `task`. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -9007,7 +9450,7 @@ client.agent.trace_import.create(
 <dl>
 <dd>
 
-**connection_uuid:** `typing.Optional[str]` — ConnectionUUID identifies the project trace connection.
+**connection_uuid:** `typing.Optional[str]` — The developer selects the configured provider connection.
     
 </dd>
 </dl>
@@ -9047,7 +9490,7 @@ client.agent.trace_import.create(
 <dl>
 <dd>
 
-**provider_project_id:** `typing.Optional[str]` — ProviderProjectID is the source provider project identifier.
+**provider_project_id:** `typing.Optional[str]` — The developer selects the project to import from the provider.
     
 </dd>
 </dl>
@@ -9103,7 +9546,7 @@ client.agent.trace_import.create(
 <dl>
 <dd>
 
-Read one trace import. The response does not include its source cursor.
+Read one trace import. The response does not include its source cursor. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -9185,7 +9628,7 @@ client.agent.trace_import.get(
 <dl>
 <dd>
 
-Set `traces=delete` to queue asynchronous Trace deletion. The default keeps Traces. Example query: `?traces=delete`.
+Set `traces=delete` to queue asynchronous Trace deletion. The default keeps Traces. Example query: `?traces=delete`. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -9275,7 +9718,7 @@ client.agent.trace_import.delete(
 <dl>
 <dd>
 
-Use `expected_revision` to reject a stale update. Example request: `{"expected_revision":1,"name":"Updated support traces"}`.
+Use `expected_revision` to reject a stale update. Example request: `{"expected_revision":1,"name":"Updated support traces"}`. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -9421,7 +9864,7 @@ client.agent.trace_import.update(
 <dl>
 <dd>
 
-Pause a scheduled trace import. One-time imports cannot be paused.
+Pause a scheduled trace import. One-time imports cannot be paused. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -9503,7 +9946,7 @@ client.agent.trace_import.pause(
 <dl>
 <dd>
 
-Resume a scheduled trace import. Zep verifies credentials first when they caused the pause.
+Resume a scheduled trace import. Zep verifies credentials first when they caused the pause. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -9597,7 +10040,7 @@ client = Zep(
 
 client.agent.trace.create(
     agent_uuid="agent_uuid",
-    objective="objective",
+    objective="Refund a duplicate charge.",
 )
 
 ```
@@ -9622,7 +10065,11 @@ client.agent.trace.create(
 <dl>
 <dd>
 
-**objective:** `str` — The task-instance objective captured for this attempt.
+**objective:** `str` 
+
+The developer describes the task instance. The create request requires a non-empty value but
+does not check its size. An AppendAgentTraceEventRequest returns 400 if the Trace objective
+exceeds 8 KiB (8,192 bytes).
     
 </dd>
 </dl>
@@ -9630,7 +10077,10 @@ client.agent.trace.create(
 <dl>
 <dd>
 
-**learn_from:** `typing.Optional[bool]` — Whether eligible evidence may participate in learning. Defaults to true.
+**learn_from:** `typing.Optional[bool]` 
+
+The developer supplies whether eligible evidence may participate in learning. Defaults to
+true.
     
 </dd>
 </dl>
@@ -9646,7 +10096,7 @@ client.agent.trace.create(
 <dl>
 <dd>
 
-**parent_trace_uuid:** `typing.Optional[str]` — The parent Trace UUID when this attempt retries an earlier attempt.
+**parent_trace_uuid:** `typing.Optional[str]` — The developer supplies the parent Trace UUID when this attempt retries an earlier attempt.
     
 </dd>
 </dl>
@@ -9656,8 +10106,13 @@ client.agent.trace.create(
 
 **task_family:** `typing.Optional[str]` 
 
-The task-family slug. Optional when inferred task families are enabled
-for the account: the service assigns one after the Trace closes.
+The developer may set a task-family slug. If the developer omits it, Agent Skills assigns the
+Trace to a task family automatically. If Agent Skills cannot assign a task family, the
+`task_family_inference` field of the Trace is `unassigned`. A BYOM configuration requires `task_family`. A
+strict-residency deployment requires `task_family`. Without task_family in either case, the
+API returns 400 `invalid_request` with the message `task_family is required`. The slug must
+contain 1 to 128 lowercase letters, digits, `.`, `_`, `/`, or `-`. It must start with a
+lowercase letter or digit.
     
 </dd>
 </dl>
@@ -9665,7 +10120,10 @@ for the account: the service assigns one after the Trace closes.
 <dl>
 <dd>
 
-**trace_id:** `typing.Optional[str]` — The optional customer-assigned identifier, unique within the Agent.
+**trace_id:** `typing.Optional[str]` 
+
+The developer may set an identifier that is unique within the Agent. A retry with the same
+create parameters returns 200 and the existing Trace. Different parameters return 409.
     
 </dd>
 </dl>
@@ -9788,7 +10246,10 @@ client.agent.trace.list(
 <dl>
 <dd>
 
-**outcome:** `typing.Optional[AgentTraceOutcome]` — Filters to one reported outcome.
+**outcome:** `typing.Optional[AgentTraceOutcome]` 
+
+The developer supplies filters to one reported outcome. Valid values are succeeded, failed,
+partial, abandoned, unknown.
     
 </dd>
 </dl>
@@ -10010,6 +10471,7 @@ client.agent.trace.update(
     agent_uuid="agent_uuid",
     trace_uuid="trace_uuid",
     expected_revision=1,
+    task_family="support/refund",
 )
 
 ```
@@ -10344,7 +10806,8 @@ client.agent.trace.correct_task_family(
     agent_uuid="agent_uuid",
     trace_uuid="trace_uuid",
     expected_revision=1,
-    reason="reason",
+    reason="acknowledged_gap",
+    task_family="support/refund",
 )
 
 ```
@@ -10501,6 +10964,20 @@ client.agent.trace.list_events(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+A tool call and its result can share a tool_call_id. For example, append {"event_type":"tool_call","tool_call_id":"call_8f2b","content":"Search orders","context":{"tools":[{"name":"search_orders"}]}} and {"event_type":"tool_result","tool_call_id":"call_8f2b","content":"Order results","context":{"tools":[{"name":"search_orders"}]}}.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -10571,6 +11048,9 @@ client.agent.trace.append_event(
 <dd>
 
 **context:** `typing.Optional[AgentTraceEventContext]` 
+
+Context gives the model, the tools, and the environments of the event. context.tools is the tool
+that the event calls or returns, and Skills learning reads it. A tool event can omit the tool name.
     
 </dd>
 </dl>
@@ -10586,7 +11066,7 @@ client.agent.trace.append_event(
 <dl>
 <dd>
 
-**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` 
+**metadata:** `typing.Optional[typing.Dict[str, typing.Any]]` — Metadata is developer data. Skills learning does not read it.
     
 </dd>
 </dl>
@@ -10611,6 +11091,19 @@ client.agent.trace.append_event(
 <dd>
 
 **sources:** `typing.Optional[typing.List[AgentTraceEventSource]]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tool_call_id:** `typing.Optional[str]` 
+
+ToolCallID is the ID that the agent framework gives a tool call. Use the same ID on
+the tool_call and tool_result events. It is valid only on these event types. A result
+without a matching call is valid. OpenAI uses tool_calls[].id, Anthropic uses the
+tool_use block id, and LangChain uses ToolMessage.tool_call_id.
     
 </dd>
 </dl>
@@ -10950,6 +11443,20 @@ client.agent.trace.list_summary_versions(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List Agent Verifiers. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -11065,6 +11572,20 @@ client.agent.verifier.list(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get Agent Verifier. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -11132,6 +11653,20 @@ client.agent.verifier.get(
 <details><summary><code>client.agent.verifier.<a href="src/zep_cloud/agent/verifier/client.py">update</a>(...) -> AgentVerifier</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update Agent Verifier. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -11242,6 +11777,20 @@ client.agent.verifier.update(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Invalidate Agent Verifier Evidence. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -11262,7 +11811,7 @@ client = Zep(
 client.agent.verifier.invalidate_evidence(
     agent_uuid="agent_uuid",
     verifier_uuid="verifier_uuid",
-    reason="reason",
+    reason="acknowledged_gap",
     verifier_revisions=[
         1
     ],
@@ -11298,7 +11847,7 @@ client.agent.verifier.invalidate_evidence(
 <dl>
 <dd>
 
-**reason:** `str` — Why evidence from these verifier revisions is invalid.
+**reason:** `str` — The developer supplies why evidence from these verifier revisions is invalid.
     
 </dd>
 </dl>
@@ -11329,6 +11878,20 @@ client.agent.verifier.invalidate_evidence(
 <details><summary><code>client.agent.verifier.<a href="src/zep_cloud/agent/verifier/client.py">revoke</a>(...) -> AgentVerifier</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Revoke Agent Verifier. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -11408,6 +11971,20 @@ client.agent.verifier.revoke(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List Agent Skill Candidate Reviews. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -11482,6 +12059,20 @@ client.agent.skill.candidate.list(
 <details><summary><code>client.agent.skill.candidate.<a href="src/zep_cloud/agent/skill/candidate/client.py">get</a>(...) -> AgentSkillCandidateReview</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get Agent Skill Candidate Review. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -11574,7 +12165,7 @@ client.agent.skill.evaluation.create_for_candidate(
     review_uuid="review_uuid",
     candidate_uuid="candidate_uuid",
     evaluated_by="customer",
-    evaluator_version="evaluator_version",
+    evaluator_version="v1.0.0",
     expected_revision=1,
     verdict="succeeded",
 )
@@ -11618,6 +12209,9 @@ client.agent.skill.evaluation.create_for_candidate(
 <dd>
 
 **evaluated_by:** `CreateAgentSkillCandidateEvaluationRequestEvaluatedBy` 
+
+The developer selects the evaluation source. Valid values are customer, tool,
+offline_corpus, policy.
     
 </dd>
 </dl>
@@ -11625,7 +12219,7 @@ client.agent.skill.evaluation.create_for_candidate(
 <dl>
 <dd>
 
-**evaluator_version:** `str` 
+**evaluator_version:** `str` — The developer supplies the version of the evaluation rule.
     
 </dd>
 </dl>
@@ -11633,7 +12227,7 @@ client.agent.skill.evaluation.create_for_candidate(
 <dl>
 <dd>
 
-**expected_revision:** `int` 
+**expected_revision:** `int` — The developer supplies the current revision used for optimistic concurrency. At least 1.
     
 </dd>
 </dl>
@@ -11642,6 +12236,9 @@ client.agent.skill.evaluation.create_for_candidate(
 <dd>
 
 **verdict:** `CreateAgentSkillCandidateEvaluationRequestVerdict` 
+
+The developer supplies evaluation verdict. Valid values are succeeded, failed, partial,
+unknown.
     
 </dd>
 </dl>
@@ -11649,7 +12246,7 @@ client.agent.skill.evaluation.create_for_candidate(
 <dl>
 <dd>
 
-**controlled_test:** `typing.Optional[bool]` 
+**controlled_test:** `typing.Optional[bool]` — The developer sets this to true when a controlled test produced the result.
     
 </dd>
 </dl>
@@ -11657,7 +12254,7 @@ client.agent.skill.evaluation.create_for_candidate(
 <dl>
 <dd>
 
-**environment:** `typing.Optional[str]` 
+**environment:** `typing.Optional[str]` — The developer supplies the environment for this evaluation.
     
 </dd>
 </dl>
@@ -11665,7 +12262,7 @@ client.agent.skill.evaluation.create_for_candidate(
 <dl>
 <dd>
 
-**evidence_reference:** `typing.Optional[str]` 
+**evidence_reference:** `typing.Optional[str]` — The developer links this evaluation to an evidence record.
     
 </dd>
 </dl>
@@ -11673,7 +12270,7 @@ client.agent.skill.evaluation.create_for_candidate(
 <dl>
 <dd>
 
-**metrics:** `typing.Optional[typing.Dict[str, float]]` 
+**metrics:** `typing.Optional[typing.Dict[str, float]]` — The developer supplies evaluation metrics.
     
 </dd>
 </dl>
@@ -11697,6 +12294,20 @@ client.agent.skill.evaluation.create_for_candidate(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Record Agent Skill Evaluation. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -11718,7 +12329,7 @@ client.agent.skill.evaluation.create(
     agent_uuid="agent_uuid",
     skill_uuid="skill_uuid",
     evaluated_by="customer",
-    evaluator_version="evaluator_version",
+    evaluator_version="v1.0.0",
     skill_version=1,
     verdict="succeeded",
 )
@@ -11754,6 +12365,9 @@ client.agent.skill.evaluation.create(
 <dd>
 
 **evaluated_by:** `CreateAgentSkillEvaluationRequestEvaluatedBy` 
+
+The developer selects the evaluation source. Valid values are customer, tool,
+offline_corpus, policy.
     
 </dd>
 </dl>
@@ -11761,7 +12375,7 @@ client.agent.skill.evaluation.create(
 <dl>
 <dd>
 
-**evaluator_version:** `str` 
+**evaluator_version:** `str` — The developer supplies the evaluation rule version. It can contain up to 255 characters.
     
 </dd>
 </dl>
@@ -11769,7 +12383,7 @@ client.agent.skill.evaluation.create(
 <dl>
 <dd>
 
-**skill_version:** `int` 
+**skill_version:** `int` — The developer supplies the Skill version to evaluate. It must be at least 1.
     
 </dd>
 </dl>
@@ -11778,6 +12392,9 @@ client.agent.skill.evaluation.create(
 <dd>
 
 **verdict:** `CreateAgentSkillEvaluationRequestVerdict` 
+
+The developer supplies evaluation verdict. Valid values are succeeded, failed, partial,
+unknown.
     
 </dd>
 </dl>
@@ -11785,7 +12402,7 @@ client.agent.skill.evaluation.create(
 <dl>
 <dd>
 
-**controlled_test:** `typing.Optional[bool]` 
+**controlled_test:** `typing.Optional[bool]` — The developer sets this to true when a controlled test produced the result.
     
 </dd>
 </dl>
@@ -11793,7 +12410,7 @@ client.agent.skill.evaluation.create(
 <dl>
 <dd>
 
-**environment:** `typing.Optional[str]` 
+**environment:** `typing.Optional[str]` — The developer supplies the environment for this evaluation. At most 1024.
     
 </dd>
 </dl>
@@ -11801,7 +12418,7 @@ client.agent.skill.evaluation.create(
 <dl>
 <dd>
 
-**evidence_reference:** `typing.Optional[str]` 
+**evidence_reference:** `typing.Optional[str]` — The developer links this evaluation to an evidence record.
     
 </dd>
 </dl>
@@ -11809,7 +12426,7 @@ client.agent.skill.evaluation.create(
 <dl>
 <dd>
 
-**metrics:** `typing.Optional[typing.Dict[str, float]]` 
+**metrics:** `typing.Optional[typing.Dict[str, float]]` — The developer supplies evaluation metrics.
     
 </dd>
 </dl>
@@ -11817,7 +12434,7 @@ client.agent.skill.evaluation.create(
 <dl>
 <dd>
 
-**use_uuid:** `typing.Optional[str]` 
+**use_uuid:** `typing.Optional[str]` — The developer can link this evaluation to a recorded Skill use.
     
 </dd>
 </dl>
@@ -11850,7 +12467,7 @@ client.agent.skill.evaluation.create(
 <dl>
 <dd>
 
-Find a destination Skill by its source Agent, Skill, and version. The endpoint returns 404 until an automatic publication is ready or after it is invalidated.
+Find a destination Skill by its source Agent, Skill, and version. The endpoint returns 404 until an automatic publication is ready or after it is invalidated. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -11950,7 +12567,7 @@ client.agent.skill.publication.lookup(
 <dl>
 <dd>
 
-Get the publication that created a destination Skill. Use its source version and policy identity to verify a copied Skill. The endpoint returns 404 for unpublished and invalidated Skills.
+Get the publication that created a destination Skill. Use its source version and policy identity to verify a copied Skill. The endpoint returns 404 for unpublished and invalidated Skills. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -12024,6 +12641,20 @@ client.agent.skill.publication.get(
 <details><summary><code>client.agent.skill.evidence.<a href="src/zep_cloud/agent/skill/evidence/client.py">list</a>(...) -> Pagev4AgentSkillEvidence</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List Agent Skill Evidence. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -12109,6 +12740,20 @@ client.agent.skill.evidence.list(
 <details><summary><code>client.agent.skill.relation.<a href="src/zep_cloud/agent/skill/relation/client.py">list</a>(...) -> Pagev4AgentSkillRelationship</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List Agent Skill Relationships. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -12203,6 +12848,20 @@ client.agent.skill.relation.list(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Restore Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -12257,7 +12916,7 @@ client.agent.skill.version.restore_version(
 <dl>
 <dd>
 
-**expected_version:** `int` 
+**expected_version:** `int` — The developer supplies the current Skill version to protect against concurrent edits.
     
 </dd>
 </dl>
@@ -12265,7 +12924,7 @@ client.agent.skill.version.restore_version(
 <dl>
 <dd>
 
-**version:** `int` 
+**version:** `int` — The developer supplies the Skill version to restore.
     
 </dd>
 </dl>
@@ -12288,6 +12947,20 @@ client.agent.skill.version.restore_version(
 <details><summary><code>client.agent.skill.version.<a href="src/zep_cloud/agent/skill/version/client.py">list</a>(...) -> Pagev4AgentSkillVersion</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -12381,6 +13054,20 @@ client.agent.skill.version.list(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Compare Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -12435,7 +13122,7 @@ client.agent.skill.version.compare(
 <dl>
 <dd>
 
-**from_version:** `int` 
+**from_version:** `int` — The developer supplies the source version to compare. It must be at least 1.
     
 </dd>
 </dl>
@@ -12443,7 +13130,7 @@ client.agent.skill.version.compare(
 <dl>
 <dd>
 
-**to_version:** `int` 
+**to_version:** `int` — The developer supplies the destination version to compare. It must be at least 1.
     
 </dd>
 </dl>
@@ -12466,6 +13153,20 @@ client.agent.skill.version.compare(
 <details><summary><code>client.agent.skill.version.<a href="src/zep_cloud/agent/skill/version/client.py">get</a>(...) -> AgentSkillVersion</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -12553,6 +13254,20 @@ client.agent.skill.version.get(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create Agent Skill Use. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -12573,8 +13288,8 @@ client = Zep(
 client.agent.skill.use.create(
     agent_uuid="agent_uuid",
     skill_uuid="skill_uuid",
-    search_id="search_id",
-    trace_uuid="trace_uuid",
+    search_id="eyJ2IjoxLCJyZXF1ZXN0X2lkIjoiNmE5MDZlNzAtNTBjYS00ZTQzLWE4NzQtNWZjYWUwMmE3MWZhIn0.signature",
+    trace_uuid="6a906e70-50ca-4e43-a874-5fcae02a71fa",
     usage="selected",
 )
 
@@ -12608,7 +13323,7 @@ client.agent.skill.use.create(
 <dl>
 <dd>
 
-**search_id:** `str` 
+**search_id:** `str` — The developer supplies the signed search token returned by Skill search.
     
 </dd>
 </dl>
@@ -12616,7 +13331,7 @@ client.agent.skill.use.create(
 <dl>
 <dd>
 
-**trace_uuid:** `str` 
+**trace_uuid:** `str` — The developer supplies the UUID of the source Trace.
     
 </dd>
 </dl>
@@ -12625,6 +13340,9 @@ client.agent.skill.use.create(
 <dd>
 
 **usage:** `CreateAgentSkillUseRequestUsage` 
+
+The developer supplies how the Skill was used. Valid values are selected, used,
+partially_used, ignored, inapplicable.
     
 </dd>
 </dl>
@@ -12633,6 +13351,9 @@ client.agent.skill.use.create(
 <dd>
 
 **outcome:** `typing.Optional[AddAgentSkillUseOutcomeRequest]` 
+
+The developer records the outcome of the attempt. Valid values are
+succeeded, failed, partial, abandoned, and unknown.
     
 </dd>
 </dl>
@@ -12640,7 +13361,7 @@ client.agent.skill.use.create(
 <dl>
 <dd>
 
-**reason_code:** `typing.Optional[str]` 
+**reason_code:** `typing.Optional[str]` — The developer supplies a reason code for this outcome. It can contain up to 255 characters.
     
 </dd>
 </dl>
@@ -12663,6 +13384,20 @@ client.agent.skill.use.create(
 <details><summary><code>client.agent.skill.use.<a href="src/zep_cloud/agent/skill/use/client.py">add_outcome</a>(...) -> AgentSkillUseOutcome</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Record Agent Skill Feedback. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -12751,6 +13486,20 @@ client.agent.skill.use.add_outcome(
 <dl>
 <dd>
 
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Export an Agent Skill version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
+
 #### 🔌 Usage
 
 <dl>
@@ -12827,6 +13576,20 @@ client.agent.skill.export.create(
 <details><summary><code>client.agent.skill.export.<a href="src/zep_cloud/agent/skill/export/client.py">get</a>(...) -> typing.Iterator[bytes]</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Download an Agent Skill export. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -12923,7 +13686,7 @@ client.agent.skill.export.get(
 <dl>
 <dd>
 
-List runs that belong to this trace import.
+List runs that belong to this trace import. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -13021,7 +13784,7 @@ client.agent.trace_import.run.list(
 <dl>
 <dd>
 
-Create a pending run and its Task. This operation does not start the run.
+Create a pending run and its Task. This operation does not start the run. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -13103,7 +13866,7 @@ client.agent.trace_import.run.create(
 <dl>
 <dd>
 
-Read one run that belongs to this trace import.
+Read one run that belongs to this trace import. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -13195,7 +13958,7 @@ client.agent.trace_import.run.get(
 <dl>
 <dd>
 
-List trace results for this run. Run items do not include source payload.
+List trace results for this run. Run items do not include source payload. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 </dd>
 </dl>
 </dd>
@@ -16468,7 +17231,7 @@ client.trace_connection.trace.get(
 <dl>
 <dd>
 
-**provider_project_id:** `str` — ProviderProjectID is the provider project identifier.
+**provider_project_id:** `str` — The developer supplies the project ID from the selected provider.
     
 </dd>
 </dl>
@@ -16566,7 +17329,7 @@ client.trace_connection.trace.list(
 <dl>
 <dd>
 
-**provider_project_id:** `str` — ProviderProjectID is the provider project identifier.
+**provider_project_id:** `str` — The developer supplies the project ID from the selected provider.
     
 </dd>
 </dl>

@@ -7,15 +7,52 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSkillEvidence(UniversalBaseModel):
-    assertion_uuid: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    occurred_at: typing.Optional[str] = None
-    polarity: typing.Optional[str] = None
-    source_kind: typing.Optional[str] = None
-    summary_version_uuid: typing.Optional[str] = None
-    trace_event_uuid: typing.Optional[str] = None
-    trace_uuid: typing.Optional[str] = None
-    verification: typing.Optional[str] = None
+    assertion_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the verification assertion linked to this evidence.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    occurred_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when the source event occurred.
+    """
+
+    polarity: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the evidence stance.
+    """
+
+    source_kind: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the evidence source type. Valid values are trace,
+    trace_event, trace_summary, and skill_version.
+    """
+
+    summary_version_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns summary version linked to this evidence.
+    """
+
+    trace_event_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns trace event linked to this evidence.
+    """
+
+    trace_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the source Trace.
+    """
+
+    verification: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the verification source. Valid values are none, agent,
+    tool, customer, and external.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
