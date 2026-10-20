@@ -44,23 +44,32 @@ class UseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillUse:
         """
+        Create Agent Skill Use. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         search_id : str
+            The developer supplies the signed search token returned by Skill search.
 
         trace_uuid : str
+            The developer supplies the UUID of the source Trace.
 
         usage : CreateAgentSkillUseRequestUsage
+            The developer supplies how the Skill was used. Valid values are selected, used,
+            partially_used, ignored, inapplicable.
 
         outcome : typing.Optional[AddAgentSkillUseOutcomeRequest]
+            The developer records the outcome of the attempt. Valid values are
+            succeeded, failed, partial, abandoned, and unknown.
 
         reason_code : typing.Optional[str]
+            The developer supplies a reason code for this outcome. It can contain up to 255 characters.
 
         idempotency_key : typing.Optional[str]
 
@@ -82,8 +91,8 @@ class UseClient:
         client.agent.skill.use.create(
             agent_uuid="agent_uuid",
             skill_uuid="skill_uuid",
-            search_id="search_id",
-            trace_uuid="trace_uuid",
+            search_id="eyJ2IjoxLCJyZXF1ZXN0X2lkIjoiNmE5MDZlNzAtNTBjYS00ZTQzLWE4NzQtNWZjYWUwMmE3MWZhIn0.signature",
+            trace_uuid="6a906e70-50ca-4e43-a874-5fcae02a71fa",
             usage="selected",
         )
         """
@@ -111,18 +120,22 @@ class UseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillUseOutcome:
         """
+        Record Agent Skill Feedback. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         use_uuid : str
             Skill use UUID
 
         outcome : AddAgentSkillUseOutcomeRequestOutcome
+            The developer records the attempt outcome. Valid values are succeeded,
+            failed, partial, abandoned, and unknown.
 
         idempotency_key : typing.Optional[str]
 
@@ -188,23 +201,32 @@ class AsyncUseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillUse:
         """
+        Create Agent Skill Use. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         search_id : str
+            The developer supplies the signed search token returned by Skill search.
 
         trace_uuid : str
+            The developer supplies the UUID of the source Trace.
 
         usage : CreateAgentSkillUseRequestUsage
+            The developer supplies how the Skill was used. Valid values are selected, used,
+            partially_used, ignored, inapplicable.
 
         outcome : typing.Optional[AddAgentSkillUseOutcomeRequest]
+            The developer records the outcome of the attempt. Valid values are
+            succeeded, failed, partial, abandoned, and unknown.
 
         reason_code : typing.Optional[str]
+            The developer supplies a reason code for this outcome. It can contain up to 255 characters.
 
         idempotency_key : typing.Optional[str]
 
@@ -231,8 +253,8 @@ class AsyncUseClient:
             await client.agent.skill.use.create(
                 agent_uuid="agent_uuid",
                 skill_uuid="skill_uuid",
-                search_id="search_id",
-                trace_uuid="trace_uuid",
+                search_id="eyJ2IjoxLCJyZXF1ZXN0X2lkIjoiNmE5MDZlNzAtNTBjYS00ZTQzLWE4NzQtNWZjYWUwMmE3MWZhIn0.signature",
+                trace_uuid="6a906e70-50ca-4e43-a874-5fcae02a71fa",
                 usage="selected",
             )
 
@@ -263,18 +285,22 @@ class AsyncUseClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillUseOutcome:
         """
+        Record Agent Skill Feedback. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         use_uuid : str
             Skill use UUID
 
         outcome : AddAgentSkillUseOutcomeRequestOutcome
+            The developer records the attempt outcome. Valid values are succeeded,
+            failed, partial, abandoned, and unknown.
 
         idempotency_key : typing.Optional[str]
 

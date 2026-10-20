@@ -10,15 +10,50 @@ from .agent_context_skipped_skill import AgentContextSkippedSkill
 
 
 class AgentContext(UniversalBaseModel):
-    context: typing.Optional[str] = None
-    objective: typing.Optional[str] = None
-    partial_sources: typing.Optional[typing.List[AgentContextPartialSource]] = None
-    request_id: typing.Optional[str] = None
-    skipped: typing.Optional[typing.List[AgentContextSkippedSkill]] = None
-    snapshot: typing.Optional[typing.List[AgentContextSkillSnapshot]] = None
-    task_family: typing.Optional[str] = None
-    trace_uuid: typing.Optional[str] = None
-    truncated: typing.Optional[bool] = None
+    context: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns context for this result.
+    """
+
+    objective: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task-instance objective.
+    """
+
+    partial_sources: typing.Optional[typing.List[AgentContextPartialSource]] = pydantic.Field(default=None)
+    """
+    The service returns sources that it could not include in full.
+    """
+
+    request_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID that identifies this context request.
+    """
+
+    skipped: typing.Optional[typing.List[AgentContextSkippedSkill]] = pydantic.Field(default=None)
+    """
+    The service returns the Skills that it skipped.
+    """
+
+    snapshot: typing.Optional[typing.List[AgentContextSkillSnapshot]] = pydantic.Field(default=None)
+    """
+    The service returns a snapshot of the source data.
+    """
+
+    task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task-family slug.
+    """
+
+    trace_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the source Trace.
+    """
+
+    truncated: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The service sets this to true when the context exceeds its output limit.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

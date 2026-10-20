@@ -11,17 +11,54 @@ from .task import Task
 
 
 class AgentVerifierEvidenceInvalidationResult(UniversalBaseModel):
-    affected_skill_uuids: typing.Optional[typing.List[str]] = None
-    agent_uuid: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    created_by: typing.Optional[AgentVerifierPrincipal] = None
-    reason: typing.Optional[str] = None
-    task: typing.Optional[Task] = None
+    affected_skill_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns UUIDs of Skills affected by this invalidation.
+    """
+
+    agent_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the owning Agent.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    created_by: typing.Optional[AgentVerifierPrincipal] = pydantic.Field(default=None)
+    """
+    The service returns the principal that created this assertion.
+    """
+
+    reason: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns why the Verifier revisions were invalidated.
+    """
+
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The service returns the Task that tracks this asynchronous operation.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this resource."),
     ] = None
-    verifier_revisions: typing.Optional[typing.List[int]] = None
-    verifier_uuid: typing.Optional[str] = None
+    """
+    The service returns the UUID that identifies this resource.
+    """
+
+    verifier_revisions: typing.Optional[typing.List[int]] = pydantic.Field(default=None)
+    """
+    The service returns revisions of the Verifiers affected by this invalidation.
+    """
+
+    verifier_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the Verifier linked to this invalidation.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

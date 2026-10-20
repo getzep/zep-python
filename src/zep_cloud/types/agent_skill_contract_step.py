@@ -8,9 +8,20 @@ from .agent_skill_contract_text import AgentSkillContractText
 
 
 class AgentSkillContractStep(UniversalBaseModel):
-    decision: typing.Optional[AgentSkillContractText] = None
-    expected_observations: typing.Optional[typing.List[AgentSkillContractText]] = None
-    instruction: typing.Optional[AgentSkillContractText] = None
+    decision: typing.Optional[AgentSkillContractText] = pydantic.Field(default=None)
+    """
+    The service returns the decision for this operation.
+    """
+
+    expected_observations: typing.Optional[typing.List[AgentSkillContractText]] = pydantic.Field(default=None)
+    """
+    The service returns results to look for after this procedure step.
+    """
+
+    instruction: typing.Optional[AgentSkillContractText] = pydantic.Field(default=None)
+    """
+    The service returns the action for this procedure step.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

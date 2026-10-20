@@ -10,17 +10,54 @@ from .agent_skill_use_outcome import AgentSkillUseOutcome
 
 
 class AgentSkillUse(UniversalBaseModel):
-    agent_version: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    outcome: typing.Optional[AgentSkillUseOutcome] = None
-    reason_code: typing.Optional[str] = None
-    skill_uuid: typing.Optional[str] = None
-    skill_version: typing.Optional[int] = None
-    trace_uuid: typing.Optional[str] = None
-    usage: typing.Optional[str] = None
+    agent_version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Agent version that used this Skill.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    outcome: typing.Optional[AgentSkillUseOutcome] = pydantic.Field(default=None)
+    """
+    The service returns the task outcome.
+    """
+
+    reason_code: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the code that explains this result.
+    """
+
+    skill_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the Skill.
+    """
+
+    skill_version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the version number of the Skill.
+    """
+
+    trace_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the source Trace.
+    """
+
+    usage: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns how the Skill was used.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this resource."),
     ] = None
+    """
+    The service returns the UUID that identifies this resource.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

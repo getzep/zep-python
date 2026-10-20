@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentContextResource(UniversalBaseModel):
-    name: str
-    version: typing.Optional[str] = None
+    name: str = pydantic.Field()
+    """
+    The service returns the display name. At most 128.
+    """
+
+    version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the version of this context resource.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

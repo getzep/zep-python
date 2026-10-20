@@ -11,56 +11,56 @@ from ..core.serialization import FieldMetadata
 class AgentTaskFamilyDescriptor(UniversalBaseModel):
     agent_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The owning Agent UUID.
+    The service returns the owning Agent UUID.
     """
 
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The time the descriptor was created.
+    The service returns the time the descriptor was created.
     """
 
     description: typing.Optional[str] = pydantic.Field(default=None)
     """
-    What the family covers.
+    The service returns what the family covers.
     """
 
     descriptor_version: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The descriptor version the classifier ran against.
+    The service returns the descriptor version the classifier ran against.
     """
 
     distinguishing_tools: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
-    The tools that distinguish this family from the others.
+    The service returns the tools that distinguish this family from the others.
     """
 
     not_for: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The most similar goal that does not belong to the family.
+    The service returns the most similar goal that does not belong to the family.
     """
 
     slug: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The task-family slug members receive.
+    The service returns the task-family slug members receive.
     """
 
     updated_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The time the descriptor was last updated.
+    The service returns the time the descriptor was last updated.
     """
 
     use_when: typing.Optional[str] = pydantic.Field(default=None)
     """
-    When a Trace belongs to the family.
+    The service returns when a Trace belongs to the family.
     """
 
     uuid_: typing_extensions.Annotated[
         typing.Optional[str],
         FieldMetadata(alias="uuid"),
-        pydantic.Field(alias="uuid", description="The stable descriptor UUID."),
+        pydantic.Field(alias="uuid", description="The service returns the stable descriptor UUID."),
     ] = None
     """
-    The stable descriptor UUID.
+    The service returns the stable descriptor UUID.
     """
 
     if IS_PYDANTIC_V2:

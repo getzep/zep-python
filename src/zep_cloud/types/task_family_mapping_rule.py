@@ -10,7 +10,7 @@ from .task_family_mapping_rule_source import TaskFamilyMappingRuleSource
 class TaskFamilyMappingRule(UniversalBaseModel):
     fallback: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Fallback is used when the selected source has no value.
+    The service uses this task family when the source gives no value. The value infer asks Agent Skills to assign the task family automatically.
     """
 
     key: typing.Optional[str] = pydantic.Field(default=None)
@@ -25,12 +25,12 @@ class TaskFamilyMappingRule(UniversalBaseModel):
 
     source: typing.Optional[TaskFamilyMappingRuleSource] = pydantic.Field(default=None)
     """
-    Source selects the task family source.
+    The service reads the task family from this source. The value infer asks Agent Skills to assign the task family automatically.
     """
 
     value: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Value is the fixed task family value.
+    The developer supplies the task-family slug when the source is fixed.
     """
 
     if IS_PYDANTIC_V2:

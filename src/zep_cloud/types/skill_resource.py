@@ -7,9 +7,20 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class SkillResource(UniversalBaseModel):
-    aliases: typing.Optional[typing.List[str]] = None
-    name: typing.Optional[str] = None
-    version: typing.Optional[str] = None
+    aliases: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies alternate names for the resource.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies a display name.
+    """
+
+    version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies the Agent deployment version.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -10,13 +10,34 @@ from .agent_skill_candidate_base_version import AgentSkillCandidateBaseVersion
 
 
 class AgentSkillCandidateReviewResult(UniversalBaseModel):
-    base_versions: typing.Optional[typing.List[AgentSkillCandidateBaseVersion]] = None
-    candidate_uuids: typing.Optional[typing.List[str]] = None
-    decision: typing.Optional[str] = None
-    target_skill_uuids: typing.Optional[typing.List[str]] = None
+    base_versions: typing.Optional[typing.List[AgentSkillCandidateBaseVersion]] = pydantic.Field(default=None)
+    """
+    The service returns Skill versions used as the split-plan base.
+    """
+
+    candidate_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns UUIDs of the candidate Skills in this plan.
+    """
+
+    decision: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Curator decision for this review result. Valid values are add, patch, merge, split, supersede, contradict, retire, reject, and no_change.
+    """
+
+    target_skill_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns UUIDs of the Skills that this plan can update.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this resource."),
     ] = None
+    """
+    The service returns the UUID that identifies this resource.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

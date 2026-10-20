@@ -9,8 +9,15 @@ from .create_agent_request import CreateAgentRequest
 
 
 class AgentSplitPlanDestinationRequest(UniversalBaseModel):
-    agent: CreateAgentRequest
-    skills: typing.List[AgentSplitPlanSkillSelectionRequest]
+    agent: CreateAgentRequest = pydantic.Field()
+    """
+    The developer supplies the Agent settings for this destination.
+    """
+
+    skills: typing.List[AgentSplitPlanSkillSelectionRequest] = pydantic.Field()
+    """
+    The developer lists 1 to 100 Skills to include in this plan.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

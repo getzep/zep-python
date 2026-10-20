@@ -7,13 +7,40 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSkillCandidateBaseVersion(UniversalBaseModel):
-    agent_versions: typing.Optional[typing.List[str]] = None
-    description: typing.Optional[str] = None
-    do_not_use_when: typing.Optional[typing.List[str]] = None
-    markdown: typing.Optional[str] = None
-    name: typing.Optional[str] = None
-    skill_uuid: typing.Optional[str] = None
-    version: typing.Optional[int] = None
+    agent_versions: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns Agent versions that can use the Skill.
+    """
+
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the resource description.
+    """
+
+    do_not_use_when: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns situations in which the Skill must not be used.
+    """
+
+    markdown: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Skill content in Markdown.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the display name.
+    """
+
+    skill_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the Skill.
+    """
+
+    version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the Skill version number.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

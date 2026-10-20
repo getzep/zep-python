@@ -8,10 +8,25 @@ from .agent_trace_summary_byte_range import AgentTraceSummaryByteRange
 
 
 class AgentTraceSummaryExcerptedEvent(UniversalBaseModel):
-    content_bytes: typing.Optional[int] = None
-    event_id: typing.Optional[str] = None
-    omitted_byte_ranges: typing.Optional[typing.List[AgentTraceSummaryByteRange]] = None
-    sequence: typing.Optional[int] = None
+    content_bytes: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the excerpted event content in bytes.
+    """
+
+    event_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the ID of the source event.
+    """
+
+    omitted_byte_ranges: typing.Optional[typing.List[AgentTraceSummaryByteRange]] = pydantic.Field(default=None)
+    """
+    The service returns byte ranges removed from the excerpted event content.
+    """
+
+    sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the sequence number of the excerpted event.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

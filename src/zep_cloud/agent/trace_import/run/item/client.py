@@ -36,7 +36,7 @@ class ItemClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[TraceImportRunItem, TraceImportRunItemPage]:
         """
-        List trace results for this run. Run items do not include source payload.
+        List trace results for this run. Run items do not include source payload. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -112,7 +112,7 @@ class AsyncItemClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[TraceImportRunItem, TraceImportRunItemPage]:
         """
-        List trace results for this run. Run items do not include source payload.
+        List trace results for this run. Run items do not include source payload. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------

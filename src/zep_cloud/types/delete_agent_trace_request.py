@@ -7,7 +7,10 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class DeleteAgentTraceRequest(UniversalBaseModel):
-    expected_revision: int
+    expected_revision: int = pydantic.Field()
+    """
+    The developer supplies the current revision for optimistic concurrency.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

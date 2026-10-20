@@ -11,6 +11,7 @@ from ....core.parse_error import ParsingError
 from ....core.pydantic_utilities import parse_obj_as
 from ....core.request_options import RequestOptions
 from ....errors.bad_request_error import BadRequestError
+from ....errors.conflict_error import ConflictError
 from ....errors.forbidden_error import ForbiddenError
 from ....errors.not_found_error import NotFoundError
 from ....errors.service_unavailable_error import ServiceUnavailableError
@@ -34,7 +35,7 @@ class RawPublicationClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillPublicationLineage]:
         """
-        Find a destination Skill by its source Agent, Skill, and version. The endpoint returns 404 until an automatic publication is ready or after it is invalidated.
+        Find a destination Skill by its source Agent, Skill, and version. The endpoint returns 404 until an automatic publication is ready or after it is invalidated. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -150,7 +151,7 @@ class RawPublicationClient:
         self, agent_uuid: str, skill_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[AgentSkillPublicationLineage]:
         """
-        Get the publication that created a destination Skill. Use its source version and policy identity to verify a copied Skill. The endpoint returns 404 for unpublished and invalidated Skills.
+        Get the publication that created a destination Skill. Use its source version and policy identity to verify a copied Skill. The endpoint returns 404 for unpublished and invalidated Skills. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -158,7 +159,7 @@ class RawPublicationClient:
             Destination Agent UUID
 
         skill_uuid : str
-            Destination Skill UUID
+            Skill UUID, or the 8-character short_id
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -227,6 +228,17 @@ class RawPublicationClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 503:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
@@ -266,7 +278,7 @@ class AsyncRawPublicationClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillPublicationLineage]:
         """
-        Find a destination Skill by its source Agent, Skill, and version. The endpoint returns 404 until an automatic publication is ready or after it is invalidated.
+        Find a destination Skill by its source Agent, Skill, and version. The endpoint returns 404 until an automatic publication is ready or after it is invalidated. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -382,7 +394,7 @@ class AsyncRawPublicationClient:
         self, agent_uuid: str, skill_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[AgentSkillPublicationLineage]:
         """
-        Get the publication that created a destination Skill. Use its source version and policy identity to verify a copied Skill. The endpoint returns 404 for unpublished and invalidated Skills.
+        Get the publication that created a destination Skill. Use its source version and policy identity to verify a copied Skill. The endpoint returns 404 for unpublished and invalidated Skills. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -390,7 +402,7 @@ class AsyncRawPublicationClient:
             Destination Agent UUID
 
         skill_uuid : str
-            Destination Skill UUID
+            Skill UUID, or the 8-character short_id
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -450,6 +462,17 @@ class AsyncRawPublicationClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

@@ -9,10 +9,25 @@ from .agent_trace_summary_omitted_range import AgentTraceSummaryOmittedRange
 
 
 class AgentTraceSummaryCoverage(UniversalBaseModel):
-    excerpted_events: typing.Optional[typing.List[AgentTraceSummaryExcerptedEvent]] = None
-    first_sequence: typing.Optional[int] = None
-    last_sequence: typing.Optional[int] = None
-    omitted_sequence_ranges: typing.Optional[typing.List[AgentTraceSummaryOmittedRange]] = None
+    excerpted_events: typing.Optional[typing.List[AgentTraceSummaryExcerptedEvent]] = pydantic.Field(default=None)
+    """
+    The service returns events that the summary includes as excerpts.
+    """
+
+    first_sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the first sequence number covered by this summary.
+    """
+
+    last_sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the last sequence number covered by this summary.
+    """
+
+    omitted_sequence_ranges: typing.Optional[typing.List[AgentTraceSummaryOmittedRange]] = pydantic.Field(default=None)
+    """
+    The service returns sequence ranges that the summary omits.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

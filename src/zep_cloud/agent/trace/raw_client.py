@@ -69,23 +69,32 @@ class RawTraceClient:
             Agent UUID
 
         objective : str
-            The task-instance objective captured for this attempt.
+            The developer describes the task instance. The create request requires a non-empty value but
+            does not check its size. An AppendAgentTraceEventRequest returns 400 if the Trace objective
+            exceeds 8 KiB (8,192 bytes).
 
         learn_from : typing.Optional[bool]
-            Whether eligible evidence may participate in learning. Defaults to true.
+            The developer supplies whether eligible evidence may participate in learning. Defaults to
+            true.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Developer metadata used to organize and filter Traces.
 
         parent_trace_uuid : typing.Optional[str]
-            The parent Trace UUID when this attempt retries an earlier attempt.
+            The developer supplies the parent Trace UUID when this attempt retries an earlier attempt.
 
         task_family : typing.Optional[str]
-            The task-family slug. Optional when inferred task families are enabled
-            for the account: the service assigns one after the Trace closes.
+            The developer may set a task-family slug. If the developer omits it, Agent Skills assigns the
+            Trace to a task family automatically. If Agent Skills cannot assign a task family, the
+            `task_family_inference` field of the Trace is `unassigned`. A BYOM configuration requires `task_family`. A
+            strict-residency deployment requires `task_family`. Without task_family in either case, the
+            API returns 400 `invalid_request` with the message `task_family is required`. The slug must
+            contain 1 to 128 lowercase letters, digits, `.`, `_`, `/`, or `-`. It must start with a
+            lowercase letter or digit.
 
         trace_id : typing.Optional[str]
-            The optional customer-assigned identifier, unique within the Agent.
+            The developer may set an identifier that is unique within the Agent. A retry with the same
+            create parameters returns 200 and the existing Trace. Different parameters return 409.
 
         idempotency_key : typing.Optional[str]
 
@@ -239,7 +248,8 @@ class RawTraceClient:
             Filters to Traces whose metadata contains these key-value pairs.
 
         outcome : typing.Optional[AgentTraceOutcome]
-            Filters to one reported outcome.
+            The developer supplies filters to one reported outcome. Valid values are succeeded, failed,
+            partial, abandoned, unknown.
 
         parent_trace_uuid : typing.Optional[str]
             Filters to direct retries of this parent Trace.
@@ -484,6 +494,7 @@ class RawTraceClient:
             Trace UUID
 
         expected_revision : int
+            The developer supplies the current revision for optimistic concurrency.
 
         idempotency_key : typing.Optional[str]
 
@@ -746,6 +757,39 @@ class RawTraceClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 409:
                 raise ConflictError(
                     headers=dict(_response.headers),
@@ -868,6 +912,39 @@ class RawTraceClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 409:
                 raise ConflictError(
                     headers=dict(_response.headers),
@@ -958,6 +1035,39 @@ class RawTraceClient:
                 return HttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1063,6 +1173,39 @@ class RawTraceClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 503:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
@@ -1100,10 +1243,13 @@ class RawTraceClient:
         occurred_at: typing.Optional[str] = OMIT,
         sequence: typing.Optional[int] = OMIT,
         sources: typing.Optional[typing.Sequence[AgentTraceEventSource]] = OMIT,
+        tool_call_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentTraceEvent]:
         """
+        A tool call and its result can share a tool_call_id. For example, append {"event_type":"tool_call","tool_call_id":"call_8f2b","content":"Search orders","context":{"tools":[{"name":"search_orders"}]}} and {"event_type":"tool_result","tool_call_id":"call_8f2b","content":"Order results","context":{"tools":[{"name":"search_orders"}]}}.
+
         Parameters
         ----------
         agent_uuid : str
@@ -1117,16 +1263,25 @@ class RawTraceClient:
         content : typing.Optional[str]
 
         context : typing.Optional[AgentTraceEventContext]
+            Context gives the model, the tools, and the environments of the event. context.tools is the tool
+            that the event calls or returns, and Skills learning reads it. A tool event can omit the tool name.
 
         event_id : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata is developer data. Skills learning does not read it.
 
         occurred_at : typing.Optional[str]
 
         sequence : typing.Optional[int]
 
         sources : typing.Optional[typing.Sequence[AgentTraceEventSource]]
+
+        tool_call_id : typing.Optional[str]
+            ToolCallID is the ID that the agent framework gives a tool call. Use the same ID on
+            the tool_call and tool_result events. It is valid only on these event types. A result
+            without a matching call is valid. OpenAI uses tool_calls[].id, Anthropic uses the
+            tool_use block id, and LangChain uses ToolMessage.tool_call_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -1154,6 +1309,7 @@ class RawTraceClient:
                 "sources": convert_and_respect_annotation_metadata(
                     object_=sources, annotation=typing.Sequence[AgentTraceEventSource], direction="write"
                 ),
+                "tool_call_id": tool_call_id,
             },
             headers={
                 "content-type": "application/json",
@@ -1183,8 +1339,30 @@ class RawTraceClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 403:
                 raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1252,6 +1430,7 @@ class RawTraceClient:
             Event UUID
 
         expected_revision : int
+            The developer supplies the current revision for optimistic concurrency.
 
         idempotency_key : typing.Optional[str]
 
@@ -1355,6 +1534,39 @@ class RawTraceClient:
                 return HttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -1557,23 +1769,32 @@ class AsyncRawTraceClient:
             Agent UUID
 
         objective : str
-            The task-instance objective captured for this attempt.
+            The developer describes the task instance. The create request requires a non-empty value but
+            does not check its size. An AppendAgentTraceEventRequest returns 400 if the Trace objective
+            exceeds 8 KiB (8,192 bytes).
 
         learn_from : typing.Optional[bool]
-            Whether eligible evidence may participate in learning. Defaults to true.
+            The developer supplies whether eligible evidence may participate in learning. Defaults to
+            true.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Developer metadata used to organize and filter Traces.
 
         parent_trace_uuid : typing.Optional[str]
-            The parent Trace UUID when this attempt retries an earlier attempt.
+            The developer supplies the parent Trace UUID when this attempt retries an earlier attempt.
 
         task_family : typing.Optional[str]
-            The task-family slug. Optional when inferred task families are enabled
-            for the account: the service assigns one after the Trace closes.
+            The developer may set a task-family slug. If the developer omits it, Agent Skills assigns the
+            Trace to a task family automatically. If Agent Skills cannot assign a task family, the
+            `task_family_inference` field of the Trace is `unassigned`. A BYOM configuration requires `task_family`. A
+            strict-residency deployment requires `task_family`. Without task_family in either case, the
+            API returns 400 `invalid_request` with the message `task_family is required`. The slug must
+            contain 1 to 128 lowercase letters, digits, `.`, `_`, `/`, or `-`. It must start with a
+            lowercase letter or digit.
 
         trace_id : typing.Optional[str]
-            The optional customer-assigned identifier, unique within the Agent.
+            The developer may set an identifier that is unique within the Agent. A retry with the same
+            create parameters returns 200 and the existing Trace. Different parameters return 409.
 
         idempotency_key : typing.Optional[str]
 
@@ -1727,7 +1948,8 @@ class AsyncRawTraceClient:
             Filters to Traces whose metadata contains these key-value pairs.
 
         outcome : typing.Optional[AgentTraceOutcome]
-            Filters to one reported outcome.
+            The developer supplies filters to one reported outcome. Valid values are succeeded, failed,
+            partial, abandoned, unknown.
 
         parent_trace_uuid : typing.Optional[str]
             Filters to direct retries of this parent Trace.
@@ -1975,6 +2197,7 @@ class AsyncRawTraceClient:
             Trace UUID
 
         expected_revision : int
+            The developer supplies the current revision for optimistic concurrency.
 
         idempotency_key : typing.Optional[str]
 
@@ -2237,6 +2460,39 @@ class AsyncRawTraceClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 409:
                 raise ConflictError(
                     headers=dict(_response.headers),
@@ -2359,6 +2615,39 @@ class AsyncRawTraceClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 409:
                 raise ConflictError(
                     headers=dict(_response.headers),
@@ -2449,6 +2738,39 @@ class AsyncRawTraceClient:
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -2557,6 +2879,39 @@ class AsyncRawTraceClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 503:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
@@ -2594,10 +2949,13 @@ class AsyncRawTraceClient:
         occurred_at: typing.Optional[str] = OMIT,
         sequence: typing.Optional[int] = OMIT,
         sources: typing.Optional[typing.Sequence[AgentTraceEventSource]] = OMIT,
+        tool_call_id: typing.Optional[str] = OMIT,
         idempotency_key: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentTraceEvent]:
         """
+        A tool call and its result can share a tool_call_id. For example, append {"event_type":"tool_call","tool_call_id":"call_8f2b","content":"Search orders","context":{"tools":[{"name":"search_orders"}]}} and {"event_type":"tool_result","tool_call_id":"call_8f2b","content":"Order results","context":{"tools":[{"name":"search_orders"}]}}.
+
         Parameters
         ----------
         agent_uuid : str
@@ -2611,16 +2969,25 @@ class AsyncRawTraceClient:
         content : typing.Optional[str]
 
         context : typing.Optional[AgentTraceEventContext]
+            Context gives the model, the tools, and the environments of the event. context.tools is the tool
+            that the event calls or returns, and Skills learning reads it. A tool event can omit the tool name.
 
         event_id : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
+            Metadata is developer data. Skills learning does not read it.
 
         occurred_at : typing.Optional[str]
 
         sequence : typing.Optional[int]
 
         sources : typing.Optional[typing.Sequence[AgentTraceEventSource]]
+
+        tool_call_id : typing.Optional[str]
+            ToolCallID is the ID that the agent framework gives a tool call. Use the same ID on
+            the tool_call and tool_result events. It is valid only on these event types. A result
+            without a matching call is valid. OpenAI uses tool_calls[].id, Anthropic uses the
+            tool_use block id, and LangChain uses ToolMessage.tool_call_id.
 
         idempotency_key : typing.Optional[str]
 
@@ -2648,6 +3015,7 @@ class AsyncRawTraceClient:
                 "sources": convert_and_respect_annotation_metadata(
                     object_=sources, annotation=typing.Sequence[AgentTraceEventSource], direction="write"
                 ),
+                "tool_call_id": tool_call_id,
             },
             headers={
                 "content-type": "application/json",
@@ -2677,8 +3045,30 @@ class AsyncRawTraceClient:
                         ),
                     ),
                 )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 403:
                 raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -2746,6 +3136,7 @@ class AsyncRawTraceClient:
             Event UUID
 
         expected_revision : int
+            The developer supplies the current revision for optimistic concurrency.
 
         idempotency_key : typing.Optional[str]
 
@@ -2849,6 +3240,39 @@ class AsyncRawTraceClient:
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

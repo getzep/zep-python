@@ -42,17 +42,21 @@ class VersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillVersion:
         """
+        Restore Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         version : int
+            The developer supplies the Skill version to restore.
 
         idempotency_key : typing.Optional[str]
 
@@ -99,13 +103,15 @@ class VersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillVersion, Pagev4AgentSkillVersion]:
         """
+        List Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
@@ -160,17 +166,21 @@ class VersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillVersionComparison:
         """
+        Compare Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         from_version : int
+            The developer supplies the source version to compare. It must be at least 1.
 
         to_version : int
+            The developer supplies the destination version to compare. It must be at least 1.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -206,22 +216,28 @@ class VersionClient:
         version: int,
         *,
         markdown_format: typing.Optional[VersionGetRequestMarkdownFormat] = None,
+        include: typing.Optional[typing.Literal["contract"]] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillVersion:
         """
+        Get Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         version : int
             Skill version
 
         markdown_format : typing.Optional[VersionGetRequestMarkdownFormat]
             Markdown form: agent (default) or full
+
+        include : typing.Optional[typing.Literal["contract"]]
+            Optional field to add to the response: contract
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -245,7 +261,12 @@ class VersionClient:
         )
         """
         _response = self._raw_client.get(
-            agent_uuid, skill_uuid, version, markdown_format=markdown_format, request_options=request_options
+            agent_uuid,
+            skill_uuid,
+            version,
+            markdown_format=markdown_format,
+            include=include,
+            request_options=request_options,
         )
         return _response.data
 
@@ -276,17 +297,21 @@ class AsyncVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillVersion:
         """
+        Restore Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         version : int
+            The developer supplies the Skill version to restore.
 
         idempotency_key : typing.Optional[str]
 
@@ -341,13 +366,15 @@ class AsyncVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillVersion, Pagev4AgentSkillVersion]:
         """
+        List Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
@@ -411,17 +438,21 @@ class AsyncVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillVersionComparison:
         """
+        Compare Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         from_version : int
+            The developer supplies the source version to compare. It must be at least 1.
 
         to_version : int
+            The developer supplies the destination version to compare. It must be at least 1.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -465,22 +496,28 @@ class AsyncVersionClient:
         version: int,
         *,
         markdown_format: typing.Optional[VersionGetRequestMarkdownFormat] = None,
+        include: typing.Optional[typing.Literal["contract"]] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSkillVersion:
         """
+        Get Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         version : int
             Skill version
 
         markdown_format : typing.Optional[VersionGetRequestMarkdownFormat]
             Markdown form: agent (default) or full
+
+        include : typing.Optional[typing.Literal["contract"]]
+            Optional field to add to the response: contract
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -512,6 +549,11 @@ class AsyncVersionClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get(
-            agent_uuid, skill_uuid, version, markdown_format=markdown_format, request_options=request_options
+            agent_uuid,
+            skill_uuid,
+            version,
+            markdown_format=markdown_format,
+            include=include,
+            request_options=request_options,
         )
         return _response.data

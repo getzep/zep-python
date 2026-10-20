@@ -9,32 +9,33 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 class AgentTraceTaskFamilyInference(UniversalBaseModel):
     assigned_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The time the outcome was recorded.
+    The service returns the time the outcome was recorded.
     """
 
     classifier_version: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The classifier version that produced the outcome.
+    The service records the classifier version that produced the outcome.
     """
 
     confidence: typing.Optional[float] = pydantic.Field(default=None)
     """
-    The classifier confidence of the accepted or top candidate.
+    The service records the classifier confidence for the accepted or top candidate, from 0 to 1.
     """
 
     descriptor_version: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The descriptor set version the classifier ran against.
+    The service returns the descriptor set version the classifier ran against.
     """
 
     learning_reusable: typing.Optional[bool] = pydantic.Field(default=None)
     """
-    Whether the classifier marked the Trace reusable for learning.
+    The service returns whether the classifier marked the Trace reusable for learning.
     """
 
     state: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The inference state: pending, assigned, or unassigned.
+    The service returns pending while classification is in progress, assigned when a task family
+    is selected, or unassigned when no family is selected.
     """
 
     if IS_PYDANTIC_V2:

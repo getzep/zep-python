@@ -9,21 +9,47 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 class AgentLearningState(UniversalBaseModel):
     approval: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Approval is the approval mode of the Agent: manual or auto. The default is auto.
+    The service returns the approval mode. Valid values are auto and manual. The default is auto.
     """
 
-    compilation_mode: typing.Optional[str] = None
+    compilation_mode: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Agent's learning mode. Valid values are scheduled, manual, and
+    on_close. The default is scheduled.
+    """
+
     compilation_pending: typing.Optional[bool] = pydantic.Field(default=None)
     """
-    CompilationPending is true while a learning run for the task family
-    waits to start or runs. Skills from that run are not yet available.
+    The service sets this to true while a learning run waits to start or runs.
+    Skills from that run are not yet available.
     """
 
-    eligible_trace_count: typing.Optional[int] = None
-    minimum_attempt_families: typing.Optional[int] = None
-    next_step: typing.Optional[str] = None
-    required_evaluations: typing.Optional[typing.List[str]] = None
-    task_family: typing.Optional[str] = None
+    eligible_trace_count: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service reports the number of Traces that can support learning.
+    """
+
+    minimum_attempt_families: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service reports how many distinct attempt families a run needs. The default is 3 in
+    scheduled mode and 1 in on_close mode.
+    """
+
+    next_step: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns text that tells a person what to do next. Code must
+    not treat this text as a stable value.
+    """
+
+    required_evaluations: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns the evaluations that each candidate must pass.
+    """
+
+    task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the category whose learning progress this record describes.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

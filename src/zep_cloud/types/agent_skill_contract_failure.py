@@ -8,8 +8,15 @@ from .agent_skill_contract_text import AgentSkillContractText
 
 
 class AgentSkillContractFailure(UniversalBaseModel):
-    condition: typing.Optional[AgentSkillContractText] = None
-    recovery: typing.Optional[typing.List[AgentSkillContractText]] = None
+    condition: typing.Optional[AgentSkillContractText] = pydantic.Field(default=None)
+    """
+    The service returns the failure condition.
+    """
+
+    recovery: typing.Optional[typing.List[AgentSkillContractText]] = pydantic.Field(default=None)
+    """
+    The service returns actions that recover from this failure.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

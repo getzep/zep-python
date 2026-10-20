@@ -8,9 +8,21 @@ from .agent_trace_summary_omission_reason import AgentTraceSummaryOmissionReason
 
 
 class AgentTraceSummaryOmittedRange(UniversalBaseModel):
-    first_sequence: typing.Optional[int] = None
-    last_sequence: typing.Optional[int] = None
-    reason: typing.Optional[AgentTraceSummaryOmissionReason] = None
+    first_sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the first sequence number in the omitted range.
+    """
+
+    last_sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the last sequence number in the omitted range.
+    """
+
+    reason: typing.Optional[AgentTraceSummaryOmissionReason] = pydantic.Field(default=None)
+    """
+    The service returns the reason for this result. Valid values are narrower_authorization_boundary,
+    acknowledged_gap, abandoned_gap, processing_failed, source_deleted.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

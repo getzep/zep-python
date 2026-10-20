@@ -8,9 +8,20 @@ from .agent_skill_search_hit import AgentSkillSearchHit
 
 
 class AgentSkillSearchResponse(UniversalBaseModel):
-    items: typing.Optional[typing.List[AgentSkillSearchHit]] = None
-    next_cursor: typing.Optional[str] = None
-    search_id: typing.Optional[str] = None
+    items: typing.Optional[typing.List[AgentSkillSearchHit]] = pydantic.Field(default=None)
+    """
+    The service returns the items in this page.
+    """
+
+    next_cursor: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the cursor for the next page, when one exists.
+    """
+
+    search_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the signed token for this result set.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

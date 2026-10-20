@@ -12,7 +12,12 @@ class AgentTraceEventContext(UniversalBaseModel):
     artifacts: typing.Optional[typing.List[AgentTraceResourceRef]] = None
     environments: typing.Optional[typing.List[AgentTraceResourceRef]] = None
     model: typing.Optional[AgentTraceResourceRef] = None
-    tools: typing.Optional[typing.List[AgentTraceResourceRef]] = None
+    tools: typing.Optional[typing.List[AgentTraceResourceRef]] = pydantic.Field(default=None)
+    """
+    Tools identifies the tool that the event calls or returns. Skills learning reads this field.
+    It is optional. A tool event can omit the tool name.
+    """
+
     verification: typing.Optional[AgentTraceVerification] = None
 
     if IS_PYDANTIC_V2:

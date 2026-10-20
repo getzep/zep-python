@@ -10,33 +10,61 @@ from .agent_memory_settings_compilation_mode import AgentMemorySettingsCompilati
 
 
 class AgentMemorySettings(UniversalBaseModel):
-    admission_evaluation_requirements: typing.Optional[typing.List[AgentMemoryEvaluationPolicy]] = None
-    approval: typing.Optional[AgentMemorySettingsApproval] = None
-    approval_minimum_attempt_families: typing.Optional[int] = None
-    approval_required_tools: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    admission_evaluation_requirements: typing.Optional[typing.List[AgentMemoryEvaluationPolicy]] = pydantic.Field(
+        default=None
+    )
     """
-    ApprovalRequiredTools lists the tool names that need a member approval in
-    auto approval. A generated Skill that uses one of these tools waits for a
-    member. The default is an empty list.
+    The developer lists the evaluations that each candidate must pass for its category.
     """
 
-    auto_approval_task_families: typing.Optional[typing.List[str]] = None
-    compilation_mode: typing.Optional[AgentMemorySettingsCompilationMode] = None
+    approval: typing.Optional[AgentMemorySettingsApproval] = pydantic.Field(default=None)
+    """
+    The developer sets the approval mode. Valid values are auto and manual. The default is auto.
+    """
+
+    approval_minimum_attempt_families: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The developer sets the minimum number of distinct attempt families for admission. The range is
+    1 to 16, and the default is 1.
+    """
+
+    approval_required_tools: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer lists tool names that need member approval in auto approval. A generated Skill
+    that uses one of these tools waits for a member. The list can contain up to 256 unique names,
+    each at most 255 characters. The default is an empty list.
+    """
+
+    auto_approval_task_families: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer lists task-family slugs that use auto approval. An empty list applies auto
+    approval to all task families.
+    """
+
+    compilation_mode: typing.Optional[AgentMemorySettingsCompilationMode] = pydantic.Field(default=None)
+    """
+    The developer selects the compilation mode. Valid values are scheduled, manual, and on_close.
+    The default is scheduled.
+    """
+
     provisional_expiry_days: typing.Optional[int] = pydantic.Field(default=None)
     """
-    ProvisionalExpiryDays is the period after which Zep retires a provisional
-    Skill that no application used. When it is not set, provisional Skills do
-    not expire.
+    The developer sets how many days an unused provisional Skill can remain before the service
+    retires it. The range is 1 to 3650 days. If omitted, provisional Skills do not expire.
     """
 
     provisional_skill_limit: typing.Optional[int] = pydantic.Field(default=None)
     """
-    ProvisionalSkillLimit is the maximum count of provisional Skills in one
-    task family. Over the limit, a new provisional Skill waits for a member.
-    When it is not set, no limit applies.
+    The developer sets the maximum number of provisional Skills in one category. The range is 1 to
+    1000. A new Skill waits for a member when the count is over the limit. If omitted, no limit
+    applies.
     """
 
-    retention_days: typing.Optional[int] = None
+    retention_days: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The developer sets the age-based cleanup period for eligible proposal sets. The range is 1 to
+    3650 days. If omitted, the setting does not enable age-based cleanup.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

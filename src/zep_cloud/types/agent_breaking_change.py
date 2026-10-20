@@ -9,17 +9,34 @@ from ..core.serialization import FieldMetadata
 
 
 class AgentBreakingChange(UniversalBaseModel):
-    affected_skill_count: typing.Optional[int] = None
-    agent_uuid: typing.Optional[str] = None
+    affected_skill_count: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the number of Skills affected by the declaration.
+    """
+
+    agent_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the Agent that received this declaration.
+    """
+
     revision: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The Agent revision produced by this declaration, stable on replay.
+    The service returns the Agent revision produced by this declaration, stable on replay.
     """
 
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service assigns the UUID that identifies this declaration."),
     ] = None
-    version: typing.Optional[str] = None
+    """
+    The service assigns the UUID that identifies this declaration.
+    """
+
+    version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the deployment version recorded by this declaration.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -9,21 +9,74 @@ from ..core.serialization import FieldMetadata
 
 
 class AgentSkillEvaluation(UniversalBaseModel):
-    controlled_test: typing.Optional[bool] = None
-    created_at: typing.Optional[str] = None
-    environment: typing.Optional[str] = None
-    evaluated_by: typing.Optional[str] = None
-    evaluator_version: typing.Optional[str] = None
-    evidence_reference: typing.Optional[str] = None
-    metrics: typing.Optional[typing.Dict[str, float]] = None
-    skill_uuid: typing.Optional[str] = None
-    skill_version: typing.Optional[int] = None
-    trace_uuid: typing.Optional[str] = None
-    use_uuid: typing.Optional[str] = None
+    controlled_test: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The developer sets this to true when a controlled test produced the result.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    environment: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the environment used for this evaluation.
+    """
+
+    evaluated_by: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the evaluation source. Valid values are customer, tool, offline_corpus, and policy.
+    """
+
+    evaluator_version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the version of the evaluation rule.
+    """
+
+    evidence_reference: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the link to supporting evidence, when one exists.
+    """
+
+    metrics: typing.Optional[typing.Dict[str, float]] = pydantic.Field(default=None)
+    """
+    The service returns evaluation metrics.
+    """
+
+    skill_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the Skill.
+    """
+
+    skill_version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the version number of the Skill.
+    """
+
+    trace_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the source Trace.
+    """
+
+    use_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the recorded Skill use, when linked.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this resource."),
     ] = None
-    verdict: typing.Optional[str] = None
+    """
+    The service returns the UUID that identifies this resource.
+    """
+
+    verdict: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the evaluation verdict.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -12,26 +12,106 @@ from .agent_trace_summary_verification import AgentTraceSummaryVerification
 
 
 class AgentTraceStructuredSummary(UniversalBaseModel):
-    ambiguities: typing.Optional[typing.List[AgentTraceSummaryStatement]] = None
-    approach: typing.Optional[typing.List[AgentTraceSummaryStatement]] = None
-    artifacts: typing.Optional[typing.List[AgentTraceSummaryResource]] = None
-    candidate_lessons: typing.Optional[typing.List[AgentTraceSummaryStatement]] = None
-    corrections: typing.Optional[typing.List[AgentTraceSummaryStatement]] = None
-    coverage: typing.Optional[AgentTraceSummaryCoverage] = None
-    effective_steps: typing.Optional[typing.List[AgentTraceSummaryStatement]] = None
-    environments: typing.Optional[typing.List[AgentTraceSummaryResource]] = None
-    errors: typing.Optional[typing.List[AgentTraceSummaryStatement]] = None
-    event_time_basis: typing.Optional[str] = None
-    first_event_time: typing.Optional[str] = None
-    ineffective_steps: typing.Optional[typing.List[AgentTraceSummaryStatement]] = None
-    last_event_time: typing.Optional[str] = None
-    objective: typing.Optional[str] = None
-    recoveries: typing.Optional[typing.List[AgentTraceSummaryStatement]] = None
-    reported_outcome: typing.Optional[AgentTraceOutcome] = None
-    result: typing.Optional[AgentTraceSummaryStatement] = None
-    task_family: typing.Optional[str] = None
-    tools: typing.Optional[typing.List[AgentTraceSummaryResource]] = None
-    verification: typing.Optional[AgentTraceSummaryVerification] = None
+    ambiguities: typing.Optional[typing.List[AgentTraceSummaryStatement]] = pydantic.Field(default=None)
+    """
+    The service returns unresolved ambiguities.
+    """
+
+    approach: typing.Optional[typing.List[AgentTraceSummaryStatement]] = pydantic.Field(default=None)
+    """
+    The service returns verification method.
+    """
+
+    artifacts: typing.Optional[typing.List[AgentTraceSummaryResource]] = pydantic.Field(default=None)
+    """
+    The service returns linked artifacts.
+    """
+
+    candidate_lessons: typing.Optional[typing.List[AgentTraceSummaryStatement]] = pydantic.Field(default=None)
+    """
+    The service returns lessons that the learning process may use.
+    """
+
+    corrections: typing.Optional[typing.List[AgentTraceSummaryStatement]] = pydantic.Field(default=None)
+    """
+    The service returns corrective actions.
+    """
+
+    coverage: typing.Optional[AgentTraceSummaryCoverage] = pydantic.Field(default=None)
+    """
+    The service returns the event coverage of the summary.
+    """
+
+    effective_steps: typing.Optional[typing.List[AgentTraceSummaryStatement]] = pydantic.Field(default=None)
+    """
+    The service returns actions that helped complete the task.
+    """
+
+    environments: typing.Optional[typing.List[AgentTraceSummaryResource]] = pydantic.Field(default=None)
+    """
+    The service returns environment names used by the Skill.
+    """
+
+    errors: typing.Optional[typing.List[AgentTraceSummaryStatement]] = pydantic.Field(default=None)
+    """
+    The service returns verification errors.
+    """
+
+    event_time_basis: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns how event times were selected for the summary.
+    """
+
+    first_event_time: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the time of the first event in the summary.
+    """
+
+    ineffective_steps: typing.Optional[typing.List[AgentTraceSummaryStatement]] = pydantic.Field(default=None)
+    """
+    The service returns actions that did not help complete the task.
+    """
+
+    last_event_time: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the time of the last event in the summary.
+    """
+
+    objective: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task-instance objective.
+    """
+
+    recoveries: typing.Optional[typing.List[AgentTraceSummaryStatement]] = pydantic.Field(default=None)
+    """
+    The service returns recovery actions.
+    """
+
+    reported_outcome: typing.Optional[AgentTraceOutcome] = pydantic.Field(default=None)
+    """
+    The service returns the outcome reported for the Trace. Valid values are succeeded, failed, partial,
+    abandoned, unknown.
+    """
+
+    result: typing.Optional[AgentTraceSummaryStatement] = pydantic.Field(default=None)
+    """
+    The service returns verification result.
+    """
+
+    task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task-family slug.
+    """
+
+    tools: typing.Optional[typing.List[AgentTraceSummaryResource]] = pydantic.Field(default=None)
+    """
+    The service returns tool names used by the Skill.
+    """
+
+    verification: typing.Optional[AgentTraceSummaryVerification] = pydantic.Field(default=None)
+    """
+    The service returns the verification status and its evidence.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

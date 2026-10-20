@@ -35,13 +35,15 @@ class EvidenceClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillEvidence, Pagev4AgentSkillEvidence]:
         """
+        List Agent Skill Evidence. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
@@ -104,13 +106,15 @@ class AsyncEvidenceClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillEvidence, Pagev4AgentSkillEvidence]:
         """
+        List Agent Skill Evidence. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.

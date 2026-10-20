@@ -9,7 +9,8 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 class TraceProviderProject(UniversalBaseModel):
     created_at: typing.Optional[str] = pydantic.Field(default=None)
     """
-    CreatedAt is the project creation time, when the provider returns it.
+    The provider supplies this creation time when it has one. The service
+    returns it when it is available.
     """
 
     id: typing.Optional[str] = pydantic.Field(default=None)

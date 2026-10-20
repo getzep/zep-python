@@ -9,6 +9,7 @@ if typing.TYPE_CHECKING:
     from .graph_context_request_recency_bias import GraphContextRequestRecencyBias
     from .graph_list_request_order import GraphListRequestOrder
     from .graph_list_request_order_by import GraphListRequestOrderBy
+    from .graph_query_request_mode import GraphQueryRequestMode
     from .search_edges_request_reranker import SearchEdgesRequestReranker
     from .search_episodes_request_reranker import SearchEpisodesRequestReranker
     from .search_nodes_request_reranker import SearchNodesRequestReranker
@@ -19,6 +20,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "GraphContextRequestRecencyBias": ".graph_context_request_recency_bias",
     "GraphListRequestOrder": ".graph_list_request_order",
     "GraphListRequestOrderBy": ".graph_list_request_order_by",
+    "GraphQueryRequestMode": ".graph_query_request_mode",
     "SearchEdgesRequestReranker": ".search_edges_request_reranker",
     "SearchEpisodesRequestReranker": ".search_episodes_request_reranker",
     "SearchNodesRequestReranker": ".search_nodes_request_reranker",
@@ -53,6 +55,7 @@ __all__ = [
     "GraphContextRequestRecencyBias",
     "GraphListRequestOrder",
     "GraphListRequestOrderBy",
+    "GraphQueryRequestMode",
     "SearchEdgesRequestReranker",
     "SearchEpisodesRequestReranker",
     "SearchNodesRequestReranker",

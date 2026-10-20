@@ -8,7 +8,11 @@ from .add_agent_skill_use_outcome_request_outcome import AddAgentSkillUseOutcome
 
 
 class AddAgentSkillUseOutcomeRequest(UniversalBaseModel):
-    outcome: AddAgentSkillUseOutcomeRequestOutcome
+    outcome: AddAgentSkillUseOutcomeRequestOutcome = pydantic.Field()
+    """
+    The developer records the attempt outcome. Valid values are succeeded,
+    failed, partial, abandoned, and unknown.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

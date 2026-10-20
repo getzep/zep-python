@@ -17,6 +17,8 @@ from ..errors.unauthorized_error import UnauthorizedError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.task import Task
 from ..types.task_page import TaskPage
+from .types.task_list_request_status import TaskListRequestStatus
+from .types.task_list_request_type import TaskListRequestType
 from pydantic import ValidationError
 
 
@@ -29,6 +31,8 @@ class RawTaskClient:
         *,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        status: typing.Optional[TaskListRequestStatus] = None,
+        type: typing.Optional[TaskListRequestType] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Task, TaskPage]:
         """
@@ -39,6 +43,12 @@ class RawTaskClient:
 
         cursor : typing.Optional[str]
             Opaque page cursor
+
+        status : typing.Optional[TaskListRequestStatus]
+            Return only the tasks with this status
+
+        type : typing.Optional[TaskListRequestType]
+            Return only the tasks of this type
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -54,6 +64,8 @@ class RawTaskClient:
             params={
                 "page_size": page_size,
                 "cursor": cursor,
+                "status": status,
+                "type": type,
             },
             request_options=request_options,
         )
@@ -72,6 +84,8 @@ class RawTaskClient:
                 _get_next = lambda: self.list(
                     page_size=page_size,
                     cursor=_parsed_next,
+                    status=status,
+                    type=type,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -207,6 +221,8 @@ class AsyncRawTaskClient:
         *,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        status: typing.Optional[TaskListRequestStatus] = None,
+        type: typing.Optional[TaskListRequestType] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Task, TaskPage]:
         """
@@ -217,6 +233,12 @@ class AsyncRawTaskClient:
 
         cursor : typing.Optional[str]
             Opaque page cursor
+
+        status : typing.Optional[TaskListRequestStatus]
+            Return only the tasks with this status
+
+        type : typing.Optional[TaskListRequestType]
+            Return only the tasks of this type
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -232,6 +254,8 @@ class AsyncRawTaskClient:
             params={
                 "page_size": page_size,
                 "cursor": cursor,
+                "status": status,
+                "type": type,
             },
             request_options=request_options,
         )
@@ -252,6 +276,8 @@ class AsyncRawTaskClient:
                     return await self.list(
                         page_size=page_size,
                         cursor=_parsed_next,
+                        status=status,
+                        type=type,
                         request_options=request_options,
                     )
 

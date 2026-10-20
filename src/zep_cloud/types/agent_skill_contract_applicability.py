@@ -8,9 +8,20 @@ from .agent_skill_contract_version_constraint import AgentSkillContractVersionCo
 
 
 class AgentSkillContractApplicability(UniversalBaseModel):
-    agent_versions: typing.Optional[typing.List[str]] = None
-    citations: typing.Optional[typing.List[str]] = None
-    models: typing.Optional[typing.List[AgentSkillContractVersionConstraint]] = None
+    agent_versions: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns Agent versions that can use the Skill.
+    """
+
+    citations: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns evidence identifiers that support this applicability.
+    """
+
+    models: typing.Optional[typing.List[AgentSkillContractVersionConstraint]] = pydantic.Field(default=None)
+    """
+    The service returns model names and their allowed versions.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

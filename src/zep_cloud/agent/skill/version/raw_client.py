@@ -45,17 +45,21 @@ class RawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillVersion]:
         """
+        Restore Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         version : int
+            The developer supplies the Skill version to restore.
 
         idempotency_key : typing.Optional[str]
 
@@ -181,13 +185,15 @@ class RawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillVersion, Pagev4AgentSkillVersion]:
         """
+        List Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
@@ -281,6 +287,17 @@ class RawVersionClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 503:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
@@ -315,17 +332,21 @@ class RawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillVersionComparison]:
         """
+        Compare Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         from_version : int
+            The developer supplies the source version to compare. It must be at least 1.
 
         to_version : int
+            The developer supplies the destination version to compare. It must be at least 1.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -403,6 +424,17 @@ class RawVersionClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 503:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
@@ -434,22 +466,28 @@ class RawVersionClient:
         version: int,
         *,
         markdown_format: typing.Optional[VersionGetRequestMarkdownFormat] = None,
+        include: typing.Optional[typing.Literal["contract"]] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillVersion]:
         """
+        Get Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         version : int
             Skill version
 
         markdown_format : typing.Optional[VersionGetRequestMarkdownFormat]
             Markdown form: agent (default) or full
+
+        include : typing.Optional[typing.Literal["contract"]]
+            Optional field to add to the response: contract
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -464,6 +502,7 @@ class RawVersionClient:
             method="GET",
             params={
                 "markdown_format": markdown_format,
+                "include": include,
             },
             request_options=request_options,
         )
@@ -521,6 +560,17 @@ class RawVersionClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 503:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
@@ -561,17 +611,21 @@ class AsyncRawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillVersion]:
         """
+        Restore Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         expected_version : int
+            The developer supplies the current Skill version to protect against concurrent edits.
 
         version : int
+            The developer supplies the Skill version to restore.
 
         idempotency_key : typing.Optional[str]
 
@@ -697,13 +751,15 @@ class AsyncRawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillVersion, Pagev4AgentSkillVersion]:
         """
+        List Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
@@ -800,6 +856,17 @@ class AsyncRawVersionClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 503:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
@@ -834,17 +901,21 @@ class AsyncRawVersionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillVersionComparison]:
         """
+        Compare Agent Skill Versions. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         from_version : int
+            The developer supplies the source version to compare. It must be at least 1.
 
         to_version : int
+            The developer supplies the destination version to compare. It must be at least 1.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -922,6 +993,17 @@ class AsyncRawVersionClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 503:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
@@ -953,22 +1035,28 @@ class AsyncRawVersionClient:
         version: int,
         *,
         markdown_format: typing.Optional[VersionGetRequestMarkdownFormat] = None,
+        include: typing.Optional[typing.Literal["contract"]] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillVersion]:
         """
+        Get Agent Skill Version. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         version : int
             Skill version
 
         markdown_format : typing.Optional[VersionGetRequestMarkdownFormat]
             Markdown form: agent (default) or full
+
+        include : typing.Optional[typing.Literal["contract"]]
+            Optional field to add to the response: contract
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -983,6 +1071,7 @@ class AsyncRawVersionClient:
             method="GET",
             params={
                 "markdown_format": markdown_format,
+                "include": include,
             },
             request_options=request_options,
         )
@@ -1031,6 +1120,17 @@ class AsyncRawVersionClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

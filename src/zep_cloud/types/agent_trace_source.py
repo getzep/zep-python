@@ -7,24 +7,78 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentTraceSource(UniversalBaseModel):
-    connection_uuid: typing.Optional[str] = None
-    import_uuid: typing.Optional[str] = None
-    imported_at: typing.Optional[str] = None
-    kind: typing.Optional[typing.Literal["trace_import"]] = None
-    provider: typing.Optional[str] = None
-    provider_project_id: typing.Optional[str] = None
-    run_uuid: typing.Optional[str] = None
-    scores: typing.Optional[typing.Dict[str, float]] = None
-    source_changed: typing.Optional[bool] = pydantic.Field(default=None)
+    connection_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    SourceChanged reports whether the provider trace changed after import.
+    The service returns the UUID of the provider connection, when the Trace
+    came from an import.
     """
 
-    source_revision: typing.Optional[str] = None
-    source_url: typing.Optional[str] = None
-    trace_ended_at: typing.Optional[str] = None
-    trace_id: typing.Optional[str] = None
-    trace_started_at: typing.Optional[str] = None
+    import_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the import, when the Trace came from an
+    import.
+    """
+
+    imported_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep imported the Trace.
+    """
+
+    kind: typing.Optional[typing.Literal["trace_import"]] = pydantic.Field(default=None)
+    """
+    The service returns the source type. The valid value is trace_import.
+    """
+
+    provider: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the provider that supplied this Trace.
+    """
+
+    provider_project_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the provider's project ID when the Trace came from an
+    import.
+    """
+
+    run_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the import run, when one applies.
+    """
+
+    scores: typing.Optional[typing.Dict[str, float]] = pydantic.Field(default=None)
+    """
+    The service returns provider-specific scores for the imported Trace.
+    """
+
+    source_changed: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The service returns whether the provider Trace changed after import.
+    """
+
+    source_revision: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the provider revision processed by this import.
+    """
+
+    source_url: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns a link to the source Trace, when available.
+    """
+
+    trace_ended_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when the source Trace ended.
+    """
+
+    trace_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the provider ID of the source Trace.
+    """
+
+    trace_started_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the start time of the source Trace, when available.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

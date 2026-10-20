@@ -22,12 +22,12 @@ class AgentTrace(UniversalBaseModel):
 
     agent_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The owning Agent UUID.
+    The service returns the owning Agent UUID.
     """
 
     attempt_family_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The stable retry-family identity shared with declared child attempts.
+    The service returns the stable retry-family identity shared by attempts.
     """
 
     closed_at: typing.Optional[str] = pydantic.Field(default=None)
@@ -47,12 +47,13 @@ class AgentTrace(UniversalBaseModel):
 
     learn_from: typing.Optional[bool] = pydantic.Field(default=None)
     """
-    Whether eligible evidence may participate in learning.
+    The service returns whether eligible evidence may participate in learning.
     """
 
     learn_from_reason: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Why the Trace is not eligible for learning.
+    The service returns why the Trace is not eligible for learning, when it
+    is not eligible.
     """
 
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
@@ -62,22 +63,24 @@ class AgentTrace(UniversalBaseModel):
 
     objective: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The task-instance objective captured for this attempt.
+    The service returns the task-instance objective captured for this attempt.
     """
 
     outcome: typing.Optional[AgentTraceOutcome] = pydantic.Field(default=None)
     """
-    The caller-owned task outcome.
+    The service returns the task outcome that the developer recorded. Valid
+    values are succeeded, failed, partial, abandoned, and unknown.
     """
 
     parent_trace_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The parent attempt when this Trace is a retry.
+    The service returns the parent attempt when this Trace is a retry.
     """
 
     revision: typing.Optional[int] = pydantic.Field(default=None)
     """
-    The revision required by the next update or lifecycle command.
+    The service returns the current revision for the next update or lifecycle
+    command.
     """
 
     source: typing.Optional[AgentTraceSource] = pydantic.Field(default=None)
@@ -87,29 +90,31 @@ class AgentTrace(UniversalBaseModel):
 
     status: typing.Optional[AgentTraceLifecycle] = pydantic.Field(default=None)
     """
-    The current lifecycle state.
+    The service returns the current lifecycle state. Valid values are open, closing, closed, abandoned, and deleted.
     """
 
     task_family: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The optional opaque task-family classification slug.
+    The service returns the declared or assigned task-family slug, when one
+    is available.
     """
 
     task_family_inference: typing.Optional[AgentTraceTaskFamilyInference] = pydantic.Field(default=None)
     """
-    The latest task-family inference outcome. Absent when inference never
-    ran for this Trace.
+    The service returns the latest classification result. Its state is pending, assigned, or
+    unassigned. It is absent if classification did not run for this Trace.
     """
 
     task_family_source: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Who supplied task_family: the caller (declared), an import rule
-    (import_rule), or the service classifier (inferred).
+    The service returns how it selected the task family. Valid values are
+    declared, import_rule, and inferred.
     """
 
     trace_id: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The optional customer-assigned identifier, unique within the Agent.
+    The developer may set an identifier that is unique within the Agent. A retry with the same
+    create parameters returns 200 and the existing Trace. Different parameters return 409.
     """
 
     updated_at: typing.Optional[str] = pydantic.Field(default=None)
@@ -120,15 +125,16 @@ class AgentTrace(UniversalBaseModel):
     uuid_: typing_extensions.Annotated[
         typing.Optional[str],
         FieldMetadata(alias="uuid"),
-        pydantic.Field(alias="uuid", description="The stable Trace UUID."),
+        pydantic.Field(alias="uuid", description="The service returns the stable Trace UUID."),
     ] = None
     """
-    The stable Trace UUID.
+    The service returns the stable Trace UUID.
     """
 
     verification: typing.Optional[AgentTraceVerification] = pydantic.Field(default=None)
     """
-    The strength of the accepted outcome verification.
+    The service returns how the outcome was verified. Valid values are none,
+    agent, tool, customer, and external.
     """
 
     if IS_PYDANTIC_V2:

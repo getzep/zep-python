@@ -8,12 +8,35 @@ from .agent_context_evidence_counts import AgentContextEvidenceCounts
 
 
 class AgentContextSkillSnapshot(UniversalBaseModel):
-    artifact_sha256: typing.Optional[str] = None
-    evidence_citations: typing.Optional[typing.List[str]] = None
-    evidence_counts: typing.Optional[AgentContextEvidenceCounts] = None
-    rank: typing.Optional[int] = None
-    skill_uuid: typing.Optional[str] = None
-    version: typing.Optional[int] = None
+    artifact_sha256: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the SHA-256 digest of the Skill artifact.
+    """
+
+    evidence_citations: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns citations that support this Skill snapshot.
+    """
+
+    evidence_counts: typing.Optional[AgentContextEvidenceCounts] = pydantic.Field(default=None)
+    """
+    The service returns counts of evidence items by result.
+    """
+
+    rank: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns result rank.
+    """
+
+    skill_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the Skill.
+    """
+
+    version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the Skill version number.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

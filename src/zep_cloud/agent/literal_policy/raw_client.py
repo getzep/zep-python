@@ -36,6 +36,8 @@ class RawLiteralPolicyClient:
         self, agent_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[AgentLiteralPolicy]:
         """
+        Get Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -133,6 +135,8 @@ class RawLiteralPolicyClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentLiteralPolicy]:
         """
+        Update Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -267,6 +271,8 @@ class AsyncRawLiteralPolicyClient:
         self, agent_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[AgentLiteralPolicy]:
         """
+        Get Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -364,6 +370,8 @@ class AsyncRawLiteralPolicyClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentLiteralPolicy]:
         """
+        Update Agent Literal Policy. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str

@@ -30,6 +30,8 @@ class LearningClient:
         self, agent_uuid: str, *, task_family: str, request_options: typing.Optional[RequestOptions] = None
     ) -> AgentLearningState:
         """
+        Get Agent Learning State. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -71,6 +73,8 @@ class LearningClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillCompilationOutcome, Pagev4AgentSkillCompilationOutcome]:
         """
+        List durable learning-run outcomes for an Agent. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -133,6 +137,8 @@ class AsyncLearningClient:
         self, agent_uuid: str, *, task_family: str, request_options: typing.Optional[RequestOptions] = None
     ) -> AgentLearningState:
         """
+        Get Agent Learning State. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -182,6 +188,8 @@ class AsyncLearningClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillCompilationOutcome, Pagev4AgentSkillCompilationOutcome]:
         """
+        List durable learning-run outcomes for an Agent. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str

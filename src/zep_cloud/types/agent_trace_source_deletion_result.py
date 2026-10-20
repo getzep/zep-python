@@ -9,11 +9,30 @@ from .task import Task
 
 
 class AgentTraceSourceDeletionResult(UniversalBaseModel):
-    affected_skills: typing.Optional[int] = None
-    deletion_uuid: typing.Optional[str] = None
-    skill_repair_task: typing.Optional[Task] = None
-    summary_repair_task: typing.Optional[Task] = None
-    trace: typing.Optional[AgentTrace] = None
+    affected_skills: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the number of Skills affected by this deletion.
+    """
+
+    deletion_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the deletion operation.
+    """
+
+    skill_repair_task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The service returns the Task that repairs Skills affected by this deletion.
+    """
+
+    summary_repair_task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The service returns the Task that repairs summaries affected by this deletion.
+    """
+
+    trace: typing.Optional[AgentTrace] = pydantic.Field(default=None)
+    """
+    The service returns the Trace.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

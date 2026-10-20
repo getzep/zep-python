@@ -7,9 +7,20 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentContextEvidenceCounts(UniversalBaseModel):
-    contradicting: typing.Optional[int] = None
-    neutral: typing.Optional[int] = None
-    supporting: typing.Optional[int] = None
+    contradicting: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns contradicting evidence count.
+    """
+
+    neutral: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the count of neutral evidence items.
+    """
+
+    supporting: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns supporting evidence count.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

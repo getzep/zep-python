@@ -7,21 +7,80 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSkillRelationship(UniversalBaseModel):
-    application_state: typing.Optional[str] = None
-    kind: typing.Optional[str] = None
-    related_package_name: typing.Optional[str] = None
-    related_skill_kind: typing.Optional[str] = None
-    related_skill_name: typing.Optional[str] = None
-    related_skill_task_family: typing.Optional[str] = None
-    related_skill_uuid: typing.Optional[str] = None
-    related_skill_version: typing.Optional[int] = None
-    related_version_constraint: typing.Optional[str] = None
-    resource_name: typing.Optional[str] = None
-    resource_version_constraint: typing.Optional[str] = None
-    trace_outcome: typing.Optional[str] = None
-    trace_task_family: typing.Optional[str] = None
-    trace_uuid: typing.Optional[str] = None
-    trace_verification: typing.Optional[str] = None
+    application_state: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns whether this Skill is applied to the Agent.
+    """
+
+    kind: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Skill kind.
+    """
+
+    related_package_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the package name of the related Skill.
+    """
+
+    related_skill_kind: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the kind of the related Skill.
+    """
+
+    related_skill_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the display name of the related Skill.
+    """
+
+    related_skill_task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task-family slug of the related Skill.
+    """
+
+    related_skill_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the related Skill, when one is linked.
+    """
+
+    related_skill_version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the version number of the related Skill.
+    """
+
+    related_version_constraint: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the version constraint for the related Skill.
+    """
+
+    resource_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the name of the related tool or environment.
+    """
+
+    resource_version_constraint: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the allowed versions of the related resource.
+    """
+
+    trace_outcome: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the outcome of the source Trace.
+    """
+
+    trace_task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task family of the source Trace.
+    """
+
+    trace_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the source Trace.
+    """
+
+    trace_verification: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the verification state of the source Trace.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
