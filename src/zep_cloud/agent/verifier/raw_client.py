@@ -47,6 +47,8 @@ class RawVerifierClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentVerifier, Pagev4AgentVerifier]:
         """
+        List Agent Verifiers. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -165,6 +167,8 @@ class RawVerifierClient:
         self, agent_uuid: str, verifier_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[AgentVerifier]:
         """
+        Get Agent Verifier. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -245,6 +249,8 @@ class RawVerifierClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentVerifier]:
         """
+        Update Agent Verifier. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -366,6 +372,8 @@ class RawVerifierClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentVerifierEvidenceInvalidationResult]:
         """
+        Invalidate Agent Verifier Evidence. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -375,7 +383,7 @@ class RawVerifierClient:
             Verifier UUID
 
         reason : str
-            Why evidence from these verifier revisions is invalid.
+            The developer supplies why evidence from these verifier revisions is invalid.
 
         verifier_revisions : typing.Sequence[int]
             Verifier revisions whose accepted evidence is no longer valid.
@@ -470,6 +478,8 @@ class RawVerifierClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentVerifier]:
         """
+        Revoke Agent Verifier. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -579,6 +589,8 @@ class AsyncRawVerifierClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentVerifier, Pagev4AgentVerifier]:
         """
+        List Agent Verifiers. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -700,6 +712,8 @@ class AsyncRawVerifierClient:
         self, agent_uuid: str, verifier_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[AgentVerifier]:
         """
+        Get Agent Verifier. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -780,6 +794,8 @@ class AsyncRawVerifierClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentVerifier]:
         """
+        Update Agent Verifier. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -901,6 +917,8 @@ class AsyncRawVerifierClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentVerifierEvidenceInvalidationResult]:
         """
+        Invalidate Agent Verifier Evidence. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -910,7 +928,7 @@ class AsyncRawVerifierClient:
             Verifier UUID
 
         reason : str
-            Why evidence from these verifier revisions is invalid.
+            The developer supplies why evidence from these verifier revisions is invalid.
 
         verifier_revisions : typing.Sequence[int]
             Verifier revisions whose accepted evidence is no longer valid.
@@ -1005,6 +1023,8 @@ class AsyncRawVerifierClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentVerifier]:
         """
+        Revoke Agent Verifier. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str

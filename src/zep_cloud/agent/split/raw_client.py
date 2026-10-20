@@ -41,18 +41,25 @@ class RawSplitClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSplitPlan]:
         """
+        Plan an Agent split. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Source Agent UUID
 
         destinations : typing.Sequence[AgentSplitPlanDestinationRequest]
+            The developer lists 1 to 100 destination Agents.
 
         expected_revision : int
+            The developer supplies the current revision used for optimistic concurrency. At least 1.
 
         rationale : str
+            The developer explains the requested change. The limit is 2,000
+            characters.
 
         review_acknowledged : bool
+            The developer sets this to true to confirm that the review is complete.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -176,18 +183,25 @@ class AsyncRawSplitClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSplitPlan]:
         """
+        Plan an Agent split. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Source Agent UUID
 
         destinations : typing.Sequence[AgentSplitPlanDestinationRequest]
+            The developer lists 1 to 100 destination Agents.
 
         expected_revision : int
+            The developer supplies the current revision used for optimistic concurrency. At least 1.
 
         rationale : str
+            The developer explains the requested change. The limit is 2,000
+            characters.
 
         review_acknowledged : bool
+            The developer sets this to true to confirm that the review is complete.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

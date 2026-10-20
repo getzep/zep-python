@@ -39,7 +39,7 @@ class SourceSpan(UniversalBaseModel):
 
     model: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Model is the model identifier, when present.
+    The provider supplies the model name when it is available.
     """
 
     name: typing.Optional[str] = pydantic.Field(default=None)

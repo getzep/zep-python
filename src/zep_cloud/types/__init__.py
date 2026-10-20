@@ -208,6 +208,36 @@ if typing.TYPE_CHECKING:
     from .graph_data_type import GraphDataType
     from .graph_delete_result import GraphDeleteResult
     from .graph_page import GraphPage
+    from .graph_query_citations import GraphQueryCitations
+    from .graph_query_edge import GraphQueryEdge
+    from .graph_query_error_event import GraphQueryErrorEvent
+    from .graph_query_handle import GraphQueryHandle
+    from .graph_query_handle_item_type import GraphQueryHandleItemType
+    from .graph_query_listing import GraphQueryListing
+    from .graph_query_node import GraphQueryNode
+    from .graph_query_plan import GraphQueryPlan
+    from .graph_query_plan_event import GraphQueryPlanEvent
+    from .graph_query_plan_step import GraphQueryPlanStep
+    from .graph_query_reasoning_event import GraphQueryReasoningEvent
+    from .graph_query_response import GraphQueryResponse
+    from .graph_query_result_event import GraphQueryResultEvent
+    from .graph_query_results import GraphQueryResults
+    from .graph_query_started_event import GraphQueryStartedEvent
+    from .graph_query_stream_event import (
+        GraphQueryStreamEvent,
+        GraphQueryStreamEvent_Error,
+        GraphQueryStreamEvent_Plan,
+        GraphQueryStreamEvent_Reasoning,
+        GraphQueryStreamEvent_Result,
+        GraphQueryStreamEvent_Started,
+        GraphQueryStreamEvent_ToolCall,
+        GraphQueryStreamEvent_ToolError,
+        GraphQueryStreamEvent_ToolResult,
+    )
+    from .graph_query_tool_call_event import GraphQueryToolCallEvent
+    from .graph_query_tool_error_event import GraphQueryToolErrorEvent
+    from .graph_query_tool_error_event_reason import GraphQueryToolErrorEventReason
+    from .graph_query_tool_result_event import GraphQueryToolResultEvent
     from .hyperedge import Hyperedge
     from .hyperedge_edge import HyperedgeEdge
     from .hyperedge_input import HyperedgeInput
@@ -552,6 +582,34 @@ _dynamic_imports: typing.Dict[str, str] = {
     "GraphDataType": ".graph_data_type",
     "GraphDeleteResult": ".graph_delete_result",
     "GraphPage": ".graph_page",
+    "GraphQueryCitations": ".graph_query_citations",
+    "GraphQueryEdge": ".graph_query_edge",
+    "GraphQueryErrorEvent": ".graph_query_error_event",
+    "GraphQueryHandle": ".graph_query_handle",
+    "GraphQueryHandleItemType": ".graph_query_handle_item_type",
+    "GraphQueryListing": ".graph_query_listing",
+    "GraphQueryNode": ".graph_query_node",
+    "GraphQueryPlan": ".graph_query_plan",
+    "GraphQueryPlanEvent": ".graph_query_plan_event",
+    "GraphQueryPlanStep": ".graph_query_plan_step",
+    "GraphQueryReasoningEvent": ".graph_query_reasoning_event",
+    "GraphQueryResponse": ".graph_query_response",
+    "GraphQueryResultEvent": ".graph_query_result_event",
+    "GraphQueryResults": ".graph_query_results",
+    "GraphQueryStartedEvent": ".graph_query_started_event",
+    "GraphQueryStreamEvent": ".graph_query_stream_event",
+    "GraphQueryStreamEvent_Error": ".graph_query_stream_event",
+    "GraphQueryStreamEvent_Plan": ".graph_query_stream_event",
+    "GraphQueryStreamEvent_Reasoning": ".graph_query_stream_event",
+    "GraphQueryStreamEvent_Result": ".graph_query_stream_event",
+    "GraphQueryStreamEvent_Started": ".graph_query_stream_event",
+    "GraphQueryStreamEvent_ToolCall": ".graph_query_stream_event",
+    "GraphQueryStreamEvent_ToolError": ".graph_query_stream_event",
+    "GraphQueryStreamEvent_ToolResult": ".graph_query_stream_event",
+    "GraphQueryToolCallEvent": ".graph_query_tool_call_event",
+    "GraphQueryToolErrorEvent": ".graph_query_tool_error_event",
+    "GraphQueryToolErrorEventReason": ".graph_query_tool_error_event_reason",
+    "GraphQueryToolResultEvent": ".graph_query_tool_result_event",
     "Hyperedge": ".hyperedge",
     "HyperedgeEdge": ".hyperedge_edge",
     "HyperedgeInput": ".hyperedge_input",
@@ -920,6 +978,34 @@ __all__ = [
     "GraphDataType",
     "GraphDeleteResult",
     "GraphPage",
+    "GraphQueryCitations",
+    "GraphQueryEdge",
+    "GraphQueryErrorEvent",
+    "GraphQueryHandle",
+    "GraphQueryHandleItemType",
+    "GraphQueryListing",
+    "GraphQueryNode",
+    "GraphQueryPlan",
+    "GraphQueryPlanEvent",
+    "GraphQueryPlanStep",
+    "GraphQueryReasoningEvent",
+    "GraphQueryResponse",
+    "GraphQueryResultEvent",
+    "GraphQueryResults",
+    "GraphQueryStartedEvent",
+    "GraphQueryStreamEvent",
+    "GraphQueryStreamEvent_Error",
+    "GraphQueryStreamEvent_Plan",
+    "GraphQueryStreamEvent_Reasoning",
+    "GraphQueryStreamEvent_Result",
+    "GraphQueryStreamEvent_Started",
+    "GraphQueryStreamEvent_ToolCall",
+    "GraphQueryStreamEvent_ToolError",
+    "GraphQueryStreamEvent_ToolResult",
+    "GraphQueryToolCallEvent",
+    "GraphQueryToolErrorEvent",
+    "GraphQueryToolErrorEventReason",
+    "GraphQueryToolResultEvent",
     "Hyperedge",
     "HyperedgeEdge",
     "HyperedgeInput",

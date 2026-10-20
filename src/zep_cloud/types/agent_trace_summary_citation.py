@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentTraceSummaryCitation(UniversalBaseModel):
-    event_id: typing.Optional[str] = None
-    sequence: typing.Optional[int] = None
+    event_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the ID of the source event.
+    """
+
+    sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the event sequence cited by this summary.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

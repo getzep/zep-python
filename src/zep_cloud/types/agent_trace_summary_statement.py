@@ -8,8 +8,15 @@ from .agent_trace_summary_citation import AgentTraceSummaryCitation
 
 
 class AgentTraceSummaryStatement(UniversalBaseModel):
-    citations: typing.Optional[typing.List[AgentTraceSummaryCitation]] = None
-    text: typing.Optional[str] = None
+    citations: typing.Optional[typing.List[AgentTraceSummaryCitation]] = pydantic.Field(default=None)
+    """
+    The service returns the events that support this statement.
+    """
+
+    text: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns one statement from the summary.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

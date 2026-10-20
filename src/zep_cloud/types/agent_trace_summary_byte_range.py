@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentTraceSummaryByteRange(UniversalBaseModel):
-    end: typing.Optional[int] = None
-    start: typing.Optional[int] = None
+    end: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the byte offset after the half-open omitted range.
+    """
+
+    start: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the first byte offset in the half-open omitted range.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

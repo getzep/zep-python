@@ -14,6 +14,7 @@ The Zep Python library provides convenient access to the Zep APIs from Python.
 - [Environments](#environments)
 - [Async Client](#async-client)
 - [Exception Handling](#exception-handling)
+- [Streaming](#streaming)
 - [Pagination](#pagination)
 - [Advanced](#advanced)
   - [Access Raw Response Data](#access-raw-response-data)
@@ -67,9 +68,9 @@ client = Zep(
 )
 
 client.agent.create(
-    agent_id="agent_id",
-    name="name",
-    security_domain="security_domain",
+    agent_id="payments-agent",
+    name="Refund a duplicate charge",
+    security_domain="customer:support",
 )
 ```
 
@@ -102,9 +103,9 @@ client = AsyncZep(
 
 async def main() -> None:
     await client.agent.create(
-        agent_id="agent_id",
-        name="name",
-        security_domain="security_domain",
+        agent_id="payments-agent",
+        name="Refund a duplicate charge",
+        security_domain="customer:support",
     )
 
 
@@ -124,6 +125,25 @@ try:
 except ApiError as e:
     print(e.status_code)
     print(e.body)
+```
+
+## Streaming
+
+The SDK supports streaming responses, as well, the response will be a generator that you can loop over.
+
+```python
+from zep_cloud import Zep
+
+client = Zep(
+    api_key="<value>",
+)
+
+client.graph.query_stream(
+    graph_uuids=[
+        "graph_uuids"
+    ],
+    query="query",
+)
 ```
 
 ## Pagination

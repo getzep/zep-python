@@ -7,10 +7,25 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSkillContractSection(UniversalBaseModel):
-    heading: typing.Optional[str] = None
-    markdown: typing.Optional[str] = None
-    schema_version: typing.Optional[str] = None
-    section_id: typing.Optional[str] = None
+    heading: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns section heading.
+    """
+
+    markdown: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Skill content in Markdown.
+    """
+
+    schema_version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the section schema version. The current value is v1.
+    """
+
+    section_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the stable ID of this customer-authored section.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

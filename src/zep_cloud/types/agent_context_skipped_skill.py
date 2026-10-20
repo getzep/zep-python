@@ -7,9 +7,20 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentContextSkippedSkill(UniversalBaseModel):
-    reason: typing.Optional[str] = None
-    skill_uuid: typing.Optional[str] = None
-    version: typing.Optional[int] = None
+    reason: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns why the Skill was skipped from the context.
+    """
+
+    skill_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the Skill.
+    """
+
+    version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the Skill version number.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

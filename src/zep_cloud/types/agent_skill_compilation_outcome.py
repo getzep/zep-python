@@ -10,28 +10,88 @@ from .agent_skill_compilation_outcome_rejection_class import AgentSkillCompilati
 
 
 class AgentSkillCompilationOutcome(UniversalBaseModel):
-    agent_uuid: typing.Optional[str] = None
-    attempts: typing.Optional[int] = None
-    candidate_count: typing.Optional[int] = None
-    compilation_identity: typing.Optional[str] = None
-    compilation_window_uuid: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    decision: typing.Optional[str] = None
-    proposal_count: typing.Optional[int] = None
-    reason_text: typing.Optional[str] = None
-    rejected_add_count: typing.Optional[int] = pydantic.Field(default=None)
+    agent_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    RejectedAddCount is the count of add proposals that the Reflector,
-    the proposal scanner, or the Curator rejected in this compilation.
+    The service assigns the UUID of the Agent that owns this learning run.
     """
 
-    rejection_class: typing.Optional[AgentSkillCompilationOutcomeRejectionClass] = None
-    stage: typing.Optional[str] = None
-    task_family: typing.Optional[str] = None
-    trace_count: typing.Optional[int] = None
+    attempts: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the number of attempts made in the last stage.
+    """
+
+    candidate_count: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the number of candidate Skills that the run produced.
+    """
+
+    compilation_identity: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service assigns the UUID that identifies this idempotent compilation
+    attempt.
+    """
+
+    compilation_window_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service assigns the UUID of the scheduled window when one applies.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep recorded this learning-run outcome.
+    """
+
+    decision: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the final result of the learning run.
+    """
+
+    proposal_count: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the number of Skill proposals that the run produced.
+    """
+
+    reason_text: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service explains why the learning run stopped or made no change.
+    """
+
+    rejected_add_count: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the count of add proposals that the Reflector, the proposal scanner, or
+    the Curator rejected in this compilation.
+    """
+
+    rejection_class: typing.Optional[AgentSkillCompilationOutcomeRejectionClass] = pydantic.Field(default=None)
+    """
+    The service returns why compilation rejected the candidate. Valid values are
+    no_eligible_traces,reflector_invalid_output,applicability_ungrounded,corroboration_insufficient,scanner_rejected,curator_rejected,curator_attempts_exhausted,prompt_budget_exceeded,provider_error.
+    """
+
+    stage: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service reports the last stage reached: selection, reflector, scanner, curator, or
+    admission.
+    """
+
+    task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the category that this learning run processed.
+    """
+
+    trace_count: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the number of eligible Traces that the run processed.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the stable identifier for this learning run."),
     ] = None
+    """
+    The service returns the stable identifier for this learning run.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

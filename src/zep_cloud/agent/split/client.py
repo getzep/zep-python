@@ -38,18 +38,25 @@ class SplitClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSplitPlan:
         """
+        Plan an Agent split. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Source Agent UUID
 
         destinations : typing.Sequence[AgentSplitPlanDestinationRequest]
+            The developer lists 1 to 100 destination Agents.
 
         expected_revision : int
+            The developer supplies the current revision used for optimistic concurrency. At least 1.
 
         rationale : str
+            The developer explains the requested change. The limit is 2,000
+            characters.
 
         review_acknowledged : bool
+            The developer sets this to true to confirm that the review is complete.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -76,21 +83,21 @@ class SplitClient:
             destinations=[
                 AgentSplitPlanDestinationRequest(
                     agent=CreateAgentRequest(
-                        agent_id="agent_id",
-                        name="name",
-                        security_domain="security_domain",
+                        agent_id="payments-agent",
+                        name="Refund a duplicate charge",
+                        security_domain="customer:support",
                     ),
                     skills=[
                         AgentSplitPlanSkillSelectionRequest(
-                            skill_uuid="skill_uuid",
-                            skill_version_uuid="skill_version_uuid",
+                            skill_uuid="6a906e70-50ca-4e43-a874-5fcae02a71fa",
+                            skill_version_uuid="6a906e70-50ca-4e43-a874-5fcae02a71fa",
                             version=1,
                         )
                     ],
                 )
             ],
             expected_revision=1,
-            rationale="rationale",
+            rationale="Keep payment refunds separate from charge disputes.",
             review_acknowledged=True,
         )
         """
@@ -131,18 +138,25 @@ class AsyncSplitClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentSplitPlan:
         """
+        Plan an Agent split. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Source Agent UUID
 
         destinations : typing.Sequence[AgentSplitPlanDestinationRequest]
+            The developer lists 1 to 100 destination Agents.
 
         expected_revision : int
+            The developer supplies the current revision used for optimistic concurrency. At least 1.
 
         rationale : str
+            The developer explains the requested change. The limit is 2,000
+            characters.
 
         review_acknowledged : bool
+            The developer sets this to true to confirm that the review is complete.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -174,21 +188,21 @@ class AsyncSplitClient:
                 destinations=[
                     AgentSplitPlanDestinationRequest(
                         agent=CreateAgentRequest(
-                            agent_id="agent_id",
-                            name="name",
-                            security_domain="security_domain",
+                            agent_id="payments-agent",
+                            name="Refund a duplicate charge",
+                            security_domain="customer:support",
                         ),
                         skills=[
                             AgentSplitPlanSkillSelectionRequest(
-                                skill_uuid="skill_uuid",
-                                skill_version_uuid="skill_version_uuid",
+                                skill_uuid="6a906e70-50ca-4e43-a874-5fcae02a71fa",
+                                skill_version_uuid="6a906e70-50ca-4e43-a874-5fcae02a71fa",
                                 version=1,
                             )
                         ],
                     )
                 ],
                 expected_revision=1,
-                rationale="rationale",
+                rationale="Keep payment refunds separate from charge disputes.",
                 review_acknowledged=True,
             )
 

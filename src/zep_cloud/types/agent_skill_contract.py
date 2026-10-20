@@ -19,31 +19,132 @@ from .skill_kind import SkillKind
 
 
 class AgentSkillContract(UniversalBaseModel):
-    aliases: typing.Optional[typing.List[str]] = None
-    applicability: typing.Optional[AgentSkillContractApplicability] = None
-    citations: typing.Optional[typing.List[str]] = None
-    confidence: typing.Optional[float] = None
-    contraindications: typing.Optional[typing.List[AgentSkillContractText]] = None
-    customer_sections: typing.Optional[typing.List[AgentSkillContractSection]] = None
-    dependencies: typing.Optional[typing.List[AgentSkillContractDependency]] = None
-    description: typing.Optional[str] = None
-    environments: typing.Optional[typing.List[AgentSkillContractResource]] = None
-    evidence: typing.Optional[typing.List[AgentSkillContractEvidence]] = None
-    failures: typing.Optional[typing.List[AgentSkillContractFailure]] = None
-    invocation: typing.Optional[AgentSkillContractInvocation] = None
-    kind: typing.Optional[SkillKind] = None
-    name: typing.Optional[str] = None
-    origin: typing.Optional[AgentSkillContractOrigin] = None
-    outputs: typing.Optional[typing.List[AgentSkillContractText]] = None
-    package_name: typing.Optional[str] = None
-    preconditions: typing.Optional[typing.List[AgentSkillContractText]] = None
-    procedure: typing.Optional[typing.List[AgentSkillContractStep]] = None
-    relations: typing.Optional[typing.List[AgentSkillContractRelation]] = None
-    schema_version: typing.Optional[str] = None
-    success_criteria: typing.Optional[typing.List[AgentSkillContractText]] = None
-    task_family: typing.Optional[str] = None
-    termination_conditions: typing.Optional[typing.List[AgentSkillContractText]] = None
-    tools: typing.Optional[typing.List[AgentSkillContractResource]] = None
+    aliases: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns alternate names for the resource.
+    """
+
+    applicability: typing.Optional[AgentSkillContractApplicability] = pydantic.Field(default=None)
+    """
+    The service returns the Agent versions and models that can use the Skill.
+    """
+
+    citations: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns evidence identifiers that support the contract.
+    """
+
+    confidence: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    The service returns the confidence score for the contract, from 0 to 1.
+    """
+
+    contraindications: typing.Optional[typing.List[AgentSkillContractText]] = pydantic.Field(default=None)
+    """
+    The service returns situations in which the Skill must not be used.
+    """
+
+    customer_sections: typing.Optional[typing.List[AgentSkillContractSection]] = pydantic.Field(default=None)
+    """
+    The service returns extra sections that a customer added to the Skill.
+    """
+
+    dependencies: typing.Optional[typing.List[AgentSkillContractDependency]] = pydantic.Field(default=None)
+    """
+    The service returns packages that the Skill requires.
+    """
+
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the resource description.
+    """
+
+    environments: typing.Optional[typing.List[AgentSkillContractResource]] = pydantic.Field(default=None)
+    """
+    The service returns environment names used by the Skill.
+    """
+
+    evidence: typing.Optional[typing.List[AgentSkillContractEvidence]] = pydantic.Field(default=None)
+    """
+    The service returns the evidence records cited by the contract.
+    """
+
+    failures: typing.Optional[typing.List[AgentSkillContractFailure]] = pydantic.Field(default=None)
+    """
+    The service returns failure conditions and recovery steps.
+    """
+
+    invocation: typing.Optional[AgentSkillContractInvocation] = pydantic.Field(default=None)
+    """
+    The service returns when the Skill should be used.
+    """
+
+    kind: typing.Optional[SkillKind] = pydantic.Field(default=None)
+    """
+    The service returns the Skill kind. Valid values are principle, procedure, workflow, failure_mode,
+    recovery, constraint.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the display name.
+    """
+
+    origin: typing.Optional[AgentSkillContractOrigin] = pydantic.Field(default=None)
+    """
+    The service returns how the Skill contract was created. Valid values are
+    evidence_derived and customer_authored.
+    """
+
+    outputs: typing.Optional[typing.List[AgentSkillContractText]] = pydantic.Field(default=None)
+    """
+    The service returns results that the Skill produces.
+    """
+
+    package_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the stable package name of the Skill.
+    """
+
+    preconditions: typing.Optional[typing.List[AgentSkillContractText]] = pydantic.Field(default=None)
+    """
+    The service returns conditions that must be true before use.
+    """
+
+    procedure: typing.Optional[typing.List[AgentSkillContractStep]] = pydantic.Field(default=None)
+    """
+    The service returns ordered procedure steps.
+    """
+
+    relations: typing.Optional[typing.List[AgentSkillContractRelation]] = pydantic.Field(default=None)
+    """
+    The service returns links from this Skill to other Skills.
+    """
+
+    schema_version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the contract schema version. The current value is v1.
+    """
+
+    success_criteria: typing.Optional[typing.List[AgentSkillContractText]] = pydantic.Field(default=None)
+    """
+    The service returns conditions that show when the Skill task is complete.
+    """
+
+    task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task-family slug.
+    """
+
+    termination_conditions: typing.Optional[typing.List[AgentSkillContractText]] = pydantic.Field(default=None)
+    """
+    The service returns conditions that show when the Skill's work is complete.
+    """
+
+    tools: typing.Optional[typing.List[AgentSkillContractResource]] = pydantic.Field(default=None)
+    """
+    The service returns tool names used by the Skill.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

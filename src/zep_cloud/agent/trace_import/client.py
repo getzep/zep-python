@@ -51,7 +51,7 @@ class TraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[TraceImport, TraceImportPage]:
         """
-        List trace imports that belong to this Agent.
+        List trace imports that belong to this Agent. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -107,7 +107,7 @@ class TraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImportCreateResult:
         """
-        Create a scheduled import or queue a one-time import. A scheduled import returns HTTP 201 with `import`. A one-time import returns HTTP 202 with `import`, `run`, and `task`. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`.
+        Create a scheduled import or queue a one-time import. A scheduled import returns HTTP 201 with `import`. A one-time import returns HTTP 202 with `import`, `run`, and `task`. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -115,7 +115,7 @@ class TraceImportClient:
             Agent UUID
 
         connection_uuid : typing.Optional[str]
-            ConnectionUUID identifies the project trace connection.
+            The developer selects the configured provider connection.
 
         learn_from : typing.Optional[bool]
             LearnFrom controls whether imported evidence can support Skills.
@@ -130,7 +130,7 @@ class TraceImportClient:
             OnSourceChange defines how changed source traces are handled.
 
         provider_project_id : typing.Optional[str]
-            ProviderProjectID is the source provider project identifier.
+            The developer selects the project to import from the provider.
 
         require_review : typing.Optional[bool]
             RequireReview requires review for candidates backed by this import.
@@ -182,7 +182,7 @@ class TraceImportClient:
         self, agent_uuid: str, import_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> TraceImport:
         """
-        Read one trace import. The response does not include its source cursor.
+        Read one trace import. The response does not include its source cursor. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -225,7 +225,7 @@ class TraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Optional[Task]:
         """
-        Set `traces=delete` to queue asynchronous Trace deletion. The default keeps Traces. Example query: `?traces=delete`.
+        Set `traces=delete` to queue asynchronous Trace deletion. The default keeps Traces. Example query: `?traces=delete`. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -282,7 +282,7 @@ class TraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImport:
         """
-        Use `expected_revision` to reject a stale update. Example request: `{"expected_revision":1,"name":"Updated support traces"}`.
+        Use `expected_revision` to reject a stale update. Example request: `{"expected_revision":1,"name":"Updated support traces"}`. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -363,7 +363,7 @@ class TraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImport:
         """
-        Pause a scheduled trace import. One-time imports cannot be paused.
+        Pause a scheduled trace import. One-time imports cannot be paused. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -409,7 +409,7 @@ class TraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImport:
         """
-        Resume a scheduled trace import. Zep verifies credentials first when they caused the pause.
+        Resume a scheduled trace import. Zep verifies credentials first when they caused the pause. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -481,7 +481,7 @@ class AsyncTraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[TraceImport, TraceImportPage]:
         """
-        List trace imports that belong to this Agent.
+        List trace imports that belong to this Agent. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -548,7 +548,7 @@ class AsyncTraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImportCreateResult:
         """
-        Create a scheduled import or queue a one-time import. A scheduled import returns HTTP 201 with `import`. A one-time import returns HTTP 202 with `import`, `run`, and `task`. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`.
+        Create a scheduled import or queue a one-time import. A scheduled import returns HTTP 201 with `import`. A one-time import returns HTTP 202 with `import`, `run`, and `task`. Example request: `{"connection_uuid":"8c78a85e-eac2-4f57-b5f5-59a68a1e77a1","provider_project_id":"project-123","name":"Support traces","selection":{"trace_ids":["trace-123"]},"mapping":{"task_family":{"source":"fixed","value":"support"}}}`. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -556,7 +556,7 @@ class AsyncTraceImportClient:
             Agent UUID
 
         connection_uuid : typing.Optional[str]
-            ConnectionUUID identifies the project trace connection.
+            The developer selects the configured provider connection.
 
         learn_from : typing.Optional[bool]
             LearnFrom controls whether imported evidence can support Skills.
@@ -571,7 +571,7 @@ class AsyncTraceImportClient:
             OnSourceChange defines how changed source traces are handled.
 
         provider_project_id : typing.Optional[str]
-            ProviderProjectID is the source provider project identifier.
+            The developer selects the project to import from the provider.
 
         require_review : typing.Optional[bool]
             RequireReview requires review for candidates backed by this import.
@@ -631,7 +631,7 @@ class AsyncTraceImportClient:
         self, agent_uuid: str, import_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> TraceImport:
         """
-        Read one trace import. The response does not include its source cursor.
+        Read one trace import. The response does not include its source cursor. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -682,7 +682,7 @@ class AsyncTraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Optional[Task]:
         """
-        Set `traces=delete` to queue asynchronous Trace deletion. The default keeps Traces. Example query: `?traces=delete`.
+        Set `traces=delete` to queue asynchronous Trace deletion. The default keeps Traces. Example query: `?traces=delete`. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -747,7 +747,7 @@ class AsyncTraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImport:
         """
-        Use `expected_revision` to reject a stale update. Example request: `{"expected_revision":1,"name":"Updated support traces"}`.
+        Use `expected_revision` to reject a stale update. Example request: `{"expected_revision":1,"name":"Updated support traces"}`. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -836,7 +836,7 @@ class AsyncTraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImport:
         """
-        Pause a scheduled trace import. One-time imports cannot be paused.
+        Pause a scheduled trace import. One-time imports cannot be paused. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -890,7 +890,7 @@ class AsyncTraceImportClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImport:
         """
-        Resume a scheduled trace import. Zep verifies credentials first when they caused the pause.
+        Resume a scheduled trace import. Zep verifies credentials first when they caused the pause. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------

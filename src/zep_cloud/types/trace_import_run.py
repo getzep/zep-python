@@ -36,7 +36,7 @@ class TraceImportRun(UniversalBaseModel):
 
     import_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    ImportUUID is the owning import identifier.
+    The service returns the UUID of the import that owns this run.
     """
 
     more_available: typing.Optional[bool] = pydantic.Field(default=None)
@@ -61,7 +61,7 @@ class TraceImportRun(UniversalBaseModel):
 
     task_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    TaskUUID is the Task identifier.
+    The service returns the Task UUID for this import run.
     """
 
     trigger: typing.Optional[str] = pydantic.Field(default=None)

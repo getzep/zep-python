@@ -8,6 +8,8 @@ from ..core.request_options import RequestOptions
 from ..types.task import Task
 from ..types.task_page import TaskPage
 from .raw_client import AsyncRawTaskClient, RawTaskClient
+from .types.task_list_request_status import TaskListRequestStatus
+from .types.task_list_request_type import TaskListRequestType
 
 
 class TaskClient:
@@ -30,6 +32,8 @@ class TaskClient:
         *,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        status: typing.Optional[TaskListRequestStatus] = None,
+        type: typing.Optional[TaskListRequestType] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[Task, TaskPage]:
         """
@@ -40,6 +44,12 @@ class TaskClient:
 
         cursor : typing.Optional[str]
             Opaque page cursor
+
+        status : typing.Optional[TaskListRequestStatus]
+            Return only the tasks with this status
+
+        type : typing.Optional[TaskListRequestType]
+            Return only the tasks of this type
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -63,7 +73,9 @@ class TaskClient:
         for page in response.iter_pages():
             yield page
         """
-        return self._raw_client.list(page_size=page_size, cursor=cursor, request_options=request_options)
+        return self._raw_client.list(
+            page_size=page_size, cursor=cursor, status=status, type=type, request_options=request_options
+        )
 
     def get(self, task_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> Task:
         """
@@ -115,6 +127,8 @@ class AsyncTaskClient:
         *,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
+        status: typing.Optional[TaskListRequestStatus] = None,
+        type: typing.Optional[TaskListRequestType] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[Task, TaskPage]:
         """
@@ -125,6 +139,12 @@ class AsyncTaskClient:
 
         cursor : typing.Optional[str]
             Opaque page cursor
+
+        status : typing.Optional[TaskListRequestStatus]
+            Return only the tasks with this status
+
+        type : typing.Optional[TaskListRequestType]
+            Return only the tasks of this type
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -157,7 +177,9 @@ class AsyncTaskClient:
 
         asyncio.run(main())
         """
-        return await self._raw_client.list(page_size=page_size, cursor=cursor, request_options=request_options)
+        return await self._raw_client.list(
+            page_size=page_size, cursor=cursor, status=status, type=type, request_options=request_options
+        )
 
     async def get(self, task_uuid: str, *, request_options: typing.Optional[RequestOptions] = None) -> Task:
         """

@@ -7,8 +7,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSkillContractVersionConstraint(UniversalBaseModel):
-    name: typing.Optional[str] = None
-    version_constraint: typing.Optional[str] = None
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Agent model or deployment name.
+    """
+
+    version_constraint: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the allowed versions for this model or deployment.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

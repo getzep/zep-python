@@ -2,4 +2,6 @@
 
 import typing
 
-TaskFamilyMappingRuleSource = typing.Union[typing.Literal["fixed", "metadata", "tag_prefix", "name"], typing.Any]
+TaskFamilyMappingRuleSource = typing.Union[
+    typing.Literal["fixed", "metadata", "tag_prefix", "name", "infer"], typing.Any
+]

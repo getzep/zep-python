@@ -7,11 +7,32 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentMemoryEvaluationRequirement(UniversalBaseModel):
-    controlled: typing.Optional[bool] = None
-    environment: typing.Optional[str] = None
-    evaluated_by: str
-    evaluator_version: str
-    result: str
+    controlled: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The service sets this to true when it controls whether the requirement
+    passes admission.
+    """
+
+    environment: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the environment used for this evaluation.
+    """
+
+    evaluated_by: str = pydantic.Field()
+    """
+    The developer selects the evaluation source.
+    """
+
+    evaluator_version: str = pydantic.Field()
+    """
+    The service returns the version of the evaluation rule.
+    """
+
+    result: str = pydantic.Field()
+    """
+    The developer supplies the required result for this evaluation. Valid
+    values are defined by the evaluation named in the policy.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

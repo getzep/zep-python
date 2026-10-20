@@ -39,13 +39,15 @@ class RelationClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillRelationship, Pagev4AgentSkillRelationship]:
         """
+        List Agent Skill Relationships. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         kind : typing.Optional[typing.Union[RelationListRequestKindItem, typing.Sequence[RelationListRequestKindItem]]]
             Relationship kinds
@@ -114,13 +116,15 @@ class AsyncRelationClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillRelationship, Pagev4AgentSkillRelationship]:
         """
+        List Agent Skill Relationships. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         kind : typing.Optional[typing.Union[RelationListRequestKindItem, typing.Sequence[RelationListRequestKindItem]]]
             Relationship kinds

@@ -10,11 +10,31 @@ from .agent_skill_search_hit_maturity import AgentSkillSearchHitMaturity
 
 
 class AgentSkillSearchHit(UniversalBaseModel):
-    agent_versions: typing.Optional[typing.List[str]] = None
-    description: typing.Optional[str] = None
-    environments: typing.Optional[typing.List[str]] = None
-    kind: typing.Optional[str] = None
-    markdown: typing.Optional[str] = None
+    agent_versions: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns Agent versions that can use this Skill.
+    """
+
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the resource description.
+    """
+
+    environments: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns environment names used by the Skill.
+    """
+
+    kind: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the Skill kind.
+    """
+
+    markdown: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the rendered Skill instructions in Markdown.
+    """
+
     maturity: typing.Optional[AgentSkillSearchHitMaturity] = pydantic.Field(default=None)
     """
     Maturity is the trust tier of the Skill: provisional (one source attempt
@@ -22,18 +42,47 @@ class AgentSkillSearchHit(UniversalBaseModel):
     more from verified applications), or authored (no compiled source).
     """
 
-    name: typing.Optional[str] = None
-    package_name: typing.Optional[str] = None
-    self_contained: typing.Optional[bool] = None
-    skill_id: typing.Optional[str] = None
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the display name.
+    """
+
+    package_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the stable package name of the Skill.
+    """
+
+    self_contained: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The service reports whether this Skill can run without external context.
+    """
+
+    short_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The first 8 hex characters of uuid. Every route that takes skill_uuid also accepts this value in place of the full UUID.
+    """
+
+    skill_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the stable developer-facing ID of the Skill, when set.
+    """
+
     source_attempt_families: typing.Optional[int] = pydantic.Field(default=None)
     """
     SourceAttemptFamilies is the count of distinct, successful, verified
     attempt families that support the current version.
     """
 
-    task_family: typing.Optional[str] = None
-    tools: typing.Optional[typing.List[str]] = None
+    task_family: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task-family slug.
+    """
+
+    tools: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns tool names used by the Skill.
+    """
+
     trust: typing.Optional[float] = pydantic.Field(default=None)
     """
     Trust is the lower bound of the 95% Wilson score interval for the
@@ -42,15 +91,24 @@ class AgentSkillSearchHit(UniversalBaseModel):
     """
 
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this resource."),
     ] = None
-    verified_applications: typing.Optional[int] = pydantic.Field(default=None)
     """
-    VerifiedApplications is the count of strongly verified applications
-    that end in success or failure.
+    The service returns the UUID that identifies this resource.
     """
 
-    version: typing.Optional[int] = None
+    verified_applications: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the count of strongly verified applications that end in success or
+    failure.
+    """
+
+    version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the Skill version number.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

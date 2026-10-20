@@ -14,6 +14,11 @@ class ContextThreadSummary(UniversalBaseModel):
     The time the summary was first created.
     """
 
+    graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The unique identifier of the graph this thread summary belongs to.
+    """
+
     last_summarized_at: typing.Optional[str] = pydantic.Field(default=None)
     """
     The wall-clock time of the most recent summary update.

@@ -14,7 +14,7 @@ class ImportedTraceReference(UniversalBaseModel):
 
     import_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
-    ImportUUID is the active import owner identifier.
+    The service returns the UUID of the active import.
     """
 
     trace_uuid: typing.Optional[str] = pydantic.Field(default=None)

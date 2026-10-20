@@ -8,8 +8,15 @@ from .agent_memory_evaluation_requirement import AgentMemoryEvaluationRequiremen
 
 
 class AgentMemoryEvaluationPolicy(UniversalBaseModel):
-    requirements: typing.List[AgentMemoryEvaluationRequirement]
-    task_family: str
+    requirements: typing.List[AgentMemoryEvaluationRequirement] = pydantic.Field()
+    """
+    The developer lists one or more evaluation requirements for this policy.
+    """
+
+    task_family: str = pydantic.Field()
+    """
+    The developer selects the task family that uses this evaluation policy.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

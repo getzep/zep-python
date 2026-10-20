@@ -7,9 +7,20 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class SkillProcedureStep(UniversalBaseModel):
-    decision: typing.Optional[str] = None
-    expect: typing.Optional[typing.List[str]] = None
-    instruction: typing.Optional[str] = None
+    decision: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer describes the decision point for this procedure step.
+    """
+
+    expect: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The developer supplies expected results.
+    """
+
+    instruction: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies action for this procedure step.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

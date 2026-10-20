@@ -37,6 +37,8 @@ class RawCandidateClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[AgentSkillCandidateReviewSummary, Pagev4AgentSkillCandidateReviewSummary]:
         """
+        List Agent Skill Candidate Reviews. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -156,6 +158,8 @@ class RawCandidateClient:
         self, agent_uuid: str, review_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[AgentSkillCandidateReview]:
         """
+        Get Agent Skill Candidate Review. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -280,6 +284,8 @@ class AsyncRawCandidateClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[AgentSkillCandidateReviewSummary, Pagev4AgentSkillCandidateReviewSummary]:
         """
+        List Agent Skill Candidate Reviews. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
@@ -402,6 +408,8 @@ class AsyncRawCandidateClient:
         self, agent_uuid: str, review_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[AgentSkillCandidateReview]:
         """
+        Get Agent Skill Candidate Review. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str

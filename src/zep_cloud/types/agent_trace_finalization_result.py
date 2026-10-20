@@ -9,8 +9,15 @@ from .task import Task
 
 
 class AgentTraceFinalizationResult(UniversalBaseModel):
-    task: typing.Optional[Task] = None
-    trace: typing.Optional[AgentTrace] = None
+    task: typing.Optional[Task] = pydantic.Field(default=None)
+    """
+    The service returns the asynchronous Task.
+    """
+
+    trace: typing.Optional[AgentTrace] = pydantic.Field(default=None)
+    """
+    The service returns the finalized Trace.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

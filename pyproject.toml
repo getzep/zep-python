@@ -1,12 +1,12 @@
 [project]
 name = "zep-cloud"
 dynamic = ["version"]
-version = "4.0.0"
+version = "4.0.1"
 
 [tool.poetry]
 name = "zep-cloud"
-version = "4.0.0"
-description = ""
+version = "4.0.1"
+description = "The Python SDK for Zep, the context layer for AI agents."
 readme = "README.md"
 authors = []
 keywords = []

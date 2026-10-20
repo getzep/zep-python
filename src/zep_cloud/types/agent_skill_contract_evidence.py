@@ -9,12 +9,42 @@ from .agent_skill_contract_evidence_source_kind import AgentSkillContractEvidenc
 
 
 class AgentSkillContractEvidence(UniversalBaseModel):
-    attempt_family_id: typing.Optional[str] = None
-    id: typing.Optional[str] = None
-    polarity: typing.Optional[AgentSkillContractEvidencePolarity] = None
-    source_id: typing.Optional[str] = None
-    source_kind: typing.Optional[AgentSkillContractEvidenceSourceKind] = None
-    trajectory_id: typing.Optional[str] = None
+    attempt_family_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    AttemptFamilyID is the ID of the attempt family that supplied this
+    evidence. The service returns this value.
+    """
+
+    id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    ID is the citation identifier that the service returns. It is unique in
+    the evidence list.
+    """
+
+    polarity: typing.Optional[AgentSkillContractEvidencePolarity] = pydantic.Field(default=None)
+    """
+    Polarity states whether the evidence supports, contradicts, or does not
+    affect the contract claim. The service returns supporting, contradicting,
+    or neutral.
+    """
+
+    source_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    SourceID is the ID of the Trace, event, or summary version named by
+    source_kind. The service returns this value.
+    """
+
+    source_kind: typing.Optional[AgentSkillContractEvidenceSourceKind] = pydantic.Field(default=None)
+    """
+    SourceKind is the source type. The service returns trace, event, or
+    summary.
+    """
+
+    trace_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    TraceID is the ID of the Trace that supplied this evidence. The service
+    returns this value.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -115,9 +115,9 @@ class AgentClient:
             api_key="YOUR_API_KEY",
         )
         client.agent.create(
-            agent_id="agent_id",
-            name="name",
-            security_domain="security_domain",
+            agent_id="payments-agent",
+            name="Refund a duplicate charge",
+            security_domain="customer:support",
         )
         """
         _response = self._raw_client.create(
@@ -168,13 +168,13 @@ class AgentClient:
             Filters to the exact developer-assigned Agent identifier.
 
         deployment_id : typing.Optional[str]
-            Filters to the exact deployment identifier.
+            The developer supplies filters to the exact deployment identifier.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Filters to Agents whose metadata contains these key-value pairs.
 
         search : typing.Optional[str]
-            Filters to Agents whose name, Agent identifier, deployment identifier,
+            The developer supplies filters to Agents whose name, Agent identifier, deployment identifier,
             or deployment version contains this text. Matching is case-insensitive.
 
         status : typing.Optional[AgentStatus]
@@ -382,14 +382,19 @@ class AgentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentBreakingChange:
         """
+        Declare a breaking Agent deployment change. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         expected_revision : int
+            The developer supplies the current Agent revision for optimistic concurrency.
+            It must be at least 1.
 
         version : str
+            The developer supplies the new deployment version. It must differ from the current version.
 
         idempotency_key : typing.Optional[str]
 
@@ -411,7 +416,7 @@ class AgentClient:
         client.agent.declare_breaking_change(
             agent_uuid="agent_uuid",
             expected_revision=1,
-            version="version",
+            version="2026.09.01",
         )
         """
         _response = self._raw_client.declare_breaking_change(
@@ -438,26 +443,36 @@ class AgentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentContext:
         """
+        Get Agent context. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         environments : typing.Optional[typing.Sequence[AgentContextResource]]
+            The developer supplies environment names used by the Skill. At most 32.
 
         kind : typing.Optional[str]
+            The developer supplies a Skill kind. At most 64.
 
         max_characters : typing.Optional[int]
+            The developer sets the maximum number of characters in the context response.
 
         models : typing.Optional[typing.Sequence[AgentContextResource]]
+            The developer supplies models used for this evaluation. At most 32.
 
         objective : typing.Optional[str]
+            The developer supplies the task-instance objective. At most 512.
 
         task_family : typing.Optional[str]
+            The developer supplies the task-family slug. At most 128.
 
         tools : typing.Optional[typing.Sequence[AgentContextResource]]
+            The developer supplies tool names used by the Skill. At most 32.
 
         trace_uuid : typing.Optional[str]
+            The developer supplies the UUID of the source Trace.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -645,9 +660,9 @@ class AsyncAgentClient:
 
         async def main() -> None:
             await client.agent.create(
-                agent_id="agent_id",
-                name="name",
-                security_domain="security_domain",
+                agent_id="payments-agent",
+                name="Refund a duplicate charge",
+                security_domain="customer:support",
             )
 
 
@@ -701,13 +716,13 @@ class AsyncAgentClient:
             Filters to the exact developer-assigned Agent identifier.
 
         deployment_id : typing.Optional[str]
-            Filters to the exact deployment identifier.
+            The developer supplies filters to the exact deployment identifier.
 
         metadata : typing.Optional[typing.Dict[str, typing.Any]]
             Filters to Agents whose metadata contains these key-value pairs.
 
         search : typing.Optional[str]
-            Filters to Agents whose name, Agent identifier, deployment identifier,
+            The developer supplies filters to Agents whose name, Agent identifier, deployment identifier,
             or deployment version contains this text. Matching is case-insensitive.
 
         status : typing.Optional[AgentStatus]
@@ -948,14 +963,19 @@ class AsyncAgentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentBreakingChange:
         """
+        Declare a breaking Agent deployment change. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         expected_revision : int
+            The developer supplies the current Agent revision for optimistic concurrency.
+            It must be at least 1.
 
         version : str
+            The developer supplies the new deployment version. It must differ from the current version.
 
         idempotency_key : typing.Optional[str]
 
@@ -982,7 +1002,7 @@ class AsyncAgentClient:
             await client.agent.declare_breaking_change(
                 agent_uuid="agent_uuid",
                 expected_revision=1,
-                version="version",
+                version="2026.09.01",
             )
 
 
@@ -1012,26 +1032,36 @@ class AsyncAgentClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AgentContext:
         """
+        Get Agent context. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         environments : typing.Optional[typing.Sequence[AgentContextResource]]
+            The developer supplies environment names used by the Skill. At most 32.
 
         kind : typing.Optional[str]
+            The developer supplies a Skill kind. At most 64.
 
         max_characters : typing.Optional[int]
+            The developer sets the maximum number of characters in the context response.
 
         models : typing.Optional[typing.Sequence[AgentContextResource]]
+            The developer supplies models used for this evaluation. At most 32.
 
         objective : typing.Optional[str]
+            The developer supplies the task-instance objective. At most 512.
 
         task_family : typing.Optional[str]
+            The developer supplies the task-family slug. At most 128.
 
         tools : typing.Optional[typing.Sequence[AgentContextResource]]
+            The developer supplies tool names used by the Skill. At most 32.
 
         trace_uuid : typing.Optional[str]
+            The developer supplies the UUID of the source Trace.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

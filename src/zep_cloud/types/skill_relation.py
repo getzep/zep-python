@@ -7,9 +7,20 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class SkillRelation(UniversalBaseModel):
-    relation: typing.Optional[str] = None
-    skill: typing.Optional[str] = None
-    version: typing.Optional[str] = None
+    relation: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies a relationship to the related Skill.
+    """
+
+    skill: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer identifies a related Skill by its stable package name.
+    """
+
+    version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The developer supplies the Agent deployment version.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

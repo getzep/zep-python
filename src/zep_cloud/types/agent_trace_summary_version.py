@@ -14,25 +14,98 @@ from .agent_trace_verification import AgentTraceVerification
 
 
 class AgentTraceSummaryVersion(UniversalBaseModel):
-    agent_uuid: typing.Optional[str] = None
-    assertion_uuid: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    creation_reason: typing.Optional[AgentTraceSummaryCreationReason] = None
-    first_occurred_at: typing.Optional[str] = None
-    first_sequence: typing.Optional[int] = None
-    last_occurred_at: typing.Optional[str] = None
-    last_sequence: typing.Optional[int] = None
-    omitted_sequence_ranges: typing.Optional[typing.List[AgentTraceSummaryOmittedRange]] = None
-    outcome: typing.Optional[AgentTraceOutcome] = None
-    parent_version_uuid: typing.Optional[str] = None
-    structured_summary: typing.Optional[AgentTraceStructuredSummary] = None
-    text: typing.Optional[str] = None
-    trace_uuid: typing.Optional[str] = None
+    agent_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the owning Agent.
+    """
+
+    assertion_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the verification assertion linked to this evidence.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    creation_reason: typing.Optional[AgentTraceSummaryCreationReason] = pydantic.Field(default=None)
+    """
+    The service returns what caused this summary version. Valid values are close, abandon, revision,
+    task_family_correction, evidence_deletion, policy_change.
+    """
+
+    first_occurred_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when the first event occurred.
+    """
+
+    first_sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the first event sequence included in this summary.
+    """
+
+    last_occurred_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when the last event occurred.
+    """
+
+    last_sequence: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the last event sequence included in this summary.
+    """
+
+    omitted_sequence_ranges: typing.Optional[typing.List[AgentTraceSummaryOmittedRange]] = pydantic.Field(default=None)
+    """
+    The service returns event sequence ranges that this summary omits.
+    """
+
+    outcome: typing.Optional[AgentTraceOutcome] = pydantic.Field(default=None)
+    """
+    The service returns the task outcome. Valid values are succeeded, failed, partial, abandoned,
+    unknown.
+    """
+
+    parent_version_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the parent summary version, when one exists.
+    """
+
+    structured_summary: typing.Optional[AgentTraceStructuredSummary] = pydantic.Field(default=None)
+    """
+    The service returns the structured summary generated for this Trace.
+    """
+
+    text: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns text that a person can read.
+    """
+
+    trace_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the source Trace.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this summary version."),
     ] = None
-    verification: typing.Optional[AgentTraceVerification] = None
-    version: typing.Optional[int] = None
+    """
+    The service returns the UUID that identifies this summary version.
+    """
+
+    verification: typing.Optional[AgentTraceVerification] = pydantic.Field(default=None)
+    """
+    The service returns how the outcome was verified. Valid values are none, agent, tool,
+    customer, external, unverified, agent_verified, tool_verified, customer_verified,
+    externally_verified.
+    """
+
+    version: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns this summary version number.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

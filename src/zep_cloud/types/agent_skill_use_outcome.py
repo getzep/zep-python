@@ -9,15 +9,45 @@ from ..core.serialization import FieldMetadata
 
 
 class AgentSkillUseOutcome(UniversalBaseModel):
-    assertion_uuid: typing.Optional[str] = None
-    created_at: typing.Optional[str] = None
-    outcome: typing.Optional[str] = None
-    trace_uuid: typing.Optional[str] = None
-    use_uuid: typing.Optional[str] = None
+    assertion_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the verification assertion linked to this evidence.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    outcome: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the task outcome.
+    """
+
+    trace_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the source Trace.
+    """
+
+    use_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the recorded Skill use.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this resource."),
     ] = None
-    verification: typing.Optional[str] = None
+    """
+    The service returns the UUID that identifies this resource.
+    """
+
+    verification: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the verification source. Valid values are none, agent,
+    tool, customer, and external.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

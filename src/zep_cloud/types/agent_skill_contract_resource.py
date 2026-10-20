@@ -7,10 +7,25 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class AgentSkillContractResource(UniversalBaseModel):
-    aliases: typing.Optional[typing.List[str]] = None
-    citations: typing.Optional[typing.List[str]] = None
-    name: typing.Optional[str] = None
-    version_constraint: typing.Optional[str] = None
+    aliases: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns alternate names for this tool or environment.
+    """
+
+    citations: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service returns evidence identifiers that support this resource.
+    """
+
+    name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the resource name stored in the contract.
+    """
+
+    version_constraint: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the allowed versions for this resource.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

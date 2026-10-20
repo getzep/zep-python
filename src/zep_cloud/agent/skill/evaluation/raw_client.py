@@ -68,20 +68,30 @@ class RawEvaluationClient:
             Candidate UUID
 
         evaluated_by : CreateAgentSkillCandidateEvaluationRequestEvaluatedBy
+            The developer selects the evaluation source. Valid values are customer, tool,
+            offline_corpus, policy.
 
         evaluator_version : str
+            The developer supplies the version of the evaluation rule.
 
         expected_revision : int
+            The developer supplies the current revision used for optimistic concurrency. At least 1.
 
         verdict : CreateAgentSkillCandidateEvaluationRequestVerdict
+            The developer supplies evaluation verdict. Valid values are succeeded, failed, partial,
+            unknown.
 
         controlled_test : typing.Optional[bool]
+            The developer sets this to true when a controlled test produced the result.
 
         environment : typing.Optional[str]
+            The developer supplies the environment for this evaluation.
 
         evidence_reference : typing.Optional[str]
+            The developer links this evaluation to an evidence record.
 
         metrics : typing.Optional[typing.Dict[str, float]]
+            The developer supplies evaluation metrics.
 
         idempotency_key : typing.Optional[str]
 
@@ -220,31 +230,44 @@ class RawEvaluationClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AgentSkillEvaluation]:
         """
+        Record Agent Skill Evaluation. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         evaluated_by : CreateAgentSkillEvaluationRequestEvaluatedBy
+            The developer selects the evaluation source. Valid values are customer, tool,
+            offline_corpus, policy.
 
         evaluator_version : str
+            The developer supplies the evaluation rule version. It can contain up to 255 characters.
 
         skill_version : int
+            The developer supplies the Skill version to evaluate. It must be at least 1.
 
         verdict : CreateAgentSkillEvaluationRequestVerdict
+            The developer supplies evaluation verdict. Valid values are succeeded, failed, partial,
+            unknown.
 
         controlled_test : typing.Optional[bool]
+            The developer sets this to true when a controlled test produced the result.
 
         environment : typing.Optional[str]
+            The developer supplies the environment for this evaluation. At most 1024.
 
         evidence_reference : typing.Optional[str]
+            The developer links this evaluation to an evidence record.
 
         metrics : typing.Optional[typing.Dict[str, float]]
+            The developer supplies evaluation metrics.
 
         use_uuid : typing.Optional[str]
+            The developer can link this evaluation to a recorded Skill use.
 
         idempotency_key : typing.Optional[str]
 
@@ -390,20 +413,30 @@ class AsyncRawEvaluationClient:
             Candidate UUID
 
         evaluated_by : CreateAgentSkillCandidateEvaluationRequestEvaluatedBy
+            The developer selects the evaluation source. Valid values are customer, tool,
+            offline_corpus, policy.
 
         evaluator_version : str
+            The developer supplies the version of the evaluation rule.
 
         expected_revision : int
+            The developer supplies the current revision used for optimistic concurrency. At least 1.
 
         verdict : CreateAgentSkillCandidateEvaluationRequestVerdict
+            The developer supplies evaluation verdict. Valid values are succeeded, failed, partial,
+            unknown.
 
         controlled_test : typing.Optional[bool]
+            The developer sets this to true when a controlled test produced the result.
 
         environment : typing.Optional[str]
+            The developer supplies the environment for this evaluation.
 
         evidence_reference : typing.Optional[str]
+            The developer links this evaluation to an evidence record.
 
         metrics : typing.Optional[typing.Dict[str, float]]
+            The developer supplies evaluation metrics.
 
         idempotency_key : typing.Optional[str]
 
@@ -542,31 +575,44 @@ class AsyncRawEvaluationClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AgentSkillEvaluation]:
         """
+        Record Agent Skill Evaluation. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
+
         Parameters
         ----------
         agent_uuid : str
             Agent UUID
 
         skill_uuid : str
-            Skill UUID
+            Skill UUID, or the 8-character short_id
 
         evaluated_by : CreateAgentSkillEvaluationRequestEvaluatedBy
+            The developer selects the evaluation source. Valid values are customer, tool,
+            offline_corpus, policy.
 
         evaluator_version : str
+            The developer supplies the evaluation rule version. It can contain up to 255 characters.
 
         skill_version : int
+            The developer supplies the Skill version to evaluate. It must be at least 1.
 
         verdict : CreateAgentSkillEvaluationRequestVerdict
+            The developer supplies evaluation verdict. Valid values are succeeded, failed, partial,
+            unknown.
 
         controlled_test : typing.Optional[bool]
+            The developer sets this to true when a controlled test produced the result.
 
         environment : typing.Optional[str]
+            The developer supplies the environment for this evaluation. At most 1024.
 
         evidence_reference : typing.Optional[str]
+            The developer links this evaluation to an evidence record.
 
         metrics : typing.Optional[typing.Dict[str, float]]
+            The developer supplies evaluation metrics.
 
         use_uuid : typing.Optional[str]
+            The developer can link this evaluation to a recorded Skill use.
 
         idempotency_key : typing.Optional[str]
 

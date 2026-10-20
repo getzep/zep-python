@@ -10,11 +10,24 @@ from .agent_skill_version import AgentSkillVersion
 
 
 class AgentSkillVersionComparison(UniversalBaseModel):
-    changed_fields: typing.Optional[typing.List[str]] = None
+    changed_fields: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    The service lists fields that changed between these Skill versions.
+    """
+
     from_: typing_extensions.Annotated[
-        typing.Optional[AgentSkillVersion], FieldMetadata(alias="from"), pydantic.Field(alias="from")
+        typing.Optional[AgentSkillVersion],
+        FieldMetadata(alias="from"),
+        pydantic.Field(alias="from", description="The service returns the Skill version before the comparison."),
     ] = None
-    to: typing.Optional[AgentSkillVersion] = None
+    """
+    The service returns the Skill version before the comparison.
+    """
+
+    to: typing.Optional[AgentSkillVersion] = pydantic.Field(default=None)
+    """
+    The service returns the Skill version after the comparison.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

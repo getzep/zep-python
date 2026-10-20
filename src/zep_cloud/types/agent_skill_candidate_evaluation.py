@@ -9,20 +9,69 @@ from ..core.serialization import FieldMetadata
 
 
 class AgentSkillCandidateEvaluation(UniversalBaseModel):
-    candidate_uuid: typing.Optional[str] = None
-    controlled_test: typing.Optional[bool] = None
-    created_at: typing.Optional[str] = None
-    environment: typing.Optional[str] = None
-    evaluated_by: typing.Optional[str] = None
-    evaluator_version: typing.Optional[str] = None
-    evidence_reference: typing.Optional[str] = None
-    metrics: typing.Optional[typing.Dict[str, float]] = None
-    review_uuid: typing.Optional[str] = None
-    revision: typing.Optional[int] = None
+    candidate_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the candidate that this evaluation covers.
+    """
+
+    controlled_test: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    The service reports whether a controlled test produced the result.
+    """
+
+    created_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns when Zep created this resource.
+    """
+
+    environment: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the environment used for this evaluation.
+    """
+
+    evaluated_by: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the evaluation source. Valid values are customer, tool, offline_corpus, and policy.
+    """
+
+    evaluator_version: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the version of the evaluation rule.
+    """
+
+    evidence_reference: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the link to supporting evidence, when one exists.
+    """
+
+    metrics: typing.Optional[typing.Dict[str, float]] = pydantic.Field(default=None)
+    """
+    The service returns evaluation metrics.
+    """
+
+    review_uuid: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the UUID of the review that produced this evaluation.
+    """
+
+    revision: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    The service returns the current revision number.
+    """
+
     uuid_: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="uuid"), pydantic.Field(alias="uuid")
+        typing.Optional[str],
+        FieldMetadata(alias="uuid"),
+        pydantic.Field(alias="uuid", description="The service returns the UUID that identifies this resource."),
     ] = None
-    verdict: typing.Optional[str] = None
+    """
+    The service returns the UUID that identifies this resource.
+    """
+
+    verdict: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The service returns the evaluation verdict.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

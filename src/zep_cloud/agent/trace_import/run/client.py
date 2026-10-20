@@ -43,7 +43,7 @@ class RunClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[TraceImportRun, TraceImportRunPage]:
         """
-        List runs that belong to this trace import.
+        List runs that belong to this trace import. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -97,7 +97,7 @@ class RunClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Task:
         """
-        Create a pending run and its Task. This operation does not start the run.
+        Create a pending run and its Task. This operation does not start the run. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -143,7 +143,7 @@ class RunClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImportRun:
         """
-        Read one run that belongs to this trace import.
+        Read one run that belongs to this trace import. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -216,7 +216,7 @@ class AsyncRunClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[TraceImportRun, TraceImportRunPage]:
         """
-        List runs that belong to this trace import.
+        List runs that belong to this trace import. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -279,7 +279,7 @@ class AsyncRunClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> Task:
         """
-        Create a pending run and its Task. This operation does not start the run.
+        Create a pending run and its Task. This operation does not start the run. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -333,7 +333,7 @@ class AsyncRunClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceImportRun:
         """
-        Read one run that belongs to this trace import.
+        Read one run that belongs to this trace import. Agent Skills is in closed release. Zep enables Agent Skills only for select accounts. A request from an account without access returns `403 permission_denied`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
