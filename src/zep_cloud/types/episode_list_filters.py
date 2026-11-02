@@ -16,6 +16,12 @@ class EpisodeListFilters(UniversalBaseModel):
     project setting include_policy_violating_episodes must be on.
     """
 
+    document_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Include only the episodes of this document. The value is the
+    document_id of the episodes. At most 100 characters.
+    """
+
     mentioned_node_uuids: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     Include only episodes that mention at least one of these nodes. At

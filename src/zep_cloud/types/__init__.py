@@ -207,6 +207,8 @@ if typing.TYPE_CHECKING:
     from .graph_context_response import GraphContextResponse
     from .graph_data_type import GraphDataType
     from .graph_delete_result import GraphDeleteResult
+    from .graph_metadata_key import GraphMetadataKey
+    from .graph_metadata_key_list import GraphMetadataKeyList
     from .graph_page import GraphPage
     from .graph_query_citations import GraphQueryCitations
     from .graph_query_edge import GraphQueryEdge
@@ -581,6 +583,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "GraphContextResponse": ".graph_context_response",
     "GraphDataType": ".graph_data_type",
     "GraphDeleteResult": ".graph_delete_result",
+    "GraphMetadataKey": ".graph_metadata_key",
+    "GraphMetadataKeyList": ".graph_metadata_key_list",
     "GraphPage": ".graph_page",
     "GraphQueryCitations": ".graph_query_citations",
     "GraphQueryEdge": ".graph_query_edge",
@@ -977,6 +981,8 @@ __all__ = [
     "GraphContextResponse",
     "GraphDataType",
     "GraphDeleteResult",
+    "GraphMetadataKey",
+    "GraphMetadataKeyList",
     "GraphPage",
     "GraphQueryCitations",
     "GraphQueryEdge",

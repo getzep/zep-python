@@ -184,6 +184,100 @@ class RawUserClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def get_by_email(
+        self, *, email: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[User]:
+        """
+        Send `{"email": "jane@example.com"}` to get the user with this email.
+        An email matches only when the stored and requested values are equal after normalization.
+        Normalization lowercases both values and trims leading and trailing whitespace.
+        The operation returns `404 not_found` when no active user matches.
+        The operation returns `400 invalid_request` with `param: "email"` when multiple active users match.
+        The operation returns `400 invalid_request` with `param: "email"` when BYOK is active for the account.
+        An email that was stored encrypted with BYOK does not match.
+
+        Parameters
+        ----------
+        email : str
+            The user's email address. Matching ignores case and leading and trailing whitespace.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[User]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "users/get-by-email",
+            method="POST",
+            json={
+                "email": email,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    User,
+                    parse_obj_as(
+                        type_=User,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     def list(
         self,
         *,
@@ -1126,6 +1220,100 @@ class AsyncRawUserClient:
                 )
             if _response.status_code == 409:
                 raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_by_email(
+        self, *, email: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[User]:
+        """
+        Send `{"email": "jane@example.com"}` to get the user with this email.
+        An email matches only when the stored and requested values are equal after normalization.
+        Normalization lowercases both values and trims leading and trailing whitespace.
+        The operation returns `404 not_found` when no active user matches.
+        The operation returns `400 invalid_request` with `param: "email"` when multiple active users match.
+        The operation returns `400 invalid_request` with `param: "email"` when BYOK is active for the account.
+        An email that was stored encrypted with BYOK does not match.
+
+        Parameters
+        ----------
+        email : str
+            The user's email address. Matching ignores case and leading and trailing whitespace.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[User]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "users/get-by-email",
+            method="POST",
+            json={
+                "email": email,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    User,
+                    parse_obj_as(
+                        type_=User,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

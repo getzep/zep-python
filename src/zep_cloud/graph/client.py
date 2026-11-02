@@ -27,6 +27,8 @@ from ..types.graph_content_policy import GraphContentPolicy
 from ..types.graph_content_policy_request import GraphContentPolicyRequest
 from ..types.graph_context_response import GraphContextResponse
 from ..types.graph_delete_result import GraphDeleteResult
+from ..types.graph_metadata_key import GraphMetadataKey
+from ..types.graph_metadata_key_list import GraphMetadataKeyList
 from ..types.graph_page import GraphPage
 from ..types.graph_query_response import GraphQueryResponse
 from ..types.graph_query_stream_event import GraphQueryStreamEvent
@@ -74,8 +76,8 @@ class GraphClient:
         self._raw_client = RawGraphClient(client_wrapper=client_wrapper)
         self._client_wrapper = client_wrapper
         self._document_summary: typing.Optional[DocumentSummaryClient] = None
-        self._episode: typing.Optional[EpisodeClient] = None
         self._edge: typing.Optional[EdgeClient] = None
+        self._episode: typing.Optional[EpisodeClient] = None
         self._hyperedge: typing.Optional[HyperedgeClient] = None
         self._node: typing.Optional[NodeClient] = None
         self._observation: typing.Optional[ObservationClient] = None
@@ -264,7 +266,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[GraphQueryStreamEvent]:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -282,7 +284,7 @@ class GraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -327,7 +329,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphQueryResponse:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -345,7 +347,7 @@ class GraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -784,6 +786,56 @@ class GraphClient:
         )
         return _response.data
 
+    def list_metadata_keys(
+        self,
+        graph_uuid: str,
+        *,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[GraphMetadataKey, GraphMetadataKeyList]:
+        """
+        Returns the append-only metadata keys recorded for a graph. A key can remain in the list after no episode or message uses it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
+
+        page_size : typing.Optional[int]
+            The maximum number of keys per page.
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[GraphMetadataKey, GraphMetadataKeyList]
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        response = client.graph.list_metadata_keys(
+            graph_uuid="graph_uuid",
+        )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
+        """
+        return self._raw_client.list_metadata_keys(
+            graph_uuid, page_size=page_size, cursor=cursor, request_options=request_options
+        )
+
     def get_observation_steering(
         self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ObservationSteering:
@@ -907,6 +959,7 @@ class GraphClient:
         self,
         graph_uuid: str,
         *,
+        edge_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
@@ -920,11 +973,14 @@ class GraphClient:
         graph_uuid : str
             The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
+        edge_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The edge type hierarchy. Omitted when the ontology has no edge subtypes.
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
 
         entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
-            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
+            The entity type hierarchy. Omitted when the ontology has no entity subtypes.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -956,6 +1012,7 @@ class GraphClient:
         """
         _response = self._raw_client.set_ontology(
             graph_uuid,
+            edge_type_hierarchy=edge_type_hierarchy,
             edge_types=edge_types,
             entity_type_hierarchy=entity_type_hierarchy,
             entity_types=entity_types,
@@ -1575,20 +1632,20 @@ class GraphClient:
         return self._document_summary
 
     @property
-    def episode(self):
-        if self._episode is None:
-            from .episode.client import EpisodeClient  # noqa: E402
-
-            self._episode = EpisodeClient(client_wrapper=self._client_wrapper)
-        return self._episode
-
-    @property
     def edge(self):
         if self._edge is None:
             from .edge.client import EdgeClient  # noqa: E402
 
             self._edge = EdgeClient(client_wrapper=self._client_wrapper)
         return self._edge
+
+    @property
+    def episode(self):
+        if self._episode is None:
+            from .episode.client import EpisodeClient  # noqa: E402
+
+            self._episode = EpisodeClient(client_wrapper=self._client_wrapper)
+        return self._episode
 
     @property
     def hyperedge(self):
@@ -1628,8 +1685,8 @@ class AsyncGraphClient:
         self._raw_client = AsyncRawGraphClient(client_wrapper=client_wrapper)
         self._client_wrapper = client_wrapper
         self._document_summary: typing.Optional[AsyncDocumentSummaryClient] = None
-        self._episode: typing.Optional[AsyncEpisodeClient] = None
         self._edge: typing.Optional[AsyncEdgeClient] = None
+        self._episode: typing.Optional[AsyncEpisodeClient] = None
         self._hyperedge: typing.Optional[AsyncHyperedgeClient] = None
         self._node: typing.Optional[AsyncNodeClient] = None
         self._observation: typing.Optional[AsyncObservationClient] = None
@@ -1843,7 +1900,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[GraphQueryStreamEvent]:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -1861,7 +1918,7 @@ class AsyncGraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1915,7 +1972,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphQueryResponse:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -1933,7 +1990,7 @@ class AsyncGraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2453,6 +2510,65 @@ class AsyncGraphClient:
         )
         return _response.data
 
+    async def list_metadata_keys(
+        self,
+        graph_uuid: str,
+        *,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[GraphMetadataKey, GraphMetadataKeyList]:
+        """
+        Returns the append-only metadata keys recorded for a graph. A key can remain in the list after no episode or message uses it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
+
+        page_size : typing.Optional[int]
+            The maximum number of keys per page.
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[GraphMetadataKey, GraphMetadataKeyList]
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            response = await client.graph.list_metadata_keys(
+                graph_uuid="graph_uuid",
+            )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
+
+
+        asyncio.run(main())
+        """
+        return await self._raw_client.list_metadata_keys(
+            graph_uuid, page_size=page_size, cursor=cursor, request_options=request_options
+        )
+
     async def get_observation_steering(
         self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ObservationSteering:
@@ -2602,6 +2718,7 @@ class AsyncGraphClient:
         self,
         graph_uuid: str,
         *,
+        edge_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
@@ -2615,11 +2732,14 @@ class AsyncGraphClient:
         graph_uuid : str
             The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
+        edge_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The edge type hierarchy. Omitted when the ontology has no edge subtypes.
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
 
         entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
-            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
+            The entity type hierarchy. Omitted when the ontology has no entity subtypes.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -2659,6 +2779,7 @@ class AsyncGraphClient:
         """
         _response = await self._raw_client.set_ontology(
             graph_uuid,
+            edge_type_hierarchy=edge_type_hierarchy,
             edge_types=edge_types,
             entity_type_hierarchy=entity_type_hierarchy,
             entity_types=entity_types,
@@ -3341,20 +3462,20 @@ class AsyncGraphClient:
         return self._document_summary
 
     @property
-    def episode(self):
-        if self._episode is None:
-            from .episode.client import AsyncEpisodeClient  # noqa: E402
-
-            self._episode = AsyncEpisodeClient(client_wrapper=self._client_wrapper)
-        return self._episode
-
-    @property
     def edge(self):
         if self._edge is None:
             from .edge.client import AsyncEdgeClient  # noqa: E402
 
             self._edge = AsyncEdgeClient(client_wrapper=self._client_wrapper)
         return self._edge
+
+    @property
+    def episode(self):
+        if self._episode is None:
+            from .episode.client import AsyncEpisodeClient  # noqa: E402
+
+            self._episode = AsyncEpisodeClient(client_wrapper=self._client_wrapper)
+        return self._episode
 
     @property
     def hyperedge(self):

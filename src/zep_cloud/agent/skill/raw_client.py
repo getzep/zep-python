@@ -488,7 +488,7 @@ class RawSkillClient:
             Agent UUID
 
         query : str
-            The developer supplies a search query for Skills.
+            The developer supplies a search query for Skills. A term is a sequence of characters between whitespace. When the query has more than 64 terms, Zep searches with the first 64 terms and ignores the other terms. The query must not be longer than 512 bytes.
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
@@ -1615,7 +1615,7 @@ class AsyncRawSkillClient:
             Agent UUID
 
         query : str
-            The developer supplies a search query for Skills.
+            The developer supplies a search query for Skills. A term is a sequence of characters between whitespace. When the query has more than 64 terms, Zep searches with the first 64 terms and ignores the other terms. The query must not be longer than 512 bytes.
 
         page_size : typing.Optional[int]
             The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.

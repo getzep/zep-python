@@ -37,59 +37,6 @@ class EpisodeClient:
         """
         return self._raw_client
 
-    def list_for_document(
-        self,
-        graph_uuid: str,
-        document_id: str,
-        *,
-        page_size: typing.Optional[int] = None,
-        cursor: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SyncPager[Episode, EpisodePage]:
-        """
-        Parameters
-        ----------
-        graph_uuid : str
-            The UUID of the graph. For a user graph, you can also use the UUID of the user.
-
-        document_id : str
-            Document ID
-
-        page_size : typing.Optional[int]
-            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
-
-        cursor : typing.Optional[str]
-            Opaque page cursor
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SyncPager[Episode, EpisodePage]
-            OK
-
-        Examples
-        --------
-        from zep_cloud import Zep
-
-        client = Zep(
-            api_key="YOUR_API_KEY",
-        )
-        response = client.graph.episode.list_for_document(
-            graph_uuid="graph_uuid",
-            document_id="document_id",
-        )
-        for item in response:
-            yield item
-        # alternatively, you can paginate page-by-page
-        for page in response.iter_pages():
-            yield page
-        """
-        return self._raw_client.list_for_document(
-            graph_uuid, document_id, page_size=page_size, cursor=cursor, request_options=request_options
-        )
-
     def add(
         self,
         graph_uuid: str,
@@ -186,7 +133,10 @@ class EpisodeClient:
         list can also contain episode UUIDs: an episode UUID matches that episode,
         so one request can return a known set of episodes. At most 256 entries.
         `filters.metadata_filters` restricts the results to episodes whose stored
-        metadata matches the predicate.
+        metadata matches the predicate. `filters.document_id` restricts the results
+        to the episodes of one document.
+
+        Example body: `{"filters": {"document_id": "gdrive.test-folder.weird-document"}}`
 
         Parameters
         ----------
@@ -481,68 +431,6 @@ class AsyncEpisodeClient:
         """
         return self._raw_client
 
-    async def list_for_document(
-        self,
-        graph_uuid: str,
-        document_id: str,
-        *,
-        page_size: typing.Optional[int] = None,
-        cursor: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncPager[Episode, EpisodePage]:
-        """
-        Parameters
-        ----------
-        graph_uuid : str
-            The UUID of the graph. For a user graph, you can also use the UUID of the user.
-
-        document_id : str
-            Document ID
-
-        page_size : typing.Optional[int]
-            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
-
-        cursor : typing.Optional[str]
-            Opaque page cursor
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncPager[Episode, EpisodePage]
-            OK
-
-        Examples
-        --------
-        import asyncio
-
-        from zep_cloud import AsyncZep
-
-        client = AsyncZep(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            response = await client.graph.episode.list_for_document(
-                graph_uuid="graph_uuid",
-                document_id="document_id",
-            )
-            async for item in response:
-                yield item
-
-            # alternatively, you can paginate page-by-page
-            async for page in response.iter_pages():
-                yield page
-
-
-        asyncio.run(main())
-        """
-        return await self._raw_client.list_for_document(
-            graph_uuid, document_id, page_size=page_size, cursor=cursor, request_options=request_options
-        )
-
     async def add(
         self,
         graph_uuid: str,
@@ -647,7 +535,10 @@ class AsyncEpisodeClient:
         list can also contain episode UUIDs: an episode UUID matches that episode,
         so one request can return a known set of episodes. At most 256 entries.
         `filters.metadata_filters` restricts the results to episodes whose stored
-        metadata matches the predicate.
+        metadata matches the predicate. `filters.document_id` restricts the results
+        to the episodes of one document.
+
+        Example body: `{"filters": {"document_id": "gdrive.test-folder.weird-document"}}`
 
         Parameters
         ----------
