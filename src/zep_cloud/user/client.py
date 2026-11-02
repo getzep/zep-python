@@ -115,6 +115,43 @@ class UserClient:
         )
         return _response.data
 
+    def get_by_email(self, *, email: str, request_options: typing.Optional[RequestOptions] = None) -> User:
+        """
+        Send `{"email": "jane@example.com"}` to get the user with this email.
+        An email matches only when the stored and requested values are equal after normalization.
+        Normalization lowercases both values and trims leading and trailing whitespace.
+        The operation returns `404 not_found` when no active user matches.
+        The operation returns `400 invalid_request` with `param: "email"` when multiple active users match.
+        The operation returns `400 invalid_request` with `param: "email"` when BYOK is active for the account.
+        An email that was stored encrypted with BYOK does not match.
+
+        Parameters
+        ----------
+        email : str
+            The user's email address. Matching ignores case and leading and trailing whitespace.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.user.get_by_email(
+            email="jane@example.com",
+        )
+        """
+        _response = self._raw_client.get_by_email(email=email, request_options=request_options)
+        return _response.data
+
     def list(
         self,
         *,
@@ -571,6 +608,51 @@ class AsyncUserClient:
             idempotency_key=idempotency_key,
             request_options=request_options,
         )
+        return _response.data
+
+    async def get_by_email(self, *, email: str, request_options: typing.Optional[RequestOptions] = None) -> User:
+        """
+        Send `{"email": "jane@example.com"}` to get the user with this email.
+        An email matches only when the stored and requested values are equal after normalization.
+        Normalization lowercases both values and trims leading and trailing whitespace.
+        The operation returns `404 not_found` when no active user matches.
+        The operation returns `400 invalid_request` with `param: "email"` when multiple active users match.
+        The operation returns `400 invalid_request` with `param: "email"` when BYOK is active for the account.
+        An email that was stored encrypted with BYOK does not match.
+
+        Parameters
+        ----------
+        email : str
+            The user's email address. Matching ignores case and leading and trailing whitespace.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        User
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.user.get_by_email(
+                email="jane@example.com",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_by_email(email=email, request_options=request_options)
         return _response.data
 
     async def list(

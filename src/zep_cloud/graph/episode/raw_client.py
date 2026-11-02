@@ -40,135 +40,6 @@ class RawEpisodeClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_for_document(
-        self,
-        graph_uuid: str,
-        document_id: str,
-        *,
-        page_size: typing.Optional[int] = None,
-        cursor: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SyncPager[Episode, EpisodePage]:
-        """
-        Parameters
-        ----------
-        graph_uuid : str
-            The UUID of the graph. For a user graph, you can also use the UUID of the user.
-
-        document_id : str
-            Document ID
-
-        page_size : typing.Optional[int]
-            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
-
-        cursor : typing.Optional[str]
-            Opaque page cursor
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SyncPager[Episode, EpisodePage]
-            OK
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"graphs/{encode_path_param(graph_uuid)}/documents/{encode_path_param(document_id)}/episodes",
-            method="GET",
-            params={
-                "page_size": page_size,
-                "cursor": cursor,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _parsed_response = typing.cast(
-                    EpisodePage,
-                    parse_obj_as(
-                        type_=EpisodePage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                _items = _parsed_response.items
-                _parsed_next = _parsed_response.next_cursor
-                _has_next = _parsed_next is not None and _parsed_next != ""
-                _get_next = lambda: self.list_for_document(
-                    graph_uuid,
-                    document_id,
-                    page_size=page_size,
-                    cursor=_parsed_next,
-                    request_options=request_options,
-                )
-                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        except ValidationError as e:
-            raise ParsingError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
     def add(
         self,
         graph_uuid: str,
@@ -336,7 +207,10 @@ class RawEpisodeClient:
         list can also contain episode UUIDs: an episode UUID matches that episode,
         so one request can return a known set of episodes. At most 256 entries.
         `filters.metadata_filters` restricts the results to episodes whose stored
-        metadata matches the predicate.
+        metadata matches the predicate. `filters.document_id` restricts the results
+        to the episodes of one document.
+
+        Example body: `{"filters": {"document_id": "gdrive.test-folder.weird-document"}}`
 
         Parameters
         ----------
@@ -1012,138 +886,6 @@ class AsyncRawEpisodeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_for_document(
-        self,
-        graph_uuid: str,
-        document_id: str,
-        *,
-        page_size: typing.Optional[int] = None,
-        cursor: typing.Optional[str] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncPager[Episode, EpisodePage]:
-        """
-        Parameters
-        ----------
-        graph_uuid : str
-            The UUID of the graph. For a user graph, you can also use the UUID of the user.
-
-        document_id : str
-            Document ID
-
-        page_size : typing.Optional[int]
-            The maximum number of items in one page. The SDK method returns a pager. In Python, `.items` holds only the first page. In TypeScript, `.data` holds only the first page. To read every page, iterate the pager: use `for` or `list(...)` in Python, or `for await` in TypeScript. In Go, the method returns one page, and `Iterator()` reads all pages.
-
-        cursor : typing.Optional[str]
-            Opaque page cursor
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncPager[Episode, EpisodePage]
-            OK
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"graphs/{encode_path_param(graph_uuid)}/documents/{encode_path_param(document_id)}/episodes",
-            method="GET",
-            params={
-                "page_size": page_size,
-                "cursor": cursor,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _parsed_response = typing.cast(
-                    EpisodePage,
-                    parse_obj_as(
-                        type_=EpisodePage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                _items = _parsed_response.items
-                _parsed_next = _parsed_response.next_cursor
-                _has_next = _parsed_next is not None and _parsed_next != ""
-
-                async def _get_next():
-                    return await self.list_for_document(
-                        graph_uuid,
-                        document_id,
-                        page_size=page_size,
-                        cursor=_parsed_next,
-                        request_options=request_options,
-                    )
-
-                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        types_api_error_ApiError,
-                        parse_obj_as(
-                            type_=types_api_error_ApiError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise core_api_error_ApiError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
-            )
-        except ValidationError as e:
-            raise ParsingError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
-            )
-        raise core_api_error_ApiError(
-            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
-        )
-
     async def add(
         self,
         graph_uuid: str,
@@ -1311,7 +1053,10 @@ class AsyncRawEpisodeClient:
         list can also contain episode UUIDs: an episode UUID matches that episode,
         so one request can return a known set of episodes. At most 256 entries.
         `filters.metadata_filters` restricts the results to episodes whose stored
-        metadata matches the predicate.
+        metadata matches the predicate. `filters.document_id` restricts the results
+        to the episodes of one document.
+
+        Example body: `{"filters": {"document_id": "gdrive.test-folder.weird-document"}}`
 
         Parameters
         ----------

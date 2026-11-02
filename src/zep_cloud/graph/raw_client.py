@@ -46,6 +46,8 @@ from ..types.graph_content_policy import GraphContentPolicy
 from ..types.graph_content_policy_request import GraphContentPolicyRequest
 from ..types.graph_context_response import GraphContextResponse
 from ..types.graph_delete_result import GraphDeleteResult
+from ..types.graph_metadata_key import GraphMetadataKey
+from ..types.graph_metadata_key_list import GraphMetadataKeyList
 from ..types.graph_page import GraphPage
 from ..types.graph_query_response import GraphQueryResponse
 from ..types.graph_query_stream_event import GraphQueryStreamEvent
@@ -465,7 +467,7 @@ class RawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[HttpResponse[typing.Iterator[GraphQueryStreamEvent]]]:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -483,7 +485,7 @@ class RawGraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -662,7 +664,7 @@ class RawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GraphQueryResponse]:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -680,7 +682,7 @@ class RawGraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1805,6 +1807,121 @@ class RawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def list_metadata_keys(
+        self,
+        graph_uuid: str,
+        *,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[GraphMetadataKey, GraphMetadataKeyList]:
+        """
+        Returns the append-only metadata keys recorded for a graph. A key can remain in the list after no episode or message uses it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
+
+        page_size : typing.Optional[int]
+            The maximum number of keys per page.
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        SyncPager[GraphMetadataKey, GraphMetadataKeyList]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/metadata-keys",
+            method="GET",
+            params={
+                "page_size": page_size,
+                "cursor": cursor,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    GraphMetadataKeyList,
+                    parse_obj_as(
+                        type_=GraphMetadataKeyList,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list_metadata_keys(
+                    graph_uuid,
+                    page_size=page_size,
+                    cursor=_parsed_next,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     def get_observation_steering(
         self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[ObservationSteering]:
@@ -2076,6 +2193,7 @@ class RawGraphClient:
         self,
         graph_uuid: str,
         *,
+        edge_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
@@ -2089,11 +2207,14 @@ class RawGraphClient:
         graph_uuid : str
             The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
+        edge_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The edge type hierarchy. Omitted when the ontology has no edge subtypes.
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
 
         entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
-            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
+            The entity type hierarchy. Omitted when the ontology has no entity subtypes.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -2116,6 +2237,7 @@ class RawGraphClient:
             f"graphs/{encode_path_param(graph_uuid)}/ontology",
             method="PUT",
             json={
+                "edge_type_hierarchy": edge_type_hierarchy,
                 "edge_types": convert_and_respect_annotation_metadata(
                     object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
                 ),
@@ -3696,7 +3818,7 @@ class AsyncRawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[AsyncHttpResponse[typing.AsyncIterator[GraphQueryStreamEvent]]]:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -3714,7 +3836,7 @@ class AsyncRawGraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -3893,7 +4015,7 @@ class AsyncRawGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GraphQueryResponse]:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
 
         Parameters
         ----------
@@ -3911,7 +4033,7 @@ class AsyncRawGraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. A project with a BYOM configuration supports only deep. A BYOC deployment supports only deep.
+            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -5041,6 +5163,124 @@ class AsyncRawGraphClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    async def list_metadata_keys(
+        self,
+        graph_uuid: str,
+        *,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[GraphMetadataKey, GraphMetadataKeyList]:
+        """
+        Returns the append-only metadata keys recorded for a graph. A key can remain in the list after no episode or message uses it.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            The UUID of the graph. For a user graph, you can also use the UUID of the user.
+
+        page_size : typing.Optional[int]
+            The maximum number of keys per page.
+
+        cursor : typing.Optional[str]
+            Opaque page cursor
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncPager[GraphMetadataKey, GraphMetadataKeyList]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"graphs/{encode_path_param(graph_uuid)}/metadata-keys",
+            method="GET",
+            params={
+                "page_size": page_size,
+                "cursor": cursor,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _parsed_response = typing.cast(
+                    GraphMetadataKeyList,
+                    parse_obj_as(
+                        type_=GraphMetadataKeyList,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                _items = _parsed_response.items
+                _parsed_next = _parsed_response.next_cursor
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list_metadata_keys(
+                        graph_uuid,
+                        page_size=page_size,
+                        cursor=_parsed_next,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
     async def get_observation_steering(
         self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[ObservationSteering]:
@@ -5312,6 +5552,7 @@ class AsyncRawGraphClient:
         self,
         graph_uuid: str,
         *,
+        edge_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
@@ -5325,11 +5566,14 @@ class AsyncRawGraphClient:
         graph_uuid : str
             The UUID of the graph. For a user graph, you can also use the UUID of the user.
 
+        edge_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The edge type hierarchy. Omitted when the ontology has no edge subtypes.
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
 
         entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
-            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
+            The entity type hierarchy. Omitted when the ontology has no entity subtypes.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -5352,6 +5596,7 @@ class AsyncRawGraphClient:
             f"graphs/{encode_path_param(graph_uuid)}/ontology",
             method="PUT",
             json={
+                "edge_type_hierarchy": edge_type_hierarchy,
                 "edge_types": convert_and_respect_annotation_metadata(
                     object_=edge_types, annotation=typing.Sequence[EdgeType], direction="write"
                 ),

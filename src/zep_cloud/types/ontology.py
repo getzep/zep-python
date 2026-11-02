@@ -9,6 +9,11 @@ from .entity_type import EntityType
 
 
 class Ontology(UniversalBaseModel):
+    edge_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
+    """
+    The edge type hierarchy. Omitted when the ontology has no edge subtypes.
+    """
+
     edge_types: typing.Optional[typing.List[EdgeType]] = pydantic.Field(default=None)
     """
     The edge types defined in the ontology in effect at this scope.
@@ -16,7 +21,7 @@ class Ontology(UniversalBaseModel):
 
     entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = pydantic.Field(default=None)
     """
-    The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
+    The entity type hierarchy. Omitted when the ontology has no entity subtypes.
     """
 
     entity_types: typing.Optional[typing.List[EntityType]] = pydantic.Field(default=None)

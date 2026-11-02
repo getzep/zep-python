@@ -51,7 +51,9 @@ class Task(UniversalBaseModel):
     status: typing.Optional[TaskStatus] = pydantic.Field(default=None)
     """
     The service returns the task state. Valid values are pending, processing,
-    succeeded, partial, and failed.
+    succeeded, partial, and failed. A task has no canceled state. When a batch
+    becomes canceled, its batch.process task becomes failed, and the task error
+    code is batch_canceled.
     """
 
     type: typing.Optional[str] = pydantic.Field(default=None)

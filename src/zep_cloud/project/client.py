@@ -438,6 +438,7 @@ class ProjectClient:
     def set_ontology(
         self,
         *,
+        edge_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
@@ -450,11 +451,14 @@ class ProjectClient:
 
         Parameters
         ----------
+        edge_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The edge type hierarchy. Omitted when the ontology has no edge subtypes.
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
 
         entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
-            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
+            The entity type hierarchy. Omitted when the ontology has no entity subtypes.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -483,6 +487,7 @@ class ProjectClient:
         client.project.set_ontology()
         """
         _response = self._raw_client.set_ontology(
+            edge_type_hierarchy=edge_type_hierarchy,
             edge_types=edge_types,
             entity_type_hierarchy=entity_type_hierarchy,
             entity_types=entity_types,
@@ -1067,6 +1072,7 @@ class AsyncProjectClient:
     async def set_ontology(
         self,
         *,
+        edge_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         edge_types: typing.Optional[typing.Sequence[EdgeType]] = OMIT,
         entity_type_hierarchy: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         entity_types: typing.Optional[typing.Sequence[EntityType]] = OMIT,
@@ -1079,11 +1085,14 @@ class AsyncProjectClient:
 
         Parameters
         ----------
+        edge_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
+            The edge type hierarchy. Omitted when the ontology has no edge subtypes.
+
         edge_types : typing.Optional[typing.Sequence[EdgeType]]
             The edge types defined in the ontology in effect at this scope.
 
         entity_type_hierarchy : typing.Optional[typing.Dict[str, typing.Any]]
-            The entity type hierarchy (spec ontology-1). Omitted when the ontology is flat.
+            The entity type hierarchy. Omitted when the ontology has no entity subtypes.
 
         entity_types : typing.Optional[typing.Sequence[EntityType]]
             The entity types defined in the ontology in effect at this scope.
@@ -1120,6 +1129,7 @@ class AsyncProjectClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.set_ontology(
+            edge_type_hierarchy=edge_type_hierarchy,
             edge_types=edge_types,
             entity_type_hierarchy=entity_type_hierarchy,
             entity_types=entity_types,
