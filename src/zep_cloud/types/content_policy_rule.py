@@ -4,23 +4,49 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .content_policy_rule_action import ContentPolicyRuleAction
 
 
 class ContentPolicyRule(UniversalBaseModel):
+    action: typing.Optional[ContentPolicyRuleAction] = pydantic.Field(default=None)
+    """
+    The rule action. The supported values are exclude and include.
+    """
+
     category_key: typing.Optional[str] = pydantic.Field(default=None)
     """
     The key of the category this rule belongs to.
     """
 
+    condition: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The condition that this rule evaluates.
+    """
+
     description: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The content this rule prohibits.
+    Deprecated: use condition. This alias remains available for one release.
+    """
+
+    edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Edge types that this rule covers.
+    """
+
+    entity_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Entity types that this rule covers.
     """
 
     id: typing.Optional[str] = pydantic.Field(default=None)
     """
     The server-assigned identifier of the rule. Stable across revisions while
-    the category key and description are unchanged.
+    the effective rule definition is unchanged.
+    """
+
+    patterns: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Regular expression patterns that this rule matches.
     """
 
     permitted_examples: typing.Optional[typing.List[str]] = pydantic.Field(default=None)

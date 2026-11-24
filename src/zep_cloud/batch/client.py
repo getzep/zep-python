@@ -232,7 +232,7 @@ class BatchClient:
             api_key="YOUR_API_KEY",
         )
         response = client.batch.list_items(
-            batch_uuid="batch_uuid",
+            batch_uuid="366ac0d2-69b5-4140-89e8-15d025a33340",
         )
         for item in response:
             yield item
@@ -279,10 +279,13 @@ class BatchClient:
             api_key="YOUR_API_KEY",
         )
         client.batch.add_items(
-            batch_uuid="batch_uuid",
+            batch_uuid="366ac0d2-69b5-4140-89e8-15d025a33340",
             items=[
                 BatchItemInput(
                     type="graph_episode",
+                    graph_uuid="815f9d31-eef0-4201-90e6-02c1e6f16e90",
+                    data_type="text",
+                    data="A sample item.",
                 )
             ],
         )
@@ -585,7 +588,7 @@ class AsyncBatchClient:
 
         async def main() -> None:
             response = await client.batch.list_items(
-                batch_uuid="batch_uuid",
+                batch_uuid="366ac0d2-69b5-4140-89e8-15d025a33340",
             )
             async for item in response:
                 yield item
@@ -641,10 +644,13 @@ class AsyncBatchClient:
 
         async def main() -> None:
             await client.batch.add_items(
-                batch_uuid="batch_uuid",
+                batch_uuid="366ac0d2-69b5-4140-89e8-15d025a33340",
                 items=[
                     BatchItemInput(
                         type="graph_episode",
+                        graph_uuid="815f9d31-eef0-4201-90e6-02c1e6f16e90",
+                        data_type="text",
+                        data="A sample item.",
                     )
                 ],
             )

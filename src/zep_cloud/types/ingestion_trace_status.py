@@ -2,4 +2,4 @@
 
 import typing
 
-IngestionTraceStatus = typing.Union[typing.Literal["recorded", "failed"], typing.Any]
+IngestionTraceStatus = typing.Union[typing.Literal["pending", "recorded", "failed"], typing.Any]

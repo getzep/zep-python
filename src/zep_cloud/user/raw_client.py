@@ -56,7 +56,7 @@ class RawUserClient:
         Parameters
         ----------
         content_policy : typing.Optional[GraphContentPolicyRequest]
-            Content policy additions for the user's graph. The graph binds the
+            Experimental. Content policy additions for the user's graph. The graph binds the
             current project content policy plus these additions, and the binding
             does not change after creation.
 
@@ -1114,7 +1114,7 @@ class AsyncRawUserClient:
         Parameters
         ----------
         content_policy : typing.Optional[GraphContentPolicyRequest]
-            Content policy additions for the user's graph. The graph binds the
+            Experimental. Content policy additions for the user's graph. The graph binds the
             current project content policy plus these additions, and the binding
             does not change after creation.
 

@@ -11,7 +11,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update
 class EpisodeSearchFilters(UniversalBaseModel):
     content_policy_violated: typing.Optional[bool] = pydantic.Field(default=None)
     """
-    Match episodes by their content-policy result. Supported only on episode search when the project setting include_policy_violating_episodes is true.
+    Experimental. Match episodes by their content-policy result. Supported only on episode search when the project setting include_policy_violating_episodes is true.
     """
 
     metadata_filters: typing.Optional["MetadataFilterGroup"] = pydantic.Field(default=None)

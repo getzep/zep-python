@@ -4,19 +4,47 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .content_policy_rule_request_action import ContentPolicyRuleRequestAction
 
 
 class ContentPolicyRuleRequest(UniversalBaseModel):
+    action: typing.Optional[ContentPolicyRuleRequestAction] = pydantic.Field(default=None)
+    """
+    The rule action. The supported values are exclude and include.
+    The include action is experimental and gated.
+    """
+
     category_key: typing.Optional[str] = pydantic.Field(default=None)
     """
     The key of the category this rule belongs to. The category must be in
     the same policy.
     """
 
+    condition: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The experimental condition that this rule evaluates. This field is available
+    to all accounts. Maximum 1000 characters.
+    """
+
     description: typing.Optional[str] = pydantic.Field(default=None)
     """
-    The content this rule prohibits, in plain language. Maximum 1000
-    characters.
+    Deprecated: use condition. This alias remains available for one release.
+    When both fields are set, they must have the same value.
+    """
+
+    edge_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Edge types that this rule covers. The field is experimental and gated.
+    """
+
+    entity_types: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Entity types that this rule covers. The field is experimental and gated.
+    """
+
+    patterns: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
+    """
+    Regular expression patterns that this rule matches. The field is experimental and gated.
     """
 
     permitted_examples: typing.Optional[typing.List[str]] = pydantic.Field(default=None)

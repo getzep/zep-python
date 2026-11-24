@@ -6,6 +6,7 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .batch_item_error import BatchItemError
 from .batch_item_kind import BatchItemKind
 from .batch_item_status import BatchItemStatus
 from .episode_content_policy import EpisodeContentPolicy
@@ -14,7 +15,7 @@ from .episode_content_policy import EpisodeContentPolicy
 class BatchItem(UniversalBaseModel):
     content_policy: typing.Optional[EpisodeContentPolicy] = pydantic.Field(default=None)
     """
-    The content policy state of the item's episode, present only on a graph
+    Experimental. The content policy state of the item's episode, present only on a graph
     with a bound content policy rule and only once the item is processed.
     """
 
@@ -26,6 +27,11 @@ class BatchItem(UniversalBaseModel):
     episode_uuid: typing.Optional[str] = pydantic.Field(default=None)
     """
     The identifier of the episode created for this item, equal to source_uuid.
+    """
+
+    error: typing.Optional[BatchItemError] = pydantic.Field(default=None)
+    """
+    The reason the item failed and the action to take. Present only when status is failed.
     """
 
     graph_uuid: typing.Optional[str] = pydantic.Field(default=None)

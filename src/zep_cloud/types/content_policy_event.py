@@ -6,6 +6,7 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .content_policy_event_artifact_kind import ContentPolicyEventArtifactKind
 from .content_policy_event_drop_reason import ContentPolicyEventDropReason
+from .content_policy_matched_by import ContentPolicyMatchedBy
 
 
 class ContentPolicyEvent(UniversalBaseModel):
@@ -27,8 +28,7 @@ class ContentPolicyEvent(UniversalBaseModel):
 
     drop_reason: typing.Optional[ContentPolicyEventDropReason] = pydantic.Field(default=None)
     """
-    Why the artifact was dropped: match, indeterminate, oversize, or
-    dependent.
+    Why the artifact was dropped: match, indeterminate, oversize, dependent, or not_included.
     """
 
     episode_uuid: typing.Optional[str] = pydantic.Field(default=None)
@@ -39,6 +39,11 @@ class ContentPolicyEvent(UniversalBaseModel):
     id: typing.Optional[str] = pydantic.Field(default=None)
     """
     The opaque identifier of the event.
+    """
+
+    matched_by: typing.Optional[typing.List[ContentPolicyMatchedBy]] = pydantic.Field(default=None)
+    """
+    The match mechanisms. The list is empty for a not_included event.
     """
 
     revision: typing.Optional[int] = pydantic.Field(default=None)

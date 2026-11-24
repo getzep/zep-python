@@ -23,6 +23,7 @@ class AddedEdge(UniversalBaseModel):
     fact: typing.Optional[str] = pydantic.Field(default=None)
     """
     The natural-language fact you submitted for this edge.
+    graph.hyperedge.create_edge does not return this field.
     """
 
     fact_name: typing.Optional[str] = pydantic.Field(default=None)

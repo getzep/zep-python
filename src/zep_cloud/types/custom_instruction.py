@@ -14,7 +14,7 @@ class CustomInstruction(UniversalBaseModel):
 
     text: str = pydantic.Field()
     """
-    the actual instruction text
+    the domain knowledge text
     """
 
     if IS_PYDANTIC_V2:

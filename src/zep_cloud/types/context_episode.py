@@ -7,6 +7,7 @@ import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .episode_content_policy import EpisodeContentPolicy
+from .episode_wait_status import EpisodeWaitStatus
 from .graph_data_type import GraphDataType
 from .role_type import RoleType
 
@@ -19,7 +20,7 @@ class ContextEpisode(UniversalBaseModel):
 
     content_policy: typing.Optional[EpisodeContentPolicy] = pydantic.Field(default=None)
     """
-    The content policy state of the episode, present only on a graph with a
+    Experimental. The content policy state of the episode, present only on a graph with a
     bound content policy rule.
     """
 
@@ -32,6 +33,14 @@ class ContextEpisode(UniversalBaseModel):
     """
     The developer-assigned identifier of the document this episode belongs to,
     present only for episodes added to a document.
+    """
+
+    expired_at: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    The time when Zep stopped the processing of the episode because the
+    episode waited for more than 7 days. An expired episode is not in the
+    graph. Add the episode again to process it. The field is omitted for an
+    episode that did not expire.
     """
 
     graph_uuid: typing.Optional[str] = pydantic.Field(default=None)
@@ -116,6 +125,13 @@ class ContextEpisode(UniversalBaseModel):
     ] = None
     """
     The unique identifier of the episode.
+    """
+
+    wait_status: typing.Optional[EpisodeWaitStatus] = pydantic.Field(default=None)
+    """
+    Why an episode that is not processed waits. The field is present when
+    the episode has waited for more than 24 hours, and when the episode
+    expired. It is omitted for a processed episode.
     """
 
     if IS_PYDANTIC_V2:

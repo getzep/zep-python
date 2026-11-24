@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .ingestion_trace_candidate_outcome import IngestionTraceCandidateOutcome
 from .ingestion_trace_edge import IngestionTraceEdge
 from .ingestion_trace_edge_invalidation import IngestionTraceEdgeInvalidation
 from .ingestion_trace_node import IngestionTraceNode
@@ -12,6 +13,12 @@ from .ingestion_trace_node_resolution import IngestionTraceNodeResolution
 
 
 class IngestionTraceOutput(UniversalBaseModel):
+    candidate_outcomes: typing.Optional[typing.List[IngestionTraceCandidateOutcome]] = pydantic.Field(default=None)
+    """
+    The outcomes that the step recorded for each extracted and candidate pair.
+    Present for resolve_nodes and resolve_edges and empty for the other steps.
+    """
+
     edge_invalidations: typing.Optional[typing.List[IngestionTraceEdgeInvalidation]] = pydantic.Field(default=None)
     """
     The existing edges that the resolved edges invalidated. Present for resolve_edges and empty for

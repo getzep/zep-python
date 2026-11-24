@@ -12,7 +12,11 @@ from ..types.content_policy_rule_request import ContentPolicyRuleRequest
 from ..types.custom_instruction import CustomInstruction
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
+from ..types.inclusion_rule import InclusionRule
+from ..types.inclusion_rules import InclusionRules
 from ..types.instructions import Instructions
+from ..types.knowledge_entry import KnowledgeEntry
+from ..types.knowledge_response import KnowledgeResponse
 from ..types.observation_steering import ObservationSteering
 from ..types.observation_type import ObservationType
 from ..types.ontology import Ontology
@@ -120,7 +124,7 @@ class ProjectClient:
 
     def get_content_policy(self, *, request_options: typing.Optional[RequestOptions] = None) -> ContentPolicy:
         """
-        Returns the current content policy revision of the project. A new graph binds this revision at creation.
+        Experimental: the request, the response, and the behavior of this operation can change. Returns the current content policy revision of the project. A new graph binds this revision at creation.
 
         Parameters
         ----------
@@ -153,7 +157,7 @@ class ProjectClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ContentPolicy:
         """
-        Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. An empty policy (no categories and no rules) removes the content policy for new graphs.
+        Experimental: this operation and the new rule fields can change. The typed rule fields are in private preview and are available only to enabled accounts. Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. For example, {"categories":[{"key":"health"}],"rules":[{"category_key":"health","action":"exclude","entity_types":["Person"],"condition":"The statement names a person's health condition.","prohibited_examples":["Jordan has a chronic back condition."],"patterns":["diagnosed with"]}]}.
 
         Parameters
         ----------
@@ -196,7 +200,7 @@ class ProjectClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ContentPolicy, ContentPolicyRevisionPage]:
         """
-        Lists every revision of the project content policy, newest first, including revision 0.
+        Experimental: the request, the response, and the behavior of this operation can change. Lists every revision of the project content policy, newest first, including revision 0.
 
         Parameters
         ----------
@@ -236,6 +240,8 @@ class ProjectClient:
         self, revision_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ContentPolicy:
         """
+        Experimental: the request, the response, and the behavior of this operation can change.
+
         Parameters
         ----------
         revision_uuid : str
@@ -261,6 +267,78 @@ class ProjectClient:
         )
         """
         _response = self._raw_client.get_content_policy_revision(revision_uuid, request_options=request_options)
+        return _response.data
+
+    def get_inclusion_rules(self, *, request_options: typing.Optional[RequestOptions] = None) -> InclusionRules:
+        """
+        Returns the project rules, for example {"inclusion_rules":[],"inherited":false}.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        InclusionRules
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.get_inclusion_rules()
+        """
+        _response = self._raw_client.get_inclusion_rules(request_options=request_options)
+        return _response.data
+
+    def set_inclusion_rules(
+        self,
+        *,
+        inclusion_rules: typing.Optional[typing.Sequence[InclusionRule]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> InclusionRules:
+        """
+        Replaces the project rules. Request: {"inclusion_rules":[]}. Response: {"inclusion_rules":[],"inherited":false}.
+
+        Parameters
+        ----------
+        inclusion_rules : typing.Optional[typing.Sequence[InclusionRule]]
+            InclusionRules replaces the complete rule set at this scope.
+
+        inherited : typing.Optional[bool]
+            Inherited identifies a graph that uses project defaults.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        InclusionRules
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.set_inclusion_rules()
+        """
+        _response = self._raw_client.set_inclusion_rules(
+            inclusion_rules=inclusion_rules,
+            inherited=inherited,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
         return _response.data
 
     def get_instructions(self, *, request_options: typing.Optional[RequestOptions] = None) -> Instructions:
@@ -330,6 +408,74 @@ class ProjectClient:
             instructions=instructions,
             idempotency_key=idempotency_key,
             request_options=request_options,
+        )
+        return _response.data
+
+    def get_knowledge(self, *, request_options: typing.Optional[RequestOptions] = None) -> KnowledgeResponse:
+        """
+        Returns the domain knowledge in effect at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.get_knowledge()
+        """
+        _response = self._raw_client.get_knowledge(request_options=request_options)
+        return _response.data
+
+    def set_knowledge(
+        self,
+        *,
+        knowledge: typing.Optional[typing.Sequence[KnowledgeEntry]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> KnowledgeResponse:
+        """
+        Replaces the complete set of domain knowledge entries at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+        Request example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}]}
+
+        Parameters
+        ----------
+        knowledge : typing.Optional[typing.Sequence[KnowledgeEntry]]
+            The complete set of domain knowledge entries. An empty list clears the scope.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.project.set_knowledge()
+        """
+        _response = self._raw_client.set_knowledge(
+            knowledge=knowledge, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
 
@@ -681,7 +827,7 @@ class AsyncProjectClient:
 
     async def get_content_policy(self, *, request_options: typing.Optional[RequestOptions] = None) -> ContentPolicy:
         """
-        Returns the current content policy revision of the project. A new graph binds this revision at creation.
+        Experimental: the request, the response, and the behavior of this operation can change. Returns the current content policy revision of the project. A new graph binds this revision at creation.
 
         Parameters
         ----------
@@ -722,7 +868,7 @@ class AsyncProjectClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ContentPolicy:
         """
-        Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. An empty policy (no categories and no rules) removes the content policy for new graphs.
+        Experimental: this operation and the new rule fields can change. The typed rule fields are in private preview and are available only to enabled accounts. Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. For example, {"categories":[{"key":"health"}],"rules":[{"category_key":"health","action":"exclude","entity_types":["Person"],"condition":"The statement names a person's health condition.","prohibited_examples":["Jordan has a chronic back condition."],"patterns":["diagnosed with"]}]}.
 
         Parameters
         ----------
@@ -773,7 +919,7 @@ class AsyncProjectClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ContentPolicy, ContentPolicyRevisionPage]:
         """
-        Lists every revision of the project content policy, newest first, including revision 0.
+        Experimental: the request, the response, and the behavior of this operation can change. Lists every revision of the project content policy, newest first, including revision 0.
 
         Parameters
         ----------
@@ -822,6 +968,8 @@ class AsyncProjectClient:
         self, revision_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ContentPolicy:
         """
+        Experimental: the request, the response, and the behavior of this operation can change.
+
         Parameters
         ----------
         revision_uuid : str
@@ -855,6 +1003,94 @@ class AsyncProjectClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_content_policy_revision(revision_uuid, request_options=request_options)
+        return _response.data
+
+    async def get_inclusion_rules(self, *, request_options: typing.Optional[RequestOptions] = None) -> InclusionRules:
+        """
+        Returns the project rules, for example {"inclusion_rules":[],"inherited":false}.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        InclusionRules
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.get_inclusion_rules()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_inclusion_rules(request_options=request_options)
+        return _response.data
+
+    async def set_inclusion_rules(
+        self,
+        *,
+        inclusion_rules: typing.Optional[typing.Sequence[InclusionRule]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> InclusionRules:
+        """
+        Replaces the project rules. Request: {"inclusion_rules":[]}. Response: {"inclusion_rules":[],"inherited":false}.
+
+        Parameters
+        ----------
+        inclusion_rules : typing.Optional[typing.Sequence[InclusionRule]]
+            InclusionRules replaces the complete rule set at this scope.
+
+        inherited : typing.Optional[bool]
+            Inherited identifies a graph that uses project defaults.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        InclusionRules
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.set_inclusion_rules()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_inclusion_rules(
+            inclusion_rules=inclusion_rules,
+            inherited=inherited,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
         return _response.data
 
     async def get_instructions(self, *, request_options: typing.Optional[RequestOptions] = None) -> Instructions:
@@ -940,6 +1176,90 @@ class AsyncProjectClient:
             instructions=instructions,
             idempotency_key=idempotency_key,
             request_options=request_options,
+        )
+        return _response.data
+
+    async def get_knowledge(self, *, request_options: typing.Optional[RequestOptions] = None) -> KnowledgeResponse:
+        """
+        Returns the domain knowledge in effect at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeResponse
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.get_knowledge()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_knowledge(request_options=request_options)
+        return _response.data
+
+    async def set_knowledge(
+        self,
+        *,
+        knowledge: typing.Optional[typing.Sequence[KnowledgeEntry]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> KnowledgeResponse:
+        """
+        Replaces the complete set of domain knowledge entries at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+        Request example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}]}
+
+        Parameters
+        ----------
+        knowledge : typing.Optional[typing.Sequence[KnowledgeEntry]]
+            The complete set of domain knowledge entries. An empty list clears the scope.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeResponse
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.project.set_knowledge()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_knowledge(
+            knowledge=knowledge, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
 

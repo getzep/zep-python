@@ -12,7 +12,7 @@ from .task_result_episode import TaskResultEpisode
 class TaskResult(UniversalBaseModel):
     content_policy: typing.Optional[TaskResultContentPolicy] = pydantic.Field(default=None)
     """
-    The content policy outcome of the task.
+    Experimental. The content policy outcome of the task.
     """
 
     edge_uuid: typing.Optional[str] = pydantic.Field(default=None)
