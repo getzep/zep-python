@@ -11,7 +11,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel, update
 class EpisodeListFilters(UniversalBaseModel):
     content_policy_violated: typing.Optional[bool] = pydantic.Field(default=None)
     """
-    When true, include only episodes that a content policy flagged. When
+    Experimental. When true, include only episodes that a content policy flagged. When
     false, include only episodes that no content policy flagged. The
     project setting include_policy_violating_episodes must be on.
     """

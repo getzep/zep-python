@@ -26,7 +26,11 @@ from ..types.content_policy_rule_request import ContentPolicyRuleRequest
 from ..types.custom_instruction import CustomInstruction
 from ..types.edge_type import EdgeType
 from ..types.entity_type import EntityType
+from ..types.inclusion_rule import InclusionRule
+from ..types.inclusion_rules import InclusionRules
 from ..types.instructions import Instructions
+from ..types.knowledge_entry import KnowledgeEntry
+from ..types.knowledge_response import KnowledgeResponse
 from ..types.observation_steering import ObservationSteering
 from ..types.observation_type import ObservationType
 from ..types.ontology import Ontology
@@ -249,7 +253,7 @@ class RawProjectClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[ContentPolicy]:
         """
-        Returns the current content policy revision of the project. A new graph binds this revision at creation.
+        Experimental: the request, the response, and the behavior of this operation can change. Returns the current content policy revision of the project. A new graph binds this revision at creation.
 
         Parameters
         ----------
@@ -320,7 +324,7 @@ class RawProjectClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ContentPolicy]:
         """
-        Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. An empty policy (no categories and no rules) removes the content policy for new graphs.
+        Experimental: this operation and the new rule fields can change. The typed rule fields are in private preview and are available only to enabled accounts. Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. For example, {"categories":[{"key":"health"}],"rules":[{"category_key":"health","action":"exclude","entity_types":["Person"],"condition":"The statement names a person's health condition.","prohibited_examples":["Jordan has a chronic back condition."],"patterns":["diagnosed with"]}]}.
 
         Parameters
         ----------
@@ -423,7 +427,7 @@ class RawProjectClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ContentPolicy, ContentPolicyRevisionPage]:
         """
-        Lists every revision of the project content policy, newest first, including revision 0.
+        Experimental: the request, the response, and the behavior of this operation can change. Lists every revision of the project content policy, newest first, including revision 0.
 
         Parameters
         ----------
@@ -518,6 +522,8 @@ class RawProjectClient:
         self, revision_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[ContentPolicy]:
         """
+        Experimental: the request, the response, and the behavior of this operation can change.
+
         Parameters
         ----------
         revision_uuid : str
@@ -570,6 +576,184 @@ class RawProjectClient:
                 )
             if _response.status_code == 403:
                 raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_inclusion_rules(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[InclusionRules]:
+        """
+        Returns the project rules, for example {"inclusion_rules":[],"inherited":false}.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[InclusionRules]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/inclusion-rules",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    InclusionRules,
+                    parse_obj_as(
+                        type_=InclusionRules,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def set_inclusion_rules(
+        self,
+        *,
+        inclusion_rules: typing.Optional[typing.Sequence[InclusionRule]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[InclusionRules]:
+        """
+        Replaces the project rules. Request: {"inclusion_rules":[]}. Response: {"inclusion_rules":[],"inherited":false}.
+
+        Parameters
+        ----------
+        inclusion_rules : typing.Optional[typing.Sequence[InclusionRule]]
+            InclusionRules replaces the complete rule set at this scope.
+
+        inherited : typing.Optional[bool]
+            Inherited identifies a graph that uses project defaults.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[InclusionRules]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/inclusion-rules",
+            method="PUT",
+            json={
+                "inclusion_rules": convert_and_respect_annotation_metadata(
+                    object_=inclusion_rules, annotation=typing.Sequence[InclusionRule], direction="write"
+                ),
+                "inherited": inherited,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    InclusionRules,
+                    parse_obj_as(
+                        type_=InclusionRules,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -729,6 +913,182 @@ class RawProjectClient:
                     Instructions,
                     parse_obj_as(
                         type_=Instructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def get_knowledge(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[KnowledgeResponse]:
+        """
+        Returns the domain knowledge in effect at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[KnowledgeResponse]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/knowledge",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    KnowledgeResponse,
+                    parse_obj_as(
+                        type_=KnowledgeResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    def set_knowledge(
+        self,
+        *,
+        knowledge: typing.Optional[typing.Sequence[KnowledgeEntry]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[KnowledgeResponse]:
+        """
+        Replaces the complete set of domain knowledge entries at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+        Request example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}]}
+
+        Parameters
+        ----------
+        knowledge : typing.Optional[typing.Sequence[KnowledgeEntry]]
+            The complete set of domain knowledge entries. An empty list clears the scope.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[KnowledgeResponse]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "project/knowledge",
+            method="PUT",
+            json={
+                "knowledge": convert_and_respect_annotation_metadata(
+                    object_=knowledge, annotation=typing.Sequence[KnowledgeEntry], direction="write"
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    KnowledgeResponse,
+                    parse_obj_as(
+                        type_=KnowledgeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1140,6 +1500,17 @@ class RawProjectClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise core_api_error_ApiError(
@@ -1540,7 +1911,7 @@ class AsyncRawProjectClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[ContentPolicy]:
         """
-        Returns the current content policy revision of the project. A new graph binds this revision at creation.
+        Experimental: the request, the response, and the behavior of this operation can change. Returns the current content policy revision of the project. A new graph binds this revision at creation.
 
         Parameters
         ----------
@@ -1611,7 +1982,7 @@ class AsyncRawProjectClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ContentPolicy]:
         """
-        Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. An empty policy (no categories and no rules) removes the content policy for new graphs.
+        Experimental: this operation and the new rule fields can change. The typed rule fields are in private preview and are available only to enabled accounts. Replaces the project content policy and creates a new immutable revision. Graphs that already exist keep the revision they bound. For example, {"categories":[{"key":"health"}],"rules":[{"category_key":"health","action":"exclude","entity_types":["Person"],"condition":"The statement names a person's health condition.","prohibited_examples":["Jordan has a chronic back condition."],"patterns":["diagnosed with"]}]}.
 
         Parameters
         ----------
@@ -1714,7 +2085,7 @@ class AsyncRawProjectClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ContentPolicy, ContentPolicyRevisionPage]:
         """
-        Lists every revision of the project content policy, newest first, including revision 0.
+        Experimental: the request, the response, and the behavior of this operation can change. Lists every revision of the project content policy, newest first, including revision 0.
 
         Parameters
         ----------
@@ -1812,6 +2183,8 @@ class AsyncRawProjectClient:
         self, revision_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[ContentPolicy]:
         """
+        Experimental: the request, the response, and the behavior of this operation can change.
+
         Parameters
         ----------
         revision_uuid : str
@@ -1864,6 +2237,184 @@ class AsyncRawProjectClient:
                 )
             if _response.status_code == 403:
                 raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_inclusion_rules(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[InclusionRules]:
+        """
+        Returns the project rules, for example {"inclusion_rules":[],"inherited":false}.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[InclusionRules]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/inclusion-rules",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    InclusionRules,
+                    parse_obj_as(
+                        type_=InclusionRules,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_inclusion_rules(
+        self,
+        *,
+        inclusion_rules: typing.Optional[typing.Sequence[InclusionRule]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[InclusionRules]:
+        """
+        Replaces the project rules. Request: {"inclusion_rules":[]}. Response: {"inclusion_rules":[],"inherited":false}.
+
+        Parameters
+        ----------
+        inclusion_rules : typing.Optional[typing.Sequence[InclusionRule]]
+            InclusionRules replaces the complete rule set at this scope.
+
+        inherited : typing.Optional[bool]
+            Inherited identifies a graph that uses project defaults.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[InclusionRules]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/inclusion-rules",
+            method="PUT",
+            json={
+                "inclusion_rules": convert_and_respect_annotation_metadata(
+                    object_=inclusion_rules, annotation=typing.Sequence[InclusionRule], direction="write"
+                ),
+                "inherited": inherited,
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    InclusionRules,
+                    parse_obj_as(
+                        type_=InclusionRules,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,
@@ -2023,6 +2574,182 @@ class AsyncRawProjectClient:
                     Instructions,
                     parse_obj_as(
                         type_=Instructions,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def get_knowledge(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[KnowledgeResponse]:
+        """
+        Returns the domain knowledge in effect at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[KnowledgeResponse]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/knowledge",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    KnowledgeResponse,
+                    parse_obj_as(
+                        type_=KnowledgeResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def set_knowledge(
+        self,
+        *,
+        knowledge: typing.Optional[typing.Sequence[KnowledgeEntry]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[KnowledgeResponse]:
+        """
+        Replaces the complete set of domain knowledge entries at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+        Request example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}]}
+
+        Parameters
+        ----------
+        knowledge : typing.Optional[typing.Sequence[KnowledgeEntry]]
+            The complete set of domain knowledge entries. An empty list clears the scope.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[KnowledgeResponse]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "project/knowledge",
+            method="PUT",
+            json={
+                "knowledge": convert_and_respect_annotation_metadata(
+                    object_=knowledge, annotation=typing.Sequence[KnowledgeEntry], direction="write"
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+                "Idempotency-Key": str(idempotency_key) if idempotency_key is not None else generate_idempotency_key(),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    KnowledgeResponse,
+                    parse_obj_as(
+                        type_=KnowledgeResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2427,6 +3154,17 @@ class AsyncRawProjectClient:
                 )
             if _response.status_code == 404:
                 raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
                         types_api_error_ApiError,

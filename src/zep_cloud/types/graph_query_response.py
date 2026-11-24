@@ -5,6 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .graph_query_citations import GraphQueryCitations
+from .graph_query_response_answer_status import GraphQueryResponseAnswerStatus
 from .graph_query_results import GraphQueryResults
 
 
@@ -13,6 +14,11 @@ class GraphQueryResponse(UniversalBaseModel):
     """
     The answer with citation handles removed. Present only when the
     request sets generate_answer to true.
+    """
+
+    answer_status: typing.Optional[GraphQueryResponseAnswerStatus] = pydantic.Field(default=None)
+    """
+    The outcome of the answer: answered, partial (the answer covers only part of the question), or refused (the records do not answer the question). Present only when the request sets generate_answer to true.
     """
 
     citations: typing.Optional[GraphQueryCitations] = pydantic.Field(default=None)

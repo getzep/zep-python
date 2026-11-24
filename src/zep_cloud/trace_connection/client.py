@@ -229,7 +229,7 @@ class TraceConnectionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceConnection:
         """
-        Verify changed settings before Zep stores them. Both providers accept 1 to 60 requests per minute and an optional retention window. Example request: `{"requests_per_minute":60,"retention_days":30}`.
+        Verify changed settings before Zep stores them. A request that changes `api_url` must also include `credential`. Otherwise Zep returns `400 invalid_request`. Both providers accept 1 to 60 requests per minute and an optional retention window. Example request: `{"requests_per_minute":60,"retention_days":30}`.
 
         Parameters
         ----------
@@ -238,6 +238,7 @@ class TraceConnectionClient:
 
         api_url : typing.Optional[str]
             APIURL is the new custom provider endpoint, when supplied.
+            A request that changes api_url must also include credential.
 
         credential : typing.Optional[str]
             Credential is the new write-only provider credential, when supplied.
@@ -587,7 +588,7 @@ class AsyncTraceConnectionClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TraceConnection:
         """
-        Verify changed settings before Zep stores them. Both providers accept 1 to 60 requests per minute and an optional retention window. Example request: `{"requests_per_minute":60,"retention_days":30}`.
+        Verify changed settings before Zep stores them. A request that changes `api_url` must also include `credential`. Otherwise Zep returns `400 invalid_request`. Both providers accept 1 to 60 requests per minute and an optional retention window. Example request: `{"requests_per_minute":60,"retention_days":30}`.
 
         Parameters
         ----------
@@ -596,6 +597,7 @@ class AsyncTraceConnectionClient:
 
         api_url : typing.Optional[str]
             APIURL is the new custom provider endpoint, when supplied.
+            A request that changes api_url must also include credential.
 
         credential : typing.Optional[str]
             Credential is the new write-only provider credential, when supplied.

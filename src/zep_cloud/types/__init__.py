@@ -133,6 +133,8 @@ if typing.TYPE_CHECKING:
     from .async_result import AsyncResult
     from .batch import Batch
     from .batch_item import BatchItem
+    from .batch_item_error import BatchItemError
+    from .batch_item_error_code import BatchItemErrorCode
     from .batch_item_input import BatchItemInput
     from .batch_item_input_data_type import BatchItemInputDataType
     from .batch_item_input_role import BatchItemInputRole
@@ -155,9 +157,12 @@ if typing.TYPE_CHECKING:
     from .content_policy_event_list_filters import ContentPolicyEventListFilters
     from .content_policy_event_list_filters_drop_reason import ContentPolicyEventListFiltersDropReason
     from .content_policy_event_page import ContentPolicyEventPage
+    from .content_policy_matched_by import ContentPolicyMatchedBy
     from .content_policy_revision_page import ContentPolicyRevisionPage
     from .content_policy_rule import ContentPolicyRule
+    from .content_policy_rule_action import ContentPolicyRuleAction
     from .content_policy_rule_request import ContentPolicyRuleRequest
+    from .content_policy_rule_request_action import ContentPolicyRuleRequestAction
     from .context_edge import ContextEdge
     from .context_episode import ContextEpisode
     from .context_node import ContextNode
@@ -200,6 +205,7 @@ if typing.TYPE_CHECKING:
     from .episode_list_filters import EpisodeListFilters
     from .episode_page import EpisodePage
     from .episode_search_filters import EpisodeSearchFilters
+    from .episode_wait_status import EpisodeWaitStatus
     from .error_body import ErrorBody
     from .graph import Graph
     from .graph_content_policy import GraphContentPolicy
@@ -222,6 +228,7 @@ if typing.TYPE_CHECKING:
     from .graph_query_plan_step import GraphQueryPlanStep
     from .graph_query_reasoning_event import GraphQueryReasoningEvent
     from .graph_query_response import GraphQueryResponse
+    from .graph_query_response_answer_status import GraphQueryResponseAnswerStatus
     from .graph_query_result_event import GraphQueryResultEvent
     from .graph_query_results import GraphQueryResults
     from .graph_query_started_event import GraphQueryStartedEvent
@@ -246,7 +253,13 @@ if typing.TYPE_CHECKING:
     from .hyperedge_list_filters import HyperedgeListFilters
     from .hyperedge_page import HyperedgePage
     from .imported_trace_reference import ImportedTraceReference
+    from .inclusion_rule import InclusionRule
+    from .inclusion_rule_effect import InclusionRuleEffect
+    from .inclusion_rule_target import InclusionRuleTarget
+    from .inclusion_rules import InclusionRules
     from .ingestion_trace import IngestionTrace
+    from .ingestion_trace_candidate_outcome import IngestionTraceCandidateOutcome
+    from .ingestion_trace_candidate_outcome_outcome import IngestionTraceCandidateOutcomeOutcome
     from .ingestion_trace_edge import IngestionTraceEdge
     from .ingestion_trace_edge_invalidation import IngestionTraceEdgeInvalidation
     from .ingestion_trace_edge_reference import IngestionTraceEdgeReference
@@ -262,6 +275,8 @@ if typing.TYPE_CHECKING:
     from .ingestion_trace_status import IngestionTraceStatus
     from .ingestion_trace_step import IngestionTraceStep
     from .instructions import Instructions
+    from .knowledge_entry import KnowledgeEntry
+    from .knowledge_response import KnowledgeResponse
     from .lookup_batch_response import LookupBatchResponse
     from .lookup_item import LookupItem
     from .lookup_item_resource_type import LookupItemResourceType
@@ -312,6 +327,7 @@ if typing.TYPE_CHECKING:
     from .role_type import RoleType
     from .search_filters import SearchFilters
     from .search_list_request import SearchListRequest
+    from .set_knowledge_request import SetKnowledgeRequest
     from .skill_definition import SkillDefinition
     from .skill_definition_section import SkillDefinitionSection
     from .skill_failure import SkillFailure
@@ -509,6 +525,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "AsyncResult": ".async_result",
     "Batch": ".batch",
     "BatchItem": ".batch_item",
+    "BatchItemError": ".batch_item_error",
+    "BatchItemErrorCode": ".batch_item_error_code",
     "BatchItemInput": ".batch_item_input",
     "BatchItemInputDataType": ".batch_item_input_data_type",
     "BatchItemInputRole": ".batch_item_input_role",
@@ -531,9 +549,12 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ContentPolicyEventListFilters": ".content_policy_event_list_filters",
     "ContentPolicyEventListFiltersDropReason": ".content_policy_event_list_filters_drop_reason",
     "ContentPolicyEventPage": ".content_policy_event_page",
+    "ContentPolicyMatchedBy": ".content_policy_matched_by",
     "ContentPolicyRevisionPage": ".content_policy_revision_page",
     "ContentPolicyRule": ".content_policy_rule",
+    "ContentPolicyRuleAction": ".content_policy_rule_action",
     "ContentPolicyRuleRequest": ".content_policy_rule_request",
+    "ContentPolicyRuleRequestAction": ".content_policy_rule_request_action",
     "ContextEdge": ".context_edge",
     "ContextEpisode": ".context_episode",
     "ContextNode": ".context_node",
@@ -576,6 +597,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "EpisodeListFilters": ".episode_list_filters",
     "EpisodePage": ".episode_page",
     "EpisodeSearchFilters": ".episode_search_filters",
+    "EpisodeWaitStatus": ".episode_wait_status",
     "ErrorBody": ".error_body",
     "Graph": ".graph",
     "GraphContentPolicy": ".graph_content_policy",
@@ -598,6 +620,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "GraphQueryPlanStep": ".graph_query_plan_step",
     "GraphQueryReasoningEvent": ".graph_query_reasoning_event",
     "GraphQueryResponse": ".graph_query_response",
+    "GraphQueryResponseAnswerStatus": ".graph_query_response_answer_status",
     "GraphQueryResultEvent": ".graph_query_result_event",
     "GraphQueryResults": ".graph_query_results",
     "GraphQueryStartedEvent": ".graph_query_started_event",
@@ -620,7 +643,13 @@ _dynamic_imports: typing.Dict[str, str] = {
     "HyperedgeListFilters": ".hyperedge_list_filters",
     "HyperedgePage": ".hyperedge_page",
     "ImportedTraceReference": ".imported_trace_reference",
+    "InclusionRule": ".inclusion_rule",
+    "InclusionRuleEffect": ".inclusion_rule_effect",
+    "InclusionRuleTarget": ".inclusion_rule_target",
+    "InclusionRules": ".inclusion_rules",
     "IngestionTrace": ".ingestion_trace",
+    "IngestionTraceCandidateOutcome": ".ingestion_trace_candidate_outcome",
+    "IngestionTraceCandidateOutcomeOutcome": ".ingestion_trace_candidate_outcome_outcome",
     "IngestionTraceEdge": ".ingestion_trace_edge",
     "IngestionTraceEdgeInvalidation": ".ingestion_trace_edge_invalidation",
     "IngestionTraceEdgeReference": ".ingestion_trace_edge_reference",
@@ -636,6 +665,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "IngestionTraceStatus": ".ingestion_trace_status",
     "IngestionTraceStep": ".ingestion_trace_step",
     "Instructions": ".instructions",
+    "KnowledgeEntry": ".knowledge_entry",
+    "KnowledgeResponse": ".knowledge_response",
     "LookupBatchResponse": ".lookup_batch_response",
     "LookupItem": ".lookup_item",
     "LookupItemResourceType": ".lookup_item_resource_type",
@@ -686,6 +717,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "RoleType": ".role_type",
     "SearchFilters": ".search_filters",
     "SearchListRequest": ".search_list_request",
+    "SetKnowledgeRequest": ".set_knowledge_request",
     "SkillDefinition": ".skill_definition",
     "SkillDefinitionSection": ".skill_definition_section",
     "SkillFailure": ".skill_failure",
@@ -907,6 +939,8 @@ __all__ = [
     "AsyncResult",
     "Batch",
     "BatchItem",
+    "BatchItemError",
+    "BatchItemErrorCode",
     "BatchItemInput",
     "BatchItemInputDataType",
     "BatchItemInputRole",
@@ -929,9 +963,12 @@ __all__ = [
     "ContentPolicyEventListFilters",
     "ContentPolicyEventListFiltersDropReason",
     "ContentPolicyEventPage",
+    "ContentPolicyMatchedBy",
     "ContentPolicyRevisionPage",
     "ContentPolicyRule",
+    "ContentPolicyRuleAction",
     "ContentPolicyRuleRequest",
+    "ContentPolicyRuleRequestAction",
     "ContextEdge",
     "ContextEpisode",
     "ContextNode",
@@ -974,6 +1011,7 @@ __all__ = [
     "EpisodeListFilters",
     "EpisodePage",
     "EpisodeSearchFilters",
+    "EpisodeWaitStatus",
     "ErrorBody",
     "Graph",
     "GraphContentPolicy",
@@ -996,6 +1034,7 @@ __all__ = [
     "GraphQueryPlanStep",
     "GraphQueryReasoningEvent",
     "GraphQueryResponse",
+    "GraphQueryResponseAnswerStatus",
     "GraphQueryResultEvent",
     "GraphQueryResults",
     "GraphQueryStartedEvent",
@@ -1018,7 +1057,13 @@ __all__ = [
     "HyperedgeListFilters",
     "HyperedgePage",
     "ImportedTraceReference",
+    "InclusionRule",
+    "InclusionRuleEffect",
+    "InclusionRuleTarget",
+    "InclusionRules",
     "IngestionTrace",
+    "IngestionTraceCandidateOutcome",
+    "IngestionTraceCandidateOutcomeOutcome",
     "IngestionTraceEdge",
     "IngestionTraceEdgeInvalidation",
     "IngestionTraceEdgeReference",
@@ -1034,6 +1079,8 @@ __all__ = [
     "IngestionTraceStatus",
     "IngestionTraceStep",
     "Instructions",
+    "KnowledgeEntry",
+    "KnowledgeResponse",
     "LookupBatchResponse",
     "LookupItem",
     "LookupItemResourceType",
@@ -1084,6 +1131,7 @@ __all__ = [
     "RoleType",
     "SearchFilters",
     "SearchListRequest",
+    "SetKnowledgeRequest",
     "SkillDefinition",
     "SkillDefinitionSection",
     "SkillFailure",

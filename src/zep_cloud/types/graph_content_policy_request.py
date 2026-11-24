@@ -24,7 +24,7 @@ class GraphContentPolicyRequest(UniversalBaseModel):
     rules: typing.Optional[typing.List[ContentPolicyRuleRequest]] = pydantic.Field(default=None)
     """
     Rules to add for this graph. A rule that the project policy already has,
-    with the same category key and description, is ignored.
+    with the same effective rule identity is ignored.
     """
 
     if IS_PYDANTIC_V2:

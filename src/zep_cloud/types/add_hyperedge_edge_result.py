@@ -11,8 +11,9 @@ from .task import Task
 class AddHyperedgeEdgeResult(UniversalBaseModel):
     edge: typing.Optional[AddedEdge] = pydantic.Field(default=None)
     """
-    An accept-time acknowledgement of the member edge, carrying the
-    identifier Zep assigned and the hyperedge's shared fields.
+    An accept-time acknowledgement of the member edge. It contains the
+    identifier that Zep assigned and the name and nodes that you supplied.
+    It does not contain the shared fact or timestamps of the hyperedge.
     """
 
     task: typing.Optional[Task] = pydantic.Field(default=None)

@@ -10,7 +10,7 @@ from .task_result_content_policy import TaskResultContentPolicy
 class TaskResultEpisode(UniversalBaseModel):
     content_policy: typing.Optional[TaskResultContentPolicy] = pydantic.Field(default=None)
     """
-    The content policy state of the episode.
+    Experimental. The content policy state of the episode.
     """
 
     episode_uuid: typing.Optional[str] = pydantic.Field(default=None)

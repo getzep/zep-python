@@ -32,7 +32,11 @@ from ..types.graph_metadata_key_list import GraphMetadataKeyList
 from ..types.graph_page import GraphPage
 from ..types.graph_query_response import GraphQueryResponse
 from ..types.graph_query_stream_event import GraphQueryStreamEvent
+from ..types.inclusion_rule import InclusionRule
+from ..types.inclusion_rules import InclusionRules
 from ..types.instructions import Instructions
+from ..types.knowledge_entry import KnowledgeEntry
+from ..types.knowledge_response import KnowledgeResponse
 from ..types.node import Node
 from ..types.node_page import NodePage
 from ..types.node_search_filters import NodeSearchFilters
@@ -108,7 +112,7 @@ class GraphClient:
         Parameters
         ----------
         content_policy : typing.Optional[GraphContentPolicyRequest]
-            Content policy additions for the graph. The graph binds the current
+            Experimental. Content policy additions for the graph. The graph binds the current
             project content policy plus these additions, and the binding does not
             change after creation.
 
@@ -266,7 +270,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Iterator[GraphQueryStreamEvent]:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Smart Query retrieves multi-hop context from a graph in one call. Some agent tasks need multi-hop retrieval: the agent does not know in advance what to search for, so it must retrieve a record, learn from it, and then plan the next retrieval. Zep explores the graph with searches and graph traversals, and it uses the records from each retrieval round to plan the next round. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items and an `answer_status` of `answered`, `partial`, or `refused`. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: Optimized for latency. Retrieves the context for multi-hop queries. The query runs at most 3 search rounds. deep: Runs more retrieval steps, so it can retrieve complete lists, such as the records for a count. It takes longer than fast mode. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and available to every Zep account. The request, the response, the events, and the modes of the operation can change.
 
         Parameters
         ----------
@@ -274,7 +278,7 @@ class GraphClient:
             The graph UUIDs to query. The current release accepts one UUID.
 
         query : str
-            The natural-language question about the graph.
+            The natural-language query for the graph.
 
         generate_answer : typing.Optional[bool]
             When true, a model also writes an answer from the retrieved records.
@@ -284,7 +288,11 @@ class GraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
+            The retrieval mode. The default is fast.
+            Fast mode is optimized for latency. It retrieves the context for multi-hop queries.
+            The query runs at most 3 search rounds. A BYOM project needs a decision model for fast mode.
+            A BYOC deployment needs a decision model (SystemOne or Gemini Decisions) for fast mode.
+            Deep mode runs more retrieval steps, so it can retrieve complete lists, such as the records for a count. It takes longer than fast mode.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -329,7 +337,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphQueryResponse:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Smart Query retrieves multi-hop context from a graph in one call. Some agent tasks need multi-hop retrieval: the agent does not know in advance what to search for, so it must retrieve a record, learn from it, and then plan the next retrieval. Zep explores the graph with searches and graph traversals, and it uses the records from each retrieval round to plan the next round. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items and an `answer_status` of `answered`, `partial`, or `refused`. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: Optimized for latency. Retrieves the context for multi-hop queries. The query runs at most 3 search rounds. deep: Runs more retrieval steps, so it can retrieve complete lists, such as the records for a count. It takes longer than fast mode. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and available to every Zep account. The request, the response, the events, and the modes of the operation can change.
 
         Parameters
         ----------
@@ -337,7 +345,7 @@ class GraphClient:
             The graph UUIDs to query. The current release accepts one UUID.
 
         query : str
-            The natural-language question about the graph.
+            The natural-language query for the graph.
 
         generate_answer : typing.Optional[bool]
             When true, a model also writes an answer from the retrieved records.
@@ -347,7 +355,11 @@ class GraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
+            The retrieval mode. The default is fast.
+            Fast mode is optimized for latency. It retrieves the context for multi-hop queries.
+            The query runs at most 3 search rounds. A BYOM project needs a decision model for fast mode.
+            A BYOC deployment needs a decision model (SystemOne or Gemini Decisions) for fast mode.
+            Deep mode runs more retrieval steps, so it can retrieve complete lists, such as the records for a count. It takes longer than fast mode.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -550,7 +562,7 @@ class GraphClient:
         self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> GraphContentPolicy:
         """
-        Returns the content policy the graph bound at creation. The policy of a graph does not change after creation. A graph without a content policy returns revision 0 with no categories and no rules.
+        Experimental: the request, the response, and the behavior of this operation can change. Returns the content policy the graph bound at creation. The policy of a graph does not change after creation. A graph without a content policy returns revision 0 with no categories and no rules.
 
         Parameters
         ----------
@@ -589,7 +601,7 @@ class GraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[ContentPolicyEvent, ContentPolicyEventPage]:
         """
-        Lists the content policy decisions recorded for a graph, newest first. Each event carries identifiers only. A graph without a content policy returns an empty list.
+        Experimental: the request, the response, and the behavior of this operation can change. Lists the content policy decisions recorded for a graph, newest first. Each event carries identifiers only. A graph without a content policy returns an empty list.
 
         Parameters
         ----------
@@ -702,6 +714,92 @@ class GraphClient:
         )
         return _response.data
 
+    def get_inclusion_rules(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> InclusionRules:
+        """
+        Returns the graph rules, for example {"inclusion_rules":[],"inherited":true}.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        InclusionRules
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.get_inclusion_rules(
+            graph_uuid="graph_uuid",
+        )
+        """
+        _response = self._raw_client.get_inclusion_rules(graph_uuid, request_options=request_options)
+        return _response.data
+
+    def set_inclusion_rules(
+        self,
+        graph_uuid: str,
+        *,
+        inclusion_rules: typing.Optional[typing.Sequence[InclusionRule]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> InclusionRules:
+        """
+        Replaces the graph rules. Request: {"inclusion_rules":[]}. Response: {"inclusion_rules":[],"inherited":true}.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        inclusion_rules : typing.Optional[typing.Sequence[InclusionRule]]
+            InclusionRules replaces the complete rule set at this scope.
+
+        inherited : typing.Optional[bool]
+            Inherited identifies a graph that uses project defaults.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        InclusionRules
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.set_inclusion_rules(
+            graph_uuid="graph_uuid",
+        )
+        """
+        _response = self._raw_client.set_inclusion_rules(
+            graph_uuid,
+            inclusion_rules=inclusion_rules,
+            inherited=inherited,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
     def get_instructions(
         self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Instructions:
@@ -783,6 +881,87 @@ class GraphClient:
             instructions=instructions,
             idempotency_key=idempotency_key,
             request_options=request_options,
+        )
+        return _response.data
+
+    def get_knowledge(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> KnowledgeResponse:
+        """
+        Returns the domain knowledge in effect at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+
+        Parameters
+        ----------
+        graph_uuid : str
+            The UUID of the graph or its user.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.get_knowledge(
+            graph_uuid="graph_uuid",
+        )
+        """
+        _response = self._raw_client.get_knowledge(graph_uuid, request_options=request_options)
+        return _response.data
+
+    def set_knowledge(
+        self,
+        graph_uuid: str,
+        *,
+        knowledge: typing.Optional[typing.Sequence[KnowledgeEntry]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> KnowledgeResponse:
+        """
+        Replaces the complete set of domain knowledge entries at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+        Request example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}]}
+
+        Parameters
+        ----------
+        graph_uuid : str
+            The UUID of the graph or its user.
+
+        knowledge : typing.Optional[typing.Sequence[KnowledgeEntry]]
+            The complete set of domain knowledge entries. An empty list clears the scope.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeResponse
+            OK
+
+        Examples
+        --------
+        from zep_cloud import Zep
+
+        client = Zep(
+            api_key="YOUR_API_KEY",
+        )
+        client.graph.set_knowledge(
+            graph_uuid="graph_uuid",
+        )
+        """
+        _response = self._raw_client.set_knowledge(
+            graph_uuid, knowledge=knowledge, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
 
@@ -1717,7 +1896,7 @@ class AsyncGraphClient:
         Parameters
         ----------
         content_policy : typing.Optional[GraphContentPolicyRequest]
-            Content policy additions for the graph. The graph binds the current
+            Experimental. Content policy additions for the graph. The graph binds the current
             project content policy plus these additions, and the binding does not
             change after creation.
 
@@ -1900,7 +2079,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.AsyncIterator[GraphQueryStreamEvent]:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Smart Query retrieves multi-hop context from a graph in one call. Some agent tasks need multi-hop retrieval: the agent does not know in advance what to search for, so it must retrieve a record, learn from it, and then plan the next retrieval. Zep explores the graph with searches and graph traversals, and it uses the records from each retrieval round to plan the next round. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items and an `answer_status` of `answered`, `partial`, or `refused`. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: Optimized for latency. Retrieves the context for multi-hop queries. The query runs at most 3 search rounds. deep: Runs more retrieval steps, so it can retrieve complete lists, such as the records for a count. It takes longer than fast mode. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and available to every Zep account. The request, the response, the events, and the modes of the operation can change.
 
         Parameters
         ----------
@@ -1908,7 +2087,7 @@ class AsyncGraphClient:
             The graph UUIDs to query. The current release accepts one UUID.
 
         query : str
-            The natural-language question about the graph.
+            The natural-language query for the graph.
 
         generate_answer : typing.Optional[bool]
             When true, a model also writes an answer from the retrieved records.
@@ -1918,7 +2097,11 @@ class AsyncGraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
+            The retrieval mode. The default is fast.
+            Fast mode is optimized for latency. It retrieves the context for multi-hop queries.
+            The query runs at most 3 search rounds. A BYOM project needs a decision model for fast mode.
+            A BYOC deployment needs a decision model (SystemOne or Gemini Decisions) for fast mode.
+            Deep mode runs more retrieval steps, so it can retrieve complete lists, such as the records for a count. It takes longer than fast mode.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1972,7 +2155,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GraphQueryResponse:
         """
-        Experimental. Retrieves the graph records for a natural-language question about a graph with a read-only retrieval loop. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. deep: A model plans its own searches. It can page through complete lists and read more records before it answers. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and in closed release. Zep enables the operation only for select accounts. The request, the response, the events, and the modes of the operation can change. A request from an account without access returns `404 not_found`. To get access, contact support@getzep.com.
+        Experimental. Smart Query retrieves multi-hop context from a graph in one call. Some agent tasks need multi-hop retrieval: the agent does not know in advance what to search for, so it must retrieve a record, learn from it, and then plan the next retrieval. Zep explores the graph with searches and graph traversals, and it uses the records from each retrieval round to plan the next round. By default, the response has the retrieved records and no answer. Set `generate_answer` to `true` to also get an answer that a model writes from the records, with the cited graph items and an `answer_status` of `answered`, `partial`, or `refused`. Set `stream` to `true` to get the retrieval calls as server-sent events. The default mode is fast. fast: Optimized for latency. Retrieves the context for multi-hop queries. The query runs at most 3 search rounds. deep: Runs more retrieval steps, so it can retrieve complete lists, such as the records for a count. It takes longer than fast mode. BYOM and BYOC projects can use fast mode when they have a configured decision model. Other projects can use fast mode without a decision model. BYOM and BYOC projects without a decision model must use deep mode. The operation is experimental and available to every Zep account. The request, the response, the events, and the modes of the operation can change.
 
         Parameters
         ----------
@@ -1980,7 +2163,7 @@ class AsyncGraphClient:
             The graph UUIDs to query. The current release accepts one UUID.
 
         query : str
-            The natural-language question about the graph.
+            The natural-language query for the graph.
 
         generate_answer : typing.Optional[bool]
             When true, a model also writes an answer from the retrieved records.
@@ -1990,7 +2173,11 @@ class AsyncGraphClient:
             Optional caller guidance for the answer. The agent treats it as untrusted text.
 
         mode : typing.Optional[GraphQueryRequestMode]
-            The retrieval mode. The default is fast. fast: A decision model selects the types of search for each round and stops when it has enough context. The query runs at most 3 search rounds. A BYOM project or BYOC deployment also needs a SystemOne decision model for fast. deep: A model plans its own searches. It can page through complete lists and read more records before it answers.
+            The retrieval mode. The default is fast.
+            Fast mode is optimized for latency. It retrieves the context for multi-hop queries.
+            The query runs at most 3 search rounds. A BYOM project needs a decision model for fast mode.
+            A BYOC deployment needs a decision model (SystemOne or Gemini Decisions) for fast mode.
+            Deep mode runs more retrieval steps, so it can retrieve complete lists, such as the records for a count. It takes longer than fast mode.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -2233,7 +2420,7 @@ class AsyncGraphClient:
         self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> GraphContentPolicy:
         """
-        Returns the content policy the graph bound at creation. The policy of a graph does not change after creation. A graph without a content policy returns revision 0 with no categories and no rules.
+        Experimental: the request, the response, and the behavior of this operation can change. Returns the content policy the graph bound at creation. The policy of a graph does not change after creation. A graph without a content policy returns revision 0 with no categories and no rules.
 
         Parameters
         ----------
@@ -2280,7 +2467,7 @@ class AsyncGraphClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[ContentPolicyEvent, ContentPolicyEventPage]:
         """
-        Lists the content policy decisions recorded for a graph, newest first. Each event carries identifiers only. A graph without a content policy returns an empty list.
+        Experimental: the request, the response, and the behavior of this operation can change. Lists the content policy decisions recorded for a graph, newest first. Each event carries identifiers only. A graph without a content policy returns an empty list.
 
         Parameters
         ----------
@@ -2410,6 +2597,108 @@ class AsyncGraphClient:
         )
         return _response.data
 
+    async def get_inclusion_rules(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> InclusionRules:
+        """
+        Returns the graph rules, for example {"inclusion_rules":[],"inherited":true}.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        InclusionRules
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.get_inclusion_rules(
+                graph_uuid="graph_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_inclusion_rules(graph_uuid, request_options=request_options)
+        return _response.data
+
+    async def set_inclusion_rules(
+        self,
+        graph_uuid: str,
+        *,
+        inclusion_rules: typing.Optional[typing.Sequence[InclusionRule]] = OMIT,
+        inherited: typing.Optional[bool] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> InclusionRules:
+        """
+        Replaces the graph rules. Request: {"inclusion_rules":[]}. Response: {"inclusion_rules":[],"inherited":true}.
+
+        Parameters
+        ----------
+        graph_uuid : str
+            Graph UUID
+
+        inclusion_rules : typing.Optional[typing.Sequence[InclusionRule]]
+            InclusionRules replaces the complete rule set at this scope.
+
+        inherited : typing.Optional[bool]
+            Inherited identifies a graph that uses project defaults.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        InclusionRules
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.set_inclusion_rules(
+                graph_uuid="graph_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_inclusion_rules(
+            graph_uuid,
+            inclusion_rules=inclusion_rules,
+            inherited=inherited,
+            idempotency_key=idempotency_key,
+            request_options=request_options,
+        )
+        return _response.data
+
     async def get_instructions(
         self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Instructions:
@@ -2507,6 +2796,103 @@ class AsyncGraphClient:
             instructions=instructions,
             idempotency_key=idempotency_key,
             request_options=request_options,
+        )
+        return _response.data
+
+    async def get_knowledge(
+        self, graph_uuid: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> KnowledgeResponse:
+        """
+        Returns the domain knowledge in effect at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+
+        Parameters
+        ----------
+        graph_uuid : str
+            The UUID of the graph or its user.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeResponse
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.get_knowledge(
+                graph_uuid="graph_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_knowledge(graph_uuid, request_options=request_options)
+        return _response.data
+
+    async def set_knowledge(
+        self,
+        graph_uuid: str,
+        *,
+        knowledge: typing.Optional[typing.Sequence[KnowledgeEntry]] = OMIT,
+        idempotency_key: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> KnowledgeResponse:
+        """
+        Replaces the complete set of domain knowledge entries at this scope. The knowledge_api account flag must be enabled.
+        Response example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}],"inherited":false}
+        Request example: {"knowledge":[{"name":"CRM","text":"CRM means the customer service."}]}
+
+        Parameters
+        ----------
+        graph_uuid : str
+            The UUID of the graph or its user.
+
+        knowledge : typing.Optional[typing.Sequence[KnowledgeEntry]]
+            The complete set of domain knowledge entries. An empty list clears the scope.
+
+        idempotency_key : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        KnowledgeResponse
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from zep_cloud import AsyncZep
+
+        client = AsyncZep(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.graph.set_knowledge(
+                graph_uuid="graph_uuid",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.set_knowledge(
+            graph_uuid, knowledge=knowledge, idempotency_key=idempotency_key, request_options=request_options
         )
         return _response.data
 

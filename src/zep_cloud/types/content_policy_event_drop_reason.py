@@ -3,5 +3,5 @@
 import typing
 
 ContentPolicyEventDropReason = typing.Union[
-    typing.Literal["match", "indeterminate", "oversize", "dependent"], typing.Any
+    typing.Literal["match", "indeterminate", "oversize", "dependent", "not_included"], typing.Any
 ]

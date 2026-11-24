@@ -2,4 +2,4 @@
 
 import typing
 
-EpisodeContentPolicyStatus = typing.Union[typing.Literal["pending", "complete", "failed"], typing.Any]
+EpisodeContentPolicyStatus = typing.Union[typing.Literal["pending", "complete", "failed", "not_evaluated"], typing.Any]

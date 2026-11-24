@@ -18,7 +18,7 @@ class SearchFilters(UniversalBaseModel):
 
     content_policy_violated: typing.Optional[bool] = pydantic.Field(default=None)
     """
-    Match episodes by their content-policy result. Supported only on episode search when the project setting include_policy_violating_episodes is true.
+    Experimental. Match episodes by their content-policy result. Supported only on episode search when the project setting include_policy_violating_episodes is true.
     """
 
     date_filters: typing.Optional[DateFilters] = pydantic.Field(default=None)
